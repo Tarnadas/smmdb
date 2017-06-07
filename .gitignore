@@ -1,0 +1,7 @@
+
+/src/server/scripts/credentials.js
+/node_modules/
+/build/server/server.bundle.js
+/.idea/
+/build/client/img/courses/
+/build/client/script/renderer.bundle.js
