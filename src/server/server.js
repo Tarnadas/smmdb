@@ -21,7 +21,7 @@ import Database    from './scripts/database'
 import Sorting     from './scripts/sorting'
 import Parsing     from './scripts/parsing'
 import {
-    clientId as googleClientId
+    clientId as googleClientId, cookie as cookieCredentials
 } from './scripts/credentials'
 import {
     log, calculatePoints
@@ -101,7 +101,7 @@ function main() {
     app.use('/script', express.static(path.join(__dirname, '../client/script'), { maxAge: cacheMaxAgeJS }));
     app.use(cookieSession({
         name: 'session',
-        keys: credentials.cookie,
+        keys: cookieCredentials,
         maxAge: 24 * 60 * 60 * 1000
     }));
 
@@ -689,30 +689,6 @@ function main() {
         
     });
 
-    // TODO this should instead make an api call
-    app.route('/get-courses').post((req, res) => {
-
-        log("[200] " + req.method + " to " + req.url);
-        
-        req.on('data', (chunk) => {
-            let data = JSON.parse(chunk.toString());
-            //getCourses(res, util.sendJson, !!usersLoggedIn[req.session.token], usersLoggedIn[req.session.token], false, data);
-        });
-
-    });
-
-    // TODO same
-    app.route('/get-packages').post((req, res) => {
-        
-        log("[200] " + req.method + " to " + req.url);
-        
-        req.on('data', (chunk) => {
-            let data = JSON.parse(chunk.toString());
-            //getCourses(res, util.sendJson, !!usersLoggedIn[req.session.token], usersLoggedIn[req.session.token], true, data);
-        });
-
-    });
-
     app.route('/api/:apicall*?').get((req, res) => {
         
         if (req.url.includes("/") && req.url.length > 5) {
@@ -736,11 +712,12 @@ function main() {
                     isPackage = true;
                 }
                 let loggedIn = false, userId;
-                if (!!apiData.apikey && usersByAPIKey.hasOwnProperty(apiData.apikey)) {
+                let account = Account.getAccountByAPIKey(apiData.apikey);
+                if (!!account) {
                     loggedIn = true;
-                    userId = usersByAPIKey[apiData.apikey];
+                    userId = account.id;
                 }
-                res.json(api.getCourses(loggedIn, userId, isPackage, apiData));
+                res.json(API.getCourses(loggedIn, userId, isPackage, apiData));
             } else if (apiCall === "starcourse") {
                 if (!apiData.apikey) {
                     res.json({
@@ -752,7 +729,7 @@ function main() {
                     });
                 } else {
                     let userId = usersByAPIKey[apiData.apikey];
-                    res.json(api.starCourse(userId, apiData));
+                    res.json(API.starCourse(userId, apiData));
                 }
             } else if (apiCall === "completecourse") {
                 if (!apiData.apikey) {
@@ -765,7 +742,7 @@ function main() {
                     });
                 } else {
                     let userId = usersByAPIKey[apiData.apikey];
-                    res.json(api.completeCourse(userId, apiData));
+                    res.json(API.completeCourse(userId, apiData));
                 }
             } else {
                 res.json({
@@ -791,7 +768,7 @@ function main() {
                     err: "API key unknown"
                 });
             } else {
-                res.json(await api.uploadCourse(req, res, usersByAPIKey[apiKey]));
+                res.json(await API.uploadCourse(req, res, usersByAPIKey[apiKey]));
             }
         } else {
             res.json({

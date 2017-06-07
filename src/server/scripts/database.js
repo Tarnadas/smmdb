@@ -1,14 +1,12 @@
 import mysql from 'mysql2/promise'
 
+import Sorting from './sorting'
 import Course  from '../Course'
 import Account from '../Account'
 
 import {
     mysql as mysqlCredentials
 } from './credentials'
-import {
-    Sorting
-} from './sorting'
 
 const mysqlConnection = Symbol();
 

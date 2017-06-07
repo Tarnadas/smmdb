@@ -1,9 +1,8 @@
 import * as fs from 'fs'
 
-import {
-    database, sorting
-} from '../server'
-import Account from '../Account'
+import Database from './database'
+import Sorting  from './sorting'
+import Account  from '../Account'
 
 export default class API {
 
@@ -20,7 +19,7 @@ export default class API {
             dir = filterData.dir;
         }
 
-        let courses = sorting.getCoursesBySorting(orderBy, dir);
+        let courses = Sorting.getCoursesBySorting(orderBy, dir);
         for (let i = 0; i < courses.length; i++) {
 
             let course = courses[i];
@@ -125,7 +124,7 @@ export default class API {
 
     }
 
-    static starCourse (accountId, data) {
+    static async starCourse (accountId, data) {
 
         if (!data.courseid) {
             return {
@@ -181,7 +180,7 @@ export default class API {
                         try {
                             courses[courseId].stars++;
 
-                            database.starCourse(accountId, courseId);
+                            await Database.starCourse(accountId, courseId);
                             sorting.starUpload(courseId);
 
                             if (!starredByUserId[accountId]) {
@@ -222,7 +221,7 @@ export default class API {
         }
     }
 
-    static completeCourse (accountId, data) {
+    static async completeCourse (accountId, data) {
 
         if (!data.courseid) {
             return {
@@ -240,7 +239,7 @@ export default class API {
                         try {
                             courses[courseId].completed--;
 
-                            database.uncompleteCourse(accountId, courseId);
+                            await Database.uncompleteCourse(accountId, courseId);
                             sorting.uncompleteUpload(courseId);
 
                             let index = completedByUserId[accountId].indexOf(courseId);
@@ -369,7 +368,7 @@ export default class API {
                                 users[accountId].points += pointsPerUpload;
 
                                 let result = await database.saveCourse(title, accountId, path + newFileName);
-                                sorting.insertUpload(result.id);
+                                Sorting.insertUpload(result.id);
 
                                 resolve(JSON.stringify(result));
                             }
