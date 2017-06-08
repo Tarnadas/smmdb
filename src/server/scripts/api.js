@@ -4,15 +4,14 @@ import Database from './database'
 import Sorting  from './sorting'
 import Account  from '../Account'
 
+const MAX_LIMIT = 100;
+
 export default class API {
 
     static getCourses (loggedIn, userId, filterData) {
 
         let orderBy = "lastmodified", dir = "desc";
-        let result = {
-            courses: {}
-        };
-        let resultSorted = [];
+        let result = [];
 
         if (!!filterData && !!filterData.order && !!filterData.dir) {
             orderBy = filterData.order;
@@ -20,7 +19,9 @@ export default class API {
         }
 
         let courses = Sorting.getCoursesBySorting(orderBy, dir);
-        for (let i = 0; i < courses.length; i++) {
+        let limit = (!!filterData && !!filterData.limit) ? (filterData.limit) : MAX_LIMIT;
+        let start = (!!filterData && !!filterData.start) ? (filterData.start) : 0;
+        for (let i = start; i < start + limit; i++) {
 
             let course = courses[i];
 
@@ -92,30 +93,9 @@ export default class API {
                 }
             }
             let resultCourse = course.getJSON(loggedIn, userId);
-            /*let resultCourse = {};
-            Object.assign(resultCourse, course);
-            resultCourse.completed = course.getCompleted();
-            resultCourse.starred   = course.getStarred();
-            resultCourse.downloads = course.getDownloads();
-            if (loggedIn && course.completedByUser(userId)) {
-                resultCourse.completedself = 1;
-            } else {
-                resultCourse.completedself = 0;
-            }
-            if (loggedIn && course.starredByUser(userId)) {
-                resultCourse.starredself = 1;
-            } else {
-                resultCourse.starredself = 0;
-            }
-            if (!resultCourse.ownername) {
-                resultCourse.ownername = Account.getAccount(resultCourse.owner).username;
-            }
-            resultCourse.points = Account.getAccount(resultCourse.owner).points;*/
-            result.courses[course.id] = resultCourse;
-            resultSorted.push(course.id);
+            result.push(resultCourse);
 
         }
-        result.order = resultSorted;
 
         return result;
 
