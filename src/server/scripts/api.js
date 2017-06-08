@@ -6,7 +6,7 @@ import Account  from '../Account'
 
 export default class API {
 
-    static getCourses (loggedIn, userId, isPackage, filterData) {
+    static getCourses (loggedIn, userId, filterData) {
 
         let orderBy = "lastmodified", dir = "desc";
         let result = {
@@ -23,33 +23,35 @@ export default class API {
         for (let i = 0; i < courses.length; i++) {
 
             let course = courses[i];
-            if (!!isPackage !== course.ispackage) {
-                continue;
-            }
 
             if (!!filterData) {
+                if (filterData.ispackage != null) {
+                    if (!!filterData.ispackage !== course.ispackage) {
+                        continue;
+                    }
+                }
                 if (!!filterData.lastmodifiedfrom) {
-                    if (filterData.lastmodifiedfrom > course.lastmodified) {
+                    if (parseInt(filterData.lastmodifiedfrom) > course.lastmodified) {
                         continue;
                     }
                 }
                 if (!!filterData.lastmodifiedto) {
-                    if (filterData.lastmodifiedto < course.lastmodified) {
+                    if (parseInt(filterData.lastmodifiedto) < course.lastmodified) {
                         continue;
                     }
                 }
                 if (!!filterData.uploadedfrom) {
-                    if (filterData.uploadedfrom > course.uploaded) {
+                    if (parseInt(filterData.uploadedfrom) > course.uploaded) {
                         continue;
                     }
                 }
                 if (!!filterData.uploadedto) {
-                    if (filterData.uploadedto < course.uploaded) {
+                    if (parseInt(filterData.uploadedto) < course.uploaded) {
                         continue;
                     }
                 }
                 if (!!filterData.coursetype) {
-                    if (filterData.coursetype !== course.coursetype) {
+                    if (parseInt(filterData.coursetype) !== course.coursetype) {
                         continue;
                     }
                 }
@@ -64,27 +66,27 @@ export default class API {
                     }
                 }
                 if (!!filterData.leveltype) {
-                    if (filterData.leveltype !== course.leveltype || !course.leveltype) {
+                    if (parseInt(filterData.leveltype) !== course.leveltype || course.leveltype == null) {
                         continue;
                     }
                 }
                 if (!!filterData.difficultyfrom) {
-                    if (filterData.difficultyfrom > course.difficulty || !course.difficulty) {
+                    if (parseInt(filterData.difficultyfrom) > course.difficulty || course.difficulty == null) {
                         continue;
                     }
                 }
                 if (!!filterData.difficultyto) {
-                    if (filterData.difficultyto < course.difficulty || !course.difficulty) {
+                    if (parseInt(filterData.difficultyto) < course.difficulty || course.difficulty == null) {
                         continue;
                     }
                 }
-                if (!!filterData.updatereq) {
-                    if (filterData.updatereq !== course.updatereq || !course.updatereq) {
+                if (filterData.updatereq != null) {
+                    if (!!filterData.updatereq !== course.updatereq || course.updatereq == null) {
                         continue;
                     }
                 }
-                if (!!filterData.hasthumbnail) {
-                    if (filterData.hasthumbnail !== course.hasthumbnail || !course.hasthumbnail) {
+                if (filterData.hasthumbnail != null) {
+                    if (!!filterData.hasthumbnail !== course.hasthumbnail || course.hasthumbnail == null) {
                         continue;
                     }
                 }

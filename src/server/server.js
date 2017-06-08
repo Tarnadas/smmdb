@@ -707,17 +707,13 @@ function main() {
                     err: "Wrong syntax"
                 });
             } else if (apiCall === "getcourses") {
-                let isPackage = false;
-                if (!!apiData.ispackage && apiData.ispackage === "1") {
-                    isPackage = true;
-                }
                 let loggedIn = false, userId;
                 let account = Account.getAccountByAPIKey(apiData.apikey);
                 if (!!account) {
                     loggedIn = true;
                     userId = account.id;
                 }
-                res.json(API.getCourses(loggedIn, userId, isPackage, apiData));
+                res.json(API.getCourses(loggedIn, userId, apiData));
             } else if (apiCall === "starcourse") {
                 if (!apiData.apikey) {
                     res.json({
