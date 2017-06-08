@@ -21,9 +21,9 @@ export default class Account {
         this[completed] = [];
         this[starred] = [];
         this[loggedIn] = logIn;
-        if (!!data._id) {
-            accounts[data._id] = this;
-        }
+        //if (!!data._id) {
+        //    accounts[data._id] = this;
+        //}
         accountsByGoogleId[data.googleid] = this;
         if (!!data.apikey) {
             accountsByAPIKey[data.apikey] = this;

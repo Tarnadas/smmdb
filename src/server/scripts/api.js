@@ -91,7 +91,8 @@ export default class API {
                     }
                 }
             }
-            let resultCourse = {};
+            let resultCourse = course.getJSON(loggedIn, userId);
+            /*let resultCourse = {};
             Object.assign(resultCourse, course);
             resultCourse.completed = course.getCompleted();
             resultCourse.starred   = course.getStarred();
@@ -109,7 +110,7 @@ export default class API {
             if (!resultCourse.ownername) {
                 resultCourse.ownername = Account.getAccount(resultCourse.owner).username;
             }
-            resultCourse.points = Account.getAccount(resultCourse.owner).points;
+            resultCourse.points = Account.getAccount(resultCourse.owner).points;*/
             result.courses[course.id] = resultCourse;
             resultSorted.push(course.id);
 

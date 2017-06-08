@@ -61,7 +61,7 @@ const clientId = googleClientId;
 (async () => {
     try {
         await Database.initialize();
-        await Database.convertMySQL();
+        //await Database.convertMySQL();
         main();
     } catch (err) {
         console.log(err);

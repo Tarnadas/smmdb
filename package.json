@@ -19,6 +19,7 @@
     "jsdom": "^9.9.1",
     "mongodb": "^2.2.28",
     "mysql2": "^1.2.0",
+    "progress": "^2.0.0",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
     "react-google-login": "^2.8.9",

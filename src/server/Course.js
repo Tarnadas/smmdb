@@ -5,12 +5,12 @@ import {
 import {
      pointsPerStar, pointsPerDownload
 } from './server'
+import Account from './Account'
 
-import * as fs from 'fs'
+import * as fs   from 'fs'
 
 export const courses = {};
 
-const courseData = Symbol();
 const completed  = Symbol();
 const starred    = Symbol();
 const downloads  = Symbol();
@@ -26,9 +26,6 @@ export default class Course {
         if (!!data._id) {
             courses[data._id] = this;
         }
-    }
-    async deserialize () {
-        this[courseData] = await deserialize(this.course.buffer);
     }
     static async convertFromMySQL (data) {
         if (!data.downloadpath || !fs.existsSync(data.downloadpath)) {
@@ -53,13 +50,13 @@ export default class Course {
 
             for (let i in courses) {
                 let course = Object.assign({}, data);
-                course.course = await courses[i].serializeGzipped();
-                course[courseData] = courses[i];
+                course.serialized = await courses[i].serializeGzipped();
+                course.courseData = courses[i];
                 result.push(course);
             }
             if (result.length > 1) {
                 for (let i in result) {
-                    result[i].title = result[i][courseData].title;
+                    result[i].title = result[i].courseData.title;
                 }
             }
         } catch(err) {
@@ -67,14 +64,51 @@ export default class Course {
         }
         return result;
     }
+    async fix (thumbnail) {
+        if (!this.courseData.maker) {
+            await this.courseData.setMaker(Account.getAccount(this.owner).username);
+        }
+        if (!this.courseData.title) {
+            await this.courseData.setTitle(this.title);
+        }
+        if (!!thumbnail && fs.existsSync(thumbnail) && this.courseData.isThumbnailBroken()) {
+            await this.courseData.setThumbnail(thumbnail);
+        }
+        return this;
+    }
     static getCourse (courseId) {
         return courses[courseId];
     }
     setId () {
         courses[this._id] = this;
     }
-    getJson () {
-
+    getJSON (loggedIn, accountId) {
+        let result = Object.assign({}, this);
+        result.completed = this[completed].length;
+        result.starred   = this[starred].length;
+        result.downloads = this[downloads].length;
+        if (loggedIn && this.completedByUser(accountId)) {
+            result.completedself = 1;
+        } else {
+            result.completedself = 0;
+        }
+        if (loggedIn && this.starredByUser(accountId)) {
+            result.starredself = 1;
+        } else {
+            result.starredself = 0;
+        }
+        result.maker = Account.getAccount(result.owner).username;
+        result.gamestyle = this.courseData.gameStyle;
+        result.coursetheme = this.courseData.courseTheme;
+        result.coursethemesub = this.courseData.courseThemeSub;
+        result.time = this.courseData.time;
+        result.autoscroll = this.courseData.autoScroll;
+        result.autoscrollsub = this.courseData.autoScrollSub;
+        result.points = Account.getAccount(result.owner).points;
+        delete result.owner;
+        delete result.serialized;
+        delete result.courseData;
+        return result;
     }
     addCompleted (accountId) {
         this[completed].push(accountId);

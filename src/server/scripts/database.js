@@ -2,6 +2,9 @@ import mysql from 'mysql2/promise'
 import {
     MongoClient
 } from 'mongodb'
+import ProgressBar from 'progress'
+
+import * as path from 'path'
 
 import Sorting from './sorting'
 import Course, {courses}  from '../Course'
@@ -23,15 +26,22 @@ export default class Database {
         // load courses
         this.courses = this.db.collection('courses');
         let courses = await this.courses.find({}).toArray();
+        let progressCourses = new ProgressBar('  loading courses [:bar] :percent :etas', {
+            complete: '=',
+            incomplete: ' ',
+            width: 40,
+            total: courses.length
+        });
         for (let i in courses) {
-            await new Course(courses[i]).deserialize();
+            await new Course(courses[i]);
+            progressCourses.tick();
         }
 
         // load accounts
         this.accounts = this.db.collection('accounts');
         let accounts = await this.accounts.find({}).toArray();
         for (let i in accounts) {
-            new Account(accounts[i]);
+            (new Account(accounts[i])).setId();
         }
 
     }
@@ -51,8 +61,23 @@ export default class Database {
             "videoid,UNIX_TIMESTAMP(lastmodified) as lastmodified,UNIX_TIMESTAMP(uploaded) as uploaded FROM courses";
         let rows = (await this[mysqlConnection].execute(query))[0];
         let courses = [];
-        for (let i = 0; i < /*rows.length*/5; i++) {
-            courses = courses.concat(await Course.convertFromMySQL(rows[i]));
+        let progress = new ProgressBar('  converting courses [:bar] :percent :etas', {
+            complete: '=',
+            incomplete: ' ',
+            width: 40,
+            total: rows.length
+        });
+        let thumbnails = [];
+        for (let i = 0; i < rows.length; i++) {
+            let id = rows[i].id;
+            let a = await Course.convertFromMySQL(rows[i]);
+            thumbnails = thumbnails.concat(Array.from((function * () {
+                for (let i = 0; i < a.length; i++) {
+                    yield path.join(__dirname, `../client/img/courses/${id}.pic`);
+                }
+            })()));
+            courses = courses.concat(a);
+            progress.tick();
         }
 
         rows = (await this[mysqlConnection].execute("SELECT * FROM accounts"))[0];
@@ -64,11 +89,18 @@ export default class Database {
             account.setId();
         }
 
+        progress = new ProgressBar('  fixing courses [:bar] :percent :etas', {
+            complete: '=',
+            incomplete: ' ',
+            width: 40,
+            total: rows.length
+        });
         for (let i in courses) {
             courses[i].owner = accountIds[courses[i].owner];
-            let course = new Course(courses[i]);
+            let course = await (new Course(courses[i])).fix(thumbnails[i]);
             await this.addCourse(course);
             course.setId();
+            progress.tick();
         }
 
         return null;
