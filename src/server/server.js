@@ -36,7 +36,6 @@ const $api   = cheerio.load(fs.readFileSync(path.join(__dirname, "../client/view
 
 export const pointsPerDownload = 1;
 export const pointsPerStar = 15;
-export const pointsPerUpload = 40;
 
 export const thumbnailMaxWidth  = 1000;
 export const thumbnailMaxHeight = 100;
@@ -62,11 +61,7 @@ const clientId = googleClientId;
 (async () => {
     try {
         await Database.initialize();
-        await Database.getCourses();
-        await Database.getAccounts();
-        await Database.getCompletedCourses();
-        await Database.getStarredCourses();
-        await Database.getDownloadedCourses();
+        await Database.convertMySQL();
         main();
     } catch (err) {
         console.log(err);

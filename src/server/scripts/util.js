@@ -10,7 +10,7 @@ export function calculatePoints () {
     for (let courseId in courses) {
         if (courses.hasOwnProperty(courseId)) {
             let course = courses[courseId];
-            Account.getAccount(course.owner).points += course.getPoints();
+            Account.getAccount(course.owner).addPoints(course.getPoints());
         }
     }
 

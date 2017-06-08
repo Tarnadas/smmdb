@@ -1,7 +1,10 @@
 import mysql from 'mysql2/promise'
+import {
+    MongoClient
+} from 'mongodb'
 
 import Sorting from './sorting'
-import Course  from '../Course'
+import Course, {courses}  from '../Course'
 import Account from '../Account'
 
 import {
@@ -9,66 +12,65 @@ import {
 } from './credentials'
 
 const mysqlConnection = Symbol();
+const mongoUrl = 'mongodb://localhost:27017';
 
 export default class Database {
 
     static async initialize () {
 
-        // TODO add table creation queries
-        this[mysqlConnection] = await mysql.createConnection(mysqlCredentials);
+        this.db = await MongoClient.connect(mongoUrl);
+
+        // load courses
+        this.courses = this.db.collection('courses');
+        let courses = await this.courses.find({}).toArray();
+        for (let i in courses) {
+            await new Course(courses[i]).deserialize();
+        }
+
+        // load accounts
+        this.accounts = this.db.collection('accounts');
+        let accounts = await this.accounts.find({}).toArray();
+        for (let i in accounts) {
+            new Account(accounts[i]);
+        }
 
     }
 
-    static async getCourses () {
+    static async addCourse (course) {
+        return await this.courses.insertOne(course);
+    }
 
+    static async addAccount (account) {
+        return await this.accounts.insertOne(account);
+    }
+
+    static async convertMySQL () {
+
+        this[mysqlConnection] = await mysql.createConnection(mysqlCredentials);
         let query = "SELECT id,title,owner,coursetype,nintendoid,leveltype,difficulty,updatereq,hasthumbnail,hasimage,ispackage,downloadpath," +
             "videoid,UNIX_TIMESTAMP(lastmodified) as lastmodified,UNIX_TIMESTAMP(uploaded) as uploaded FROM courses";
         let rows = (await this[mysqlConnection].execute(query))[0];
-        for (let i = 0; i < rows.length; i++) {
-            new Course(rows[i]);
+        let courses = [];
+        for (let i = 0; i < /*rows.length*/5; i++) {
+            courses = courses.concat(await Course.convertFromMySQL(rows[i]));
         }
-        return null;
 
-    }
-
-    static async getAccounts () {
-
-        let rows = (await this[mysqlConnection].execute("SELECT * FROM accounts"))[0];
+        rows = (await this[mysqlConnection].execute("SELECT * FROM accounts"))[0];
+        let accountIds = {};
         for (let i = 0; i < rows.length; i++) {
-            new Account(rows[i]);
+            let id = rows[i].id;
+            let account = new Account(Account.convertFromMySQL(rows[i]));
+            accountIds[id] = (await this.addAccount(account)).insertedId;
+            account.setId();
         }
-        return null;
 
-    }
-
-    static async getCompletedCourses () {
-
-        let rows = (await this[mysqlConnection].execute("SELECT * FROM completed"))[0];
-        for (let i = 0; i < rows.length; i++) {
-            Account.getAccount(rows[i].userid).addCompleted(rows[i].courseid);
-            Course.getCourse(rows[i].courseid).addCompleted(rows[i].courseid);
+        for (let i in courses) {
+            courses[i].owner = accountIds[courses[i].owner];
+            let course = new Course(courses[i]);
+            await this.addCourse(course);
+            course.setId();
         }
-        return null;
 
-    }
-
-    static async getStarredCourses () {
-
-        let rows = (await this[mysqlConnection].execute("SELECT * FROM stars"))[0];
-        for (let i = 0; i < rows.length; i++) {
-            Account.getAccount(rows[i].userid).addStarred(rows[i].courseid);
-            Course.getCourse(rows[i].courseid).addStarred(rows[i].courseid);
-        }
-        return null;
-
-    }
-
-    static async getDownloadedCourses () {
-
-        let rows = (await this[mysqlConnection].execute("SELECT * FROM downloads"))[0];
-        for (let i = 0; i < rows.length; i++) {
-            Course.getCourse(rows[i].courseid).addDownload(rows[i].ipaddress);
-        }
         return null;
 
     }
@@ -82,8 +84,7 @@ export default class Database {
         new Account({
             id: accountId,
             googleid: +googleId,
-            username: profileName,
-            points: 0
+            username: profileName
         }, true);
         return null;
 

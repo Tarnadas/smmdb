@@ -93,6 +93,9 @@ export default class API {
             }
             let resultCourse = {};
             Object.assign(resultCourse, course);
+            resultCourse.completed = course.getCompleted();
+            resultCourse.starred   = course.getStarred();
+            resultCourse.downloads = course.getDownloads();
             if (loggedIn && course.completedByUser(userId)) {
                 resultCourse.completedself = 1;
             } else {
