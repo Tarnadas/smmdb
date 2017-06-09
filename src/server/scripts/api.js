@@ -17,13 +17,19 @@ export default class API {
             orderBy = filterData.order;
             dir = filterData.dir;
         }
-
         let courses = Sorting.getCoursesBySorting(orderBy, dir);
-        let limit = (!!filterData && !!filterData.limit) ? (filterData.limit) : MAX_LIMIT;
-        let start = (!!filterData && !!filterData.start) ? (filterData.start) : 0;
+        if (!courses) {
+            return {
+                err: 'Wrong order and/or dir property'
+            }
+        }
+
+        let limit = (!!filterData && !!filterData.limit) ? (+filterData.limit) : MAX_LIMIT;
+        let start = (!!filterData && !!filterData.start) ? (+filterData.start) : 0;
         for (let i = start; i < start + limit; i++) {
 
             let course = courses[i];
+            if (!course) break;
 
             if (!!filterData) {
                 if (filterData.ispackage != null) {

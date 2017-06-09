@@ -13,6 +13,7 @@ import Account from '../Account'
 import {
     mysql as mysqlCredentials
 } from './credentials'
+import { log } from './util'
 
 const mysqlConnection = Symbol();
 const mongoUrl = 'mongodb://localhost:27017';
@@ -21,11 +22,13 @@ export default class Database {
 
     static async initialize () {
 
+        log('Connecting to database');
         this.db = await MongoClient.connect(mongoUrl);
 
         // load courses
         this.courses = this.db.collection('courses');
         let courses = await this.courses.find({}).toArray();
+        log('Connected');
         let progressCourses = new ProgressBar('  loading courses [:bar] :percent :etas', {
             complete: '=',
             incomplete: ' ',
@@ -33,7 +36,12 @@ export default class Database {
             total: courses.length
         });
         for (let i in courses) {
-            await new Course(courses[i]);
+            new Course(courses[i]);
+            await new Promise(resolve => {
+                setTimeout(() => {
+                    resolve();
+                });
+            });
             progressCourses.tick();
         }
 
