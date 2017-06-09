@@ -4,6 +4,7 @@ import {
 } from 'react-redux'
 
 import TopBarArea from '../areas/TopBarArea'
+import ContentView from './ContentView'
 
 class AppView extends React.Component {
     render () {
@@ -58,6 +59,7 @@ class AppView extends React.Component {
                     <div style={styles.logoFont}>SUPER MARIO MAKER DATABASE</div>
                     <div style={styles.logoImage} />
                 </div>
+                <ContentView />
                 <footer style={styles.footer}>
                     Super Mario Maker Database (in short SMMDB) is not affiliated or associated with any other company.<br/>
                     All logos, trademarks, and trade names used herein are the property of their respective owners.

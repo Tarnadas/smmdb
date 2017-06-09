@@ -21,9 +21,6 @@ export default class Account {
         this[completed] = [];
         this[starred] = [];
         this[loggedIn] = logIn;
-        //if (!!data._id) {
-        //    accounts[data._id] = this;
-        //}
         accountsByGoogleId[data.googleid] = this;
         if (!!data.apikey) {
             accountsByAPIKey[data.apikey] = this;
@@ -47,11 +44,23 @@ export default class Account {
     setId () {
         accounts[this._id] = this;
     }
+    static exists (googleId) {
+        return !!accountsByGoogleId[googleId];
+    }
     static getAccountByGoogleId (googleId) {
         return accountsByGoogleId[googleId];
     }
     static getAccountByAPIKey (apiKey) {
         return accountsByAPIKey[apiKey];
+    }
+    getJSON () {
+        return {
+            id: this._id,
+            apikey: this.apikey,
+            completed: this[completed],
+            starred: this[starred],
+            points: this[points]
+        }
     }
     addPoints (p) {
         this[points] += p;

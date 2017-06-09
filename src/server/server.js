@@ -201,30 +201,22 @@ function main() {
                         // create account if it does not exist
                         let googleId = tokenInfo.sub;
 
-                        let response = {};
-                        if (!googleIds[0].includes(googleId)) {
+                        let account;
+                        if (!Account.exists(googleId)) {
                             // create new account
-                            let accountName = tokenInfo.email.split("@")[0];
-                            await database.saveAccount(googleId, idToken, tokenInfo.email, accountName);
-                            googleIds[0].push(googleId);
-                            response.apiKey = generateAPIKey();
-                            users[userId].apiKey = apiKey;
-                            usersByAPIKey[apiKey] = userId;
-                            database.setAPIKey(apiKey, userId);
+                            let username = tokenInfo.email.split("@")[0];
+                            account = new Account({
+                                googleid: googleId,
+                                username
+                            });
+                            await Database.addAccount(account);
                         } else {
-                            let userId = usersByGoogleId[googleId];
-                            // store session token
-                            usersLoggedIn[idToken] = userId;
-                            await database.updateSession(userId, idToken);
-
-                            response.userId = userId;
-                            response.completed = completedByUserId[userId];
-                            response.starred = starredByUserId[userId];
-                            response.apiKey = users[userId].apiKey;
+                            account = Account.getAccountByGoogleId(googleId);
+                            account.login();
                         }
-                        req.session.token = idToken;
+                        req.session.apikey = account.apikey;
 
-                        res.json(response);
+                        res.json(account.getJSON());
 
                     }
                 });
