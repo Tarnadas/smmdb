@@ -5,6 +5,7 @@ import {
 import ProgressBar from 'progress'
 
 import * as path from 'path'
+import * as fs   from 'fs'
 
 import Sorting from './sorting'
 import Course, {courses}  from '../Course'
@@ -103,11 +104,15 @@ export default class Database {
             width: 40,
             total: rows.length
         });
+        if (!fs.existsSync(path.join(__dirname, '../client/courseimg'))) {
+            fs.mkdirSync(path.join(__dirname, '../client/courseimg'));
+        }
         for (let i in courses) {
             courses[i].owner = accountIds[courses[i].owner];
             let course = await (new Course(courses[i])).fix(thumbnails[i]);
             await this.addCourse(course);
             course.setId();
+            course.saveThumbnail();
             progress.tick();
         }
 

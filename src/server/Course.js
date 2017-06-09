@@ -1,5 +1,5 @@
 import {
-    decompress, deserialize
+    decompress
 } from 'cemu-smm'
 
 import {
@@ -8,6 +8,7 @@ import {
 import Account from './Account'
 
 import * as fs   from 'fs'
+import * as path from 'path'
 
 export const courses = {};
 
@@ -71,16 +72,20 @@ export default class Course {
         if (!this.courseData.title) {
             await this.courseData.setTitle(this.title);
         }
-        if (!!thumbnail && fs.existsSync(thumbnail) && this.courseData.isThumbnailBroken()) {
-            await this.courseData.setThumbnail(thumbnail);
+        if (await this.courseData.isThumbnailBroken()) {
+            if (!!thumbnail && fs.existsSync(thumbnail)) {
+                await this.courseData.setThumbnail(thumbnail);
+            } else {
+                await this.courseData.setThumbnail(path.join(__dirname, '../client/images/icon_default.jpg'));
+            }
         }
         return this;
     }
-    static getCourse (courseId) {
-        return courses[courseId];
-    }
     setId () {
         courses[this._id] = this;
+    }
+    static getCourse (courseId) {
+        return courses[courseId];
     }
     getJSON (loggedIn, accountId) {
         let result = Object.assign({}, this);
@@ -144,5 +149,9 @@ export default class Course {
     }
     getPoints () {
         return this[downloads].length * pointsPerDownload + this[starred].length * pointsPerStar
+    }
+    saveThumbnail () {
+        fs.writeFileSync(path.join(__dirname, `../client/courseimg/${this._id}.jpg`), this.courseData.thumbnailPreview);
+        fs.writeFileSync(path.join(__dirname, `../client/courseimg/${this._id}_full.jpg`), this.courseData.thumbnail);
     }
 }

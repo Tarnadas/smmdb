@@ -3,7 +3,8 @@
 /node_modules/
 /build/server/server.bundle.js
 /.idea/
-/build/client/img/courses/
 /build/client/script/renderer.bundle.js
 /db/
 /courses/
+/build/client/img/
+/build/client/courseimg/

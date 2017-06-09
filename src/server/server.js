@@ -91,7 +91,8 @@ function main() {
         fileSize: maxFileSize
     }}));
     app.use(favicon(path.join(__dirname, '../../favicon.ico')));
-    app.use('/img', express.static(path.join(__dirname, '../client/img'), { maxAge: cacheMaxAgeImg })); // TODO course images should not be cached
+    app.use('/img', express.static(path.join(__dirname, '../client/images'), { maxAge: cacheMaxAgeImg }));
+    app.use('/courseimg', express.static(path.join(__dirname, '../client/courseimg')));
     app.use('/styles', express.static(path.join(__dirname, '../client/styles'), { maxAge: cacheMaxAgeCSS })); // TODO minimize styles
     app.use('/script', express.static(path.join(__dirname, '../client/script'), { maxAge: cacheMaxAgeJS }));
     app.use(cookieSession({
