@@ -28,12 +28,11 @@ export default class SMMButton extends React.PureComponent {
                 lineHeight: '40px',
                 width: '120px',
                 height: '40px',
-                backgroundColor: this.state.hover ? '#ffe500' : '#ffe500',
-                color: this.state.hover ? '#323245' : '#323245',
+                backgroundColor: this.state.hover ? '#323245' : '#ffe500',
+                color: this.state.hover ? '#fff' : '#323245',
                 cursor: 'pointer',
                 outline: 'none',
                 overflow: 'hidden',
-                position: 'relative',
                 whiteSpace: 'nowrap',
                 boxSizing: 'border-box',
                 border: '0',
@@ -69,7 +68,10 @@ export default class SMMButton extends React.PureComponent {
         const iconStyle = this.props.iconColor === 'bright' ? styles.smmIcon : (this.state.hover ? styles.smmIconHover : styles.smmIconDark);
         const text = this.props.text;
         return (
-            <div style={styles.smmButton}>
+            <div style={styles.smmButton}
+                 onMouseEnter={this.mouseEnter}
+                 onMouseLeave={this.mouseLeave}
+            >
                 <ButtonSub iconStyle={iconStyle} iconSrc={this.props.iconSrc} text={text} />
             </div>
         )

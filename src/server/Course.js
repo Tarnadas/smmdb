@@ -1,6 +1,10 @@
 import {
-    decompress
+    decompress, courseProto
 } from 'cemu-smm'
+import {
+    zip
+} from 'cross-unzip'
+import tmp from 'tmp'
 
 import {
      pointsPerStar, pointsPerDownload
@@ -26,6 +30,11 @@ export default class Course {
         this[downloads] = [];
         if (!!data._id) {
             courses[data._id] = this;
+        }
+        if (!!this.courseData) {
+            //console.log(this.courseData);
+            //this.courseData = Object.create(courseProto, this.courseData);
+            Object.setPrototypeOf(this.courseData, courseProto);
         }
     }
     static async convertFromMySQL (data) {
@@ -102,18 +111,35 @@ export default class Course {
         } else {
             result.starredself = 0;
         }
-        result.maker = Account.getAccount(result.owner).username;
+        result.maker = this.courseData.maker;
+        result.uploader = Account.getAccount(result.owner).username;
         result.gamestyle = this.courseData.gameStyle;
         result.coursetheme = this.courseData.courseTheme;
         result.coursethemesub = this.courseData.courseThemeSub;
         result.time = this.courseData.time;
         result.autoscroll = this.courseData.autoScroll;
         result.autoscrollsub = this.courseData.autoScrollSub;
-        result.points = Account.getAccount(result.owner).points;
+        result.reputation = Account.getAccount(result.owner).getPoints();
         delete result.owner;
         delete result.serialized;
         delete result.courseData;
         return result;
+    }
+    async getCompressed () {
+        let tmpDir = await new Promise((resolve, reject) => {
+            tmp.dir({}, (err, path) => {
+                if (err) reject(err);
+                resolve(path);
+            })
+        });
+        this.courseData.writeToSave(0, tmpDir);
+        const outPath = path.join(tmpDir, `${this.title}.zip`);
+        return await new Promise(resolve => {
+            zip(tmpDir, outPath, err => {
+                if (err) throw err;
+                resolve(outPath);
+            });
+        });
     }
     addCompleted (accountId) {
         this[completed].push(accountId);

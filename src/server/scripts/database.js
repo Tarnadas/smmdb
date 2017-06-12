@@ -77,7 +77,7 @@ export default class Database {
             total: rows.length
         });
         let thumbnails = [];
-        for (let i = 0; i < rows.length; i++) {
+        for (let i = 0; i < 5/*rows.length*/; i++) {
             let id = rows[i].id;
             let a = await Course.convertFromMySQL(rows[i]);
             thumbnails = thumbnails.concat(Array.from((function * () {

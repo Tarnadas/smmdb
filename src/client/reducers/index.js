@@ -5,19 +5,28 @@ import {
     combineReducers
 } from 'redux-immutable';
 import {
-    Map
+    Map, List
 } from 'immutable';
 
-import chat     from './chat';
+import socket     from './socket'
+import chat       from './chat'
+import courseData from './courseData'
+import userData   from './userData'
 
 export default function initReducer(s) {
     const initialState = Map({
+        socket: s,
         chat: Map({
             global: Map()
-        })
+        }),
+        courseData: List(),
+        userData: Map()
     });
     const reducer = combineReducers({
-        chat
+        socket,
+        chat,
+        courseData,
+        userData
     }, initialState);
     return createStore(reducer, initialState);
 }

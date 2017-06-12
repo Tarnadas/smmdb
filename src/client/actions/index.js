@@ -13,3 +13,17 @@ export function setUserId (userId) {
         userId
     }
 }
+
+export function setCourses (courses) {
+    return {
+        type: 'SET_COURSES',
+        courses
+    }
+}
+
+export function setVideoId (videoId) {
+    return {
+        type: 'SET_VIDEO_ID',
+        videoId
+    }
+}

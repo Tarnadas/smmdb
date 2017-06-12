@@ -18,6 +18,9 @@ export default function userData (state, action) {
                 state = state.delete('room');
             }
             return state;
+        case 'SET_VIDEO_ID':
+            state = state.set('videoId', action.videoId);
+            return state;
     }
     return state;
 }

@@ -3,11 +3,21 @@ import {
     connect
 } from 'react-redux'
 
+import MainView from './MainView'
+
 class ContentView extends React.PureComponent {
     render () {
         const page = this.props.page;
+        const styles = {
+            content: {
+                backgroundColor: '#24997e',
+                minHeight: 'calc(100% - 180px)',
+                maxHeight: 'calc(100% - 162px)',
+                textAlign: 'center'
+            }
+        };
         return (
-            <div>
+            <div style={styles.content}>
                 {
                     page === 'main' && (
                         <MainView />
@@ -18,7 +28,7 @@ class ContentView extends React.PureComponent {
     }
 }
 export default connect(state => {
-    const page = state.get('page');
+    const page = 'main';//state.get('page');
     return {
         page
     }

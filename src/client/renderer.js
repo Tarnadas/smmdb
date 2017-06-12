@@ -10,6 +10,8 @@ import Socket      from './socket'
 import initReducer from './reducers'
 import AppView     from './components/views/AppView'
 
+export const domain = 'http://tarnadas.ddns.net';
+
 const socket = new Socket();
 const store = initReducer(socket);
 socket.setStore(store);

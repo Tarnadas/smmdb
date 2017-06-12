@@ -101,37 +101,43 @@ function main() {
         maxAge: 24 * 60 * 60 * 1000
     }));
 
-    app.use('/courses', async (req, res) => {
-
-        let courseId = req.url.substr(1);
-
-        if  (!courses[courseId]) {
-            res.writeHeader(404, {"Content-Type": "text/html"});
-            res.end();
-        } else {
-            res.download(__dirname + '/' + courses[courseId].downloadpath, courses[courseId].title + "." + courses[courseId].downloadpath.split(".", 2)[1]);
-            let ipAddress = req.ip;
-            if (!downloadedByCourseId[courseId] || !downloadedByCourseId[courseId].includes(ipAddress)) {
-                if (!downloadedByCourseId[courseId]) {
-                    downloadedByCourseId[courseId] = [ipAddress];
-                    downloadedAmount[courseId] = 1;
-                    await database.storeDownload(courseId, ipAddress);
-                } else if (!downloadedByCourseId[courseId].includes(ipAddress)) {
-                    downloadedByCourseId[courseId].push(ipAddress);
-                    downloadedAmount[courseId]++;
-                    await database.storeDownload(courseId, ipAddress);
-                }
-                users[courses[courseId].owner].points += pointsPerDownload;
-                courses[courseId].downloads = downloadedAmount[courseId];
-            }
-        }
-
-    });
-
     app.get('/', (req, res) => {
 
         log("[200] " + req.method + " to " + req.url);
         res.send($index.html());
+
+    });
+
+    app.route('/courses/:courseid*?').get(async (req, res) => {
+
+        let courseId = req.params.courseid;
+
+        let query = {};
+        if (req.url.includes("?")) {
+            let split = req.url.split("?", 2);
+            let data = split[1];
+            query = qs.parse(data);
+        }
+        let course = Course.getCourse(courseId)
+        if (!course) {
+            res.json({
+                err: 'Course not found'
+            });
+            return;
+        }
+        if (query.type === 'zip') {
+            let file = await course.getCompressed();
+            if (typeof(file) === 'string') {
+                res.setHeader("Content-Type", "application/zip");
+                res.download(file);
+            } else {
+                res.json({
+                    err: 'Could not compress file'
+                });
+            }
+        } else {
+            res.send(course.courseData);
+        }
 
     });
 
