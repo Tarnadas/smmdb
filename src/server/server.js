@@ -2,7 +2,6 @@ import express       from 'express'
 import compression   from 'compression'
 import busboy        from 'connect-busboy'
 import cheerio       from 'cheerio'
-import sharp         from 'sharp'
 import cookieSession from 'cookie-session'
 import verifier      from 'google-id-token-verifier'
 import favicon       from 'serve-favicon'
@@ -37,9 +36,6 @@ const $api   = cheerio.load(fs.readFileSync(path.join(__dirname, "../client/view
 export const pointsPerDownload = 1;
 export const pointsPerStar = 15;
 
-export const thumbnailMaxWidth  = 1000;
-export const thumbnailMaxHeight = 100;
-
 export const maxFileSize = 6 * 1024 * 1024;
 
 //const cacheMaxAgeServer = 86400000*7; // TODO server caching?
@@ -61,7 +57,9 @@ const clientId = googleClientId;
 (async () => {
     try {
         await Database.initialize();
-        await Database.convertMySQL();
+        if (process.argv.includes('convertmysql')) {
+            await Database.convertMySQL();
+        }
         main();
     } catch (err) {
         console.log(err);
@@ -135,8 +133,10 @@ function main() {
                     err: 'Could not compress file'
                 });
             }
+        } else if (query.type === 'json') {
+            res.json(course.courseData);
         } else {
-            res.send(course.courseData);
+            res.send(course.serialized);
         }
 
     });

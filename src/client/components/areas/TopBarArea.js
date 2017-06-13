@@ -1,9 +1,12 @@
 import React from 'react'
+import {
+    connect
+} from 'react-redux'
 
 import LoginButton from '../buttons/LoginButton'
 import SMMButton   from '../buttons/SMMButton'
 
-export default class TopBarArea extends React.PureComponent{
+class TopBarArea extends React.PureComponent{
     render () {
         const styles = {
             topbar: {
@@ -39,9 +42,21 @@ export default class TopBarArea extends React.PureComponent{
                     </a>
                 </div>
                 <div style={styles.right}>
-                    <LoginButton />
+                    {
+                        !!this.props.accountData ? (
+                            <div />
+                        ) : (
+                            <LoginButton />
+                        )
+                    }
                 </div>
             </div>
         );
     }
 }
+export default connect(state => {
+    let accountData = state.getIn(['userData', 'accountData']);
+    return {
+        accountData: !!accountData ? accountData.toJS() : null
+    }
+})(TopBarArea);

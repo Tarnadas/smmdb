@@ -112,7 +112,6 @@ class AppView extends React.PureComponent {
 export default connect(state => {
     let userName = state.getIn(['userData', 'userName']);
     let videoId = state.getIn(['userData', 'videoId']);
-    console.log(videoId);
     return {
         userName: !!userName ? userName : '',
         videoId: !!videoId ? videoId : ''

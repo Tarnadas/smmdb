@@ -7,6 +7,13 @@ export function addChatMessageGlobal (timestamp, userName, message) {
     }
 }
 
+export function setAccountData (accountData) {
+    return {
+        type: 'SET_ACCOUNT_DATA',
+        accountData
+    }
+}
+
 export function setUserId (userId) {
     return {
         type: 'SET_USER_ID',

@@ -3,7 +3,6 @@ const path    = require('path');
 
 module.exports = [
     {
-        //entry: path.join(__dirname, 'src/client/script/main.js'),
         entry: path.join(__dirname, 'src/client/renderer.js'),
         output: {
             filename: 'renderer.bundle.js',
@@ -59,6 +58,25 @@ module.exports = [
         plugins: [
             new webpack.EnvironmentPlugin('NODE_ENV')
         ],
-        externals: [require('webpack-node-externals')()]
+        externals: [require('webpack-node-externals')()],
+        module: {
+            loaders: [
+                {
+                    test: /\.js$/,
+                    exclude: /node_modules/,
+                    loader: 'babel-loader',
+                    query: {
+                        presets: [
+                            ["env", {
+                                "targets": {
+                                    "node": "current"
+                                }
+                            }]
+                        ],
+                        plugins: [require('babel-plugin-transform-react-jsx')]
+                    }
+                }
+            ]
+        }
     }
 ];

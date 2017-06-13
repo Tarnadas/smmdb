@@ -1,10 +1,17 @@
 import React       from 'react'
 import GoogleLogin from 'react-google-login'
 import request     from 'request-promise'
+import {
+    connect
+} from 'react-redux'
 
 import ButtonSub from '../subs/ButtonSub'
 
-export default class LoginButton extends React.PureComponent {
+import {
+    setAccountData
+} from '../../actions'
+
+class LoginButton extends React.PureComponent {
     constructor (props) {
         super(props);
         this.state = {
@@ -33,7 +40,7 @@ export default class LoginButton extends React.PureComponent {
             body: response,
             json: true
         });
-        console.log(res);
+        this.props.dispatch(setAccountData(res));
     }
     onGoogleLoginFailure (response) {
         console.log(response);
@@ -89,3 +96,4 @@ export default class LoginButton extends React.PureComponent {
         )
     }
 }
+export default connect()(LoginButton);

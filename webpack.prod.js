@@ -12,11 +12,17 @@ module.exports = [
         },
         node: {
             __dirname: false,
-            __filename: false
+            __filename: false,
+            console: true,
+            fs: 'empty',
+            net: 'empty',
+            tls: 'empty'
         },
         plugins: [
             new webpack.EnvironmentPlugin('NODE_ENV'),
-            new BabiliPlugin()
+            new BabiliPlugin({
+                "keepFnName": true
+            })
         ],
         module: {
             loaders: [
@@ -25,16 +31,6 @@ module.exports = [
                     exclude: /node_modules/,
                     loader: 'babel-loader',
                     query: {
-                        presets: [
-                            ["env", {
-                                "targets": {
-                                    "browsers": [
-                                        "last 3 Chrome versions",
-                                        "last 2 ff versions"
-                                    ]
-                                }
-                            }]
-                        ],
                         plugins: [require('babel-plugin-transform-react-jsx')]
                     }
                 }
