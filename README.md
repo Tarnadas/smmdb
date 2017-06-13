@@ -36,7 +36,7 @@ All API calls are subject to change.
 
 **Example**: `http://smm-test.alextc.de/api/getcourses?limit=50&start=121&prettify=1`
 
-Receive courses 121 to 171 in lastmodified descending order with indentation.
+Receive courses 121 to 170 in lastmodified descending order with indentation.
 
 ### Download course
 
