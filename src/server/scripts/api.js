@@ -32,11 +32,6 @@ export default class API {
             if (!course) break;
 
             if (!!filterData) {
-                if (filterData.ispackage != null) {
-                    if (!!filterData.ispackage !== course.ispackage) {
-                        continue;
-                    }
-                }
                 if (!!filterData.lastmodifiedfrom) {
                     if (parseInt(filterData.lastmodifiedfrom) > course.lastmodified) {
                         continue;
@@ -57,26 +52,6 @@ export default class API {
                         continue;
                     }
                 }
-                if (!!filterData.coursetype) {
-                    if (parseInt(filterData.coursetype) !== course.coursetype) {
-                        continue;
-                    }
-                }
-                if (!!filterData.title) {
-                    if (!course.title.toLowerCase().includes(filterData.title.toLowerCase())) {
-                        continue;
-                    }
-                }
-                if (!!filterData.owner) {
-                    if (filterData.owner.toLowerCase() !== Account.getAccount(course.owner).username.toLowerCase()) {
-                        continue;
-                    }
-                }
-                if (!!filterData.leveltype) {
-                    if (parseInt(filterData.leveltype) !== course.leveltype || course.leveltype == null) {
-                        continue;
-                    }
-                }
                 if (!!filterData.difficultyfrom) {
                     if (parseInt(filterData.difficultyfrom) > course.difficulty || course.difficulty == null) {
                         continue;
@@ -87,13 +62,33 @@ export default class API {
                         continue;
                     }
                 }
-                if (filterData.updatereq != null) {
-                    if (!!filterData.updatereq !== course.updatereq || course.updatereq == null) {
+                if (!!filterData.title) {
+                    if (!course.title.toLowerCase().includes(filterData.title.toLowerCase())) {
                         continue;
                     }
                 }
-                if (filterData.hasthumbnail != null) {
-                    if (!!filterData.hasthumbnail !== course.hasthumbnail || course.hasthumbnail == null) {
+                if (!!filterData.maker) {
+                    if (filterData.maker.toLowerCase() !== course.courseData.maker.toLowerCase()) {
+                        continue;
+                    }
+                }
+                if (!!filterData.uploader) {
+                    if (filterData.uploader.toLowerCase() !== Account.getAccount(course.owner).username.toLowerCase()) {
+                        continue;
+                    }
+                }
+                if (!!filterData.gamestyle) {
+                    if (parseInt(filterData.gamestyle) !== course.courseData.gameStyle) {
+                        continue;
+                    }
+                }
+                if (!!filterData.coursetheme) {
+                    if (parseInt(filterData.coursetheme) !== course.courseData.courseTheme) {
+                        continue;
+                    }
+                }
+                if (!!filterData.coursethemesub) {
+                    if (parseInt(filterData.coursethemesub) !== course.courseData.courseThemeSub) {
                         continue;
                     }
                 }

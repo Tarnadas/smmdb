@@ -106,41 +106,6 @@ function main() {
 
     });
 
-    app.route('/courses/:courseid*?').get(async (req, res) => {
-
-        let courseId = req.params.courseid;
-
-        let query = {};
-        if (req.url.includes("?")) {
-            let split = req.url.split("?", 2);
-            let data = split[1];
-            query = qs.parse(data);
-        }
-        let course = Course.getCourse(courseId)
-        if (!course) {
-            res.json({
-                err: 'Course not found'
-            });
-            return;
-        }
-        if (query.type === 'zip') {
-            let file = await course.getCompressed();
-            if (typeof(file) === 'string') {
-                res.setHeader("Content-Type", "application/zip");
-                res.download(file);
-            } else {
-                res.json({
-                    err: 'Could not compress file'
-                });
-            }
-        } else if (query.type === 'json') {
-            res.json(course.courseData);
-        } else {
-            res.send(course.serialized);
-        }
-
-    });
-
     app.route('/tokensignin').post((req, res) => {
 
         let data = '';
@@ -207,7 +172,7 @@ function main() {
 
     });
 
-    app.route('/api/:apicall*?').get((req, res) => {
+    app.route('/api/:apicall*?').get(async (req, res) => {
         
         if (req.url.includes("/") && req.url.length > 5) {
 
@@ -231,7 +196,36 @@ function main() {
                     loggedIn = true;
                     userId = account.id;
                 }
+                if (!!apiData.prettify) {
+                    app.set('json spaces', 2);
+                }
                 res.json(API.getCourses(loggedIn, userId, apiData));
+                if (!!apiData.prettify) {
+                    app.set('json spaces', 0);
+                }
+            } else if (apiCall === "downloadcourse") {
+                let course = Course.getCourse(apiData.id);
+                if (!course) {
+                    res.json({
+                        err: 'Course not found'
+                    });
+                    return;
+                }
+                if (apiData.type === 'zip') {
+                    let file = await course.getCompressed();
+                    if (typeof(file) === 'string') {
+                        res.setHeader("Content-Type", "application/zip");
+                        res.download(file);
+                    } else {
+                        res.json({
+                            err: 'Could not compress file'
+                        });
+                    }
+                } else if (apiData.type === 'json') {
+                    res.json(course.courseData);
+                } else {
+                    res.send(course.serialized);
+                }
             } else if (apiCall === "starcourse") {
                 if (!apiData.apikey) {
                     res.json({
@@ -265,7 +259,7 @@ function main() {
             }
             
         } else {
-            sendHtml(null, res, $api.html());
+            //sendHtml(null, res, $api.html());
         }
         
     }).post(async (req, res) => {

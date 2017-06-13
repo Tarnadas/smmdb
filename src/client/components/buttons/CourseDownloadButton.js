@@ -31,7 +31,7 @@ export default class CourseDownloadButton extends React.PureComponent {
             }
         };
         return (
-            <a style={styles.href} href={`/courses/${this.props.courseId}?type=zip`} download>
+            <a style={styles.href} href={`/api/downloadcourse?id=${this.props.courseId}&type=zip`} download>
                 <div style={styles.button}>
                     <div style={styles.icon}>
                         <img style={styles.iconImg} src="/img/coursebot.png" />
