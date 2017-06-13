@@ -8,11 +8,13 @@ This server is not production ready. However a public test server is running on 
 
 All API calls are subject to change.
 
-[http://smm-test.alextc.de/api/request?querystring]() where `querystring` can have following arguments (default values are *italic*):
+[http://smm-test.alextc.de/api/request?querystring]()
 
 ### Receive course list
 
 **Request**: `getcourses`
+
+**Querystring**: (default values are *italic*)
 
 | Query | Value | Description |
 | --- | --- | --- |
@@ -41,6 +43,8 @@ Receive courses 121 to 170 in lastmodified descending order with indentation.
 ### Download course
 
 **Request**: `downloadcourse`
+
+**Querystring**: (default values are *italic*)
 
 | Query | Value | Description |
 | --- | --- | --- |
