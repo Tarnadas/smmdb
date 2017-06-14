@@ -73,9 +73,7 @@ export default class Socket {
      * @param rawData stringified data
      */
     onConnected (rawData) {
-        console.log(rawData);
         let data = JSON.parse(rawData);
-        console.log(`your user ID is ${data.id}`);
         store.dispatch(setUserId(data.id));
     }
 

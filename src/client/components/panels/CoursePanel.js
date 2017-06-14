@@ -68,7 +68,7 @@ export default class CoursePanel extends React.PureComponent {
                 paddingLeft: '10px',
                 textAlign: 'left',
                 fontSize: '22px',
-                whiteSpace: 'no-wrap'
+                whiteSpace: 'nowrap'
             },
             close: {
                 display: this.state.showDetails ? '' : 'none',
@@ -195,7 +195,7 @@ export default class CoursePanel extends React.PureComponent {
                         </div>
                         <div style={styles.preview}>
                             <div style={styles.previewImgWrapper}>
-                                <img style={styles.previewImg} src={`/courseimg/${this.props.course._id}_full.jpg`} />
+                                <img style={styles.previewImg} src={`/courseimg/${this.props.course.id}_full.jpg`} />
                             </div>
                         </div>
                         <div style={styles.mii}>
@@ -226,10 +226,10 @@ export default class CoursePanel extends React.PureComponent {
                     </div>
                     <div style={styles.bottom}>
                         <div style={styles.imageLarge}>
-                            <img src={`/courseimg/${this.props.course._id}.jpg`} />
+                            <img src={`/courseimg/${this.props.course.id}.jpg`} />
                         </div>
                         <div style={styles.buttonPanel}>
-                            <CourseDownloadButton courseId={this.props.course._id} />
+                            <CourseDownloadButton courseId={this.props.course.id} />
                             {
                                 !!this.props.course.videoid && (
                                     <CourseVideoButton videoId={this.props.course.videoid} />

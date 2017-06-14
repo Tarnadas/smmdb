@@ -2,7 +2,7 @@ import {
     generateAPIKey
 } from './scripts/util'
 
-const accounts = {};
+export const accounts = {};
 const accountsByGoogleId = {};
 const accountsByAPIKey = {};
 //const accountsLoggedIn = {};

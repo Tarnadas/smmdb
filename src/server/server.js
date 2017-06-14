@@ -5,6 +5,7 @@ import cheerio       from 'cheerio'
 import cookieSession from 'cookie-session'
 import verifier      from 'google-id-token-verifier'
 import favicon       from 'serve-favicon'
+import bytes         from 'bytes'
 
 import * as http from 'http'
 import * as fs   from 'fs'
@@ -31,7 +32,6 @@ export const lobby = new Lobby();
 const port = 80;
 
 const $index = cheerio.load(fs.readFileSync(path.join(__dirname, "../client/views/index.html")));
-const $api   = cheerio.load(fs.readFileSync(path.join(__dirname, "../client/views/api.html")));
 
 export const pointsPerDownload = 1;
 export const pointsPerStar = 15;
@@ -56,8 +56,9 @@ const clientId = googleClientId;
 // initialize database
 (async () => {
     try {
-        await Database.initialize();
-        if (process.argv.includes('convertmysql')) {
+        let convert = process.argv.includes('convertmysql');
+        await Database.initialize(convert);
+        if (convert) {
             await Database.convertMySQL();
         }
         main();
@@ -68,6 +69,9 @@ const clientId = googleClientId;
 
 function main() {
 
+    console.log();
+    log(`Courses are using ${bytes(require('object-sizeof')(require('./Course').courses))} of RAM`);
+    console.log();
     log("Database initialized");
 
     calculatePoints();
@@ -222,35 +226,10 @@ function main() {
                         });
                     }
                 } else if (apiData.type === 'json') {
-                    res.json(course.courseData);
+                    res.json(await course.getObject());
                 } else {
-                    res.send(course.serialized);
-                }
-            } else if (apiCall === "starcourse") {
-                if (!apiData.apikey) {
-                    res.json({
-                        err: "API key required"
-                    });
-                } else if (!usersByAPIKey.hasOwnProperty(apiData.apikey)) {
-                    res.json({
-                        err: "API key unknown"
-                    });
-                } else {
-                    let userId = usersByAPIKey[apiData.apikey];
-                    res.json(API.starCourse(userId, apiData));
-                }
-            } else if (apiCall === "completecourse") {
-                if (!apiData.apikey) {
-                    res.json({
-                        err: "API key required"
-                    });
-                } else if (!usersByAPIKey.hasOwnProperty(apiData.apikey)) {
-                    res.json({
-                        err: "API key unknown"
-                    });
-                } else {
-                    let userId = usersByAPIKey[apiData.apikey];
-                    res.json(API.completeCourse(userId, apiData));
+                    res.set('Content-Encoding', 'gzip');
+                    res.send(await course.getSerialized());
                 }
             } else {
                 res.json({

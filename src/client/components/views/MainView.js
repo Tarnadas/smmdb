@@ -39,7 +39,6 @@ class MainView extends React.PureComponent {
         })());
     }
     render () {
-        console.log(this.props.courses);
         const styles = {
             main: {
                 marginTop: '30px',
