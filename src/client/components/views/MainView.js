@@ -1,8 +1,10 @@
-import React from 'react'
+import React      from 'react'
 import {
     connect
 } from 'react-redux'
-import { Scrollbars } from 'react-custom-scrollbars'
+import {
+    Scrollbars
+} from 'react-custom-scrollbars'
 import request from 'request-promise'
 
 import * as url from 'url'
@@ -41,10 +43,12 @@ class MainView extends React.PureComponent {
     render () {
         const styles = {
             main: {
-                marginTop: '30px',
+                marginTop: '40px',
                 width: 'calc(100% - 240px)',
-                height: 'calc(100% - 60px)',
-                overflow: 'hidden'
+                height: 'calc(100% - 40px)',
+                overflow: 'hidden',
+                position: 'relative',
+                zIndex: '10'
             },
             flex: {
                 color: '#fff',

@@ -42,7 +42,7 @@ export default class Account {
         return accounts[accountId];
     }
     static getAccountAmount () {
-        return accounts.keys().length;
+        return Object.keys(accounts).length;
     }
     setId () {
         accounts[this._id] = this;

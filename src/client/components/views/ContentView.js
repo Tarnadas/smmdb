@@ -3,7 +3,8 @@ import {
     connect
 } from 'react-redux'
 
-import MainView from './MainView'
+import MainView   from './MainView'
+import StatsPanel from '../panels/StatsPanel'
 
 class ContentView extends React.PureComponent {
     render () {
@@ -11,13 +12,13 @@ class ContentView extends React.PureComponent {
         const styles = {
             content: {
                 backgroundColor: '#24997e',
-                minHeight: 'calc(100% - 180px)',
-                maxHeight: 'calc(100% - 162px)',
+                height: 'calc(100% - 162px)',
                 textAlign: 'center'
             }
         };
         return (
             <div style={styles.content}>
+                <StatsPanel />
                 {
                     page === 'main' && (
                         <MainView />

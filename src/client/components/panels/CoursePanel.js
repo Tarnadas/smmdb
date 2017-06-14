@@ -31,7 +31,6 @@ export default class CoursePanel extends React.PureComponent {
                 width: 'calc(100% - 20px)',
                 backgroundColor: '#d4dda5',
                 borderRadius: '10px',
-                zIndex: '10',
                 margin: '10px',
                 color: '#000',
                 overflow: 'hidden',
@@ -158,6 +157,7 @@ export default class CoursePanel extends React.PureComponent {
                 flexWrap: 'wrap'
             }
         };
+        const theme = parseInt(this.props.course.courseTheme);
         /*
          <img style={styles.makerRep} src="/img/rep.png" />
          <div>
@@ -172,13 +172,13 @@ export default class CoursePanel extends React.PureComponent {
                     <div style={styles.top}>
                         <div style={styles.theme}>
                             <img src={
-                                this.props.course.coursetheme === 0 ? (
+                                theme === 0 ? (
                                     '/img/smb.png'
                                 ) : (
-                                    this.props.course.coursetheme === 1 ? (
+                                    theme === 1 ? (
                                         '/img/smb3.png'
                                     ) : (
-                                        this.props.course.coursetheme === 2 ? (
+                                        theme === 2 ? (
                                             '/img/smw.png'
                                         ) : (
                                             '/img/nsmbu.png'

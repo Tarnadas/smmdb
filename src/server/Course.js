@@ -176,7 +176,7 @@ export default class Course {
     }
 
     static getCourseAmount () {
-        return courses.keys().length;
+        return Object.keys(courses).length;
     }
 
     addCompleted (accountId) {
