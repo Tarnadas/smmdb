@@ -26,10 +26,9 @@ import {
 import {
     log, calculatePoints
 } from './scripts/util'
+import { port } from '../static'
 
 export const lobby = new Lobby();
-
-const port = 80;
 
 const $index = cheerio.load(fs.readFileSync(path.join(__dirname, "../client/views/index.html")));
 
@@ -193,6 +192,12 @@ function main() {
                 res.json({
                     err: "Wrong syntax"
                 });
+            } else if (apiCall === "getstats") {
+                const result = {
+                    courses: Course.getCourseAmount(),
+                    accounts: Account.getAccountAmount()
+                };
+                res.json(result);
             } else if (apiCall === "getcourses") {
                 let loggedIn = false, userId;
                 let account = Account.getAccountByAPIKey(apiData.apikey);

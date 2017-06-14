@@ -41,6 +41,9 @@ export default class Account {
     static getAccount (accountId) {
         return accounts[accountId];
     }
+    static getAccountAmount () {
+        return accounts.keys().length;
+    }
     setId () {
         accounts[this._id] = this;
     }

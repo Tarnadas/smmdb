@@ -11,7 +11,6 @@ export default class API {
     static getCourses (loggedIn, userId, filterData) {
 
         let orderBy = "lastmodified", dir = "desc";
-        let result = [];
 
         if (!!filterData && !!filterData.order && !!filterData.dir) {
             orderBy = filterData.order;
@@ -24,9 +23,12 @@ export default class API {
             }
         }
 
-        let limit = (!!filterData && !!filterData.limit) ? (+filterData.limit) : MAX_LIMIT;
-        let start = (!!filterData && !!filterData.start) ? (+filterData.start) : 0;
-        for (let i = start; i < start + limit; i++) {
+        const limit = (!!filterData && !!filterData.limit) ? (+filterData.limit) : MAX_LIMIT;
+        const start = (!!filterData && !!filterData.start) ? (+filterData.start) : 0;
+        delete filterData.limit;
+        delete filterData.start;
+        let filteredResult = filterData !== {} ? [] : courses;
+        for (let i in courses) {
 
             let course = courses[i];
             if (!course) break;
@@ -68,7 +70,7 @@ export default class API {
                     }
                 }
                 if (!!filterData.maker) {
-                    if (filterData.maker.toLowerCase() !== course.courseData.maker.toLowerCase()) {
+                    if (filterData.maker.toLowerCase() !== course.maker.toLowerCase()) {
                         continue;
                     }
                 }
@@ -78,27 +80,27 @@ export default class API {
                     }
                 }
                 if (!!filterData.gamestyle) {
-                    if (parseInt(filterData.gamestyle) !== course.courseData.gameStyle) {
+                    if (parseInt(filterData.gamestyle) !== course.gameStyle) {
                         continue;
                     }
                 }
                 if (!!filterData.coursetheme) {
-                    if (parseInt(filterData.coursetheme) !== course.courseData.courseTheme) {
+                    if (parseInt(filterData.coursetheme) !== course.courseTheme) {
                         continue;
                     }
                 }
                 if (!!filterData.coursethemesub) {
-                    if (parseInt(filterData.coursethemesub) !== course.courseData.courseThemeSub) {
+                    if (parseInt(filterData.coursethemesub) !== course.courseThemeSub) {
                         continue;
                     }
                 }
             }
             let resultCourse = course.getJSON(loggedIn, userId);
-            result.push(resultCourse);
+            filteredResult.push(resultCourse);
 
         }
 
-        return result;
+        return filteredResult.splice(start, start + limit);
 
     }
 

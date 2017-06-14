@@ -72,8 +72,7 @@ module.exports = [
                                     "node": "current"
                                 }
                             }]
-                        ],
-                        plugins: [require('babel-plugin-transform-react-jsx')]
+                        ]
                     }
                 }
             ]

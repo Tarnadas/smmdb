@@ -175,6 +175,10 @@ export default class Course {
         return fs.readFileSync(path.join(__dirname, `../client/coursedata/${this._id}.gzip`));
     }
 
+    static getCourseAmount () {
+        return courses.keys().length;
+    }
+
     addCompleted (accountId) {
         this[completed].push(accountId);
     }

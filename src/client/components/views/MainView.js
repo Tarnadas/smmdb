@@ -12,7 +12,7 @@ import {
 } from '../../actions'
 import {
     domain
-} from '../../renderer'
+} from '../../../static'
 
 import CoursePanel from '../panels/CoursePanel'
 

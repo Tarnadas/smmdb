@@ -14,7 +14,6 @@ let onDisconnect = Symbol(), onChatGlobal = Symbol();
 
 export default class Client {
     constructor (s, id, client, disconnect, chatGlobal) {
-        console.log('a user connected');
 
         this.onDisconnect = this.onDisconnect.bind(this);
         this.onLogin = this.onLogin.bind(this);
@@ -39,7 +38,6 @@ export default class Client {
      * client disconnected
      */
     onDisconnect () {
-        console.log('a user disconnected');
         this[onDisconnect](this);
     }
 
