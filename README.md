@@ -10,6 +10,14 @@ All API calls are subject to change.
 
 [http://smm-test.alextc.de/api/request?querystring]()
 
+### Receive server statistics
+
+**Request**: `getstats`
+
+**Querystring**: empty
+
+**Example**: `http://smm-test.alextc.de/api/getstats`
+
 ### Receive course list
 
 **Request**: `getcourses`

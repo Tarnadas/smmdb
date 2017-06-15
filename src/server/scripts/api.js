@@ -100,7 +100,7 @@ export default class API {
 
         }
 
-        return filteredResult.splice(start, start + limit);
+        return filteredResult.splice(start, limit);
 
     }
 

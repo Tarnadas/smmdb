@@ -6,7 +6,12 @@ export default function courseData (state, action) {
     if (!action) return state;
     switch (action.type) {
         case 'SET_COURSES':
-            return new List(action.courses);
+            if (action.concat) {
+                state = state.concat(action.courses);
+            } else {
+                state = new List(action.courses);
+            }
+            return state;
     }
     return state;
 }

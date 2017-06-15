@@ -21,10 +21,11 @@ export function setUserId (userId) {
     }
 }
 
-export function setCourses (courses) {
+export function setCourses (courses, concat) {
     return {
         type: 'SET_COURSES',
-        courses
+        courses,
+        concat
     }
 }
 
