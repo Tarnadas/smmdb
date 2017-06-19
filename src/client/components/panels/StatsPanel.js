@@ -32,9 +32,9 @@ export default class StatsPanel extends React.PureComponent {
                 height: '32px',
                 lineHeight: '32px',
                 color: 'rgb(255, 229, 0)',
-                float: 'left',
-                margin: '10px 0 0 20px',
-                position: 'absolute'
+                position: 'absolute',
+                top: '10px',
+                left: '20px'
             }
         };
         return (

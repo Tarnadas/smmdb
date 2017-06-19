@@ -11,6 +11,8 @@ import {
 import socket     from './socket'
 import chat       from './chat'
 import courseData from './courseData'
+import filter     from './filter'
+import showFilter from './showFilter'
 import userData   from './userData'
 
 export default function initReducer(s) {
@@ -20,12 +22,19 @@ export default function initReducer(s) {
             global: Map()
         }),
         courseData: List(),
+        filter: Map({
+            nextFilter: Map(),
+            currentFilter: Map()
+        }),
+        showFilter: false,
         userData: Map()
     });
     const reducer = combineReducers({
         socket,
         chat,
         courseData,
+        filter,
+        showFilter,
         userData
     }, initialState);
     return createStore(reducer, initialState);

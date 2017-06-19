@@ -29,6 +29,26 @@ export function setCourses (courses, concat) {
     }
 }
 
+export function showFilter (showFilter) {
+    return {
+        type: 'SHOW_FILTER',
+        showFilter
+    }
+}
+
+export function setFilter (filter) {
+    return {
+        type: 'SET_FILTER',
+        filter
+    }
+}
+
+export function applyFilter () {
+    return {
+        type: 'APPLY_FILTER'
+    }
+}
+
 export function setVideoId (videoId) {
     return {
         type: 'SET_VIDEO_ID',

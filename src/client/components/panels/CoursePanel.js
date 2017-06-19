@@ -76,7 +76,9 @@ export default class CoursePanel extends React.PureComponent {
                 height: '32px',
                 float: 'right',
                 margin: '6px',
-                backgroundColor: '#cfcfab'
+                backgroundColor: '#11c2b0',
+                borderRadius: '5px',
+                padding: '6px'
             },
             preview: {
                 width: 'calc(100% - 86px)',

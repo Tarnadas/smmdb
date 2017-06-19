@@ -9,7 +9,7 @@ export default function courseData (state, action) {
             if (action.concat) {
                 state = state.concat(action.courses);
             } else {
-                state = new List(action.courses);
+                state = List(action.courses);
             }
             return state;
     }

@@ -3,7 +3,8 @@ import {
     connect
 } from 'react-redux'
 
-import TopBarArea from '../areas/TopBarArea'
+import TopBarArea  from '../areas/TopBarArea'
+import FilterArea  from '../areas/FilterArea'
 import ContentView from './ContentView'
 
 import {
@@ -66,7 +67,7 @@ class AppView extends React.PureComponent {
                 color: '#000'
             },
             overflow: {
-                display: this.props.videoId ? 'flex' : 'none',
+                display: 'flex',
                 position: 'absolute',
                 zIndex: '100',
                 backgroundColor: 'rgba(0,0,0,0.6)',
@@ -105,15 +106,24 @@ class AppView extends React.PureComponent {
                         </div>
                     )
                 }
+                {
+                    this.props.showFilter && (
+                        <div style={styles.overflow}>
+                            <FilterArea />
+                        </div>
+                    )
+                }
             </div>
         );
     }
 }
 export default connect(state => {
-    let userName = state.getIn(['userData', 'userName']);
-    let videoId = state.getIn(['userData', 'videoId']);
+    const userName = state.getIn(['userData', 'userName']);
+    const videoId = state.getIn(['userData', 'videoId']);
+    const showFilter = state.get('showFilter');
     return {
         userName: !!userName ? userName : '',
-        videoId: !!videoId ? videoId : ''
+        videoId: !!videoId ? videoId : '',
+        showFilter
     }
 })(AppView);
