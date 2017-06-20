@@ -159,7 +159,7 @@ export default class CoursePanel extends React.PureComponent {
                 flexWrap: 'wrap'
             }
         };
-        const theme = parseInt(this.props.course.courseTheme);
+        const style = parseInt(this.props.course.gameStyle);
         /*
          <img style={styles.makerRep} src="/img/rep.png" />
          <div>
@@ -174,13 +174,13 @@ export default class CoursePanel extends React.PureComponent {
                     <div style={styles.top}>
                         <div style={styles.theme}>
                             <img src={
-                                theme === 0 ? (
+                                style === 0 ? (
                                     '/img/smb.png'
                                 ) : (
-                                    theme === 1 ? (
+                                    style === 1 ? (
                                         '/img/smb3.png'
                                     ) : (
-                                        theme === 2 ? (
+                                        style === 2 ? (
                                             '/img/smw.png'
                                         ) : (
                                             '/img/nsmbu.png'
