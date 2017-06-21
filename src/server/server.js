@@ -111,6 +111,8 @@ function main() {
 
     app.route('/tokensignin').post((req, res) => {
 
+        log("[200] " + req.method + " to " + req.url);
+
         let data = '';
         req.on('data', chunk => {
             data += chunk;
@@ -140,7 +142,7 @@ function main() {
                             await Database.addAccount(account);
                         } else {
                             account = Account.getAccountByGoogleId(googleId);
-                            account.login();
+                            account.login(idToken);
                         }
                         req.session.idtoken = idToken;
 
@@ -158,20 +160,23 @@ function main() {
 
         log("[200] " + req.method + " to " + req.url);
 
-        /*req.on('data', (chunk) => {
-            if (chunk.toString().includes("idtoken=")) { // TODO chunk should be a json
-                let token = chunk.toString().split("idtoken=", 2)[1].split("&")[0];
-                delete usersLoggedIn[token];
-                database.removeSession(token);
-                res.json({
-                    message: "Success"
-                });
-            } else {
-                res.json({
-                    err: "Wrong Syntax"
-                })
-            }
-        });*/
+        if (!req.session.idtoken) {
+            res.json({
+                err: 'No idToken submitted. Have you enabled cookies?'
+            });
+            return;
+        }
+        let account = Account.getAccountBySession(req.session.idtoken);
+        if (!account) {
+            res.json({
+                err: 'Account not found'
+            });
+            return;
+        }
+        account.logout();
+        res.json({
+            message: 'success'
+        });
 
     });
 

@@ -27,7 +27,9 @@ export default function initReducer(s) {
             currentFilter: Map()
         }),
         showFilter: false,
-        userData: Map()
+        userData: Map({
+            accountData: Map()
+        })
     });
     const reducer = combineReducers({
         socket,

@@ -5,6 +5,7 @@ import {
 export const accounts = {};
 const accountsByGoogleId = {};
 const accountsByAPIKey = {};
+const accountsBySession = {};
 //const accountsLoggedIn = {};
 
 const points    = Symbol();
@@ -56,6 +57,9 @@ export default class Account {
     static getAccountByAPIKey (apiKey) {
         return accountsByAPIKey[apiKey];
     }
+    static getAccountBySession (idToken) {
+        return accountsBySession[idToken];
+    }
     getJSON () {
         return {
             id: this._id,
@@ -71,11 +75,13 @@ export default class Account {
     getPoints () {
         return this[points];
     }
-    login () {
+    login (idToken) {
         this[loggedIn] = true;
+        accountsBySession[idToken] = this;
     }
-    logout () {
+    logout (idToken) {
         this[loggedIn] = false;
+        delete accountsBySession[idToken];
     }
     isLoggedIn () {
         return this[loggedIn];

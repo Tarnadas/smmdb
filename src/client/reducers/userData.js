@@ -6,7 +6,7 @@ export default function userData (state, action) {
     if (!action) return state;
     switch (action.type) {
         case 'SET_ACCOUNT_DATA':
-            state = state.set('userId', Map(action.accountData));
+            state = state.set('accountData', !!action.accountData ? Map(action.accountData) : Map());
             return state;
         case 'SET_USER_ID':
             state = state.set('userId', action.userId);

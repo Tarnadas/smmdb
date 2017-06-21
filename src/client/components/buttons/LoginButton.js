@@ -15,13 +15,13 @@ class LoginButton extends React.PureComponent {
     constructor (props) {
         super(props);
         this.state = {
-            loggedIn: false,
             hover: false
         };
         this.mouseEnter = this.mouseEnter.bind(this);
         this.mouseLeave = this.mouseLeave.bind(this);
         this.onGoogleLoginSuccess = this.onGoogleLoginSuccess.bind(this);
         this.onGoogleLoginFailure = this.onGoogleLoginFailure.bind(this);
+        this.onLogOut = this.onLogOut.bind(this);
     }
     mouseEnter() {
         this.setState({
@@ -45,7 +45,21 @@ class LoginButton extends React.PureComponent {
     onGoogleLoginFailure (response) {
         console.log(response);
     }
+    async onLogOut () {
+        let res = await request({
+            method: 'POST',
+            uri: 'http://tarnadas.ddns.net/signout',
+            json: true
+        });
+        if (!res.err) {
+            this.props.dispatch(setAccountData());
+        } else {
+            console.log(res.err);
+        }
+    }
     render () {
+        const accountData = this.props.accountData.toJS();
+        const loggedIn = !!accountData.id;
         const styles = {
             smmButton: {
                 margin: '0 10px 10px 10px',
@@ -75,7 +89,7 @@ class LoginButton extends React.PureComponent {
             }
         };
         let iconSrc, text;
-        if (this.state.loggedIn) {
+        if (loggedIn) {
             iconSrc = '/img/logout.png';
             text = 'Sign out';
         } else {
@@ -84,16 +98,29 @@ class LoginButton extends React.PureComponent {
         }
         return (
             <div style={{float:'right'}} onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}>
-                <GoogleLogin
-                    clientId="899493559187-bnvgqj1i8cnph7ilkl4h261836skee25.apps.googleusercontent.com"
-                    style={styles.smmButton}
-                    onSuccess={this.onGoogleLoginSuccess}
-                    onFailure={this.onGoogleLoginFailure}
-                >
-                    <ButtonSub iconStyle={styles.smmIcon} iconSrc={iconSrc} text={text} />
-                </GoogleLogin>
+                {
+                    loggedIn ? (
+                        <div style={styles.smmButton} onClick={this.onLogOut}>
+                            <ButtonSub iconStyle={styles.smmIcon} iconSrc={iconSrc} text={text} />
+                        </div>
+                    ) : (
+                        <GoogleLogin
+                            clientId="899493559187-bnvgqj1i8cnph7ilkl4h261836skee25.apps.googleusercontent.com"
+                            style={styles.smmButton}
+                            onSuccess={this.onGoogleLoginSuccess}
+                            onFailure={this.onGoogleLoginFailure}
+                        >
+                            <ButtonSub iconStyle={styles.smmIcon} iconSrc={iconSrc} text={text} />
+                        </GoogleLogin>
+                    )
+                }
             </div>
         )
     }
 }
-export default connect()(LoginButton);
+export default connect(state => {
+    const accountData = state.getIn(['userData', 'accountData']);
+    return {
+        accountData
+    }
+})(LoginButton);

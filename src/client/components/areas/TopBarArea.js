@@ -44,13 +44,7 @@ class TopBarArea extends React.PureComponent{
                     </a>
                 </div>
                 <div style={styles.right}>
-                    {
-                        !!this.props.accountData ? (
-                            <div />
-                        ) : (
-                            <LoginButton />
-                        )
-                    }
+                    <LoginButton />
                 </div>
             </div>
         );
