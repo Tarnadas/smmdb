@@ -23,6 +23,20 @@ class LoginButton extends React.PureComponent {
         this.onGoogleLoginFailure = this.onGoogleLoginFailure.bind(this);
         this.onLogOut = this.onLogOut.bind(this);
     }
+    componentDidMount () {
+        (async () => {
+            let res = await request({
+                method: 'POST',
+                uri: 'http://tarnadas.ddns.net/signin',
+                json: true
+            });
+            if (!res.err) {
+                setTimeout(() => { // TODO this is just a workaround to prevent a warning
+                    this.props.dispatch(setAccountData(res));
+                }, 1000);
+            }
+        })();
+    }
     mouseEnter() {
         this.setState({
             hover: true

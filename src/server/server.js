@@ -156,6 +156,27 @@ function main() {
 
     });
 
+    app.route('/signin').post((req, res) => {
+
+        log("[200] " + req.method + " to " + req.url);
+
+        if (!req.session.idtoken) {
+            res.json({
+                err: 'No idToken submitted. Have you enabled cookies?'
+            });
+            return;
+        }
+        let account = Account.getAccountBySession(req.session.idtoken);
+        if (!account) {
+            res.json({
+                err: 'Account not found'
+            });
+            return;
+        }
+        res.json(account.getJSON());
+
+    });
+
     app.route('/signout').post((req, res) => {
 
         log("[200] " + req.method + " to " + req.url);
@@ -173,7 +194,7 @@ function main() {
             });
             return;
         }
-        account.logout();
+        account.logout(req.session.idtoken);
         res.json({
             message: 'success'
         });
