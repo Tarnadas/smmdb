@@ -5,11 +5,13 @@ import {
     connect
 } from 'react-redux'
 
-import ButtonSub from '../subs/ButtonSub'
+import * as url from 'url'
 
+import ButtonSub from '../subs/ButtonSub'
 import {
     setAccountData
 } from '../../actions'
+import { domain } from '../../../static'
 
 class LoginButton extends React.PureComponent {
     constructor (props) {
@@ -27,7 +29,7 @@ class LoginButton extends React.PureComponent {
         (async () => {
             let res = await request({
                 method: 'POST',
-                uri: 'http://tarnadas.ddns.net/signin',
+                uri: url.resolve(domain, '/signin'),
                 json: true
             });
             if (!res.err) {
@@ -50,7 +52,7 @@ class LoginButton extends React.PureComponent {
     async onGoogleLoginSuccess (response) {
         let res = await request({
             method: 'POST',
-            uri: 'http://tarnadas.ddns.net/tokensignin',
+            uri: url.resolve(domain, '/tokensignin'),
             body: response,
             json: true
         });
@@ -62,7 +64,7 @@ class LoginButton extends React.PureComponent {
     async onLogOut () {
         let res = await request({
             method: 'POST',
-            uri: 'http://tarnadas.ddns.net/signout',
+            uri: url.resolve(domain, '/signout'),
             json: true
         });
         if (!res.err) {
