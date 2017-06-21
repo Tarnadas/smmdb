@@ -57,7 +57,7 @@ Receive courses 121 to 170 in lastmodified descending order with indentation.
 | Query | Value | Description |
 | --- | --- | --- |
 | id | `{string}` | Course ID |
-| type | `zip \| json \| `*`protobuf`* | MIME type of response |
+| type | `zip \| 3ds \| json \| `*`protobuf`* | MIME type of response |
 
 **Example**: `http://smm-test.alextc.de/api/downloadcourse?id=ihavenoidea&type=zip`
 

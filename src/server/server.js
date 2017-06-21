@@ -237,8 +237,12 @@ function main() {
                     }
                 } else if (apiData.type === 'json') {
                     res.json(await course.getObject());
+                } else if (apiData.type === '3ds') {
+                    res.setHeader('Content-Type', 'application/3ds');
+                    res.send(await course.get3DS());
                 } else {
                     res.set('Content-Encoding', 'gzip');
+                    res.set('Content-Type', 'application/wiiu');
                     res.send(await course.getSerialized());
                 }
             } else {

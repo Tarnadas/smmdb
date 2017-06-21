@@ -112,7 +112,10 @@ export default class Course {
                 }
             }
         } catch(err) {
+            console.log();
+            console.log(err);
             console.log("dropped course: " + data.id);
+            console.log();
         }
         return result;
     }
@@ -173,6 +176,10 @@ export default class Course {
 
     getSerialized () {
         return fs.readFileSync(path.join(__dirname, `../client/coursedata/${this._id}.gzip`));
+    }
+
+    async get3DS () {
+        return await (await deserialize(fs.readFileSync(path.join(__dirname, `../client/coursedata/${this._id}`)))).to3DS();
     }
 
     static getCourseAmount () {
