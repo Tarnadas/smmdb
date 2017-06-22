@@ -5,7 +5,7 @@ const path    = require('path');
 
 module.exports = [
     {
-        entry: path.join(__dirname, 'src/client/renderer.js'),
+        entry: ['babel-polyfill', path.join(__dirname, 'src/client/renderer.js')],
         output: {
             filename: 'renderer.bundle.js',
             path: path.join(__dirname, 'build/client/script')
@@ -31,6 +31,17 @@ module.exports = [
                     exclude: /node_modules/,
                     loader: 'babel-loader',
                     query: {
+                        presets: [
+                            ["env", {
+                                "targets": {
+                                    "browsers": [
+                                        "last 2 versions"
+                                    ]
+                                },
+                                "modules": false,
+                                "useBuiltIns": true
+                            }]
+                        ],
                         plugins: [require('babel-plugin-transform-react-jsx')]
                     }
                 }

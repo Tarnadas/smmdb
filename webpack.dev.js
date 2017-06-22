@@ -34,7 +34,9 @@ module.exports = [
                                         "last 3 Chrome versions",
                                         "last 2 ff versions"
                                     ]
-                                }
+                                },
+                                "modules": false,
+                                "useBuiltIns": true
                             }]
                         ],
                         plugins: [require('babel-plugin-transform-react-jsx')]
