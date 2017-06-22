@@ -55,3 +55,10 @@ export function setVideoId (videoId) {
         videoId
     }
 }
+
+export function mediaQuery (screenSize) {
+    return {
+        type: 'MEDIA_QUERY',
+        screenSize
+    }
+}

@@ -5,16 +5,22 @@ import {
 
 import LoginButton from '../buttons/LoginButton'
 import SMMButton   from '../buttons/SMMButton'
+import {
+    ScreenSize
+} from '../../reducers/mediaQuery'
 
 class TopBarArea extends React.PureComponent{
     render () {
+        const screenSize = this.props.screenSize;
+        const accountData = !!this.props.accountData ? this.props.accountData.toJS() : null;
         const styles = {
             topbar: {
                 width: '100%',
                 height: 'auto',
                 padding: '10px',
-                display: 'inline-flex',
-                alignItems: 'flex-start'
+                display: screenSize === ScreenSize.LARGE ? 'inline-flex' : 'none',
+                alignItems: 'flex-start',
+                flex: '0 0 auto'
             },
             right: {
                 width: 'auto',
@@ -48,8 +54,10 @@ class TopBarArea extends React.PureComponent{
     }
 }
 export default connect(state => {
-    let accountData = state.getIn(['userData', 'accountData']);
+    const screenSize = state.getIn(['mediaQuery', 'screenSize']);
+    const accountData = state.getIn(['userData', 'accountData']);
     return {
-        accountData: !!accountData ? accountData.toJS() : null
+        screenSize,
+        accountData
     }
 })(TopBarArea);

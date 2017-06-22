@@ -6,6 +6,9 @@ import {
 import {
     setVideoId
 } from '../../actions'
+import {
+    ScreenSize
+} from '../../reducers/mediaQuery'
 
 class CourseVideoButton extends React.PureComponent {
     constructor (props) {
@@ -16,30 +19,37 @@ class CourseVideoButton extends React.PureComponent {
         this.props.dispatch(setVideoId(this.props.videoId))
     }
     render () {
+        const screenSize = this.props.screenSize;
         const styles = {
             button: {
                 backgroundColor: '#11c2b0',
                 color: '#fff',
                 borderRadius: '5px',
-                border: '8px solid #0f9989',
-                height: '180px',
-                width: 'calc(50% - 10px)',
+                border: screenSize === ScreenSize.LARGE ? '8px solid #0f9989' : '4px solid #0f9989',
+                height: screenSize === ScreenSize.LARGE ? '180px' : 'auto',
+                width: '100%',
                 margin: '0 5px',
                 boxShadow: '0px 5px 0px 0px rgba(0,0,0,0.4)',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                padding: '0 10px'
             },
             icon: {
-                height: '110px',
-
+                maxHeight: '110px',
+                height: 'auto',
+                width: 'auto',
+                display: 'block'
             },
             iconImg: {
                 width: 'auto',
-                height: 'auto'
+                height: screenSize === ScreenSize.LARGE ? '100%' : '80px'
             },
             text: {
-                height: '70px',
-                lineHeight: '70px',
-                fontSize: '24px'
+                height: screenSize === ScreenSize.LARGE ? '70px' : 'auto',
+                width: screenSize === ScreenSize.LARGE ? '100%' : 'auto',
+                minWidth: screenSize === ScreenSize.LARGE ? '' : '90px',
+                margin: screenSize === ScreenSize.LARGE ? '' : '3px 0',
+                lineHeight: screenSize === ScreenSize.LARGE ? '70px' : '',
+                fontSize: screenSize === ScreenSize.LARGE ? '24px' : '16px'
             }
         };
         return (
@@ -48,7 +58,7 @@ class CourseVideoButton extends React.PureComponent {
                     <img style={styles.iconImg} src="/img/play.png" />
                 </div>
                 <div style={styles.text}>
-                    Show Video
+                    Video
                 </div>
             </div>
         )

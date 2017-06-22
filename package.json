@@ -18,7 +18,6 @@
     "connect-busboy": "^0.0.2",
     "cookie-session": "^2.0.0-alpha.2",
     "cookies": "^0.6.2",
-    "copy-to-clipboard": "^3.0.6",
     "cross-unzip": "^0.2.1",
     "express": "^4.14.0",
     "google-id-token-verifier": "^0.2.3",

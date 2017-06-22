@@ -16,6 +16,9 @@ import {
 import {
     domain
 } from '../../../static'
+import {
+    ScreenSize
+} from '../../reducers/mediaQuery'
 
 import CoursePanel from '../panels/CoursePanel'
 import SideBarArea from '../areas/SideBarArea'
@@ -76,40 +79,45 @@ class MainView extends React.PureComponent {
             (async () => {
                 this.index += STEP_LIMIT;
                 await this.fetchCourses(true, STEP_LIMIT, this.index);
-                /*const courses = JSON.parse(await request({
-                    url: url.resolve(domain, `/api/getcourses?limit=${STEP_LIMIT}&start=${this.index}`)
-                }));
-                this.props.dispatch(setCourses(courses, true));*/
             })();
         }
     }
     render () {
+        const screenSize = this.props.screenSize;
         const styles = {
             main: {
-                width: 'calc(100% - 260px)',
-                height: 'calc(100% - 40px)',
+                width: screenSize === ScreenSize.LARGE ? 'calc(100% - 260px)' : '100%',
+                height: screenSize === ScreenSize.LARGE ? 'calc(100% - 40px)' : 'auto',
                 overflow: 'hidden',
-                position: 'absolute',
+                position: screenSize === ScreenSize.LARGE ? 'absolute' : '',
                 zIndex: '10',
-                top: '40px',
-                left: '140px'
+                top: screenSize === ScreenSize.LARGE ? '40px' : '',
+                left: screenSize === ScreenSize.LARGE ? '140px' : ''
             },
             flex: {
                 color: '#fff',
                 overflow: 'hidden',
-                display: 'flex'
+                display: screenSize === ScreenSize.LARGE ? 'flex' : 'block'
             }
         };
         return (
             <div>
-                <SideBarArea />
+                {
+                    screenSize === ScreenSize.LARGE && <SideBarArea />
+                }
                 <div style={styles.main}>
                     <div style={styles.flex}>
-                        <Scrollbars style={{height: '100%'}} onScroll={this.handleScroll} ref={input => { this.scrollBar = input; }}>
-                            {
+                        {
+                            screenSize === ScreenSize.LARGE ? (
+                                <Scrollbars style={{height: '100%'}} onScroll={this.handleScroll} ref={input => { this.scrollBar = input; }}>
+                                    {
+                                        this.renderCourses(this.props.courses)
+                                    }
+                                </Scrollbars>
+                            ) : (
                                 this.renderCourses(this.props.courses)
-                            }
-                        </Scrollbars>
+                            )
+                        }
                     </div>
                 </div>
             </div>
@@ -117,10 +125,11 @@ class MainView extends React.PureComponent {
     }
 }
 export default connect(state => {
+    const screenSize = state.getIn(['mediaQuery', 'screenSize']);
     const courses = state.get('courseData').toJS();
-    //console.log(courses);
     const filter = state.getIn(['filter', 'currentFilter']);
     return {
+        screenSize,
         courses,
         filter
     }

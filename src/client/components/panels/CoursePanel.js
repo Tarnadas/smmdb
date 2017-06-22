@@ -1,9 +1,15 @@
 import React from 'react'
+import {
+    connect
+} from 'react-redux'
 
 import CourseDownloadButton from '../buttons/CourseDownloadButton'
 import CourseVideoButton    from '../buttons/CourseVideoButton'
+import {
+    ScreenSize
+} from '../../reducers/mediaQuery'
 
-export default class CoursePanel extends React.PureComponent {
+class CoursePanel extends React.PureComponent {
     constructor (props) {
         super(props);
         this.state = {
@@ -25,16 +31,18 @@ export default class CoursePanel extends React.PureComponent {
         });
     }
     render () {
+        const screenSize = this.props.screenSize;
         const styles = {
             panel: {
-                height: this.state.showDetails ? '409px' : '169px',
+                height: this.state.showDetails ? 'auto' : '169px',
                 width: 'calc(100% - 20px)',
                 backgroundColor: '#d4dda5',
                 borderRadius: '10px',
                 margin: '10px',
                 color: '#000',
                 overflow: 'hidden',
-                transition: 'height 0.8s'
+                transition: 'height 0.8s', // TODO
+                display: 'flex'
             },
             top: {
                 height: '169px',
@@ -46,11 +54,13 @@ export default class CoursePanel extends React.PureComponent {
             },
             rank: {
                 width: '100px',
+                height: 'auto',
                 backgroundColor: '#d7db48',
-                borderRadius: '10px 0 0 10px'
+                borderRadius: '10px 0 0 10px',
+                display: screenSize === ScreenSize.SMALL ? 'none' : 'block'
             },
             details: {
-                width: 'calc(100% - 100px)',
+                width: screenSize === ScreenSize.SMALL ? '100%' : 'calc(100% - 100px)',
                 display: 'inline-flex',
                 flexWrap: 'wrap',
                 alignContent: 'flex-start',
@@ -63,11 +73,12 @@ export default class CoursePanel extends React.PureComponent {
             title: {
                 width: `calc(100% - ${this.state.showDetails ? '135' : '91'}px)`,
                 height: '44px',
-                lineHeight: '44px',
                 paddingLeft: '10px',
                 textAlign: 'left',
-                fontSize: '22px',
-                whiteSpace: 'nowrap'
+                fontSize: screenSize === ScreenSize.SMALL ?  '16px' : '22px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
             },
             close: {
                 display: this.state.showDetails ? '' : 'none',
@@ -81,7 +92,7 @@ export default class CoursePanel extends React.PureComponent {
                 padding: '6px'
             },
             preview: {
-                width: 'calc(100% - 86px)',
+                width: screenSize === ScreenSize.SMALL ? '100%' :'calc(100% - 86px)',
                 height: '81px',
                 overflow: 'hidden'
             },
@@ -96,7 +107,8 @@ export default class CoursePanel extends React.PureComponent {
             },
             mii: {
                 height: '81px',
-                width: '86px'
+                width: '86px',
+                display: screenSize === ScreenSize.SMALL ? 'none' : 'block'
             },
             miiImgWrapper: {
                 width: '76px',
@@ -146,17 +158,21 @@ export default class CoursePanel extends React.PureComponent {
             },
             bottom: {
                 display: 'inline-flex',
-                height: '240px'
+                //alignItems: 'flex-start',
+                height: 'auto',
+                justifyContent: 'space-around',
+                flexWrap: screenSize === ScreenSize.LARGE ? '' : 'wrap'
             },
             imageLarge: {
-                width: '320px',
-                height: '240px'
+                width: 'auto',
+                //minWidth: '320px',
+                height: 'auto'
             },
             buttonPanel: {
-                width: 'calc(100% - 280px)',
-                margin: '0 20px',
+                width: screenSize === ScreenSize.LARGE ? 'calc(100% - 280px)' : 'auto',
+                margin: screenSize !== ScreenSize.LARGE ? '20px' : '0 20px',
                 display: 'flex',
-                flexWrap: 'wrap'
+                alignItems: 'flex-start'
             }
         };
         const style = parseInt(this.props.course.gameStyle);
@@ -231,10 +247,10 @@ export default class CoursePanel extends React.PureComponent {
                             <img src={`/courseimg/${this.props.course.id}.jpg`} />
                         </div>
                         <div style={styles.buttonPanel}>
-                            <CourseDownloadButton courseId={this.props.course.id} />
+                            <CourseDownloadButton courseId={this.props.course.id} screenSize={screenSize} />
                             {
                                 !!this.props.course.videoid && (
-                                    <CourseVideoButton videoId={this.props.course.videoid} />
+                                    <CourseVideoButton videoId={this.props.course.videoid} screenSize={screenSize} />
                                 )
                             }
                         </div>
@@ -244,3 +260,9 @@ export default class CoursePanel extends React.PureComponent {
         )
     }
 }
+export default connect(state => {
+    const screenSize = state.getIn(['mediaQuery', 'screenSize']);
+    return {
+        screenSize
+    }
+})(CoursePanel);

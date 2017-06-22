@@ -36,7 +36,9 @@ div#root {
 	max-height: 100%;
 	overflow: hidden;
 }
-::-webkit-scrollbar {
-    height: 0;
-    width: 6px;
+@media (min-width: 1024px) {
+    ::-webkit-scrollbar {
+        height: 0;
+        width: 6px;
+    }
 }

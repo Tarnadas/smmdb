@@ -14,6 +14,7 @@ import courseData from './courseData'
 import filter     from './filter'
 import showFilter from './showFilter'
 import userData   from './userData'
+import mediaQuery from './mediaQuery'
 
 export default function initReducer(s) {
     const initialState = Map({
@@ -29,6 +30,9 @@ export default function initReducer(s) {
         showFilter: false,
         userData: Map({
             accountData: Map()
+        }),
+        mediaQuery: Map({
+            screenSize: 2
         })
     });
     const reducer = combineReducers({
@@ -37,7 +41,8 @@ export default function initReducer(s) {
         courseData,
         filter,
         showFilter,
-        userData
+        userData,
+        mediaQuery,
     }, initialState);
     return createStore(reducer, initialState);
 }

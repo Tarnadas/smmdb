@@ -2,32 +2,51 @@ import React    from 'react'
 import {
     connect
 } from 'react-redux'
+import MediaQuery from 'react-responsive'
 
 import TopBarArea  from '../areas/TopBarArea'
 import FilterArea  from '../areas/FilterArea'
 import ContentView from './ContentView'
 
 import {
-    setVideoId
+    ScreenSize
+} from '../../reducers/mediaQuery'
+import {
+    setVideoId, mediaQuery
 } from '../../actions'
 
 class AppView extends React.PureComponent {
     constructor (props) {
         super(props);
+        this.screenSize = 0;
         this.onVideoHide = this.onVideoHide.bind(this);
+        this.onMediaSmall = this.onMediaQuery.bind(this, ScreenSize.SMALL);
+        this.onMediaMedium = this.onMediaQuery.bind(this, ScreenSize.MEDIUM);
+        this.onMediaLarge = this.onMediaQuery.bind(this, ScreenSize.LARGE);
+    }
+    componentWillUpdate (nextProps, nextState, nextContext) {
+        this.screenSize = 0;
     }
     onVideoHide () {
         this.props.dispatch(setVideoId(''));
     }
+    onMediaQuery (size, query) {
+        if (query) {
+            console.log(size);
+            this.props.dispatch(mediaQuery(size));
+        }
+        return null;
+    }
     render () {
+        const screenSize = this.props.screenSize;
         const styles = {
             global: {
                 width: '100%',
                 maxWidth: '100%',
                 height: '100%',
                 maxHeight: '100%',
-                overflow: 'hidden',
-                display: 'flex',
+                overflow: screenSize === ScreenSize.LARGE ? 'hidden' : 'scroll',
+                display: screenSize === ScreenSize.LARGE ? 'flex' : 'block',
                 flexDirection: 'column'
             },
             logo: {
@@ -36,8 +55,7 @@ class AppView extends React.PureComponent {
                 textAlign: 'center',
                 boxShadow: '0px 10px 20px 0px rgba(0,0,0,0.3)',
                 zIndex: '1',
-                position: 'relative'
-                //backgroundColor: '#ffcf00'
+                flex: '0 0'
             },
             logoFont: {
                 display: 'inline-block',
@@ -61,7 +79,8 @@ class AppView extends React.PureComponent {
                 fontFamily: 'Consolas, "courier new", serif',
                 fontWeight: 'bold',
                 color: '#000',
-                flex: '0'
+                flex: '0 0',
+                height: 'auto'
             },
             overflow: {
                 display: 'flex',
@@ -80,46 +99,62 @@ class AppView extends React.PureComponent {
             }
         };
         const isLoggedIn = !!this.props.userName;
-        console.log("main render");
         return (
             <div>
-                <div style={styles.global}>
-                    <TopBarArea isLoggedIn={isLoggedIn} />
-                    <div style={styles.logo}>
-                        <div style={styles.logoFont}>SUPER MARIO MAKER DATABASE</div>
-                        <div style={styles.logoImage}>
-                            <img src="/img/Construction_Mario.png" />
-                        </div>
-                    </div>
-                    <ContentView />
-                    <div style={styles.footer}>
-                        Super Mario Maker Database (in short SMMDB) is not affiliated or associated with any other company.<br/>
-                        All logos, trademarks, and trade names used herein are the property of their respective owners.
-                    </div>
+                <div style={{display: 'none'}}>
+                    <MediaQuery minWidth={700}>
+                        <MediaQuery minWidth={1024}>
+                            { this.onMediaLarge }
+                        </MediaQuery>
+                        <MediaQuery maxWidth={1023}>
+                            { this.onMediaMedium }
+                        </MediaQuery>
+                    </MediaQuery>
+                    <MediaQuery maxWidth={699}>
+                        { this.onMediaSmall }
+                    </MediaQuery>
                 </div>
-                {
-                    !!this.props.videoId && (
-                        <div style={styles.overflow} onClick={this.onVideoHide}>
-                            <iframe style={styles.video} src={`http://www.youtube.com/embed/${this.props.videoId}?disablekb=1&iv_load_policy=3&rel=0&showinfo=0`} frameBorder='0' allowFullScreen />
+                <div>
+                    <div style={styles.global}>
+                        <TopBarArea isLoggedIn={isLoggedIn} />
+                        <div style={styles.logo}>
+                            <div style={styles.logoFont}>SUPER MARIO MAKER DATABASE</div>
+                            <div style={styles.logoImage}>
+                                <img src="/img/Construction_Mario.png" />
+                            </div>
                         </div>
-                    )
-                }
-                {
-                    this.props.showFilter && (
-                        <div style={styles.overflow}>
-                            <FilterArea />
+                        <ContentView />
+                        <div style={styles.footer}>
+                            Super Mario Maker Database (in short SMMDB) is not affiliated or associated with any other company.<br/>
+                            All logos, trademarks, and trade names used herein are the property of their respective owners.
                         </div>
-                    )
-                }
+                    </div>
+                    {
+                        !!this.props.videoId && (
+                            <div style={styles.overflow} onClick={this.onVideoHide}>
+                                <iframe style={styles.video} src={`http://www.youtube.com/embed/${this.props.videoId}?disablekb=1&iv_load_policy=3&rel=0&showinfo=0`} frameBorder='0' allowFullScreen />
+                            </div>
+                        )
+                    }
+                    {
+                        this.props.showFilter && (
+                            <div style={styles.overflow}>
+                                <FilterArea />
+                            </div>
+                        )
+                    }
+                </div>
             </div>
         );
     }
 }
 export default connect(state => {
+    const screenSize = state.getIn(['mediaQuery', 'screenSize']);
     const userName = state.getIn(['userData', 'userName']);
     const videoId = state.getIn(['userData', 'videoId']);
     const showFilter = state.get('showFilter');
     return {
+        screenSize,
         userName: !!userName ? userName : '',
         videoId: !!videoId ? videoId : '',
         showFilter
