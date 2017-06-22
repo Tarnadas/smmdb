@@ -11,15 +11,12 @@ class TopBarArea extends React.PureComponent{
         const styles = {
             topbar: {
                 width: '100%',
-                height: '50px',
+                height: 'auto',
                 padding: '10px',
-                marginBottom: '20px',
                 display: 'inline-flex',
                 alignItems: 'flex-start'
             },
             right: {
-                position: 'absolute',
-                right: '0',
                 width: 'auto',
                 height: 'auto'
             }

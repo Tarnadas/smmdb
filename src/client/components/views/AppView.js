@@ -26,7 +26,9 @@ class AppView extends React.PureComponent {
                 maxWidth: '100%',
                 height: '100%',
                 maxHeight: '100%',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column'
             },
             logo: {
                 height: 'auto',
@@ -52,19 +54,14 @@ class AppView extends React.PureComponent {
                 zIndex: '2'
             },
             footer: {
-                display: 'block',
-                position: 'absolute',
-                bottom: '0',
-                verticalAlign: 'baseline',
-                width: '100%',
-                height: '43px',
                 paddingTop: '13px',
                 fontSize: '11px',
                 textAlign: 'center',
                 background: 'rgba(44, 44, 44, 0.3)',
                 fontFamily: 'Consolas, "courier new", serif',
                 fontWeight: 'bold',
-                color: '#000'
+                color: '#000',
+                flex: '0'
             },
             overflow: {
                 display: 'flex',
@@ -83,6 +80,7 @@ class AppView extends React.PureComponent {
             }
         };
         const isLoggedIn = !!this.props.userName;
+        console.log("main render");
         return (
             <div>
                 <div style={styles.global}>

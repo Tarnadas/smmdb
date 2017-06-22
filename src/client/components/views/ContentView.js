@@ -12,8 +12,9 @@ class ContentView extends React.PureComponent {
         const styles = {
             content: {
                 backgroundColor: '#24997e',
-                height: 'calc(100% - 162px)',
-                textAlign: 'center'
+                height: 'auto',
+                textAlign: 'center',
+                flex: '1'
             }
         };
         return (
