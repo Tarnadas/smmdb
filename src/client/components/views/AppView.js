@@ -2,7 +2,6 @@ import React    from 'react'
 import {
     connect
 } from 'react-redux'
-import MediaQuery from 'react-responsive'
 import request from 'request-promise'
 
 import * as url from 'url'
@@ -35,11 +34,29 @@ class AppView extends React.PureComponent {
         this.queryString = qs.stringify(props.filter.toJS());
         this.fetchCourses = this.fetchCourses.bind(this);
         this.onVideoHide = this.onVideoHide.bind(this);
-        this.onMediaSmall = this.onMediaQuery.bind(this, ScreenSize.SMALL);
-        this.onMediaMedium = this.onMediaQuery.bind(this, ScreenSize.MEDIUM);
-        this.onMediaLarge = this.onMediaQuery.bind(this, ScreenSize.LARGE);
         this.handleScroll = this.handleScroll.bind(this);
         this.shouldUpdate = this.shouldUpdate.bind(this);
+    }
+    componentWillMount () {
+        const listener = (size, query) => {
+            if (query.matches) {
+                this.props.dispatch(mediaQuery(size));
+            }
+        };
+        const queryLarge = window.matchMedia('(min-width: 1000px)');
+        queryLarge.addListener(listener.bind(this, ScreenSize.LARGE));
+        const queryMedium = window.matchMedia('(max-width: 999px) and (min-width: 700px)');
+        queryMedium.addListener(listener.bind(this, ScreenSize.MEDIUM));
+        const querySmall = window.matchMedia('(max-width: 699px)');
+        querySmall.addListener(listener.bind(this, ScreenSize.SMALL));
+
+        if (queryLarge.matches) {
+            this.props.dispatch(mediaQuery(ScreenSize.LARGE));
+        } else if (queryMedium.matches) {
+            this.props.dispatch(mediaQuery(ScreenSize.MEDIUM));
+        } else if (querySmall.matches) {
+            this.props.dispatch(mediaQuery(ScreenSize.SMALL));
+        }
     }
     componentDidMount () {
         (async () => {
@@ -69,12 +86,6 @@ class AppView extends React.PureComponent {
     }
     onVideoHide () {
         this.props.dispatch(setVideoId(''));
-    }
-    onMediaQuery (size, query) {
-        if (query) {
-            this.props.dispatch(mediaQuery(size));
-        }
-        return null;
     }
     handleScroll (e) {
         if (this.props.screenSize === ScreenSize.LARGE) return;
@@ -155,49 +166,34 @@ class AppView extends React.PureComponent {
         const isLoggedIn = !!this.props.userName;
         return (
             <div>
-                <div style={{display: 'none'}}>
-                    <MediaQuery minWidth={700}>
-                        <MediaQuery minWidth={1024}>
-                            { this.onMediaLarge }
-                        </MediaQuery>
-                        <MediaQuery maxWidth={1023}>
-                            { this.onMediaMedium }
-                        </MediaQuery>
-                    </MediaQuery>
-                    <MediaQuery maxWidth={699}>
-                        { this.onMediaSmall }
-                    </MediaQuery>
-                </div>
-                <div>
-                    <div style={styles.global} onScroll={this.handleScroll}>
-                        <TopBarArea isLoggedIn={isLoggedIn} />
-                        <div style={styles.logo}>
-                            <div style={styles.logoFont}>SUPER MARIO MAKER DATABASE</div>
-                            <div style={styles.logoImage}>
-                                <img src="/img/Construction_Mario.png" />
-                            </div>
-                        </div>
-                        <ContentView shouldUpdate={this.shouldUpdate} />
-                        <div style={styles.footer}>
-                            Super Mario Maker Database (in short SMMDB) is not affiliated or associated with any other company.<br/>
-                            All logos, trademarks, and trade names used herein are the property of their respective owners.
+                <div style={styles.global} onScroll={this.handleScroll}>
+                    <TopBarArea isLoggedIn={isLoggedIn} />
+                    <div style={styles.logo}>
+                        <div style={styles.logoFont}>SUPER MARIO MAKER DATABASE</div>
+                        <div style={styles.logoImage}>
+                            <img src="/img/Construction_Mario.png" />
                         </div>
                     </div>
-                    {
-                        !!this.props.videoId && (
-                            <div style={styles.overflow} onClick={this.onVideoHide}>
-                                <iframe style={styles.video} src={`http://www.youtube.com/embed/${this.props.videoId}?disablekb=1&iv_load_policy=3&rel=0&showinfo=0`} frameBorder='0' allowFullScreen />
-                            </div>
-                        )
-                    }
-                    {
-                        this.props.showFilter && (
-                            <div style={styles.overflow}>
-                                <FilterArea />
-                            </div>
-                        )
-                    }
+                    <ContentView shouldUpdate={this.shouldUpdate} />
+                    <div style={styles.footer}>
+                        Super Mario Maker Database (in short SMMDB) is not affiliated or associated with any other company.<br/>
+                        All logos, trademarks, and trade names used herein are the property of their respective owners.
+                    </div>
                 </div>
+                {
+                    !!this.props.videoId && (
+                        <div style={styles.overflow} onClick={this.onVideoHide}>
+                            <iframe style={styles.video} src={`http://www.youtube.com/embed/${this.props.videoId}?disablekb=1&iv_load_policy=3&rel=0&showinfo=0`} frameBorder='0' allowFullScreen />
+                        </div>
+                    )
+                }
+                {
+                    this.props.showFilter && (
+                        <div style={styles.overflow}>
+                            <FilterArea />
+                        </div>
+                    )
+                }
             </div>
         );
     }

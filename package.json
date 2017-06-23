@@ -33,7 +33,6 @@
     "react-dom": "^15.6.1",
     "react-google-login": "git+https://github.com/Tarnadas/react-google-login.git",
     "react-redux": "^5.0.5",
-    "react-responsive": "^1.3.0",
     "redux": "^3.7.0",
     "redux-immutable": "^4.0.0",
     "request": "^2.81.0",
