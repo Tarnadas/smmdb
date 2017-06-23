@@ -37,6 +37,7 @@ class MainView extends React.PureComponent {
     }
     render () {
         const screenSize = this.props.screenSize;
+        const courses = this.props.courses.toJS();
         const styles = {
             main: {
                 width: screenSize === ScreenSize.LARGE ? 'calc(100% - 260px)' : '100%',
@@ -65,11 +66,11 @@ class MainView extends React.PureComponent {
                             screenSize === ScreenSize.LARGE ? (
                                 <Scrollbars style={{height: '100%'}} onScroll={this.handleScroll} ref={input => { this.scrollBar = input; }}>
                                     {
-                                        this.renderCourses(this.props.courses)
+                                        this.renderCourses(courses)
                                     }
                                 </Scrollbars>
                             ) : (
-                                this.renderCourses(this.props.courses)
+                                this.renderCourses(courses)
                             )
                         }
                     </div>
@@ -80,7 +81,7 @@ class MainView extends React.PureComponent {
 }
 export default connect(state => {
     const screenSize = state.getIn(['mediaQuery', 'screenSize']);
-    const courses = state.get('courseData').toJS();
+    const courses = state.get('courseData');
     const filter = state.getIn(['filter', 'currentFilter']);
     return {
         screenSize,

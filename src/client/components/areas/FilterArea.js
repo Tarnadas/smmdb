@@ -34,20 +34,21 @@ class FilterArea extends React.PureComponent {
         this.onCourseThemeSubChange = this.onSelectChange.bind(this, 'coursethemesub');
     }
     componentWillMount () {
-        if (!!this.props.filter) {
+        const filter = this.props.filter.toJS();
+        if (!!filter) {
             this.setState({
-                title: !!this.props.filter.title ? this.props.filter.title : '',
-                maker: !!this.props.filter.maker ? this.props.filter.maker : '',
-                uploader: !!this.props.filter.uploader ? this.props.filter.uploader : '',
-                lastmodifiedfrom: !!this.props.filter.lastmodifiedfrom ? this.props.filter.lastmodifiedfrom : NaN,
-                lastmodifiedto: !!this.props.filter.lastmodifiedto ? this.props.filter.lastmodifiedto : NaN,
-                uploadedfrom: !!this.props.filter.uploadedfrom ? this.props.filter.uploadedfrom : NaN,
-                uploadedto: !!this.props.filter.uploadedto ? this.props.filter.uploadedto : NaN,
-                difficultyfrom: !!this.props.filter.difficultyfrom ? this.props.filter.difficultyfrom : '',
-                difficultyto: !!this.props.filter.difficultyto ? this.props.filter.difficultyto : '',
-                gamestyle: !!this.props.filter.gamestyle ? this.props.filter.gamestyle : '',
-                coursetheme: !!this.props.filter.coursetheme ? this.props.filter.coursetheme : '',
-                coursethemesub: !!this.props.filter.coursethemesub ? this.props.filter.coursethemesub : '',
+                title: !!filter.title ? filter.title : '',
+                maker: !!filter.maker ? filter.maker : '',
+                uploader: !!filter.uploader ? filter.uploader : '',
+                lastmodifiedfrom: !!filter.lastmodifiedfrom ? filter.lastmodifiedfrom : NaN,
+                lastmodifiedto: !!filter.lastmodifiedto ? filter.lastmodifiedto : NaN,
+                uploadedfrom: !!filter.uploadedfrom ? filter.uploadedfrom : NaN,
+                uploadedto: !!filter.uploadedto ? filter.uploadedto : NaN,
+                difficultyfrom: !!filter.difficultyfrom ? filter.difficultyfrom : '',
+                difficultyto: !!filter.difficultyto ? filter.difficultyto : '',
+                gamestyle: !!filter.gamestyle ? filter.gamestyle : '',
+                coursetheme: !!filter.coursetheme ? filter.coursetheme : '',
+                coursethemesub: !!filter.coursethemesub ? filter.coursethemesub : '',
             });
         }
     }
@@ -114,6 +115,7 @@ class FilterArea extends React.PureComponent {
         this.setState(res);
     }
     render () {
+        const filter = this.props.filter.toJS();
         const styles = {
             area: {
                 width: '1050px',
@@ -300,7 +302,7 @@ class FilterArea extends React.PureComponent {
     }
 }
 export default connect(state => {
-    const filter = state.getIn(['filter', 'nextFilter']).toJS();
+    const filter = state.getIn(['filter', 'nextFilter']);
     return {
         filter
     }

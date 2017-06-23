@@ -204,13 +204,11 @@ export default connect(state => {
     const videoId = state.getIn(['userData', 'videoId']);
     const showFilter = state.get('showFilter');
     const filter = state.getIn(['filter', 'currentFilter']);
-    const courses = state.get('courseData').toJS();
     return {
         screenSize,
         userName: !!userName ? userName : '',
         videoId: !!videoId ? videoId : '',
         showFilter,
-        filter,
-        courses
+        filter
     }
 })(AppView);
