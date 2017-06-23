@@ -3,6 +3,10 @@ import {
     connect
 } from 'react-redux'
 import MediaQuery from 'react-responsive'
+import request from 'request-promise'
+
+import * as url from 'url'
+import * as qs  from 'querystring'
 
 import TopBarArea  from '../areas/TopBarArea'
 import FilterArea  from '../areas/FilterArea'
@@ -12,30 +16,80 @@ import {
     ScreenSize
 } from '../../reducers/mediaQuery'
 import {
-    setVideoId, mediaQuery
+    setVideoId, mediaQuery, setCourses
 } from '../../actions'
+import {
+    domain
+} from '../../../static'
+
+const UPDATE_OFFSET = 500;
+const LIMIT         = 25;
+const STEP_LIMIT    = 10;
 
 class AppView extends React.PureComponent {
     constructor (props) {
         super(props);
         this.screenSize = 0;
+        this.doUpdate = false;
+        this.index = 0;
+        this.queryString = qs.stringify(props.filter.toJS());
+        this.fetchCourses = this.fetchCourses.bind(this);
         this.onVideoHide = this.onVideoHide.bind(this);
         this.onMediaSmall = this.onMediaQuery.bind(this, ScreenSize.SMALL);
         this.onMediaMedium = this.onMediaQuery.bind(this, ScreenSize.MEDIUM);
         this.onMediaLarge = this.onMediaQuery.bind(this, ScreenSize.LARGE);
+        this.handleScroll = this.handleScroll.bind(this);
+        this.shouldUpdate = this.shouldUpdate.bind(this);
+    }
+    componentDidMount () {
+        (async () => {
+            await this.fetchCourses();
+        })();
+    }
+    componentWillReceiveProps (nextProps, nextContext) {
+        if (nextProps.filter === this.props.filter) return;
+        this.queryString = qs.stringify(nextProps.filter.toJS());
+        this.index = 0;
+        this.scrollBar.scrollToTop();
+        (async () => {
+            await this.fetchCourses();
+        })();
     }
     componentWillUpdate (nextProps, nextState, nextContext) {
         this.screenSize = 0;
+        if (this.props.courses !== nextProps.courses) {
+            this.doUpdate = false;
+        }
+    }
+    async fetchCourses (shouldConcat = false, limit = LIMIT, start = 0) {
+        const courses = JSON.parse(await request({
+            url: url.resolve(domain, `/api/getcourses?limit=${limit}&start=${start}${!!this.queryString ? `&${this.queryString}` : ''}`)
+        }));
+        this.props.dispatch(setCourses(courses, shouldConcat));
     }
     onVideoHide () {
         this.props.dispatch(setVideoId(''));
     }
     onMediaQuery (size, query) {
         if (query) {
-            console.log(size);
             this.props.dispatch(mediaQuery(size));
         }
         return null;
+    }
+    handleScroll (e) {
+        if (this.props.screenSize === ScreenSize.LARGE) return;
+        this.shouldUpdate(e.target);
+    }
+    shouldUpdate (values) {
+        if (this.doUpdate) return;
+        const shouldUpdate = values.scrollHeight - values.scrollTop - values.clientHeight < UPDATE_OFFSET;
+        if (shouldUpdate) {
+            this.doUpdate = true;
+            (async () => {
+                this.index += STEP_LIMIT;
+                await this.fetchCourses(true, STEP_LIMIT, this.index);
+            })();
+        }
     }
     render () {
         const screenSize = this.props.screenSize;
@@ -115,7 +169,7 @@ class AppView extends React.PureComponent {
                     </MediaQuery>
                 </div>
                 <div>
-                    <div style={styles.global}>
+                    <div style={styles.global} onScroll={this.handleScroll}>
                         <TopBarArea isLoggedIn={isLoggedIn} />
                         <div style={styles.logo}>
                             <div style={styles.logoFont}>SUPER MARIO MAKER DATABASE</div>
@@ -123,7 +177,7 @@ class AppView extends React.PureComponent {
                                 <img src="/img/Construction_Mario.png" />
                             </div>
                         </div>
-                        <ContentView />
+                        <ContentView shouldUpdate={this.shouldUpdate} />
                         <div style={styles.footer}>
                             Super Mario Maker Database (in short SMMDB) is not affiliated or associated with any other company.<br/>
                             All logos, trademarks, and trade names used herein are the property of their respective owners.
@@ -153,10 +207,14 @@ export default connect(state => {
     const userName = state.getIn(['userData', 'userName']);
     const videoId = state.getIn(['userData', 'videoId']);
     const showFilter = state.get('showFilter');
+    const filter = state.getIn(['filter', 'currentFilter']);
+    const courses = state.get('courseData').toJS();
     return {
         screenSize,
         userName: !!userName ? userName : '',
         videoId: !!videoId ? videoId : '',
-        showFilter
+        showFilter,
+        filter,
+        courses
     }
 })(AppView);

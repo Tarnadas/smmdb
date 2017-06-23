@@ -22,7 +22,7 @@ class ContentView extends React.PureComponent {
                 <StatsPanel />
                 {
                     page === 'main' && (
-                        <MainView />
+                        <MainView shouldUpdate={this.props.shouldUpdate} />
                     )
                 }
             </div>

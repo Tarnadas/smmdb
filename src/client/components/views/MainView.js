@@ -5,17 +5,7 @@ import {
 import {
     Scrollbars
 } from 'react-custom-scrollbars'
-import request from 'request-promise'
 
-import * as url from 'url'
-import * as qs  from 'querystring'
-
-import {
-    setCourses
-} from '../../actions'
-import {
-    domain
-} from '../../../static'
 import {
     ScreenSize
 } from '../../reducers/mediaQuery'
@@ -23,43 +13,11 @@ import {
 import CoursePanel from '../panels/CoursePanel'
 import SideBarArea from '../areas/SideBarArea'
 
-const UPDATE_OFFSET = 500;
-const LIMIT         = 25;
-const STEP_LIMIT    = 10;
-
 class MainView extends React.PureComponent {
     constructor (props) {
         super(props);
-        this.doUpdate = false;
-        this.index = 0;
-        this.queryString = qs.stringify(props.filter.toJS());
         this.renderCourses = this.renderCourses.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
-    }
-    async fetchCourses (shouldConcat = false, limit = LIMIT, start = 0) {
-        const courses = JSON.parse(await request({
-            url: url.resolve(domain, `/api/getcourses?limit=${limit}&start=${start}${!!this.queryString ? `&${this.queryString}` : ''}`)
-        }));
-        this.props.dispatch(setCourses(courses, shouldConcat));
-    }
-    componentDidMount () {
-        (async () => {
-            await this.fetchCourses();
-        })();
-    }
-    componentWillReceiveProps (nextProps, nextContext) {
-        if (nextProps.filter === this.props.filter) return;
-        this.queryString = qs.stringify(nextProps.filter.toJS());
-        this.index = 0;
-        this.scrollBar.scrollToTop();
-        (async () => {
-            await this.fetchCourses();
-        })();
-    }
-    componentWillUpdate (nextProps, nextState, nextContext) {
-        if (this.props.courses !== nextProps.courses) {
-            this.doUpdate = false;
-        }
     }
     renderCourses (courses) {
         return Array.from((function * () {
@@ -71,16 +29,7 @@ class MainView extends React.PureComponent {
         })());
     }
     handleScroll () {
-        if (this.doUpdate) return;
-        const values = this.scrollBar.getValues();
-        const shouldUpdate = values.scrollHeight - values.scrollTop - values.clientHeight < UPDATE_OFFSET;
-        if (shouldUpdate) {
-            this.doUpdate = true;
-            (async () => {
-                this.index += STEP_LIMIT;
-                await this.fetchCourses(true, STEP_LIMIT, this.index);
-            })();
-        }
+        this.props.shouldUpdate(this.scrollBar.getValues());
     }
     render () {
         const screenSize = this.props.screenSize;
@@ -92,7 +41,8 @@ class MainView extends React.PureComponent {
                 position: screenSize === ScreenSize.LARGE ? 'absolute' : '',
                 zIndex: '10',
                 top: screenSize === ScreenSize.LARGE ? '40px' : '',
-                left: screenSize === ScreenSize.LARGE ? '140px' : ''
+                left: screenSize === ScreenSize.LARGE ? '140px' : '',
+                marginTop: screenSize === ScreenSize.LARGE ? '' : '30px'
             },
             flex: {
                 color: '#fff',
@@ -127,10 +77,8 @@ class MainView extends React.PureComponent {
 export default connect(state => {
     const screenSize = state.getIn(['mediaQuery', 'screenSize']);
     const courses = state.get('courseData').toJS();
-    const filter = state.getIn(['filter', 'currentFilter']);
     return {
         screenSize,
-        courses,
-        filter
+        courses
     }
 })(MainView);
