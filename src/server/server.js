@@ -1,5 +1,6 @@
 import express       from 'express'
 import compression   from 'compression'
+import range         from 'express-range'
 import busboy        from 'connect-busboy'
 import cheerio       from 'cheerio'
 import cookieSession from 'cookie-session'
@@ -85,8 +86,11 @@ function main() {
     const socket = new Socket();
     io.on('connection', socket.onConnection);
 
-    app.use(compression());
     app.set('trust proxy', 1);
+    app.use(compression());
+    app.use(range({
+        accept: 'bytes'
+    }));
     app.use(busboy({limits: {
         files: 1,
         fileSize: maxFileSize
@@ -260,7 +264,13 @@ function main() {
                     res.json(await course.getObject());
                 } else if (apiData.type === '3ds') {
                     res.setHeader('Content-Type', 'application/3ds');
-                    res.send(await course.get3DS());
+                    res.range({
+                        first: req.range.first,
+                        last: req.range.last,
+                        length: bytes.length
+                    });
+                    const course = await course.get3DS();
+                    res.send(course.slice(req.range.first, req.range.last));
                 } else {
                     res.set('Content-Encoding', 'gzip');
                     res.set('Content-Type', 'application/wiiu');
