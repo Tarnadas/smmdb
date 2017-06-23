@@ -1,11 +1,11 @@
-import React    from 'react'
+import React from 'react'
 import {
     connect
 } from 'react-redux'
 import request from 'request-promise'
 
-import * as url from 'url'
-import * as qs  from 'querystring'
+import { resolve }    from 'url'
+import { stringify }  from 'querystring'
 
 import TopBarArea  from '../areas/TopBarArea'
 import FilterArea  from '../areas/FilterArea'
@@ -31,7 +31,7 @@ class AppView extends React.PureComponent {
         this.screenSize = 0;
         this.doUpdate = false;
         this.index = 0;
-        this.queryString = qs.stringify(props.filter.toJS());
+        this.queryString = stringify(props.filter.toJS());
         this.fetchCourses = this.fetchCourses.bind(this);
         this.onVideoHide = this.onVideoHide.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
@@ -65,7 +65,7 @@ class AppView extends React.PureComponent {
     }
     componentWillReceiveProps (nextProps, nextContext) {
         if (nextProps.filter === this.props.filter) return;
-        this.queryString = qs.stringify(nextProps.filter.toJS());
+        this.queryString = stringify(nextProps.filter.toJS());
         this.index = 0;
         this.scrollBar.scrollToTop();
         (async () => {
@@ -80,7 +80,7 @@ class AppView extends React.PureComponent {
     }
     async fetchCourses (shouldConcat = false, limit = LIMIT, start = 0) {
         const courses = JSON.parse(await request({
-            url: url.resolve(domain, `/api/getcourses?limit=${limit}&start=${start}${!!this.queryString ? `&${this.queryString}` : ''}`)
+            url: resolve(domain, `/api/getcourses?limit=${limit}&start=${start}${!!this.queryString ? `&${this.queryString}` : ''}`)
         }));
         this.props.dispatch(setCourses(courses, shouldConcat));
     }

@@ -39,9 +39,9 @@ export const pointsPerStar = 15;
 export const maxFileSize = 6 * 1024 * 1024;
 
 //const cacheMaxAgeServer = 86400000*7; // TODO server caching?
-export const cacheMaxAgeImg = 86400000;
-export const cacheMaxAgeCSS = 86400000;
-export const cacheMaxAgeJS  = 86400000;
+export const cacheMaxAgeImg = '7d';
+export const cacheMaxAgeCSS = '1d';
+export const cacheMaxAgeJS  = '1y';
 
 const usernameRegEx = /^[a-z0-9A-Z|.]+$/;
 const usernameMinCharacters = 3;
@@ -97,7 +97,7 @@ function main() {
     }}));
     app.use(favicon(path.join(__dirname, '../../favicon.ico')));
     app.use('/img', express.static(path.join(__dirname, '../client/images'), { maxAge: cacheMaxAgeImg }));
-    app.use('/courseimg', express.static(path.join(__dirname, '../client/courseimg')));
+    app.use('/courseimg', express.static(path.join(__dirname, '../client/courseimg'), { maxAge: cacheMaxAgeImg }));
     app.use('/styles', express.static(path.join(__dirname, '../client/styles'), { maxAge: cacheMaxAgeCSS }));
     app.use('/script', express.static(path.join(__dirname, '../client/script'), { maxAge: cacheMaxAgeJS }));
     app.use(cookieSession({

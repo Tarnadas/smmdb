@@ -5,7 +5,7 @@ import {
     connect
 } from 'react-redux'
 
-import * as url from 'url'
+import { resolve } from 'url'
 
 import ButtonSub from '../subs/ButtonSub'
 import {
@@ -29,7 +29,7 @@ class LoginButton extends React.PureComponent {
         (async () => {
             let res = await request({
                 method: 'POST',
-                uri: url.resolve(domain, '/signin'),
+                uri: resolve(domain, '/signin'),
                 json: true
             });
             if (!res.err) {
@@ -52,7 +52,7 @@ class LoginButton extends React.PureComponent {
     async onGoogleLoginSuccess (response) {
         let res = await request({
             method: 'POST',
-            uri: url.resolve(domain, '/tokensignin'),
+            uri: resolve(domain, '/tokensignin'),
             body: response,
             json: true
         });
@@ -64,7 +64,7 @@ class LoginButton extends React.PureComponent {
     async onLogOut () {
         let res = await request({
             method: 'POST',
-            uri: url.resolve(domain, '/signout'),
+            uri: resolve(domain, '/signout'),
             json: true
         });
         if (!res.err) {

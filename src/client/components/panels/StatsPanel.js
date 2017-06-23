@@ -1,7 +1,7 @@
 import React from 'react'
 import request from 'request-promise'
 
-import * as url from 'url'
+import { resolve } from 'url'
 
 import {
     domain
@@ -17,7 +17,7 @@ export default class StatsPanel extends React.PureComponent {
     componentDidMount () {
         (async () => {
             const stats = JSON.parse(await request({
-                url: url.resolve(domain, '/api/getstats')
+                url: resolve(domain, '/api/getstats')
             }));
             this.setState({
                 stats

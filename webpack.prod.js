@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const BabiliPlugin = require('babili-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const path = require('path');
 
@@ -27,7 +28,8 @@ module.exports = [
             new HtmlWebpackPlugin({
                 filename: '../views/index.html',
                 template: 'build/client/views/template.html'
-            })
+            }),
+            new BundleAnalyzerPlugin()
         ],
         module: {
             loaders: [
