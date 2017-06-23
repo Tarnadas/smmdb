@@ -19,6 +19,10 @@ class MainView extends React.PureComponent {
         this.renderCourses = this.renderCourses.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
     }
+    componentWillReceiveProps (nextProps, nextContext) {
+        if (nextProps.filter === this.props.filter) return;
+        this.scrollBar.scrollToTop();
+    }
     renderCourses (courses) {
         return Array.from((function * () {
             for (let i in courses) {
@@ -77,8 +81,10 @@ class MainView extends React.PureComponent {
 export default connect(state => {
     const screenSize = state.getIn(['mediaQuery', 'screenSize']);
     const courses = state.get('courseData').toJS();
+    const filter = state.getIn(['filter', 'currentFilter']);
     return {
         screenSize,
-        courses
+        courses,
+        filter
     }
 })(MainView);

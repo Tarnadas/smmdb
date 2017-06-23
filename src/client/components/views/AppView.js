@@ -67,7 +67,7 @@ class AppView extends React.PureComponent {
         if (nextProps.filter === this.props.filter) return;
         this.queryString = stringify(nextProps.filter.toJS());
         this.index = 0;
-        this.scrollBar.scrollToTop();
+        //this.scrollBar.scrollToTop();
         (async () => {
             await this.fetchCourses();
         })();
