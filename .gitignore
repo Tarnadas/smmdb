@@ -3,10 +3,11 @@
 /node_modules/
 /build/server/server.bundle.js
 /.idea/
-/build/client/script/renderer.bundle.js
 /db/
 /courses/
 /build/client/img/
 /build/client/courseimg/
 /build/client/coursedata/
 /src/static.js
+/build/client/script/
+/build/client/views/index.html

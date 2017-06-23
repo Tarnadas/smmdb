@@ -1,11 +1,12 @@
 const webpack = require('webpack');
 const path    = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = [
     {
         entry: path.join(__dirname, 'src/client/renderer.js'),
         output: {
-            filename: 'renderer.bundle.js',
+            filename: 'bundle.[hash].js',
             path: path.join(__dirname, 'build/client/script')
         },
         devtool: 'inline-source-map',
@@ -18,7 +19,11 @@ module.exports = [
             tls: 'empty'
         },
         plugins: [
-            new webpack.EnvironmentPlugin('NODE_ENV')
+            new webpack.EnvironmentPlugin('NODE_ENV'),
+            new HtmlWebpackPlugin({
+                filename: '../views/index.html',
+                template: 'build/client/views/template.html'
+            })
         ],
         module: {
             loaders: [
@@ -41,6 +46,10 @@ module.exports = [
                         ],
                         plugins: [require('babel-plugin-transform-react-jsx')]
                     }
+                },
+                {
+                    test: /\.html$/,
+                    loader: 'html-loader'
                 }
             ]
         }
