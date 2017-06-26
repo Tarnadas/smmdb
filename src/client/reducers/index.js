@@ -1,13 +1,17 @@
 import {
-    createStore
-} from 'redux';
+    createStore, applyMiddleware
+} from 'redux'
 import {
     combineReducers
-} from 'redux-immutable';
+} from 'redux-immutable'
 import {
-    Map, List
-} from 'immutable';
+    Map, List, fromJS
+} from 'immutable'
+import {
+    routerMiddleware
+} from 'react-router-redux'
 
+import router     from './router'
 import socket     from './socket'
 import chat       from './chat'
 import courseData from './courseData'
@@ -16,8 +20,11 @@ import showFilter from './showFilter'
 import userData   from './userData'
 import mediaQuery from './mediaQuery'
 
-export default function initReducer(s) {
+export default function initReducer(history, s) {
     const initialState = Map({
+        router: fromJS({
+            location: null
+        }),
         socket: s,
         chat: Map({
             global: Map()
@@ -36,13 +43,14 @@ export default function initReducer(s) {
         })
     });
     const reducer = combineReducers({
+        router,
         socket,
         chat,
         courseData,
         filter,
         showFilter,
         userData,
-        mediaQuery,
-    }, initialState);
-    return createStore(reducer, initialState);
+        mediaQuery
+    });
+    return createStore(reducer, initialState, applyMiddleware(routerMiddleware(history)));
 }

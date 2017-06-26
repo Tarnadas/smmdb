@@ -3,6 +3,9 @@ import {
     connect
 } from 'react-redux'
 import request from 'request-promise'
+import {
+    Route
+} from 'react-router-dom'
 
 import { resolve }    from 'url'
 import { stringify }  from 'querystring'
@@ -67,7 +70,7 @@ class AppView extends React.PureComponent {
         if (nextProps.filter === this.props.filter) return;
         this.queryString = stringify(nextProps.filter.toJS());
         this.index = 0;
-        //this.scrollBar.scrollToTop();
+        //this.scrollBar.scrollToTop(); // TODO for mobile
         (async () => {
             await this.fetchCourses();
         })();
@@ -164,6 +167,12 @@ class AppView extends React.PureComponent {
             }
         };
         const isLoggedIn = !!this.props.userName;
+        //console.log(this.props.children);
+        /*
+         <ContentView shouldUpdate={this.shouldUpdate}>
+         { this.props.children }
+         </ContentView>
+         */
         return (
             <div>
                 <div style={styles.global} onScroll={this.handleScroll}>
@@ -174,7 +183,9 @@ class AppView extends React.PureComponent {
                             <img src="/img/Construction_Mario.png" />
                         </div>
                     </div>
-                    <ContentView shouldUpdate={this.shouldUpdate} />
+                    <Route path="/" render={() => (
+                        <ContentView shouldUpdate={this.shouldUpdate} />
+                    )} />
                     <div style={styles.footer}>
                         Super Mario Maker Database (in short SMMDB) is not affiliated or associated with any other company.<br/>
                         All logos, trademarks, and trade names used herein are the property of their respective owners.

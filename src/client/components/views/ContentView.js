@@ -2,13 +2,16 @@ import React from 'react'
 import {
     connect
 } from 'react-redux'
+import {
+    Route, withRouter
+} from 'react-router-dom'
 
-import MainView   from './MainView'
-import StatsPanel from '../panels/StatsPanel'
+import MainView    from './MainView'
+import UploadView  from './UploadView'
+import ProfileView from './ProfileView'
 
 class ContentView extends React.PureComponent {
     render () {
-        const page = this.props.page;
         const styles = {
             content: {
                 backgroundColor: '#24997e',
@@ -19,19 +22,13 @@ class ContentView extends React.PureComponent {
         };
         return (
             <div style={styles.content}>
-                <StatsPanel />
-                {
-                    page === 'main' && (
-                        <MainView shouldUpdate={this.props.shouldUpdate} />
-                    )
-                }
+                <Route exact path="/" render={() => (
+                    <MainView shouldUpdate={this.props.shouldUpdate} />
+                )} />
+                <Route path="/upload" component={UploadView} />
+                <Route path="/profile" component={ProfileView} />
             </div>
         )
     }
 }
-export default connect(state => {
-    const page = 'main';//state.get('page');
-    return {
-        page
-    }
-})(ContentView);
+export default withRouter(connect()(ContentView));

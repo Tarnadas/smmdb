@@ -10,6 +10,7 @@ import {
     ScreenSize
 } from '../../reducers/mediaQuery'
 
+import StatsPanel  from '../panels/StatsPanel'
 import CoursePanel from '../panels/CoursePanel'
 import SideBarArea from '../areas/SideBarArea'
 
@@ -57,6 +58,7 @@ class MainView extends React.PureComponent {
         };
         return (
             <div>
+                <StatsPanel />
                 {
                     screenSize === ScreenSize.LARGE && <SideBarArea />
                 }

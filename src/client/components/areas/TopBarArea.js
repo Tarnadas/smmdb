@@ -2,6 +2,9 @@ import React from 'react'
 import {
     connect
 } from 'react-redux'
+import {
+    Link
+} from 'react-router-dom'
 
 import LoginButton from '../buttons/LoginButton'
 import SMMButton   from '../buttons/SMMButton'
@@ -12,7 +15,6 @@ import {
 class TopBarArea extends React.PureComponent{
     render () {
         const screenSize = this.props.screenSize;
-        const accountData = !!this.props.accountData ? this.props.accountData.toJS() : null;
         const styles = {
             topbar: {
                 width: '100%',
@@ -22,7 +24,7 @@ class TopBarArea extends React.PureComponent{
                 alignItems: 'flex-start',
                 flex: '0 0 auto'
             },
-            right: {
+            button: {
                 width: 'auto',
                 height: 'auto'
             }
@@ -30,9 +32,15 @@ class TopBarArea extends React.PureComponent{
         return (
             <div style={styles.topbar}>
                 <div>
-                    <SMMButton text="Courses" iconSrc="/img/courses.png" iconColor="dark" />
-                    <SMMButton text="Upload" iconSrc="/img/upload.png" iconColor="dark" />
-                    <SMMButton text="Profile" iconSrc="/img/profile.png" iconColor="dark" />
+                    <Link to="/">
+                        <SMMButton text="Courses" iconSrc="/img/courses.png" iconColor="dark" />
+                    </Link>
+                    <Link to="/upload">
+                        <SMMButton text="Upload" iconSrc="/img/upload.png" iconColor="dark" />
+                    </Link>
+                    <Link to="/profile">
+                        <SMMButton text="Profile" iconSrc="/img/profile.png" iconColor="dark" />
+                    </Link>
                     <a href="https://github.com/Tarnadas/smmdb" target="__blank">
                         <SMMButton text="API" iconSrc="/img/api.png" iconColor="dark" />
                     </a>
@@ -46,7 +54,7 @@ class TopBarArea extends React.PureComponent{
                         <SMMButton text="Discord" iconSrc="/img/discord.png" iconColor="dark" />
                     </a>
                 </div>
-                <div style={styles.right}>
+                <div style={styles.button}>
                     <LoginButton />
                 </div>
             </div>
@@ -55,9 +63,7 @@ class TopBarArea extends React.PureComponent{
 }
 export default connect(state => {
     const screenSize = state.getIn(['mediaQuery', 'screenSize']);
-    const accountData = state.getIn(['userData', 'accountData']);
     return {
-        screenSize,
-        accountData
+        screenSize
     }
 })(TopBarArea);
