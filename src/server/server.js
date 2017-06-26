@@ -1,7 +1,6 @@
 import express       from 'express'
 import compression   from 'compression'
 import range         from 'express-range'
-import busboy        from 'connect-busboy'
 import cheerio       from 'cheerio'
 import cookieSession from 'cookie-session'
 import verifier      from 'google-id-token-verifier'
@@ -38,7 +37,6 @@ export const pointsPerStar = 15;
 
 export const maxFileSize = 6 * 1024 * 1024;
 
-//const cacheMaxAgeServer = 86400000*7; // TODO server caching?
 export const cacheMaxAgeImg = '7d';
 export const cacheMaxAgeCSS = '1d';
 export const cacheMaxAgeJS  = '1y';
@@ -91,10 +89,6 @@ function main() {
     app.use(range({
         accept: 'bytes'
     }));
-    app.use(busboy({limits: {
-        files: 1,
-        fileSize: maxFileSize
-    }}));
     app.use(favicon(path.join(__dirname, '../../favicon.ico')));
     app.use('/img', express.static(path.join(__dirname, '../client/images'), { maxAge: cacheMaxAgeImg }));
     app.use('/courseimg', express.static(path.join(__dirname, '../client/courseimg'), { maxAge: cacheMaxAgeImg }));

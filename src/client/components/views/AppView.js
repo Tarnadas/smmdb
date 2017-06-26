@@ -167,12 +167,6 @@ class AppView extends React.PureComponent {
             }
         };
         const isLoggedIn = !!this.props.userName;
-        //console.log(this.props.children);
-        /*
-         <ContentView shouldUpdate={this.shouldUpdate}>
-         { this.props.children }
-         </ContentView>
-         */
         return (
             <div>
                 <div style={styles.global} onScroll={this.handleScroll}>
@@ -213,12 +207,14 @@ export default connect(state => {
     const screenSize = state.getIn(['mediaQuery', 'screenSize']);
     const userName = state.getIn(['userData', 'userName']);
     const videoId = state.getIn(['userData', 'videoId']);
+    const courses = state.get('courseData');
     const showFilter = state.get('showFilter');
     const filter = state.getIn(['filter', 'currentFilter']);
     return {
         screenSize,
         userName: !!userName ? userName : '',
         videoId: !!videoId ? videoId : '',
+        courses,
         showFilter,
         filter
     }
