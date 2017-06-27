@@ -9,9 +9,12 @@ const path = require('path');
 
 module.exports = [
     {
-        entry: path.join(__dirname, 'src/client/renderer.js'),
+        entry: {
+            app: path.join(__dirname, 'src/client/renderer.js'),
+            vendor: ['react', 'react-dom', 'react-redux', 'react-router', 'react-router-dom', 'react-router-redux', 'react-google-login', 'redux', 'redux-immutable', 'immutable', 'history', 'bluebird']
+        },
         output: {
-            filename: 'bundle.[hash].js',
+            filename: 'app.[chunkhash].js',
             path: path.join(__dirname, 'build/client/script')
         },
         node: {
@@ -24,6 +27,11 @@ module.exports = [
         },
         plugins: [
             new webpack.EnvironmentPlugin('NODE_ENV'),
+            new webpack.optimize.CommonsChunkPlugin({
+                name: 'vendor',
+                filename: 'vendor.[chunkhash].js'
+            }),
+            new webpack.optimize.ModuleConcatenationPlugin(),
             new BabiliPlugin({
                 "keepFnName": true
             }),

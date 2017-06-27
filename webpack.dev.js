@@ -8,7 +8,7 @@ module.exports = [
     {
         entry: path.join(__dirname, 'src/client/renderer.js'),
         output: {
-            filename: 'bundle.[hash].js',
+            filename: 'app.js',
             path: path.join(__dirname, 'build/client/script')
         },
         devtool: 'inline-source-map',
@@ -22,6 +22,7 @@ module.exports = [
         },
         plugins: [
             new webpack.EnvironmentPlugin('NODE_ENV'),
+            new webpack.optimize.ModuleConcatenationPlugin(),
             new HtmlWebpackPlugin({
                 filename: '../views/index.html',
                 template: 'build/client/views/template.html'

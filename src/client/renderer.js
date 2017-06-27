@@ -1,4 +1,5 @@
 import 'babel-polyfill'
+import 'bluebird'
 
 import {
     render

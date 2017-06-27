@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.23.0",
+    "bluebird": "^3.5.0",
     "body-parser": "^1.15.2",
     "bytes": "^2.5.0",
     "cemu-smm": "git+https://github.com/Tarnadas/cemu-smm.git#dev",
