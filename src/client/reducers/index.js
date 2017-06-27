@@ -14,6 +14,7 @@ import {
 import router     from './router'
 import socket     from './socket'
 import chat       from './chat'
+import stats      from './stats'
 import courseData from './courseData'
 import filter     from './filter'
 import showFilter from './showFilter'
@@ -21,7 +22,7 @@ import userData   from './userData'
 import mediaQuery from './mediaQuery'
 
 export default function initReducer(preloadedState, history, s) {
-    const initialState = Map({
+    /*const initialState = Map({
         router: fromJS({
             location: null
         }),
@@ -29,6 +30,7 @@ export default function initReducer(preloadedState, history, s) {
         chat: Map({
             global: Map()
         }),
+        stats: Map(),
         courseData: List(),
         filter: Map({
             nextFilter: Map(),
@@ -41,11 +43,34 @@ export default function initReducer(preloadedState, history, s) {
         mediaQuery: Map({
             screenSize: 2
         })
+    });*/
+    const initialState = fromJS({
+        router: {
+            location: null
+        },
+        socket: s,
+        chat: {
+            global: {}
+        },
+        stats: {},
+        courseData: [],
+        filter: {
+            nextFilter: {},
+            currentFilter: {}
+        },
+        showFilter: false,
+        userData: {
+            accountData: {}
+        },
+        mediaQuery: {
+            screenSize: 2
+        }
     });
     const reducer = combineReducers({
         router,
         socket,
         chat,
+        stats,
         courseData,
         filter,
         showFilter,

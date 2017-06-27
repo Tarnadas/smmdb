@@ -1,4 +1,7 @@
 import React from 'react'
+import {
+    Link
+} from 'react-router-dom'
 
 import ButtonSub from '../subs/ButtonSub'
 
@@ -29,7 +32,6 @@ export default class SMMButton extends React.PureComponent {
                 width: '120px',
                 height: '40px',
                 backgroundColor: this.state.hover ? '#323245' : '#ffe500',
-                color: this.state.hover ? '#fff' : '#323245',
                 cursor: 'pointer',
                 outline: 'none',
                 overflow: 'hidden',
@@ -76,7 +78,21 @@ export default class SMMButton extends React.PureComponent {
                  onMouseLeave={this.mouseLeave}
                  onClick={this.props.onClick ? this.props.onClick : null}
             >
-                <ButtonSub iconStyle={iconStyle} iconSrc={this.props.iconSrc} text={text} />
+                {
+                    !!this.props.link ? (
+                        !!this.props.blank ? (
+                            <a href="https://github.com/Tarnadas/smmdb" target="__blank">
+                                <ButtonSub iconStyle={iconStyle} iconSrc={this.props.iconSrc} text={text} hover={this.state.hover} />
+                            </a>
+                        ) : (
+                            <Link to={this.props.link}>
+                                <ButtonSub iconStyle={iconStyle} iconSrc={this.props.iconSrc} text={text} hover={this.state.hover} />
+                            </Link>
+                        )
+                    ) : (
+                        <ButtonSub iconStyle={iconStyle} iconSrc={this.props.iconSrc} text={text} hover={this.state.hover} />
+                    )
+                }
             </div>
         )
     }

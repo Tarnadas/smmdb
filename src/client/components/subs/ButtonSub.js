@@ -6,6 +6,9 @@ export default class ButtonSub extends React.PureComponent {
             img: {
                 width: '100%',
                 height: '100%'
+            },
+            text: {
+                color: this.props.hover ? '#fff' : '#323245'
             }
         };
         return (
@@ -13,7 +16,7 @@ export default class ButtonSub extends React.PureComponent {
                 <div style={this.props.iconStyle}>
                     <img style={styles.img} src={this.props.iconSrc} />
                 </div>
-                <div>{this.props.text}</div>
+                <div style={styles.text}>{this.props.text}</div>
             </div>
         )
     }

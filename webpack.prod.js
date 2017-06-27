@@ -1,7 +1,9 @@
 const webpack = require('webpack');
 const BabiliPlugin = require('babili-webpack-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
+const HtmlWebpackPlugin          = require('html-webpack-plugin');
+const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
+const BundleAnalyzerPlugin       = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const path = require('path');
 
@@ -28,6 +30,9 @@ module.exports = [
             new HtmlWebpackPlugin({
                 filename: '../views/index.html',
                 template: 'build/client/views/template.html'
+            }),
+            new ScriptExtHtmlWebpackPlugin({
+                async: /\.js/
             }),
             new BundleAnalyzerPlugin()
         ],
@@ -88,7 +93,8 @@ module.exports = [
                                     "node": "current"
                                 }
                             }]
-                        ]
+                        ],
+                        plugins: [require('babel-plugin-transform-react-jsx')]
                     }
                 }
             ]

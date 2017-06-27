@@ -83,7 +83,6 @@ class LoginButton extends React.PureComponent {
                 width: '120px',
                 height: '40px',
                 backgroundColor: this.state.hover ? '#323245' : '#ffe500',
-                color: this.state.hover ? '#fff' : '#323245',
                 cursor: 'pointer',
                 outline: 'none',
                 overflow: 'hidden',
@@ -117,7 +116,7 @@ class LoginButton extends React.PureComponent {
                 {
                     loggedIn ? (
                         <div style={styles.smmButton} onClick={this.onLogOut}>
-                            <ButtonSub iconStyle={styles.smmIcon} iconSrc={iconSrc} text={text} />
+                            <ButtonSub iconStyle={styles.smmIcon} iconSrc={iconSrc} text={text} hover={this.state.hover} />
                         </div>
                     ) : (
                         <GoogleLogin

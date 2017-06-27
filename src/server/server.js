@@ -6,6 +6,7 @@ import cookieSession from 'cookie-session'
 import verifier      from 'google-id-token-verifier'
 import favicon       from 'serve-favicon'
 import bytes         from 'bytes'
+import device        from 'device'
 import {
     renderToString
 } from 'react-dom/server'
@@ -108,10 +109,16 @@ function main() {
     app.get('/', handleRender);
 
     function handleRender (req, res) {
-        let [html, preloadedState] = renderer(true, renderToString, null, req, API.getCourses(false, null, {limit: 25}));
+        const stats = {
+            courses: Course.getCourseAmount(),
+            accounts: Account.getAccountAmount()
+        };
+        const d = device(req.get('user-agent'));
+        //console.log(d);
+        let [html, preloadedState] = renderer(true, renderToString, null, req, API.getCourses(false, null, {limit: 25}), stats, d.is('phone') || d.is('tablet'));
         //console.log(html);
         //console.log(preloadedState.toJS());
-        const index = $index;
+        const index = cheerio.load($index.html());
         index('#root').html(html);
         index('body').prepend(`<script>window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')}</script>`);
         res.send(index.html());

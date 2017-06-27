@@ -1,6 +1,8 @@
 const webpack = require('webpack');
 const path    = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+const HtmlWebpackPlugin          = require('html-webpack-plugin');
+const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 
 module.exports = [
     {
@@ -23,6 +25,9 @@ module.exports = [
             new HtmlWebpackPlugin({
                 filename: '../views/index.html',
                 template: 'build/client/views/template.html'
+            }),
+            new ScriptExtHtmlWebpackPlugin({
+                async: /\.js/
             })
         ],
         module: {

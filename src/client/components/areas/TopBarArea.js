@@ -32,27 +32,13 @@ class TopBarArea extends React.PureComponent{
         return (
             <div style={styles.topbar}>
                 <div>
-                    <Link to="/">
-                        <SMMButton text="Courses" iconSrc="/img/courses.png" iconColor="dark" />
-                    </Link>
-                    <Link to="/upload">
-                        <SMMButton text="Upload" iconSrc="/img/upload.png" iconColor="dark" />
-                    </Link>
-                    <Link to="/profile">
-                        <SMMButton text="Profile" iconSrc="/img/profile.png" iconColor="dark" />
-                    </Link>
-                    <a href="https://github.com/Tarnadas/smmdb" target="__blank">
-                        <SMMButton text="API" iconSrc="/img/api.png" iconColor="dark" />
-                    </a>
-                    <a href="https://github.com/Tarnadas/cemu-smmdb/releases" target="__blank">
-                        <SMMButton text="Client" iconSrc="/img/client.png" iconColor="dark" />
-                    </a>
-                    <a href="https://www.reddit.com/r/CemuMarioMaker" target="__blank">
-                        <SMMButton text="Reddit" iconSrc="/img/reddit.png" iconColor="dark" />
-                    </a>
-                    <a href="https://discord.gg/0wURURBfQTrjAXqh" target="__blank">
-                        <SMMButton text="Discord" iconSrc="/img/discord.png" iconColor="dark" />
-                    </a>
+                    <SMMButton link='/' text="Courses" iconSrc="/img/courses.png" iconColor="dark" />
+                    <SMMButton link='/upload' text="Upload" iconSrc="/img/upload.png" iconColor="dark" />
+                    <SMMButton link='/profile' text="Profile" iconSrc="/img/profile.png" iconColor="dark" />
+                    <SMMButton link='https://github.com/Tarnadas/smmdb' blank text="API" iconSrc="/img/api.png" iconColor="dark" />
+                    <SMMButton link='https://github.com/Tarnadas/cemu-smmdb/releases' blank text="Client" iconSrc="/img/client.png" iconColor="dark" />
+                    <SMMButton link='https://www.reddit.com/r/CemuMarioMaker' blank text="Reddit" iconSrc="/img/reddit.png" iconColor="dark" />
+                    <SMMButton link='https://discord.gg/0wURURBfQTrjAXqh' blank text="Discord" iconSrc="/img/discord.png" iconColor="dark" />
                 </div>
                 <div style={styles.button}>
                     <LoginButton />

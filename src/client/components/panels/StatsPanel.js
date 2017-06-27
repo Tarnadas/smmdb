@@ -1,39 +1,46 @@
 import React from 'react'
 import request from 'request-promise'
+import {
+    connect
+} from 'react-redux'
 
 import { resolve } from 'url'
 
 import {
+    setStats
+} from '../../actions'
+import {
     domain
 } from '../../../static'
 
-export default class StatsPanel extends React.PureComponent {
-    constructor (props) {
+class StatsPanel extends React.PureComponent {
+    /*constructor (props) {
         super(props);
-        this.state = {
-            stats: null
+        if (!!window) {
+            if (!!window.__STATS__) {
+                const stats = window.__STATS__;
+                delete window.__STATS__;
+                this.props.dispatch(setStats(stats));
+            } else {
+                (async () => {
+                    const stats = await request({
+                        uri: resolve(domain, '/api/getstats'),
+                        json: true
+                    });
+                    this.props.dispatch(setStats(stats));
+                })();
+            }
         }
-    }
-    componentDidMount () {
-        (async () => {
-            const stats = JSON.parse(await request({
-                url: resolve(domain, '/api/getstats')
-            }));
-            this.setState({
-                stats
-            })
-        })();
-    }
+    }*/
     render () {
-        const stats = this.state.stats;
+        const stats = this.props.stats.toJS();
         const styles = {
             panel: {
                 width: 'auto',
-                height: '32px',
-                lineHeight: '32px',
+                height: 'auto',
                 color: 'rgb(255, 229, 0)',
                 position: 'absolute',
-                top: '10px',
+                top: '16px',
                 left: '20px'
             }
         };
@@ -46,3 +53,6 @@ export default class StatsPanel extends React.PureComponent {
         )
     }
 }
+export default connect(state => ({
+    stats: state.get('stats')
+}))(StatsPanel);

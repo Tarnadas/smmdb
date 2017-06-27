@@ -21,6 +21,13 @@ export function setUserId (userId) {
     }
 }
 
+export function setStats (stats) {
+    return {
+        type: 'SET_STATS',
+        stats
+    }
+}
+
 export function setCourses (courses, concat) {
     return {
         type: 'SET_COURSES',
