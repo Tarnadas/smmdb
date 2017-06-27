@@ -6,11 +6,16 @@ import cookieSession from 'cookie-session'
 import verifier      from 'google-id-token-verifier'
 import favicon       from 'serve-favicon'
 import bytes         from 'bytes'
+import {
+    renderToString
+} from 'react-dom/server'
 
 import * as http from 'http'
 import * as fs   from 'fs'
 import * as path from 'path'
 import * as qs   from 'querystring'
+
+import renderer from '../shared/renderer'
 
 import Lobby       from './Lobby'
 import Account     from './Account'
@@ -100,12 +105,24 @@ function main() {
         maxAge: 24 * 60 * 60 * 1000
     }));
 
-    app.get('/', (req, res) => {
+    app.get('/', handleRender);
+
+    function handleRender (req, res) {
+        let [html, preloadedState] = renderer(true, renderToString, null, req, API.getCourses(false, null, {limit: 25}));
+        //console.log(html);
+        //console.log(preloadedState.toJS());
+        const index = $index;
+        index('#root').html(html);
+        index('body').prepend(`<script>window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')}</script>`);
+        res.send(index.html());
+    }
+
+    /*app.get('/', (req, res) => {
 
         log("[200] " + req.method + " to " + req.url);
         res.send($index.html());
 
-    });
+    });*/
 
     app.route('/tokensignin').post((req, res) => {
 

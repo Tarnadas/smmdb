@@ -20,7 +20,7 @@ import showFilter from './showFilter'
 import userData   from './userData'
 import mediaQuery from './mediaQuery'
 
-export default function initReducer(history, s) {
+export default function initReducer(preloadedState, history, s) {
     const initialState = Map({
         router: fromJS({
             location: null
@@ -52,5 +52,5 @@ export default function initReducer(history, s) {
         userData,
         mediaQuery
     });
-    return createStore(reducer, initialState, applyMiddleware(routerMiddleware(history)));
+    return createStore(reducer, !!preloadedState ? preloadedState : initialState, applyMiddleware(routerMiddleware(history)));
 }

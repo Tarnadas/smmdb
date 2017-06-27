@@ -31,9 +31,8 @@ const STEP_LIMIT    = 10;
 class AppView extends React.PureComponent {
     constructor (props) {
         super(props);
-        this.screenSize = 0;
         this.doUpdate = false;
-        this.index = 0;
+        this.index = props.courses.toJS().length;
         this.queryString = stringify(props.filter.toJS());
         this.fetchCourses = this.fetchCourses.bind(this);
         this.onVideoHide = this.onVideoHide.bind(this);
@@ -41,6 +40,7 @@ class AppView extends React.PureComponent {
         this.shouldUpdate = this.shouldUpdate.bind(this);
     }
     componentWillMount () {
+        if (!!this.props.isServer) return;
         const listener = (size, query) => {
             if (query.matches) {
                 this.props.dispatch(mediaQuery(size));
@@ -62,9 +62,9 @@ class AppView extends React.PureComponent {
         }
     }
     componentDidMount () {
-        (async () => {
-            await this.fetchCourses();
-        })();
+        //(async () => {
+        //    await this.fetchCourses();
+        //})();
     }
     componentWillReceiveProps (nextProps, nextContext) {
         if (nextProps.filter === this.props.filter) return;
