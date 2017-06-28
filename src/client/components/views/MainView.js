@@ -1,15 +1,15 @@
-import React      from 'react'
+import React from 'react'
 import {
     connect
 } from 'react-redux'
 import {
     Scrollbars
 } from 'react-custom-scrollbars'
+import { forceCheck } from 'react-lazyload'
 
 import {
     ScreenSize
 } from '../../reducers/mediaQuery'
-
 import StatsPanel  from '../panels/StatsPanel'
 import CoursePanel from '../panels/CoursePanel'
 import SideBarArea from '../areas/SideBarArea'
@@ -34,6 +34,7 @@ class MainView extends React.PureComponent {
         })());
     }
     handleScroll () {
+        forceCheck();
         this.props.shouldUpdate(this.scrollBar.getValues());
     }
     render () {
@@ -66,7 +67,7 @@ class MainView extends React.PureComponent {
                     <div style={styles.flex}>
                         {
                             screenSize === ScreenSize.LARGE ? (
-                                <Scrollbars style={{height: '100%'}} onScroll={this.handleScroll} ref={input => { this.scrollBar = input; }}>
+                                <Scrollbars universal style={{height: '100%'}} onScroll={this.handleScroll} ref={input => { this.scrollBar = input; }}>
                                     {
                                         this.renderCourses(courses)
                                     }

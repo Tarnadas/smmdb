@@ -1,10 +1,7 @@
 @font-face {
-    font-family: SuperMarioMaker;
-    src: url(/styles/smm.ttf);
-}
-@font-face {
     font-family: SuperMarioMakerExtended;
-    src: url(/styles/smme.ttf);
+    src: url(/styles/smme.woff) format('woff'),
+         url(/styles/smme.ttf) format('truetype');
 }
 html * {
     box-sizing: border-box;
@@ -20,7 +17,7 @@ body {
     margin: 0;
 	background-color: #ffcf00;
 	font-size: 13px;
-	font-family: SuperMarioMakerExtended,SuperMarioMaker,Roboto,arial,sans-serif;
+	font-family: SuperMarioMakerExtended,Roboto,arial,sans-serif;
 	color: #323245;
 }
 a, a:visited {

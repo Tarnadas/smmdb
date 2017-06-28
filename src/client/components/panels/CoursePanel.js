@@ -1,4 +1,5 @@
 import React from 'react'
+import LazyLoad from 'react-lazyload'
 import {
     connect
 } from 'react-redux'
@@ -158,14 +159,12 @@ class CoursePanel extends React.PureComponent {
             },
             bottom: {
                 display: 'inline-flex',
-                //alignItems: 'flex-start',
                 height: 'auto',
                 justifyContent: 'space-around',
                 flexWrap: screenSize === ScreenSize.LARGE ? '' : 'wrap'
             },
             imageLarge: {
                 width: 'auto',
-                //minWidth: '320px',
                 height: 'auto'
             },
             buttonPanel: {
@@ -175,13 +174,7 @@ class CoursePanel extends React.PureComponent {
                 alignItems: 'flex-start'
             }
         };
-        const style = parseInt(this.props.course.gameStyle);
-        /*
-         <img style={styles.makerRep} src="/img/rep.png" />
-         <div>
-         { this.props.course.reputation }
-         </div>
-         */
+        const style = parseInt(this.props.course.gameStyle);//<LazyLoad height={81} offset={100} once>
         return (
             <div style={styles.panel} onClick={this.onShowDetails}>
                 <div style={styles.rank}>
@@ -213,7 +206,9 @@ class CoursePanel extends React.PureComponent {
                         </div>
                         <div style={styles.preview}>
                             <div style={styles.previewImgWrapper}>
-                                <img style={styles.previewImg} src={`/courseimg/${this.props.course.id}_full.jpg`} />
+                                <LazyLoad height={81} offset={100} once>
+                                    <img style={styles.previewImg} src={`/courseimg/${this.props.course.id}_full.jpg`} />
+                                </LazyLoad>
                             </div>
                         </div>
                         <div style={styles.mii}>
@@ -242,19 +237,23 @@ class CoursePanel extends React.PureComponent {
                             </div>
                         </div>
                     </div>
-                    <div style={styles.bottom}>
-                        <div style={styles.imageLarge}>
-                            <img src={`/courseimg/${this.props.course.id}.jpg`} />
-                        </div>
-                        <div style={styles.buttonPanel}>
-                            <CourseDownloadButton courseId={this.props.course.id} screenSize={screenSize} />
-                            {
-                                !!this.props.course.videoid && (
-                                    <CourseVideoButton videoId={this.props.course.videoid} screenSize={screenSize} />
-                                )
-                            }
-                        </div>
-                    </div>
+                    {
+                        this.state.showDetails && (
+                            <div style={styles.bottom}>
+                                <div style={styles.imageLarge}>
+                                    <img src={`/courseimg/${this.props.course.id}.jpg`} />
+                                </div>
+                                <div style={styles.buttonPanel}>
+                                    <CourseDownloadButton courseId={this.props.course.id} screenSize={screenSize} />
+                                    {
+                                        !!this.props.course.videoid && (
+                                            <CourseVideoButton videoId={this.props.course.videoid} screenSize={screenSize} />
+                                        )
+                                    }
+                                </div>
+                            </div>
+                        )
+                    }
                 </div>
             </div>
         )

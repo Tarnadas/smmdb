@@ -106,31 +106,6 @@ function main() {
         maxAge: 24 * 60 * 60 * 1000
     }));
 
-    app.get('/', handleRender);
-
-    function handleRender (req, res) {
-        const stats = {
-            courses: Course.getCourseAmount(),
-            accounts: Account.getAccountAmount()
-        };
-        const d = device(req.get('user-agent'));
-        //console.log(d);
-        let [html, preloadedState] = renderer(true, renderToString, null, req, API.getCourses(false, null, {limit: 25}), stats, d.is('phone') || d.is('tablet'));
-        //console.log(html);
-        //console.log(preloadedState.toJS());
-        const index = cheerio.load($index.html());
-        index('#root').html(html);
-        index('body').prepend(`<script>window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')}</script>`);
-        res.send(index.html());
-    }
-
-    /*app.get('/', (req, res) => {
-
-        log("[200] " + req.method + " to " + req.url);
-        res.send($index.html());
-
-    });*/
-
     app.route('/tokensignin').post((req, res) => {
 
         log("[200] " + req.method + " to " + req.url);
@@ -326,6 +301,19 @@ function main() {
             });
         }
         
+    });
+
+    app.use('/', (req, res) => {
+        const stats = {
+            courses: Course.getCourseAmount(),
+            accounts: Account.getAccountAmount()
+        };
+        const d = device(req.get('user-agent'));
+        let [html, preloadedState] = renderer(true, renderToString, null, req, API.getCourses(false, null, {limit: 10}), stats, d.is('phone') || d.is('tablet'));
+        const index = cheerio.load($index.html());
+        index('#root').html(html);
+        index('body').prepend(`<script>window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')}</script>`);
+        res.send(index.html());
     });
 
     server.listen(port, () => {

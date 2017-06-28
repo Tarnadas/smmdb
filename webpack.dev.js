@@ -28,7 +28,7 @@ module.exports = [
                 template: 'build/client/views/template.html'
             }),
             new ScriptExtHtmlWebpackPlugin({
-                async: /\.js/
+                preload: /\.js/
             })
         ],
         module: {

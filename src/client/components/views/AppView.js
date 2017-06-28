@@ -6,9 +6,10 @@ import request from 'request-promise'
 import {
     Route
 } from 'react-router-dom'
+import { forceCheck } from 'react-lazyload'
 
-import { resolve }    from 'url'
-import { stringify }  from 'querystring'
+import { resolve }   from 'url'
+import { stringify } from 'querystring'
 
 import TopBarArea  from '../areas/TopBarArea'
 import FilterArea  from '../areas/FilterArea'
@@ -25,7 +26,7 @@ import {
 } from '../../../static'
 
 const UPDATE_OFFSET = 500;
-const LIMIT         = 25;
+const LIMIT         = 10;
 const STEP_LIMIT    = 10;
 
 class AppView extends React.PureComponent {
@@ -61,11 +62,6 @@ class AppView extends React.PureComponent {
             this.props.dispatch(mediaQuery(ScreenSize.SMALL));
         }
     }
-    componentDidMount () {
-        //(async () => {
-        //    await this.fetchCourses();
-        //})();
-    }
     componentWillReceiveProps (nextProps, nextContext) {
         if (nextProps.filter === this.props.filter) return;
         this.queryString = stringify(nextProps.filter.toJS());
@@ -91,6 +87,7 @@ class AppView extends React.PureComponent {
         this.props.dispatch(setVideoId(''));
     }
     handleScroll (e) {
+        forceCheck();
         if (this.props.screenSize === ScreenSize.LARGE) return;
         this.shouldUpdate(e.target);
     }

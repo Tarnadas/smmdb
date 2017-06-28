@@ -31,6 +31,7 @@
     "react-custom-scrollbars": "^4.1.2",
     "react-dom": "^15.6.1",
     "react-google-login": "git+https://github.com/Tarnadas/react-google-login.git",
+    "react-lazyload": "^2.2.7",
     "react-redux": "^5.0.5",
     "react-router": "^4.1.1",
     "react-router-dom": "^4.1.1",
