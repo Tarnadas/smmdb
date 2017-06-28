@@ -50,7 +50,7 @@ module.exports = [
                                 "useBuiltIns": true
                             }]
                         ],
-                        plugins: [require('babel-plugin-transform-react-jsx')]
+                        plugins: ['transform-react-jsx']
                     }
                 },
                 {

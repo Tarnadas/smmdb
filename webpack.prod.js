@@ -4,6 +4,7 @@ const BabiliPlugin = require('babili-webpack-plugin');
 const HtmlWebpackPlugin          = require('html-webpack-plugin');
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin');
 const BundleAnalyzerPlugin       = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const WebpackMd5Hash             = require('webpack-md5-hash');
 
 const path = require('path');
 
@@ -11,7 +12,7 @@ module.exports = [
     {
         entry: {
             app: path.join(__dirname, 'src/client/renderer.js'),
-            vendor: ['react', 'react-dom', 'react-redux', 'react-router', 'react-router-dom', 'react-router-redux', 'react-google-login', 'react-lazyload', 'redux', 'redux-immutable', 'immutable', 'history', 'bluebird', 'simple-get']
+            vendor: ['babel-polyfill', 'react', 'react-dom', 'react-redux', 'react-router', 'react-router-dom', 'react-router-redux', 'react-google-login', 'react-lazyload', 'react-custom-scrollbars', 'redux', 'redux-immutable', 'immutable', 'history', 'bluebird', 'simple-get']
         },
         output: {
             filename: 'app.[chunkhash].js',
@@ -48,7 +49,8 @@ module.exports = [
                 openAnalyzer: false,
                 generateStatsFile: true,
                 statsFilename: path.join(__dirname, 'stats.json'),
-            })
+            }),
+            new WebpackMd5Hash()
         ],
         module: {
             loaders: [
