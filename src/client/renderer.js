@@ -12,6 +12,5 @@ import renderer from '../shared/renderer'
 
 const preloadedState = fromJS(window.__PRELOADED_STATE__);
 delete window.__PRELOADED_STATE__;
-//console.log(preloadedState.toJS());
 
 renderer(false, render, preloadedState);

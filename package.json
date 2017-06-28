@@ -25,7 +25,6 @@
     "immutable": "^3.8.1",
     "mongodb": "^2.2.29",
     "mysql2": "^1.3.5",
-    "object-sizeof": "^1.2.0",
     "progress": "^2.0.0",
     "react": "^15.6.1",
     "react-custom-scrollbars": "^4.1.2",
@@ -43,8 +42,6 @@
     "rimraf": "^2.6.1",
     "serve-favicon": "^2.3.2",
     "smm-protobuf": "git+https://github.com/Tarnadas/smm-protobuf.git",
-    "socket.io": "^2.0.3",
-    "socket.io-client": "^2.0.3",
     "tmp": "0.0.31",
     "win-7zip": "^0.1.1"
   },

@@ -1,0 +1,6 @@
+@media (min-width: 1000px) {
+    ::-webkit-scrollbar {
+        height: 0;
+        width: 6px;
+    }
+}

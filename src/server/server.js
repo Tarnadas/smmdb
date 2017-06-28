@@ -21,7 +21,6 @@ import renderer from '../shared/renderer'
 import Lobby       from './Lobby'
 import Account     from './Account'
 import Course      from './Course'
-import Socket      from './socket/Socket'
 import API         from './scripts/api'
 import Database    from './scripts/database'
 import Sorting     from './scripts/sorting'
@@ -74,8 +73,6 @@ const clientId = googleClientId;
 function main() {
 
     console.log();
-    log(`Courses are using ${bytes(require('object-sizeof')(require('./Course').courses))} of RAM`);
-    console.log();
     log("Database initialized");
 
     calculatePoints();
@@ -86,9 +83,6 @@ function main() {
     const app = express();
 
     const server = http.createServer(app);
-    const io = require('socket.io')(server);
-    const socket = new Socket();
-    io.on('connection', socket.onConnection);
 
     app.set('trust proxy', 1);
     app.use(compression());
