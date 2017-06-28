@@ -8,7 +8,7 @@ import tmp from 'tmp'
 
 import {
      pointsPerStar, pointsPerDownload
-} from './server'
+} from '.'
 import Account from './Account'
 
 import * as fs   from 'fs'
@@ -19,8 +19,6 @@ export const courses = {};
 const completed  = Symbol();
 const starred    = Symbol();
 const downloads  = Symbol();
-//const thumbnail        = Symbol();
-//const thumbnailPreview = Symbol();
 
 export default class Course {
     constructor (data) {
@@ -33,9 +31,6 @@ export default class Course {
         if (!!data._id) {
             courses[data._id] = this;
         }
-        //if (!!this.courseData) {
-        //    Object.setPrototypeOf(this.courseData, courseProto);
-        //}
     }
     async fix (thumbnail) {
         if (!this.courseData.maker) {

@@ -1,7 +1,6 @@
 
 /src/server/scripts/credentials.js
 /node_modules/
-/build/server/server.bundle.js
 /.idea/
 /db/
 /courses/
@@ -11,3 +10,4 @@
 /src/static.js
 /build/client/script/
 /build/client/views/index.html
+/build/server/index.js

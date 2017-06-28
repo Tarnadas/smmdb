@@ -8,7 +8,6 @@
     "url": "https://github.com/Tarnadas/smmdb.git"
   },
   "dependencies": {
-    "babel-polyfill": "^6.23.0",
     "bluebird": "^3.5.0",
     "body-parser": "^1.15.2",
     "bytes": "^2.5.0",
@@ -37,10 +36,9 @@
     "react-router-redux": "^5.0.0-alpha.6",
     "redux": "^3.7.0",
     "redux-immutable": "^4.0.0",
-    "request": "^2.81.0",
-    "request-promise": "^4.2.1",
     "rimraf": "^2.6.1",
     "serve-favicon": "^2.3.2",
+    "simple-get": "^2.6.0",
     "smm-protobuf": "git+https://github.com/Tarnadas/smm-protobuf.git",
     "tmp": "0.0.31",
     "win-7zip": "^0.1.1"
@@ -50,6 +48,7 @@
     "babel-loader": "^6.4.1",
     "babel-plugin-transform-react-jsx": "^6.24.1",
     "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-polyfill": "^6.23.0",
     "babel-preset-env": "^1.5.2",
     "babili-webpack-plugin": "^0.1.1",
     "html-loader": "^0.4.5",
@@ -61,7 +60,7 @@
     "webpack-node-externals": "^1.5.4"
   },
   "scripts": {
-    "start": "set NODE_ENV=development&& webpack --env=dev&& node ./build/server/server.bundle.js",
+    "start": "set NODE_ENV=development&& webpack --env=dev&& node ./build/server",
     "build": "set NODE_ENV=production&& webpack --env=prod"
   },
   "author": "Mario Reder",

@@ -10,6 +10,7 @@ import {
 import {
     routerMiddleware
 } from 'react-router-redux'
+//"build": "powershell.exe -Command \"& {set NODE_ENV=production; webpack --env=prod --profile --json | Out-file 'stats.json' -Encoding OEM}\""
 
 import router     from './router'
 import chat       from './chat'

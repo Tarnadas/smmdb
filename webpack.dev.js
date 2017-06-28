@@ -62,9 +62,9 @@ module.exports = [
     },
     {
         target: "node",
-        entry: path.join(__dirname, 'src/server/server.js'),
+        entry: path.join(__dirname, 'src/server/index.js'),
         output: {
-            filename: 'server.bundle.js',
+            filename: 'index.js',
             path: path.join(__dirname, 'build/server')
         },
         devtool: 'inline-source-map',

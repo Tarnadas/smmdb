@@ -2,13 +2,11 @@ import React from 'react'
 import {
     connect
 } from 'react-redux'
-import request from 'request-promise'
 import {
     Route
 } from 'react-router-dom'
 import { forceCheck } from 'react-lazyload'
 
-import { resolve }   from 'url'
 import { stringify } from 'querystring'
 
 import TopBarArea  from '../areas/TopBarArea'
@@ -22,8 +20,8 @@ import {
     setVideoId, mediaQuery, setCourses
 } from '../../actions'
 import {
-    domain
-} from '../../../static'
+    getJson
+} from '../../../shared/renderer'
 
 const UPDATE_OFFSET = 500;
 const LIMIT         = 10;
@@ -78,10 +76,10 @@ class AppView extends React.PureComponent {
         }
     }
     async fetchCourses (shouldConcat = false, limit = LIMIT, start = 0) {
-        const courses = JSON.parse(await request({
-            url: resolve(domain, `/api/getcourses?limit=${limit}&start=${start}${!!this.queryString ? `&${this.queryString}` : ''}`)
-        }));
-        this.props.dispatch(setCourses(courses, shouldConcat));
+        const courses = await getJson('GET', `/api/getcourses?limit=${limit}&start=${start}${!!this.queryString ? `&${this.queryString}` : ''}`);
+        if (!courses.err) {
+            this.props.dispatch(setCourses(courses, shouldConcat));
+        }
     }
     onVideoHide () {
         this.props.dispatch(setVideoId(''));

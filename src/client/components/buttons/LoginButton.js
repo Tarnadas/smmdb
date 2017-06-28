@@ -1,17 +1,16 @@
 import React       from 'react'
 import GoogleLogin from 'react-google-login'
-import request     from 'request-promise'
 import {
     connect
 } from 'react-redux'
-
-import { resolve } from 'url'
 
 import ButtonSub from '../subs/ButtonSub'
 import {
     setAccountData
 } from '../../actions'
-import { domain } from '../../../static'
+import {
+    getJson
+} from '../../../shared/renderer'
 
 class LoginButton extends React.PureComponent {
     constructor (props) {
@@ -27,11 +26,7 @@ class LoginButton extends React.PureComponent {
     }
     componentDidMount () {
         (async () => {
-            let res = await request({
-                method: 'POST',
-                uri: resolve(domain, '/signin'),
-                json: true
-            });
+            const res = await getJson('POST', '/signin');
             if (!res.err) {
                 setTimeout(() => { // TODO this is just a workaround to prevent a warning
                     this.props.dispatch(setAccountData(res));
@@ -50,23 +45,14 @@ class LoginButton extends React.PureComponent {
         });
     }
     async onGoogleLoginSuccess (response) {
-        let res = await request({
-            method: 'POST',
-            uri: resolve(domain, '/tokensignin'),
-            body: response,
-            json: true
-        });
+        const res = await getJson('POST', '/tokensignin', response);
         this.props.dispatch(setAccountData(res));
     }
     onGoogleLoginFailure (response) {
         console.log(response);
     }
     async onLogOut () {
-        let res = await request({
-            method: 'POST',
-            uri: resolve(domain, '/signout'),
-            json: true
-        });
+        const res = await getJson('POST', '/signout');
         if (!res.err) {
             this.props.dispatch(setAccountData());
         } else {

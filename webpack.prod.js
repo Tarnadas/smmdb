@@ -11,7 +11,7 @@ module.exports = [
     {
         entry: {
             app: path.join(__dirname, 'src/client/renderer.js'),
-            vendor: ['react', 'react-dom', 'react-redux', 'react-router', 'react-router-dom', 'react-router-redux', 'react-google-login', 'redux', 'redux-immutable', 'immutable', 'history', 'bluebird']
+            vendor: ['react', 'react-dom', 'react-redux', 'react-router', 'react-router-dom', 'react-router-redux', 'react-google-login', 'react-lazyload', 'redux', 'redux-immutable', 'immutable', 'history', 'bluebird', 'simple-get']
         },
         output: {
             filename: 'app.[chunkhash].js',
@@ -42,7 +42,13 @@ module.exports = [
             new ScriptExtHtmlWebpackPlugin({
                 preload: /\.js/
             }),
-            new BundleAnalyzerPlugin()
+            new BundleAnalyzerPlugin({
+                analyzerMode: 'static',
+                reportFilename: path.join(__dirname, 'report.html'),
+                openAnalyzer: false,
+                generateStatsFile: true,
+                statsFilename: path.join(__dirname, 'stats.json'),
+            })
         ],
         module: {
             loaders: [
@@ -74,9 +80,9 @@ module.exports = [
     },
     {
         target: "node",
-        entry: path.join(__dirname, 'src/server/server.js'),
+        entry: path.join(__dirname, 'src/server/index.js'),
         output: {
-            filename: 'server.bundle.js',
+            filename: 'index.js',
             path: path.join(__dirname, 'build/server')
         },
         node: {
