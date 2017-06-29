@@ -47,7 +47,6 @@ class UploadView extends React.PureComponent {
     }
     async fetchCourses (apiKey, shouldConcat = false, limit = LIMIT, start = 0) {
         const courses = await getJson('GET', `/api/getcourses?limit=${limit}&start=${start}&apikey=${apiKey}`);
-        console.log(courses);
         if (!courses.err) {
             this.props.dispatch(setCoursesSelf(courses, shouldConcat));
         }
@@ -88,8 +87,7 @@ class UploadView extends React.PureComponent {
                 top: screenSize === ScreenSize.LARGE ? '40px' : '',
                 left: screenSize === ScreenSize.LARGE ? '140px' : '',
                 marginTop: screenSize === ScreenSize.LARGE ? '' : '30px',
-                color: '#fff',
-                cursor: 'pointer'
+                color: '#fff'
             },
             flex: {
                 overflow: 'hidden',
@@ -109,7 +107,8 @@ class UploadView extends React.PureComponent {
                 textAlign: 'center',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
+                cursor: 'pointer'
             }
         };
         return (
