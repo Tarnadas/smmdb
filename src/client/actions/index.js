@@ -20,6 +20,14 @@ export function setCourses (courses, concat) {
     }
 }
 
+export function setCoursesSelf (courses, concat) {
+    return {
+        type: 'SET_COURSES_SELF',
+        courses,
+        concat
+    }
+}
+
 export function showFilter (showFilter) {
     return {
         type: 'SHOW_FILTER',

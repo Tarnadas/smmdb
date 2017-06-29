@@ -209,16 +209,17 @@ function main() {
                 };
                 res.json(result);
             } else if (apiCall === "getcourses") {
-                let loggedIn = false, userId;
+                let loggedIn = false, accountId;
                 let account = Account.getAccountByAPIKey(apiData.apikey);
                 if (!!account) {
                     loggedIn = true;
-                    userId = account.id;
+                    accountId = account.id;
+                    apiData.uploader = account.username;
                 }
                 if (!!apiData.prettify) {
                     app.set('json spaces', 2);
                 }
-                res.json(API.getCourses(loggedIn, userId, apiData));
+                res.json(API.getCourses(loggedIn, accountId, apiData));
                 if (!!apiData.prettify) {
                     app.set('json spaces', 0);
                 }
@@ -277,7 +278,22 @@ function main() {
             let data = split[1];
             apiData = qs.parse(data);
         }
-        if (apiCall === "setaccountdata") {
+        if (apiCall === "uploadcourse") {
+            if (!apiData.apikey) {
+                res.json({
+                    err: "API key required"
+                });
+            } else {
+                const account = Account.getAccountByAPIKey(apiData.apikey);
+                if (account == null) {
+                    res.json({
+                        err: `Account with API key ${apiData.apikey} not found`
+                    });
+                } else {
+
+                }
+            }
+        } else if (apiCall === "setaccountdata") {
             if (!apiData.apikey) {
                 res.json({
                     err: "API key required"

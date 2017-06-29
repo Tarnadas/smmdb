@@ -8,7 +8,7 @@ const MAX_LIMIT = 100;
 
 export default class API {
 
-    static getCourses (loggedIn, userId, filterData) {
+    static getCourses (loggedIn, accountId, filterData) {
 
         let orderBy = "lastmodified", dir = "desc";
 
@@ -95,21 +95,12 @@ export default class API {
                     }
                 }
             }
-            let resultCourse = course.getJSON(loggedIn, userId);
+            let resultCourse = course.getJSON(loggedIn, accountId);
             filteredResult.push(resultCourse);
 
         }
 
         return filteredResult.splice(start, limit);
-
-    }
-
-    static getCoursesSelf (userId) {
-
-        let filterData = {};
-        filterData.owner = Account.getAccount(userId).username;
-
-        return this.getCourses(true, userId, null, filterData);
 
     }
 

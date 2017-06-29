@@ -10,12 +10,12 @@ import {
 import {
     routerMiddleware
 } from 'react-router-redux'
-//"build": "powershell.exe -Command \"& {set NODE_ENV=production; webpack --env=prod --profile --json | Out-file 'stats.json' -Encoding OEM}\""
 
 import router     from './router'
 import chat       from './chat'
 import stats      from './stats'
 import courseData from './courseData'
+import courseDataSelf from './courseDataSelf'
 import filter     from './filter'
 import showFilter from './showFilter'
 import userData   from './userData'
@@ -31,6 +31,7 @@ export default function initReducer(preloadedState, history) {
         },
         stats: {},
         courseData: [],
+        courseDataSelf: [],
         filter: {
             nextFilter: {},
             currentFilter: {}
@@ -48,6 +49,7 @@ export default function initReducer(preloadedState, history) {
         chat,
         stats,
         courseData,
+        courseDataSelf,
         filter,
         showFilter,
         userData,
