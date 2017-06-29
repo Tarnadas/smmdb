@@ -14,6 +14,8 @@ All API calls are subject to change.
 
 **Request**: `getstats`
 
+**Protocol**: GET
+
 **Querystring**: empty
 
 **Example**: `http://smm-test.alextc.de/api/getstats`
@@ -21,6 +23,8 @@ All API calls are subject to change.
 ### Receive course list
 
 **Request**: `getcourses`
+
+**Protocol**: GET
 
 **Querystring**: (default values are *italic*)
 
@@ -52,6 +56,8 @@ Receive courses 121 to 170 in lastmodified descending order with indentation.
 
 **Request**: `downloadcourse`
 
+**Protocol**: GET
+
 **Querystring**: (default values are *italic*)
 
 | Query | Value | Description |
@@ -62,3 +68,28 @@ Receive courses 121 to 170 in lastmodified descending order with indentation.
 **Example**: `http://smm-test.alextc.de/api/downloadcourse?id=ihavenoidea&type=zip`
 
 Downloads course with ID `ihavenoidea` as zip-compressed folder.
+
+### Profile Update
+
+**Request**: `setaccountdata`
+
+**Protocol**: POST
+
+**Querystring**:
+
+| Query | Value | Description |
+| --- | --- | --- |
+| apikey | `{string}` | User's API key |
+
+**POST body**: Must contain JSON.stringified Object with Object properties to change.
+
+**Example**: `http://smm-test.alextc.de/api/setaccountdata?apikey=myAPIKey`
+with body `{ "username": "newUsername" }`
+
+Changes username of user with specified API key.
+
+## Lighthouse Report
+
+[commit b0055d7165d0bcc2ac0d4d3db003e3b8cacbab3b](http://htmlpreview.github.io/?https://github.com/Tarnadas/smmdb/blob/master/docs/smm-test.alextc.de_2017-06-29_15-07-06.html)
+
+[commit 27be681b78cc083be3741c3455b0748831e7c556](http://htmlpreview.github.io/?https://github.com/Tarnadas/smmdb/blob/master/docs/smm-test.alextc.de_2017-06-29_14-54-38.html)
