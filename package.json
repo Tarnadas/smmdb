@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "bluebird": "^3.5.0",
-    "body-parser": "^1.15.2",
+    "body-parser": "^1.17.2",
     "bytes": "^2.5.0",
     "cemu-smm": "git+https://github.com/Tarnadas/cemu-smm.git#dev",
     "cheerio": "^0.22.0",

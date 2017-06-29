@@ -111,7 +111,7 @@ class LoginButton extends React.PureComponent {
                             onSuccess={this.onGoogleLoginSuccess}
                             onFailure={this.onGoogleLoginFailure}
                         >
-                            <ButtonSub iconStyle={styles.smmIcon} iconSrc={iconSrc} text={text} />
+                            <ButtonSub iconStyle={styles.smmIcon} iconSrc={iconSrc} text={text} hover={this.state.hover} />
                         </GoogleLogin>
                     )
                 }

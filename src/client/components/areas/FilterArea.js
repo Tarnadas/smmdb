@@ -4,7 +4,6 @@ import {
 } from 'react-redux'
 
 import SMMButton from '../buttons/SMMButton'
-
 import {
     applyFilter, setFilter, showFilter
 } from '../../actions'
@@ -115,7 +114,6 @@ class FilterArea extends React.PureComponent {
         this.setState(res);
     }
     render () {
-        const filter = this.props.filter.toJS();
         const styles = {
             area: {
                 width: '1050px',

@@ -56,13 +56,13 @@ export default function renderer (isServer = false, cb, preloadedState, req, cou
     return [html, store.getState()];
 }
 
-export async function getJson (method = 'GET', path, body) {
+export async function getJson (method = 'GET', path, body = null) {
     return await new Promise((resolve, reject) => {
         get.concat({
             method,
             url: resolveUrl(domain, path),
             json: true,
-            body
+            body: body
         }, (err, res, data) => {
             if (err) reject(err);
             resolve(data);

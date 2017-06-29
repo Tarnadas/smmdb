@@ -1,6 +1,6 @@
 import mysql from 'mysql2/promise'
 import {
-    MongoClient
+    MongoClient, ObjectID
 } from 'mongodb'
 import ProgressBar from 'progress'
 import rmrf        from 'rimraf'
@@ -63,12 +63,16 @@ export default class Database {
         return await this.courses.insertOne(course);
     }
 
-    static async updateCourse (course) {
-        return await this.courses.updateOne({ '_id': course._id }, course, { upsert: true });
+    static async updateCourse (id, course) {
+        return await this.courses.updateOne({ '_id': ObjectID(id) }, { $set: course });
     }
 
     static async addAccount (account) {
         return await this.accounts.insertOne(account);
+    }
+
+    static async updateAccount (id, account) {
+        return await this.accounts.updateOne({ '_id': ObjectID(id) }, { $set: account });
     }
 
     static async convertMySQL () {

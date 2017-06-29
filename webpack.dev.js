@@ -22,7 +22,7 @@ module.exports = [
         },
         plugins: [
             new webpack.EnvironmentPlugin('NODE_ENV'),
-            new webpack.optimize.ModuleConcatenationPlugin(),
+            //new webpack.optimize.ModuleConcatenationPlugin(),
             new HtmlWebpackPlugin({
                 filename: '../views/index.html',
                 template: 'build/client/views/template.html'

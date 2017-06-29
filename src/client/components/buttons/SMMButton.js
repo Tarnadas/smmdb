@@ -5,6 +5,12 @@ import {
 
 import ButtonSub from '../subs/ButtonSub'
 
+export const COLOR_SCHEME = {
+    YELLOW: 0,
+    GREEN: 1,
+    RED: 2
+};
+
 export default class SMMButton extends React.PureComponent {
     constructor (props) {
         super(props);
@@ -25,13 +31,22 @@ export default class SMMButton extends React.PureComponent {
         });
     }
     render () {
+        const colorScheme = this.props.colorScheme || COLOR_SCHEME.YELLOW;
         const styles = {
             smmButton: {
                 margin: '0 10px 10px 10px',
                 lineHeight: '40px',
                 width: '120px',
                 height: '40px',
-                backgroundColor: this.state.hover ? '#323245' : '#ffe500',
+                backgroundColor: colorScheme === COLOR_SCHEME.YELLOW ? (
+                    this.state.hover ? '#323245' : '#ffe500'
+                ) : (
+                    colorScheme === COLOR_SCHEME.GREEN ? (
+                        this.state.hover ? '#323245' : '#33cc33'
+                    ) : (
+                        this.state.hover ? '#323245' : '#CC7034'
+                    )
+                ),
                 cursor: 'pointer',
                 outline: 'none',
                 overflow: 'hidden',

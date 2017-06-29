@@ -1,5 +1,6 @@
 import express       from 'express'
 import compression   from 'compression'
+import bodyParser    from 'body-parser'
 import range         from 'express-range'
 import cheerio       from 'cheerio'
 import cookieSession from 'cookie-session'
@@ -86,6 +87,7 @@ function main() {
 
     app.set('trust proxy', 1);
     app.use(compression());
+    app.use(bodyParser.json());
     app.use(range({
         accept: 'bytes'
     }));
@@ -104,46 +106,38 @@ function main() {
 
         log("[200] " + req.method + " to " + req.url);
 
-        let data = '';
-        req.on('data', chunk => {
-            data += chunk;
-        });
-        req.on('end', () => {
-            data = JSON.parse(data);
-            let idToken = data.tokenObj.id_token;
-            if (!idToken) {
-                res.json({
-                    err: 'idToken not found'
-                });
-            } else {
-                verifier.verify(idToken, clientId, async (err, tokenInfo) => {
-                    if (!err) {
+        let idToken = req.body.tokenObj.id_token;
+        if (!idToken) {
+            res.json({
+                err: 'idToken not found'
+            });
+        } else {
+            verifier.verify(idToken, clientId, async (err, tokenInfo) => {
+                if (!err) {
 
-                        // create account if it does not exist
-                        let googleId = tokenInfo.sub;
+                    // create account if it does not exist
+                    let googleId = tokenInfo.sub;
 
-                        let account;
-                        if (!Account.exists(googleId)) {
-                            // create new account
-                            let username = tokenInfo.email.split("@")[0];
-                            account = new Account({
-                                googleid: googleId,
-                                username
-                            });
-                            await Database.addAccount(account);
-                        } else {
-                            account = Account.getAccountByGoogleId(googleId);
-                            account.login(idToken);
-                        }
-                        req.session.idtoken = idToken;
-
-                        res.json(account.getJSON());
-
+                    let account;
+                    if (!Account.exists(googleId)) {
+                        // create new account
+                        let username = tokenInfo.email.split("@")[0];
+                        account = new Account({
+                            googleid: googleId,
+                            username
+                        });
+                        await Database.addAccount(account);
+                    } else {
+                        account = Account.getAccountByGoogleId(googleId);
+                        account.login(idToken);
                     }
-                });
-            }
+                    req.session.idtoken = idToken;
 
-        })
+                    res.json(account.getJSON());
+
+                }
+            });
+        }
 
     });
 
@@ -197,7 +191,6 @@ function main() {
         if (req.url.includes("/") && req.url.length > 5) {
 
             let apiCall = req.params.apicall;
-            
             let apiData = {};
             if (req.url.includes("?")) {
                 let split = req.url.split("?", 2);
@@ -270,24 +263,35 @@ function main() {
             }
             
         } else {
-            //sendHtml(null, res, $api.html());
+            res.json({
+                err: "Wrong syntax"
+            });
         }
         
     }).post(async (req, res) => {
 
-        let apiCall = req.get("request");
-        let apiKey = req.get("apikey");
-        if (apiCall === "uploadcourse") {
-            if (!apiKey) {
+        let apiCall = req.params.apicall;
+        let apiData = {};
+        if (req.url.includes("?")) {
+            let split = req.url.split("?", 2);
+            let data = split[1];
+            apiData = qs.parse(data);
+        }
+        if (apiCall === "setaccountdata") {
+            if (!apiData.apikey) {
                 res.json({
                     err: "API key required"
                 });
-            } else if (!usersByAPIKey.hasOwnProperty(apiKey)) {
-                res.json({
-                    err: "API key unknown"
-                });
             } else {
-                res.json(await API.uploadCourse(req, res, usersByAPIKey[apiKey]));
+                const account = Account.getAccountByAPIKey(apiData.apikey);
+                if (account == null) {
+                    res.json({
+                        err: `Account with API key ${apiData.apikey} not found`
+                    });
+                } else {
+                    if (!!req.body.username) await account.setUsername(req.body.username);
+                    res.json(account.getJSON());
+                }
             }
         } else {
             res.json({

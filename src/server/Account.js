@@ -1,12 +1,12 @@
 import {
     generateAPIKey
 } from './scripts/util'
+import Database from './scripts/database'
 
 export const accounts = {};
 const accountsByGoogleId = {};
 const accountsByAPIKey = {};
 const accountsBySession = {};
-//const accountsLoggedIn = {};
 
 const points    = Symbol();
 const completed = Symbol();
@@ -42,11 +42,19 @@ export default class Account {
     static getAccount (accountId) {
         return accounts[accountId];
     }
+    static getAccountByAPIKey (apiKey) {
+        return accountsByAPIKey[apiKey];
+    }
     static getAccountAmount () {
         return Object.keys(accounts).length;
     }
     setId () {
         accounts[this._id] = this;
+    }
+    async setUsername (username) {
+        this.username = username;
+        await Database.updateAccount(this._id, { username });
+        return null;
     }
     static exists (googleId) {
         return !!accountsByGoogleId[googleId];
@@ -62,6 +70,7 @@ export default class Account {
     }
     getJSON () {
         return {
+            username: this.username,
             id: this._id,
             apikey: this.apikey,
             completed: this[completed],
