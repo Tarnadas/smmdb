@@ -52,10 +52,11 @@ class UploadView extends React.PureComponent {
         }
     }
     renderCourses (courses) {
+        let self = this;
         return Array.from((function * () {
             for (let i in courses) {
                 yield (
-                    <CoursePanel course={courses[i]} key={i} />
+                    <CoursePanel canEdit isSelf course={courses[i]} apiKey={self.props.accountData.get('apikey')} id={i} key={i} />
                 )
             }
         })());

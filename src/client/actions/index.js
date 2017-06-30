@@ -12,11 +12,27 @@ export function setStats (stats) {
     }
 }
 
+export function setCourse (id, course) {
+    return {
+        type: 'SET_COURSE',
+        id,
+        course
+    }
+}
+
 export function setCourses (courses, concat) {
     return {
         type: 'SET_COURSES',
         courses,
         concat
+    }
+}
+
+export function setCourseSelf (id, course) {
+    return {
+        type: 'SET_COURSE_SELF',
+        id,
+        course
     }
 }
 

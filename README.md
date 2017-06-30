@@ -2,13 +2,13 @@
 
 A cross console/emulator sharing platform for Super Mario Maker courses to rule them all.
 
-This server is not production ready. However a public test server is running on [http://smm-test.alextc.de]()
+This server is not production ready. However a public test server is running on [http://smm-test.alextc.de](http://smm-test.alextc.de)
 
 ## API
 
 All API calls are subject to change.
 
-[http://smm-test.alextc.de/api/request?querystring]()
+`http://smm-test.alextc.de/api/request?querystring`
 
 ### Receive server statistics
 

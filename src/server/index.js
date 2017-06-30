@@ -293,6 +293,42 @@ function main() {
 
                 }
             }
+        } else if (apiCall === "updatecourse") {
+            if (!apiData.apikey) {
+                res.json({
+                    err: "API key required"
+                });
+            } else if (!apiData.id) {
+                res.json({
+                    err: "No course ID submitted"
+                });
+            } else {
+                const account = Account.getAccountByAPIKey(apiData.apikey);
+                if (account == null) {
+                    res.json({
+                        err: `Account with API key ${apiData.apikey} not found`
+                    });
+                    return;
+                }
+                const course = Course.getCourse(apiData.id);
+                if (course == null) {
+                    res.json({
+                        err: `Course with ID ${apiData.id} not found`
+                    });
+                    return;
+                }
+                if (!course.owner.equals(account._id)) {
+                    res.json({
+                        err: `Course with ID ${apiData.id} is not owned by account with API key ${apiData.apikey}`
+                    });
+                    return;
+                }
+                const courseData = {};
+                if (!!req.body.title) courseData.title = req.body.title;
+                if (!!req.body.maker) courseData.maker = req.body.maker;
+                await course.update(courseData);
+                res.json(course.getJSON());
+            }
         } else if (apiCall === "setaccountdata") {
             if (!apiData.apikey) {
                 res.json({

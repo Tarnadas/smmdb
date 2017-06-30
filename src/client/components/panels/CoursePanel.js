@@ -6,18 +6,47 @@ import {
 
 import CourseDownloadButton from '../buttons/CourseDownloadButton'
 import CourseVideoButton    from '../buttons/CourseVideoButton'
+import SMMButton, { COLOR_SCHEME } from '../buttons/SMMButton'
 import {
     ScreenSize
 } from '../../reducers/mediaQuery'
+import {
+    getJson
+} from '../../../shared/renderer'
+import {
+    setCourse, setCourseSelf
+} from '../../actions'
+
+const MAX_LENGTH_TITLE = 32;
+const MAX_LENGTH_MAKER = 10;
 
 class CoursePanel extends React.PureComponent {
     constructor (props) {
         super(props);
         this.state = {
-            showDetails: false
+            showDetails: false,
+            changed: false,
+            saved: false,
+            title: props.course.title,
+            maker: props.course.maker
         };
         this.onShowDetails = this.onShowDetails.bind(this);
         this.onHideDetails = this.onHideDetails.bind(this);
+        this.onCourseSubmit = this.onCourseSubmit.bind(this);
+        this.onTitleChange = this.onTitleChange.bind(this);
+        this.onMakerChange = this.onMakerChange.bind(this);
+    }
+    componentWillReceiveProps (nextProps, nextContext) {
+        if (nextProps.course.title !== this.state.title) {
+            this.setState({
+                title: nextProps.course.title
+            });
+        }
+        if (nextProps.course.maker !== this.state.maker) {
+            this.setState({
+                maker: nextProps.course.maker
+            });
+        }
     }
     onShowDetails () {
         if (!this.state.showDetails) {
@@ -31,8 +60,52 @@ class CoursePanel extends React.PureComponent {
             showDetails: false
         });
     }
+    onCourseSubmit () {
+        (async () => {
+            if (this.state.title === this.props.course.title && this.state.maker === this.props.course.maker) return;
+            const course = {
+                title: this.state.title,
+                maker: this.state.maker
+            };
+            const res = await getJson('POST', `/api/updatecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`, course);
+            if (!res.err) {
+                if (this.props.isSelf) {
+                    this.props.dispatch(setCourseSelf(this.props.id, res));
+                } else {
+                    this.props.dispatch(setCourse(this.props.id, res));
+                }
+            }
+            this.setState({
+                changed: false,
+                saved: true
+            });
+        })();
+    }
+    onTitleChange (e) {
+        let title = e.target.value;
+        if (title.length > MAX_LENGTH_TITLE) {
+            title = title.substr(0, MAX_LENGTH_TITLE);
+        }
+        this.setState({
+            title,
+            changed: true,
+            saved: false
+        });
+    }
+    onMakerChange (e) {
+        let maker = e.target.value;
+        if (maker.length > MAX_LENGTH_MAKER) {
+            maker = title.substr(0, MAX_LENGTH_MAKER);
+        }
+        this.setState({
+            maker,
+            changed: true,
+            saved: false
+        });
+    }
     render () {
         const screenSize = this.props.screenSize;
+        const colorScheme = this.state.changed ? COLOR_SCHEME.RED : (this.state.saved ? COLOR_SCHEME.GREEN : COLOR_SCHEME.YELLOW);
         const styles = {
             panel: {
                 height: this.state.showDetails ? 'auto' : '169px',
@@ -158,23 +231,45 @@ class CoursePanel extends React.PureComponent {
                 marginLeft: '14px'
             },
             bottom: {
-                display: 'inline-flex',
+                display: 'flex',
                 height: 'auto',
                 justifyContent: 'space-around',
-                flexWrap: screenSize === ScreenSize.LARGE ? '' : 'wrap'
+                flexWrap: 'wrap'
+            },
+            edit: {
+                height: 'auto',
+                padding: '10px',
+                display: 'flex',
+                flexWrap: 'wrap'
+            },
+            option: {
+                height: 'auto',
+                width: '50%',
+                padding: '10px',
+                textAlign: 'left',
+                fontSize: '16px'
+            },
+            value: {
+                height: 'auto',
+                width: 'auto'
+            },
+            input: {
+                height: '32px',
+                fontSize: '18px'
             },
             imageLarge: {
                 width: 'auto',
                 height: 'auto'
             },
             buttonPanel: {
-                width: screenSize === ScreenSize.LARGE ? 'calc(100% - 280px)' : 'auto',
+                width: screenSize === ScreenSize.LARGE ? 'calc(100% - 360px)' : 'auto',
+                height: 'auto',
                 margin: screenSize !== ScreenSize.LARGE ? '20px' : '0 20px',
                 display: 'flex',
                 alignItems: 'flex-start'
             }
         };
-        const style = parseInt(this.props.course.gameStyle);//<LazyLoad height={81} offset={100} once>
+        const style = parseInt(this.props.course.gameStyle);
         return (
             <div style={styles.panel} onClick={this.onShowDetails}>
                 <div style={styles.rank}>
@@ -240,6 +335,25 @@ class CoursePanel extends React.PureComponent {
                     {
                         this.state.showDetails && (
                             <div style={styles.bottom}>
+                                {
+                                    this.props.canEdit && (
+                                        <div style={styles.edit}>
+                                            <div style={styles.option}>
+                                                <div style={styles.value}>
+                                                    Title:
+                                                </div>
+                                                <input style={styles.input} value={this.state.title} onChange={this.onTitleChange} />
+                                            </div>
+                                            <div style={styles.option}>
+                                                <div style={styles.value}>
+                                                    Maker:
+                                                </div>
+                                                <input style={styles.input} value={this.state.maker} onChange={this.onMakerChange} />
+                                            </div>
+                                            <SMMButton text="Save" iconSrc="/img/submit.png" fontSize="13px" padding="3px" colorScheme={colorScheme} onClick={this.onCourseSubmit} />
+                                        </div>
+                                    )
+                                }
                                 <div style={styles.imageLarge}>
                                     <img src={`/courseimg/${this.props.course.id}.jpg`} />
                                 </div>
@@ -259,9 +373,6 @@ class CoursePanel extends React.PureComponent {
         )
     }
 }
-export default connect(state => {
-    const screenSize = state.getIn(['mediaQuery', 'screenSize']);
-    return {
-        screenSize
-    }
-})(CoursePanel);
+export default connect(state => ({
+    screenSize: state.getIn(['mediaQuery', 'screenSize'])
+}))(CoursePanel);

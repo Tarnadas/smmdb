@@ -10,6 +10,12 @@ import { forceCheck } from 'react-lazyload'
 import {
     ScreenSize
 } from '../../reducers/mediaQuery'
+import {
+    setCourses
+} from '../../actions'
+import {
+    getJson
+} from '../../../shared/renderer'
 import StatsPanel  from '../panels/StatsPanel'
 import CoursePanel from '../panels/CoursePanel'
 import SideBarArea from '../areas/SideBarArea'
@@ -17,18 +23,35 @@ import SideBarArea from '../areas/SideBarArea'
 class MainView extends React.PureComponent {
     constructor (props) {
         super(props);
+        this.fetchCourses = this.fetchCourses.bind(this);
         this.renderCourses = this.renderCourses.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
+    }
+    componentWillMount () {
+        (async () => {
+            await this.fetchCourses();
+        })();
     }
     componentWillReceiveProps (nextProps, nextContext) {
         if (nextProps.filter === this.props.filter) return;
         this.scrollBar.scrollToTop();
     }
+    async fetchCourses () {
+        const courses = await getJson('GET', `/api/getcourses?limit=10`);
+        if (!courses.err) {
+            this.props.dispatch(setCourses(courses, false));
+        }
+    }
     renderCourses (courses) {
+        const self = this;
         return Array.from((function * () {
             for (let i in courses) {
                 yield (
-                    <CoursePanel course={courses[i]} key={i} />
+                    self.props.accountData.get('id') && courses[i].owner === self.props.accountData.get('id') ? (
+                        <CoursePanel canEdit course={courses[i]} apiKey={self.props.accountData.get('apikey')} id={i} key={i} />
+                    ) : (
+                        <CoursePanel course={courses[i]} key={i} />
+                    )
                 )
             }
         })());
@@ -82,13 +105,9 @@ class MainView extends React.PureComponent {
         )
     }
 }
-export default connect(state => {
-    const screenSize = state.getIn(['mediaQuery', 'screenSize']);
-    const courses = state.get('courseData');
-    const filter = state.getIn(['filter', 'currentFilter']);
-    return {
-        screenSize,
-        courses,
-        filter
-    }
-})(MainView);
+export default connect(state => ({
+    screenSize: state.getIn(['mediaQuery', 'screenSize']),
+    courses: state.get('courseData'),
+    filter: state.getIn(['filter', 'currentFilter']),
+    accountData: state.getIn(['userData', 'accountData'])
+}))(MainView);

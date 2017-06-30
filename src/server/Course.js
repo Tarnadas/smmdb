@@ -10,6 +10,7 @@ import {
      pointsPerStar, pointsPerDownload
 } from '.'
 import Account from './Account'
+import Database from './scripts/database'
 
 import * as fs   from 'fs'
 import * as path from 'path'
@@ -142,7 +143,6 @@ export default class Course {
         result.uploader = Account.getAccount(result.owner).username;
         result.reputation = Account.getAccount(result.owner).getPoints();
         delete result._id;
-        delete result.owner;
         delete result.serialized;
         delete result.courseData;
         return result;
@@ -155,7 +155,7 @@ export default class Course {
                 resolve(path);
             })
         });
-        (await deserialize(fs.readFileSync(path.join(__dirname, `../client/coursedata/${this._id}`)))).writeToSave(0, tmpDir);
+        await (await deserialize(fs.readFileSync(path.join(__dirname, `../client/coursedata/${this._id}`)))).writeToSave(0, tmpDir);
         const outPath = path.join(tmpDir, `${this.title}.zip`);
         return await new Promise(resolve => {
             zip(tmpDir, outPath, err => {
@@ -175,6 +175,26 @@ export default class Course {
 
     async get3DS () {
         return await (await deserialize(fs.readFileSync(path.join(__dirname, `../client/coursedata/${this._id}`)))).to3DS();
+    }
+
+    async update ({ title, maker }) {
+        const course = await deserialize(fs.readFileSync(path.join(__dirname, `../client/coursedata/${this._id}`)));
+        const update = {};
+        if (title) {
+            this.title = title;
+            update.title = title;
+            await course.setTitle(title);
+        }
+        if (maker) {
+            this.maker = maker;
+            update.maker = maker;
+            await course.setMaker(maker);
+        }
+        this.courseData = course;
+        fs.writeFileSync(path.join(__dirname, `../client/coursedata/${this._id}`), await this.courseData.serialize());
+        fs.writeFileSync(path.join(__dirname, `../client/coursedata/${this._id}.gzip`), await this.courseData.serializeGzipped());
+        await Database.updateCourse(this._id, update);
+        return null;
     }
 
     static getCourseAmount () {

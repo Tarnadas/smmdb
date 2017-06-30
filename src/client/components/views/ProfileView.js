@@ -3,10 +3,7 @@ import {
     connect
 } from 'react-redux'
 
-import SMMButton from '../buttons/SMMButton'
-import {
-    COLOR_SCHEME
-} from '../buttons/SMMButton'
+import SMMButton, { COLOR_SCHEME } from '../buttons/SMMButton'
 import {
     ScreenSize
 } from '../../reducers/mediaQuery'
@@ -46,7 +43,10 @@ class ProfileView extends React.PureComponent {
     onProfileSubmit () {
         (async () => {
             if (this.state.username === this.props.accountData.toJS().username) return;
-            const res = await getJson('POST', `/api/setaccountdata?apikey=${this.props.accountData.get('apikey')}`, this.state);
+            const profile = {
+                username: this.state.username
+            };
+            const res = await getJson('POST', `/api/setaccountdata?apikey=${this.props.accountData.get('apikey')}`, profile);
             if (!res.err) {
                 this.props.dispatch(setAccountData(res));
             }
