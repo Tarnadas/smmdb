@@ -94,6 +94,12 @@ export default class API {
                         continue;
                     }
                 }
+                if (!!filterData.autoscroll) {
+                    const autoScroll = parseInt(filterData.autoscroll);
+                    if (autoScroll !== course.autoScroll && autoScroll !== course.autoScrollSub) {
+                        continue;
+                    }
+                }
             }
             let resultCourse = course.getJSON(loggedIn, accountId);
             filteredResult.push(resultCourse);

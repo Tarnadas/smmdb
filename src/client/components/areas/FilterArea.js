@@ -31,6 +31,7 @@ class FilterArea extends React.PureComponent {
         this.onGameStyleChange = this.onSelectChange.bind(this, 'gamestyle');
         this.onCourseThemeChange = this.onSelectChange.bind(this, 'coursetheme');
         this.onCourseThemeSubChange = this.onSelectChange.bind(this, 'coursethemesub');
+        this.onAutoScrollChange = this.onSelectChange.bind(this, 'autoscroll');
     }
     componentWillMount () {
         const filter = this.props.filter.toJS();
@@ -48,6 +49,7 @@ class FilterArea extends React.PureComponent {
                 gamestyle: !!filter.gamestyle ? filter.gamestyle : '',
                 coursetheme: !!filter.coursetheme ? filter.coursetheme : '',
                 coursethemesub: !!filter.coursethemesub ? filter.coursethemesub : '',
+                autoscroll: !!filter.autoscroll ? filter.autoscroll : ''
             });
         }
     }
@@ -65,6 +67,7 @@ class FilterArea extends React.PureComponent {
             gamestyle: this.state.gamestyle,
             coursetheme: this.state.coursetheme,
             coursethemesub: this.state.coursethemesub,
+            autoscroll: this.state.autoscroll
         };
         if (!this.state.title) delete filter.title;
         if (!this.state.maker) delete filter.maker;
@@ -78,6 +81,7 @@ class FilterArea extends React.PureComponent {
         if (!this.state.gamestyle) delete filter.gamestyle;
         if (!this.state.coursetheme) delete filter.coursetheme;
         if (!this.state.coursethemesub) delete filter.coursethemesub;
+        if (!this.state.autoscroll) delete filter.autoscroll;
         return filter;
     }
     setFilter () {
@@ -294,6 +298,19 @@ class FilterArea extends React.PureComponent {
                         </select>
                     </div>
                 </div>
+                <div style={styles.option}>
+                    <div style={styles.value}>
+                        Autoscroll:
+                    </div>
+                    <div style={styles.date}>
+                        <select style={styles.dateInput}  value={this.state.autoscroll} onChange={this.onAutoScrollChange}>
+                            <option value="" />
+                            <option value="1">Slow</option>
+                            <option value="2">Medium</option>
+                            <option value="3">Fast</option>
+                        </select>
+                    </div>
+                </div><br />
                 <SMMButton text="Apply" iconSrc="/img/filter.svg" fontSize="13px" padding="3px" onClick={this.setFilter} />
             </div>
         )

@@ -47,6 +47,7 @@ All API calls are subject to change.
 | gamestyle | `{number}` | Game style of course (0: SMB, 1: SMB3, 2: SMW, 3: NSMBU) |
 | coursetheme | `{number}` | Course theme (0: Ground, 1: Underground, 2: Castle, 3: Airship, 4: Underwater, 5: Ghost House) |
 | coursethemesub | `{number}` | Subcourse theme (0: Ground, 1: Underground, 2: Castle, 3: Airship, 4: Underwater, 5: Ghost House) |
+| autoscroll | `{number} \| `*`0`* | Auto scroll speed (0: disabled, 1: slow, 2: medium, 3: fast) |
 | prettify | *`0`*` \| 1` | Pretty print json response |
 
 **Example**: `http://smm-test.alextc.de/api/getcourses?limit=50&start=121&prettify=1`
