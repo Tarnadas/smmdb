@@ -197,14 +197,14 @@ class CoursePanel extends React.PureComponent {
                 height: '44px',
                 lineHeight: '44px',
                 fontSize: '18px',
-                margin: '0 12px',
-                color: '#444'
+                margin: '0 12px'
             },
             stats: {
                 float: 'left',
                 width: 'auto',
                 display: 'flex',
-                alignItems: 'center'
+                alignItems: 'center',
+                position: 'absolute'
             },
             statsStars: {
                 width: '36px',
@@ -213,6 +213,15 @@ class CoursePanel extends React.PureComponent {
             },
             statsDownloads: {
                 width: '24px',
+                height: '24px',
+                margin: '0 8px'
+            },
+            statsText: {
+                fontSize: '12px',
+                width: 'auto'
+            },
+            statsAutoScroll: {
+                width: 'auto',
                 height: '24px',
                 margin: '0 8px'
             },
@@ -316,16 +325,79 @@ class CoursePanel extends React.PureComponent {
                         <div style={styles.footer}>
                             <div style={styles.stats}>
                                 <img style={styles.statsStars} src="/img/unstarred.png" />
-                                <div>
-                                    { this.props.course.starred }
-                                </div>
-                                <div>
-                                    /
-                                </div>
+                                { this.props.course.starred } /
                                 <img style={styles.statsDownloads} src="/img/downloads.png" />
-                                <div>
-                                    { this.props.course.downloads }
-                                </div>
+                                { this.props.course.downloads }
+                                <img style={styles.statsDownloads} src={
+                                    this.props.course.difficulty === 0 ? (
+                                        '/img/easy.png'
+                                    ) : (
+                                        this.props.course.difficulty === 1 ? (
+                                            '/img/normal.png'
+                                        ) : (
+                                            this.props.course.difficulty === 2 ? (
+                                                '/img/expert.png'
+                                            ) : (
+                                                this.props.course.difficulty === 3 ? (
+                                                    '/img/superexpert.png'
+                                                ) : (
+                                                    '/img/normal.png'
+                                                )
+                                            )
+                                        )
+                                    )
+                                } />
+                                {
+                                    screenSize !== ScreenSize.SMALL && (
+                                        <div style={styles.statsText}>
+                                            {
+                                                this.props.course.difficulty === 0 ? (
+                                                    'easy'
+                                                ) : (
+                                                    this.props.course.difficulty === 1 ? (
+                                                        'normal'
+                                                    ) : (
+                                                        this.props.course.difficulty === 2 ? (
+                                                            'expert'
+                                                        ) : (
+                                                            this.props.course.difficulty === 3 ? (
+                                                                's. expert'
+                                                            ) : (
+                                                                '-'
+                                                            )
+                                                        )
+                                                    )
+                                                )
+                                            }
+                                        </div>
+                                    )
+                                }
+                                {
+                                    this.props.course.autoScroll === 1 ? (
+                                        <img style={styles.statsAutoScroll} src="/img/slow.png" />
+                                    ) : (
+                                        this.props.course.autoScroll === 2 ? (
+                                            <img style={styles.statsAutoScroll} src="/img/medium.png" />
+                                        ) : (
+                                            this.props.course.autoScroll === 3 && (
+                                                <img style={styles.statsAutoScroll} src="/img/fast.png" />
+                                            )
+                                        )
+                                    )
+                                }
+                                {
+                                    this.props.course.autoScrollSub === 1 ? (
+                                        <img style={styles.statsAutoScroll} src="/img/slow.png" />
+                                    ) : (
+                                        this.props.course.autoScrollSub === 2 ? (
+                                            <img style={styles.statsAutoScroll} src="/img/medium.png" />
+                                        ) : (
+                                            this.props.course.autoScrollSub === 3 && (
+                                                <img style={styles.statsAutoScroll} src="/img/fast.png" />
+                                            )
+                                        )
+                                    )
+                                }
                             </div>
                             <div style={styles.maker}>
                                 <div style={styles.makerName}>
