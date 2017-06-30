@@ -110,6 +110,7 @@ class CoursePanel extends React.PureComponent {
             panel: {
                 height: this.state.showDetails ? 'auto' : '169px',
                 width: 'calc(100% - 20px)',
+                maxWidth: '906px',
                 backgroundColor: '#d4dda5',
                 borderRadius: '10px',
                 margin: '10px',
@@ -135,6 +136,7 @@ class CoursePanel extends React.PureComponent {
             },
             details: {
                 width: screenSize === ScreenSize.SMALL ? '100%' : 'calc(100% - 100px)',
+                maxWidth: '806px',
                 display: 'inline-flex',
                 flexWrap: 'wrap',
                 alignContent: 'flex-start',

@@ -65,28 +65,31 @@ class MainView extends React.PureComponent {
         const courses = this.props.courses.toJS();
         const styles = {
             main: {
+                display: screenSize === ScreenSize.LARGE ? 'flex' : 'flex',
+                flexDirection: screenSize === ScreenSize.LARGE ? 'column' : 'column',
+                alignItems: screenSize === ScreenSize.LARGE ? 'center' : 'center'
+            },
+            content: {
                 width: screenSize === ScreenSize.LARGE ? 'calc(100% - 260px)' : '100%',
+                maxWidth: '926px',
                 height: screenSize === ScreenSize.LARGE ? 'calc(100% - 40px)' : 'auto',
                 overflow: 'hidden',
-                position: screenSize === ScreenSize.LARGE ? 'absolute' : '',
                 zIndex: '10',
-                top: screenSize === ScreenSize.LARGE ? '40px' : '',
-                left: screenSize === ScreenSize.LARGE ? '140px' : '',
-                marginTop: screenSize === ScreenSize.LARGE ? '' : '30px'
+                marginTop: '40px'
             },
             flex: {
-                color: '#fff',
-                overflow: 'hidden',
-                display: screenSize === ScreenSize.LARGE ? 'flex' : 'block'
+                //color: '#fff',
+                //overflow: 'hidden',
+                //display: screenSize === ScreenSize.LARGE ? 'flex' : 'block'
             }
         };
         return (
-            <div>
+            <div style={styles.main}>
                 <StatsPanel />
                 {
                     screenSize === ScreenSize.LARGE && <SideBarArea />
                 }
-                <div style={styles.main}>
+                <div style={styles.content}>
                     <div style={styles.flex}>
                         {
                             screenSize === ScreenSize.LARGE ? (

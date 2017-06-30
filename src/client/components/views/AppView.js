@@ -108,7 +108,7 @@ class AppView extends React.PureComponent {
                 maxWidth: '100%',
                 height: '100%',
                 maxHeight: '100%',
-                overflow: screenSize === ScreenSize.LARGE ? 'hidden' : 'scroll',
+                overflowY: screenSize === ScreenSize.LARGE ? 'hidden' : 'scroll',
                 display: screenSize === ScreenSize.LARGE ? 'flex' : 'block',
                 flexDirection: 'column'
             },

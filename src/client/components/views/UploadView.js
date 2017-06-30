@@ -79,15 +79,18 @@ class UploadView extends React.PureComponent {
         const accountData = this.props.accountData.toJS();
         const courses = this.props.courses.toJS();
         const styles = {
+            main: {
+                display: screenSize === ScreenSize.LARGE ? 'flex' : 'flex',
+                flexDirection: screenSize === ScreenSize.LARGE ? 'column' : 'column',
+                alignItems: screenSize === ScreenSize.LARGE ? 'center' : 'center'
+            },
             upload: {
                 width: screenSize === ScreenSize.LARGE ? 'calc(100% - 260px)' : '100%',
+                maxWidth: '926px',
                 height: screenSize === ScreenSize.LARGE ? 'calc(100% - 40px)' : 'auto',
                 overflow: 'hidden',
-                position: screenSize === ScreenSize.LARGE ? 'absolute' : '',
                 zIndex: '10',
-                top: screenSize === ScreenSize.LARGE ? '40px' : '',
-                left: screenSize === ScreenSize.LARGE ? '140px' : '',
-                marginTop: screenSize === ScreenSize.LARGE ? '' : '30px',
+                marginTop: '40px',
                 color: '#fff'
             },
             flex: {
@@ -113,29 +116,31 @@ class UploadView extends React.PureComponent {
             }
         };
         return (
-            <div style={styles.upload}>
-                {
-                    !!accountData.id ? (
-                        <div style={styles.flex}>
-                            <div style={styles.drag}>
-                                Drag and drop or click here to upload a course (not working)
+            <div style={styles.main}>
+                <div style={styles.upload}>
+                    {
+                        !!accountData.id ? (
+                            <div style={styles.flex}>
+                                <div style={styles.drag}>
+                                    Drag and drop or click here to upload a course (not working)
+                                </div>
+                                {
+                                    screenSize === ScreenSize.LARGE ? (
+                                        <Scrollbars universal style={{height: '100%'}} onScroll={this.handleScroll} ref={input => { this.scrollBar = input; }}>
+                                            {
+                                                this.renderCourses(courses)
+                                            }
+                                        </Scrollbars>
+                                    ) : (
+                                        this.renderCourses(courses)
+                                    )
+                                }
                             </div>
-                            {
-                                screenSize === ScreenSize.LARGE ? (
-                                    <Scrollbars universal style={{height: '100%'}} onScroll={this.handleScroll} ref={input => { this.scrollBar = input; }}>
-                                        {
-                                            this.renderCourses(courses)
-                                        }
-                                    </Scrollbars>
-                                ) : (
-                                    this.renderCourses(courses)
-                                )
-                            }
-                        </div>
-                    ) : (
-                        <div style={styles.flex}>You are not logged in</div>
-                    )
-                }
+                        ) : (
+                            <div style={styles.flex}>You are not logged in</div>
+                        )
+                    }
+                </div>
             </div>
         )
     }

@@ -11,8 +11,8 @@ const path = require('path');
 module.exports = [
     {
         entry: {
-            app: path.join(__dirname, 'src/client/renderer.js'),
-            vendor: ['babel-polyfill', 'react', 'react-dom', 'react-redux', 'react-router', 'react-router-dom', 'react-router-redux', 'react-google-login', 'react-lazyload', 'react-custom-scrollbars', 'redux', 'redux-immutable', 'immutable', 'history', 'bluebird', 'simple-get']
+            app: ['babel-polyfill', path.join(__dirname, 'src/client/renderer.js')],
+            vendor: ['react', 'react-dom', 'react-redux', 'react-router', 'react-router-dom', 'react-router-redux', 'react-google-login', 'react-lazyload', 'react-custom-scrollbars', 'redux', 'redux-immutable', 'immutable', 'history', 'bluebird', 'simple-get']
         },
         output: {
             filename: 'app.[chunkhash].js',
