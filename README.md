@@ -30,7 +30,7 @@ All API calls are subject to change.
 
 | Query | Value | Description |
 | --- | --- | --- |
-| apikey | {string} | Optional user identification |
+| apikey | `{string}` | Optional user identification |
 | order | *`lastmodified`*` \| uploaded \| title \| stars \| downloads \| completed` | Order of courses |
 | dir | `asc \| `*`desc`* | Order direction of courses |
 | limit | `{number} \| `*`100`* | Limit maximum amount of sent courses (max: 100) |
