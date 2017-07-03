@@ -6,8 +6,10 @@ import {
     Route
 } from 'react-router-dom'
 import { forceCheck } from 'react-lazyload'
+import got from 'got'
 
 import { stringify } from 'querystring'
+import { resolve }   from 'url'
 
 import TopBarArea  from '../areas/TopBarArea'
 import FilterArea  from '../areas/FilterArea'
@@ -20,8 +22,8 @@ import {
     setVideoId, mediaQuery, setCourses
 } from '../../actions'
 import {
-    getJson
-} from '../../../shared/renderer'
+    domain
+} from '../../../static'
 
 const UPDATE_OFFSET = 500;
 const LIMIT         = 10;
@@ -76,7 +78,9 @@ class AppView extends React.PureComponent {
         }
     }
     async fetchCourses (shouldConcat = false, limit = LIMIT, start = 0) {
-        const courses = await getJson('GET', `/api/getcourses?limit=${limit}&start=${start}${!!this.queryString ? `&${this.queryString}` : ''}`);
+        const courses = (await got(resolve(domain, `/api/getcourses?limit=${limit}&start=${start}${!!this.queryString ? `&${this.queryString}` : ''}`), {
+            json: true
+        })).body;
         if (!courses.err) {
             this.props.dispatch(setCourses(courses, shouldConcat));
         }

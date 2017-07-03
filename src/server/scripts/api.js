@@ -32,6 +32,7 @@ export default class API {
 
             let course = courses[i];
             if (!course) break;
+            if (filteredResult.length >= (start + limit)) break;
 
             if (!!filterData) {
                 if (!!filterData.lastmodifiedfrom) {
@@ -101,7 +102,7 @@ export default class API {
                     }
                 }
             }
-            let resultCourse = course.getJSON(loggedIn, accountId);
+            let resultCourse = course.toJSON(loggedIn, accountId);
             filteredResult.push(resultCourse);
 
         }

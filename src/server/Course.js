@@ -1,16 +1,20 @@
 import {
-    decompress, courseProto, deserialize
+    decompress, courseProto, deserialize, loadCourse
 } from 'cemu-smm'
 import {
     zip
 } from 'cross-unzip'
 import tmp from 'tmp'
+import fileType from 'file-type'
+
+import { resolve } from 'path'
 
 import {
      pointsPerStar, pointsPerDownload
 } from '.'
-import Account from './Account'
+import Account  from './Account'
 import Database from './scripts/database'
+import Sorting  from './scripts/sorting'
 
 import * as fs   from 'fs'
 import * as path from 'path'
@@ -66,7 +70,7 @@ export default class Course {
             fs.writeFileSync(path.join(__dirname, `../client/courseimg/${this._id}_full.jpg`), this.courseData.thumbnail);
         }
         fs.writeFileSync(path.join(__dirname, `../client/coursedata/${this._id}`), await this.courseData.serialize());
-        fs.writeFileSync(path.join(__dirname, `../client/coursedata/${this._id}.gzip`), await this.courseData.serializeGzipped());
+        fs.writeFileSync(path.join(__dirname, `../client/coursedata/${this._id}.gz`), await this.courseData.serializeGzipped());
         delete this.courseData;
         delete this.serialized;
         return this;
@@ -124,7 +128,7 @@ export default class Course {
         return courses[courseId];
     }
 
-    getJSON (loggedIn, accountId) {
+    toJSON (loggedIn, accountId) {
         let result = Object.assign({}, this);
         result.id = this._id;
         result.completed = this[completed].length;
@@ -170,11 +174,72 @@ export default class Course {
     }
 
     getSerialized () {
-        return fs.readFileSync(path.join(__dirname, `../client/coursedata/${this._id}.gzip`));
+        return fs.readFileSync(path.join(__dirname, `../client/coursedata/${this._id}.gz`));
     }
 
     async get3DS () {
         return await (await deserialize(fs.readFileSync(path.join(__dirname, `../client/coursedata/${this._id}`)))).to3DS();
+    }
+
+    static async fromBuffer (buffer, account) {
+        const tmpFile = resolve(__dirname, 'course');
+        fs.writeFileSync(tmpFile, buffer);
+        const type = fileType(buffer);
+        const mime = type && type.mime;
+        const buf = new Uint8Array(buffer);
+        const is3DS = () => {
+            const header = [0x04, 0x30, 0x04, 0x00, 0x7D, 0x00, 0x00, 0x00, 0xDD, 0xBA, 0xFE, 0xCA, 0x3B, 0xA0, 0xB2, 0xB8, 0x6E, 0x55, 0x29, 0x8B, 0x00, 0xC0, 0x10, 0x00];
+            for (let i = 0; i < header.length; i++) {
+                if (header[i] !== buf[i + 4]) {
+                    return false;
+                }
+            }
+            return true;
+        };
+        const createCourse = async (courseData) => {
+            const course = await (new Course(courseData));
+            course.owner = account._id;
+            course.nintendoid = null;
+            course.videoid = null;
+            course.difficulty = 1;
+            course.lastmodified = course.modified;
+            delete course.modified;
+            course.uploaded = Math.floor(new Date().getTime() / 1000);
+            if (!course.maker) course.maker = account.username;
+            delete course.tiles;
+            delete course.tilesSub;
+            delete course.sounds;
+            delete course.soundsSub;
+            delete course.thumbnail;
+            delete course.thumbnailPreview;
+            await Database.addCourse(course);
+            fs.writeFileSync(path.join(__dirname, `../client/courseimg/${course._id}.jpg`), courseData.thumbnailPreview);
+            fs.writeFileSync(path.join(__dirname, `../client/courseimg/${course._id}_full.jpg`), courseData.thumbnail);
+            fs.writeFileSync(path.join(__dirname, `../client/coursedata/${course._id}`), await courseData.serialize());
+            fs.writeFileSync(path.join(__dirname, `../client/coursedata/${course._id}.gz`), await courseData.serializeGzipped());
+            course.setId();
+            Sorting.insertCourse(course);
+            return course;
+        };
+        try {
+            if (mime === 'application/x-rar-compressed' || mime === 'application/zip' || mime === 'application/x-7z-compressed' || mime === 'application/x-tar') {
+                const courseData = await decompress(tmpFile);
+                const courses = [];
+                for (let i = 0; i < courseData.length; i++) {
+                    const course = await createCourse(courseData[i]);
+                    courses.push(course)
+                }
+                fs.unlinkSync(tmpFile);
+                return courses;
+            } else if (is3DS()) {
+                const course = await createCourse(await loadCourse(tmpFile, 0, false));
+                fs.unlinkSync(tmpFile);
+                return [course];
+            }
+        } catch (err) {
+            fs.unlinkSync(tmpFile);
+            return null;
+        }
     }
 
     async update ({ title, maker }) {
@@ -192,7 +257,7 @@ export default class Course {
         }
         this.courseData = course;
         fs.writeFileSync(path.join(__dirname, `../client/coursedata/${this._id}`), await this.courseData.serialize());
-        fs.writeFileSync(path.join(__dirname, `../client/coursedata/${this._id}.gzip`), await this.courseData.serializeGzipped());
+        fs.writeFileSync(path.join(__dirname, `../client/coursedata/${this._id}.gz`), await this.courseData.serializeGzipped());
         await Database.updateCourse(this._id, update);
         return null;
     }

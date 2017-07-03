@@ -2,14 +2,17 @@ import React from 'react'
 import {
     connect
 } from 'react-redux'
+import got from 'got'
+
+import { resolve } from 'url'
 
 import SMMButton, { COLOR_SCHEME } from '../buttons/SMMButton'
 import {
     ScreenSize
 } from '../../reducers/mediaQuery'
 import {
-    getJson
-} from '../../../shared/renderer'
+    domain
+} from '../../../static'
 import {
     setAccountData
 } from '../../actions'
@@ -46,7 +49,11 @@ class ProfileView extends React.PureComponent {
             const profile = {
                 username: this.state.username
             };
-            const res = await getJson('POST', `/api/setaccountdata?apikey=${this.props.accountData.get('apikey')}`, profile);
+            const res = (await got(resolve(domain, `/api/setaccountdata?apikey=${this.props.accountData.get('apikey')}`), {
+                method: 'POST',
+                body: profile,
+                json: true
+            })).body;
             if (!res.err) {
                 this.props.dispatch(setAccountData(res));
             }

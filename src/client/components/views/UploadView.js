@@ -6,6 +6,9 @@ import {
     Scrollbars
 } from 'react-custom-scrollbars'
 import { forceCheck } from 'react-lazyload'
+import got from 'got'
+
+import { resolve } from 'url'
 
 import {
     ScreenSize
@@ -14,9 +17,10 @@ import {
     setCoursesSelf
 } from '../../actions'
 import {
-    getJson
-} from '../../../shared/renderer'
+    domain
+} from '../../../static'
 import CoursePanel from '../panels/CoursePanel'
+import UploadArea  from '../areas/UploadArea'
 
 const UPDATE_OFFSET = 500;
 const LIMIT         = 10;
@@ -38,15 +42,18 @@ class UploadView extends React.PureComponent {
         })();
     }
     componentWillReceiveProps (nextProps, nextContext) {
+        if (nextProps.courses !== this.props.courses) this.doUpdate = false;
         if (nextProps.accountData === this.props.accountData || !nextProps.accountData.get('id')) return;
         this.doUpdate = false;
         this.index = 0;
         (async () => {
-            await this.fetchCourses(this.props.accountData.get('apikey'));
+            await this.fetchCourses(nextProps.accountData.get('apikey'));
         })();
     }
     async fetchCourses (apiKey, shouldConcat = false, limit = LIMIT, start = 0) {
-        const courses = await getJson('GET', `/api/getcourses?limit=${limit}&start=${start}&apikey=${apiKey}`);
+        const courses = (await got(resolve(domain, `/api/getcourses?limit=${limit}&start=${start}&apikey=${apiKey}`), {
+            json: true
+        })).body;
         if (!courses.err) {
             this.props.dispatch(setCoursesSelf(courses, shouldConcat));
         }
@@ -78,6 +85,7 @@ class UploadView extends React.PureComponent {
         const screenSize = this.props.screenSize;
         const accountData = this.props.accountData.toJS();
         const courses = this.props.courses.toJS();
+        const uploadedCourses = this.props.uploadedCourses.toJS();
         const styles = {
             main: {
                 display: screenSize === ScreenSize.LARGE ? 'flex' : 'flex',
@@ -98,21 +106,10 @@ class UploadView extends React.PureComponent {
                 display: screenSize === ScreenSize.LARGE ? 'flex' : 'block',
                 flexDirection: screenSize === ScreenSize.LARGE ? 'column' : ''
             },
-            drag: {
-                height: 'auto',
-                width: 'auto',
-                padding: '40px 20px',
-                marginBottom: '10px',
-                background: '#fff',
-                color: '#000',
-                fontSize: '20px',
-                border: ' 4px dashed #000000',
-                borderRadius: '20px',
-                textAlign: 'center',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer'
+            line: {
+                height: '5px',
+                backgroundColor: '#000',
+                margin: '10px 0'
             }
         };
         return (
@@ -121,18 +118,44 @@ class UploadView extends React.PureComponent {
                     {
                         !!accountData.id ? (
                             <div style={styles.flex}>
-                                <div style={styles.drag}>
-                                    Drag and drop or click here to upload a course (not working)
-                                </div>
+                                <UploadArea />
                                 {
                                     screenSize === ScreenSize.LARGE ? (
                                         <Scrollbars universal style={{height: '100%'}} onScroll={this.handleScroll} ref={input => { this.scrollBar = input; }}>
+                                            {
+                                                uploadedCourses.length > 0 && (
+                                                    <div style={{height:'auto', color:'#000', fontSize:'15px'}}>
+                                                        Recently uploaded:
+                                                        {
+                                                            this.renderCourses(uploadedCourses)
+                                                        }
+                                                        <div style={styles.line} />
+                                                        All uploads:
+                                                    </div>
+                                                )
+                                            }
                                             {
                                                 this.renderCourses(courses)
                                             }
                                         </Scrollbars>
                                     ) : (
-                                        this.renderCourses(courses)
+                                        <div>
+                                            {
+                                                uploadedCourses.length > 0 && (
+                                                    <div style={{height:'auto', color:'#000', fontSize:'15px'}}>
+                                                        Recently uploaded:
+                                                        {
+                                                            this.renderCourses(uploadedCourses)
+                                                        }
+                                                        <div style={styles.line} />
+                                                        All uploads:
+                                                    </div>
+                                                )
+                                            }
+                                            {
+                                                this.renderCourses(courses)
+                                            }
+                                        </div>
                                     )
                                 }
                             </div>
@@ -148,5 +171,6 @@ class UploadView extends React.PureComponent {
 export default connect(state => ({
     screenSize: state.getIn(['mediaQuery', 'screenSize']),
     accountData: state.getIn(['userData', 'accountData']),
-    courses: state.get('courseDataSelf')
+    courses: state.get('courseDataSelf'),
+    uploadedCourses: state.get('courseDataUploaded')
 }))(UploadView)

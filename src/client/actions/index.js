@@ -44,6 +44,22 @@ export function setCoursesSelf (courses, concat) {
     }
 }
 
+export function setCourseUploaded (id, course) {
+    return {
+        type: 'SET_COURSE_UPLOADED',
+        id,
+        course
+    }
+}
+
+export function setCoursesUploaded (courses, concat) {
+    return {
+        type: 'SET_COURSES_UPLOADED',
+        courses,
+        concat
+    }
+}
+
 export function showFilter (showFilter) {
     return {
         type: 'SHOW_FILTER',

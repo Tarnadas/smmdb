@@ -96,7 +96,7 @@ export default class SMMButton extends React.PureComponent {
                 {
                     !!this.props.link ? (
                         !!this.props.blank ? (
-                            <a href="https://github.com/Tarnadas/smmdb" target="__blank">
+                            <a href={this.props.link} target="__blank">
                                 <ButtonSub iconStyle={iconStyle} iconSrc={this.props.iconSrc} text={text} hover={this.state.hover} />
                             </a>
                         ) : (

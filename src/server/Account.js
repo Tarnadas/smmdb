@@ -68,7 +68,7 @@ export default class Account {
     static getAccountBySession (idToken) {
         return accountsBySession[idToken];
     }
-    getJSON () {
+    toJSON () {
         return {
             username: this.username,
             id: this._id,

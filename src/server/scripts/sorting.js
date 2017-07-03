@@ -101,7 +101,7 @@ export default class Sorting {
 		let upper = [], lower = [];
 		let current = coursesSorted.title.desc;
 		let iterations = 0;
-		let maxIterations = 1000;
+		const maxIterations = 1000;
 		while (iterations < maxIterations) {
 			iterations++;
 			if (current.length === 1) {
@@ -121,32 +121,78 @@ export default class Sorting {
 			}
 		}
         coursesSorted.title.desc.splice(index, 0, course);
-		
-		index = 0;
-		current = coursesSorted.title.asc;
-		iterations = 0;
-		while (iterations < maxIterations) {
-			iterations++;
-			if (current.length === 1) {
-				if (course.title < current[0].title) {
-					index++;
-				}
-				break;
-			}
-			let middle = Math.trunc((current.length-1) / 2) + 1;
-			upper = current.slice(0, middle);
-			lower = current.slice(middle, current.length);
-			if (course.title > current[middle].title) {
-				current = upper;
-			} else {
-				current = lower;
-				index += middle;
-			}
-		}
+
+        index = 0;
+        current = coursesSorted.title.asc;
+        iterations = 0;
+        while (iterations < maxIterations) {
+            iterations++;
+            if (current.length === 1) {
+                if (course.title < current[0].title) {
+                    index++;
+                }
+                break;
+            }
+            let middle = Math.trunc((current.length-1) / 2) + 1;
+            upper = current.slice(0, middle);
+            lower = current.slice(middle, current.length);
+            if (course.title > current[middle].title) {
+                current = upper;
+            } else {
+                current = lower;
+                index += middle;
+            }
+        }
         coursesSorted.title.asc.splice(index, 0, course);
 
-        coursesSorted.lastmodified.desc.splice(0, 0, course);
-        coursesSorted.lastmodified.asc.push(course);
+        index = 0;
+        current = coursesSorted.lastmodified.desc;
+        iterations = 0;
+        while (iterations < maxIterations) {
+            iterations++;
+            if (current.length === 1) {
+                if (course.lastmodified < current[0].lastmodified) {
+                    index++;
+                }
+                break;
+            }
+            let middle = Math.trunc((current.length-1) / 2) + 1;
+            upper = current.slice(0, middle);
+            lower = current.slice(middle, current.length);
+            if (course.lastmodified > current[middle].lastmodified) {
+                current = upper;
+            } else {
+                current = lower;
+                index += middle;
+            }
+        }
+        coursesSorted.lastmodified.desc.splice(index, 0, course);
+
+        index = 0;
+        current = coursesSorted.lastmodified.asc;
+        iterations = 0;
+        while (iterations < maxIterations) {
+            iterations++;
+            if (current.length === 1) {
+                if (course.lastmodified < current[0].lastmodified) {
+                    index++;
+                }
+                break;
+            }
+            let middle = Math.trunc((current.length-1) / 2) + 1;
+            upper = current.slice(0, middle);
+            lower = current.slice(middle, current.length);
+            if (course.lastmodified > current[middle].lastmodified) {
+                current = upper;
+            } else {
+                current = lower;
+                index += middle;
+            }
+        }
+        coursesSorted.lastmodified.asc.splice(index, 0, course);
+
+        //coursesSorted.lastmodified.desc.splice(0, 0, course);
+        //coursesSorted.lastmodified.asc.push(course);
 
         coursesSorted.uploaded.desc.splice(0, 0, course);
         coursesSorted.uploaded.asc.push(course);

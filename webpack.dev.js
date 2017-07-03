@@ -20,6 +20,9 @@ module.exports = [
             net: 'empty',
             tls: 'empty'
         },
+        externals: [{
+            electron: true
+        }],
         plugins: [
             new webpack.EnvironmentPlugin('NODE_ENV'),
             //new webpack.optimize.ModuleConcatenationPlugin(),

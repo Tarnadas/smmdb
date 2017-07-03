@@ -87,7 +87,12 @@ function main() {
 
     app.set('trust proxy', 1);
     app.use(compression());
-    app.use(bodyParser.json());
+    app.use(bodyParser.json({
+        limit: '500kb'
+    }));
+    app.use(bodyParser.raw({
+        limit: '6mb'
+    }));
     app.use(range({
         accept: 'bytes'
     }));
@@ -133,7 +138,7 @@ function main() {
                     }
                     req.session.idtoken = idToken;
 
-                    res.json(account.getJSON());
+                    res.json(account);
 
                 }
             });
@@ -158,7 +163,7 @@ function main() {
             });
             return;
         }
-        res.json(account.getJSON());
+        res.json(account);
 
     });
 
@@ -278,6 +283,7 @@ function main() {
             let data = split[1];
             apiData = qs.parse(data);
         }
+
         if (apiCall === "uploadcourse") {
             if (!apiData.apikey) {
                 res.json({
@@ -290,7 +296,14 @@ function main() {
                         err: `Account with API key ${apiData.apikey} not found`
                     });
                 } else {
-
+                    const courses = await Course.fromBuffer(req.body, account);
+                    if (!courses) {
+                        res.json({
+                            err: 'Could not read course'
+                        })
+                    } else {
+                        res.json(courses);
+                    }
                 }
             }
         } else if (apiCall === "updatecourse") {
@@ -327,7 +340,7 @@ function main() {
                 if (!!req.body.title) courseData.title = req.body.title;
                 if (!!req.body.maker) courseData.maker = req.body.maker;
                 await course.update(courseData);
-                res.json(course.getJSON());
+                res.json(course);
             }
         } else if (apiCall === "setaccountdata") {
             if (!apiData.apikey) {
@@ -342,7 +355,7 @@ function main() {
                     });
                 } else {
                     if (!!req.body.username) await account.setUsername(req.body.username);
-                    res.json(account.getJSON());
+                    res.json(account);
                 }
             }
         } else {

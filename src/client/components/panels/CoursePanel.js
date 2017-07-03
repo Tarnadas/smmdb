@@ -3,6 +3,9 @@ import LazyLoad from 'react-lazyload'
 import {
     connect
 } from 'react-redux'
+import got from 'got'
+
+import { resolve } from 'url'
 
 import CourseDownloadButton from '../buttons/CourseDownloadButton'
 import CourseVideoButton    from '../buttons/CourseVideoButton'
@@ -11,8 +14,8 @@ import {
     ScreenSize
 } from '../../reducers/mediaQuery'
 import {
-    getJson
-} from '../../../shared/renderer'
+    domain
+} from '../../../static'
 import {
     setCourse, setCourseSelf
 } from '../../actions'
@@ -67,7 +70,10 @@ class CoursePanel extends React.PureComponent {
                 title: this.state.title,
                 maker: this.state.maker
             };
-            const res = await getJson('POST', `/api/updatecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`, course);
+            const res = await got(resolve(domain, `/api/updatecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`), {
+                method: 'POST',
+                body: course
+            });
             if (!res.err) {
                 if (this.props.isSelf) {
                     this.props.dispatch(setCourseSelf(this.props.id, res));

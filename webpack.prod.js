@@ -12,10 +12,10 @@ module.exports = [
     {
         entry: {
             app: ['babel-polyfill', path.join(__dirname, 'src/client/renderer.js')],
-            vendor: ['react', 'react-dom', 'react-redux', 'react-router', 'react-router-dom', 'react-router-redux', 'react-google-login', 'react-lazyload', 'react-custom-scrollbars', 'redux', 'redux-immutable', 'immutable', 'history', 'bluebird', 'simple-get']
+            vendor: ['react', 'react-dom', 'react-redux', 'react-router', 'react-router-dom', 'react-router-redux', 'react-google-login', 'react-lazyload', 'react-custom-scrollbars', 'redux', 'redux-immutable', 'immutable', 'history', 'bluebird', 'got']
         },
         output: {
-            filename: 'app.[chunkhash].js',
+            filename: 'app.[hash].js',
             path: path.join(__dirname, 'build/client/script')
         },
         node: {
@@ -27,10 +27,11 @@ module.exports = [
             tls: 'empty'
         },
         plugins: [
+            new WebpackMd5Hash(),
             new webpack.EnvironmentPlugin('NODE_ENV'),
             new webpack.optimize.CommonsChunkPlugin({
                 name: 'vendor',
-                filename: 'vendor.[chunkhash].js'
+                filename: 'vendor.[hash].js'
             }),
             new webpack.optimize.ModuleConcatenationPlugin(),
             new BabiliPlugin({
@@ -49,8 +50,7 @@ module.exports = [
                 openAnalyzer: false,
                 generateStatsFile: true,
                 statsFilename: path.join(__dirname, 'stats.json'),
-            }),
-            new WebpackMd5Hash()
+            })
         ],
         module: {
             loaders: [

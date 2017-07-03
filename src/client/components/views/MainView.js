@@ -6,6 +6,9 @@ import {
     Scrollbars
 } from 'react-custom-scrollbars'
 import { forceCheck } from 'react-lazyload'
+import got from 'got'
+
+import { resolve } from 'url'
 
 import {
     ScreenSize
@@ -14,8 +17,8 @@ import {
     setCourses
 } from '../../actions'
 import {
-    getJson
-} from '../../../shared/renderer'
+    domain
+} from '../../../static'
 import StatsPanel  from '../panels/StatsPanel'
 import CoursePanel from '../panels/CoursePanel'
 import SideBarArea from '../areas/SideBarArea'
@@ -37,7 +40,9 @@ class MainView extends React.PureComponent {
         this.scrollBar.scrollToTop();
     }
     async fetchCourses () {
-        const courses = await getJson('GET', `/api/getcourses?limit=10`);
+        const courses = (await got(resolve(domain, `/api/getcourses?limit=10`), {
+            json: true
+        })).body;
         if (!courses.err) {
             this.props.dispatch(setCourses(courses, false));
         }

@@ -11,9 +11,6 @@ import {
     ConnectedRouter
 } from 'react-router-redux'
 import createHistory from 'history/createBrowserHistory'
-import get from 'simple-get'
-
-import { resolve as resolveUrl } from 'url'
 
 import initReducer from '../client/reducers'
 import AppView     from '../client/components/views/AppView'
@@ -22,7 +19,6 @@ import { ScreenSize } from '../client/reducers/mediaQuery'
 import {
     setCourses, setStats, mediaQuery
 } from '../client/actions'
-import { domain } from '../static'
 
 export default function renderer (isServer = false, cb, preloadedState, req, courses, stats, isMobile) {
     const history = isServer ? null : createHistory();
@@ -54,18 +50,4 @@ export default function renderer (isServer = false, cb, preloadedState, req, cou
         !isServer && document.getElementById('root')
     );
     return [html, store.getState()];
-}
-
-export async function getJson (method = 'GET', path, body = null) {
-    return await new Promise((resolve, reject) => {
-        get.concat({
-            method,
-            url: resolveUrl(domain, path),
-            json: true,
-            body: body
-        }, (err, res, data) => {
-            if (err) reject(err);
-            resolve(data);
-        })
-    });
 }
