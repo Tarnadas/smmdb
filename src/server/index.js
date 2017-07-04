@@ -215,7 +215,7 @@ function main() {
                 res.json(result);
             } else if (apiCall === "getcourses") {
                 let loggedIn = false, accountId;
-                let account = Account.getAccountByAPIKey(apiData.apikey);
+                const account = Account.getAccountByAPIKey(apiData.apikey);
                 if (!!account) {
                     loggedIn = true;
                     accountId = account.id;
@@ -229,7 +229,7 @@ function main() {
                     app.set('json spaces', 0);
                 }
             } else if (apiCall === "downloadcourse") {
-                let course = Course.getCourse(apiData.id);
+                const course = Course.getCourse(apiData.id);
                 if (!course) {
                     res.json({
                         err: 'Course not found'
@@ -262,6 +262,35 @@ function main() {
                     res.set('Content-Type', 'application/wiiu');
                     res.send(await course.getSerialized());
                 }
+            } else if (apiCall === "deletecourse") {
+                if (!apiData.apikey) {
+                    res.json({
+                        err: "API key required"
+                    });
+                    return;
+                }
+                const account = Account.getAccountByAPIKey(apiData.apikey);
+                if (account == null) {
+                    res.json({
+                        err: `Account with API key ${apiData.apikey} not found`
+                    });
+                    return;
+                }
+                const course = Course.getCourse(apiData.id);
+                if (!course) {
+                    res.json({
+                        err: 'Course not found'
+                    });
+                    return;
+                }
+                if (!course.owner.equals(account._id)) {
+                    res.json({
+                        err: `Course with ID ${apiData.id} is not owned by account with API key ${apiData.apikey}`
+                    });
+                    return;
+                }
+                course.delete();
+                res.json({message: 'success'});
             } else {
                 res.json({
                     err: "Wrong syntax"

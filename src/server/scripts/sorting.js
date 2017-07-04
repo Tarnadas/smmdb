@@ -307,14 +307,14 @@ export default class Sorting {
 	static deleteCourse (courseId) {
 
 	    let directions = [ 'desc', 'asc' ];
-	    for (let i = 0; i < this.properties.length; i++) {
-            let property = this.properties[i];
+	    for (let i = 0; i < properties.length; i++) {
+            let property = properties[i].name;
 	        for (let j = 0; j < directions.length; j++) {
-	            let direction = directions[j];
+	            const direction = directions[j];
                 let prevIndex = 0;
                 let current = coursesSorted[property][direction];
                 for (let i = 0; i < current.length; i++) {
-                    if (current[i].id === courseId) {
+                    if (current[i]._id === courseId) {
                         prevIndex = i;
                         break;
                     }
@@ -406,9 +406,9 @@ export default class Sorting {
 
 	static completeCourse (courseId) {
 		
-		let course = this.courses[courseId];
+		let course = courses[courseId];
 		let index = 0, prevIndex = 0;
-		let current = this.coursesSorted.completed.desc;
+		let current = coursesSorted.completed.desc;
 		for (let i = 0; i < current.length; i++) {
 			if (current[i].id === courseId) {
 				prevIndex = i;

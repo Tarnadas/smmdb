@@ -31,11 +31,13 @@ class CoursePanel extends React.PureComponent {
             changed: false,
             saved: false,
             title: props.course.title,
-            maker: props.course.maker
+            maker: props.course.maker,
+            shouldDelete: false
         };
         this.onShowDetails = this.onShowDetails.bind(this);
         this.onHideDetails = this.onHideDetails.bind(this);
         this.onCourseSubmit = this.onCourseSubmit.bind(this);
+        this.onCourseDelete = this.onCourseDelete.bind(this);
         this.onTitleChange = this.onTitleChange.bind(this);
         this.onMakerChange = this.onMakerChange.bind(this);
     }
@@ -54,7 +56,8 @@ class CoursePanel extends React.PureComponent {
     onShowDetails () {
         if (!this.state.showDetails) {
             this.setState({
-                showDetails: true
+                showDetails: true,
+                shouldDelete: false
             });
         }
     }
@@ -64,28 +67,46 @@ class CoursePanel extends React.PureComponent {
         });
     }
     onCourseSubmit () {
+        if (this.state.title === this.props.course.title && this.state.maker === this.props.course.maker) return;
         (async () => {
-            if (this.state.title === this.props.course.title && this.state.maker === this.props.course.maker) return;
             const course = {
                 title: this.state.title,
                 maker: this.state.maker
             };
-            const res = await got(resolve(domain, `/api/updatecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`), {
+            const res = (await got(resolve(domain, `/api/updatecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`), {
                 method: 'POST',
-                body: course
-            });
+                body: course,
+                json: true
+            })).body;
             if (!res.err) {
                 if (this.props.isSelf) {
                     this.props.dispatch(setCourseSelf(this.props.id, res));
                 } else {
                     this.props.dispatch(setCourse(this.props.id, res));
                 }
+                this.setState({
+                    changed: false,
+                    saved: true
+                });
             }
-            this.setState({
-                changed: false,
-                saved: true
-            });
         })();
+    }
+    onCourseDelete () {
+        if (this.state.shouldDelete) {
+            (async () => {
+                const res = (await got(resolve(domain, `/api/deletecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`), {
+                    json: true
+                })).body;
+                console.log(res);
+                if (!res.err) {
+                    this.props.onCourseDelete(this.props.id);
+                }
+            })();
+        } else {
+            this.setState({
+                shouldDelete: true
+            })
+        }
     }
     onTitleChange (e) {
         let title = e.target.value;
@@ -431,6 +452,7 @@ class CoursePanel extends React.PureComponent {
                                                 <input style={styles.input} value={this.state.maker} onChange={this.onMakerChange} />
                                             </div>
                                             <SMMButton text="Save" iconSrc="/img/submit.png" fontSize="13px" padding="3px" colorScheme={colorScheme} onClick={this.onCourseSubmit} />
+                                            <SMMButton text={this.state.shouldDelete ? 'Click again' : 'Delete'} iconSrc="/img/delete.png" fontSize="13px" padding="3px" colorScheme={colorScheme} onClick={this.onCourseDelete} />
                                         </div>
                                     )
                                 }

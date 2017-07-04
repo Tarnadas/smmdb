@@ -262,6 +262,16 @@ export default class Course {
         return null;
     }
 
+    async delete () {
+        Sorting.deleteCourse(this._id);
+        delete courses[this._id];
+        await Database.deleteCourse(this._id);
+        fs.unlinkSync(path.join(__dirname, `../client/courseimg/${this._id}.jpg`));
+        fs.unlinkSync(path.join(__dirname, `../client/courseimg/${this._id}_full.jpg`));
+        fs.unlinkSync(path.join(__dirname, `../client/coursedata/${this._id}`));
+        fs.unlinkSync(path.join(__dirname, `../client/coursedata/${this._id}.gz`));
+    }
+
     static getCourseAmount () {
         return Object.keys(courses).length;
     }

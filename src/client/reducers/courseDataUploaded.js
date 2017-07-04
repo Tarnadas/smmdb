@@ -15,6 +15,9 @@ export default function courseDataUploaded (state, action) {
                 state = List(action.courses);
             }
             return state;
+        case 'DELETE_COURSE_UPLOADED':
+            state = state.delete(action.courseId);
+            return state;
     }
     return state;
 }

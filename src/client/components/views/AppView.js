@@ -33,7 +33,7 @@ class AppView extends React.PureComponent {
     constructor (props) {
         super(props);
         this.doUpdate = false;
-        this.index = props.courses.toJS().length;
+        //this.index = props.courses.toJS().length;
         this.queryString = stringify(props.filter.toJS());
         this.fetchCourses = this.fetchCourses.bind(this);
         this.onVideoHide = this.onVideoHide.bind(this);
@@ -65,7 +65,7 @@ class AppView extends React.PureComponent {
     componentWillReceiveProps (nextProps, nextContext) {
         if (nextProps.filter === this.props.filter) return;
         this.queryString = stringify(nextProps.filter.toJS());
-        this.index = 0;
+        //this.index = 0;
         //this.scrollBar.scrollToTop(); // TODO for mobile
         (async () => {
             await this.fetchCourses();
@@ -99,8 +99,8 @@ class AppView extends React.PureComponent {
         if (shouldUpdate) {
             this.doUpdate = true;
             (async () => {
-                this.index += STEP_LIMIT;
-                await this.fetchCourses(true, STEP_LIMIT, this.index);
+                //this.index += STEP_LIMIT;
+                await this.fetchCourses(true, STEP_LIMIT, this.props.courses.size/*this.index*/);
             })();
         }
     }

@@ -67,6 +67,10 @@ export default class Database {
         return await this.courses.updateOne({ '_id': ObjectID(id) }, { $set: course });
     }
 
+    static async deleteCourse (id) {
+        return await this.courses.removeOne({ '_id': ObjectID(id) });
+    }
+
     static async addAccount (account) {
         return await this.accounts.insertOne(account);
     }

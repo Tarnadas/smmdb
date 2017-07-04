@@ -14,7 +14,7 @@ import {
     ScreenSize
 } from '../../reducers/mediaQuery'
 import {
-    setCourses
+    setCourses, deleteCourse
 } from '../../actions'
 import {
     domain
@@ -28,6 +28,7 @@ class MainView extends React.PureComponent {
         super(props);
         this.fetchCourses = this.fetchCourses.bind(this);
         this.renderCourses = this.renderCourses.bind(this);
+        this.onCourseDelete = this.onCourseDelete.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
     }
     componentWillMount () {
@@ -53,13 +54,16 @@ class MainView extends React.PureComponent {
             for (let i in courses) {
                 yield (
                     self.props.accountData.get('id') && courses[i].owner === self.props.accountData.get('id') ? (
-                        <CoursePanel canEdit course={courses[i]} apiKey={self.props.accountData.get('apikey')} id={i} key={i} />
+                        <CoursePanel canEdit course={courses[i]} apiKey={self.props.accountData.get('apikey')} id={i} key={courses[i].id} onCourseDelete={self.onCourseDelete} />
                     ) : (
-                        <CoursePanel course={courses[i]} key={i} />
+                        <CoursePanel course={courses[i]} key={courses[i].id} />
                     )
                 )
             }
         })());
+    }
+    onCourseDelete (courseId) {
+        this.props.dispatch(deleteCourse(courseId));
     }
     handleScroll () {
         forceCheck();

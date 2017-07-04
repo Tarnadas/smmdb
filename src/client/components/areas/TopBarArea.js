@@ -38,7 +38,7 @@ class TopBarArea extends React.PureComponent{
                     <SMMButton link='https://github.com/Tarnadas/smmdb' blank text="API" iconSrc="/img/api.png" iconColor="dark" />
                     <SMMButton link='https://github.com/Tarnadas/cemu-smmdb/releases' blank text="Client" iconSrc="/img/client.png" iconColor="dark" />
                     <SMMButton link='https://www.reddit.com/r/CemuMarioMaker' blank text="Reddit" iconSrc="/img/reddit.png" iconColor="dark" />
-                    <SMMButton link='https://discord.gg/0wURURBfQTrjAXqh' blank text="Discord" iconSrc="/img/discord.png" iconColor="dark" />
+                    <SMMButton link='https://discord.gg/hK2fsTq' blank text="Discord" iconSrc="/img/discord.png" iconColor="dark" />
                 </div>
                 <div style={styles.button}>
                     <LoginButton />

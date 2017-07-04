@@ -28,6 +28,13 @@ export function setCourses (courses, concat) {
     }
 }
 
+export function deleteCourse (courseId) {
+    return {
+        type: 'DELETE_COURSE',
+        courseId
+    }
+}
+
 export function setCourseSelf (id, course) {
     return {
         type: 'SET_COURSE_SELF',
@@ -44,6 +51,13 @@ export function setCoursesSelf (courses, concat) {
     }
 }
 
+export function deleteCourseSelf (courseId) {
+    return {
+        type: 'DELETE_COURSE_SELF',
+        courseId
+    }
+}
+
 export function setCourseUploaded (id, course) {
     return {
         type: 'SET_COURSE_UPLOADED',
@@ -57,6 +71,13 @@ export function setCoursesUploaded (courses, concat) {
         type: 'SET_COURSES_UPLOADED',
         courses,
         concat
+    }
+}
+
+export function deleteCourseUploaded (courseId) {
+    return {
+        type: 'DELETE_COURSE_UPLOADED',
+        courseId
     }
 }
 

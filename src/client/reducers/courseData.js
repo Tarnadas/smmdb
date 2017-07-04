@@ -15,6 +15,9 @@ export default function courseData (state, action) {
                 state = List(action.courses);
             }
             return state;
+        case 'DELETE_COURSE':
+            state = state.delete(action.courseId);
+            return state;
     }
     return state;
 }

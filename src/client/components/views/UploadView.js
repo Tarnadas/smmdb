@@ -14,7 +14,7 @@ import {
     ScreenSize
 } from '../../reducers/mediaQuery'
 import {
-    setCoursesSelf
+    setCoursesSelf, deleteCourseSelf, deleteCourseUploaded
 } from '../../actions'
 import {
     domain
@@ -30,9 +30,10 @@ class UploadView extends React.PureComponent {
     constructor (props) {
         super(props);
         this.doUpdate = false;
-        this.index = 0;
+        //this.index = 0;
         this.fetchCourses = this.fetchCourses.bind(this);
         this.renderCourses = this.renderCourses.bind(this);
+        this.onCourseDelete = this.onCourseDelete.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
     }
     componentWillMount () {
@@ -45,7 +46,7 @@ class UploadView extends React.PureComponent {
         if (nextProps.courses !== this.props.courses) this.doUpdate = false;
         if (nextProps.accountData === this.props.accountData || !nextProps.accountData.get('id')) return;
         this.doUpdate = false;
-        this.index = 0;
+        //this.index = 0;
         (async () => {
             await this.fetchCourses(nextProps.accountData.get('apikey'));
         })();
@@ -58,15 +59,21 @@ class UploadView extends React.PureComponent {
             this.props.dispatch(setCoursesSelf(courses, shouldConcat));
         }
     }
-    renderCourses (courses) {
+    renderCourses (courses, recently = false) {
         let self = this;
         return Array.from((function * () {
             for (let i in courses) {
                 yield (
-                    <CoursePanel canEdit isSelf course={courses[i]} apiKey={self.props.accountData.get('apikey')} id={i} key={i} />
+                    <CoursePanel canEdit isSelf course={courses[i]} apiKey={self.props.accountData.get('apikey')} id={i} key={courses[i].id} onCourseDelete={recently ? self.onCourseDeleteRecent : self.onCourseDelete} />
                 )
             }
         })());
+    }
+    onCourseDelete (courseId) {
+        this.props.dispatch(deleteCourseSelf(courseId));
+    }
+    onCourseDeleteRecent (courseId) {
+        this.props.dispatch(deleteCourseUploaded(courseId));
     }
     handleScroll () {
         forceCheck();
@@ -76,8 +83,8 @@ class UploadView extends React.PureComponent {
         if (shouldUpdate) {
             this.doUpdate = true;
             (async () => {
-                this.index += STEP_LIMIT;
-                await this.fetchCourses(this.props.accountData.get('apikey'), true, STEP_LIMIT, this.index);
+                //this.index += STEP_LIMIT;
+                await this.fetchCourses(this.props.accountData.get('apikey'), true, STEP_LIMIT, this.props.courses.size/*this.index*/);
             })();
         }
     }
@@ -145,7 +152,7 @@ class UploadView extends React.PureComponent {
                                                     <div style={{height:'auto', color:'#000', fontSize:'15px'}}>
                                                         Recently uploaded:
                                                         {
-                                                            this.renderCourses(uploadedCourses)
+                                                            this.renderCourses(uploadedCourses, true)
                                                         }
                                                         <div style={styles.line} />
                                                         All uploads:
