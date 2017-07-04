@@ -242,7 +242,7 @@ export default class Course {
         }
     }
 
-    async update ({ title, maker }) {
+    async update ({ title, maker, nintendoid, videoid }) {
         const course = await deserialize(fs.readFileSync(path.join(__dirname, `../client/coursedata/${this._id}`)));
         const update = {};
         if (title) {
@@ -254,6 +254,14 @@ export default class Course {
             this.maker = maker;
             update.maker = maker;
             await course.setMaker(maker);
+        }
+        if (nintendoid != null) {
+            this.nintendoid = nintendoid;
+            update.nintendoid = nintendoid;
+        }
+        if (videoid != null) {
+            this.videoid = videoid;
+            update.videoid = videoid;
         }
         this.courseData = course;
         fs.writeFileSync(path.join(__dirname, `../client/coursedata/${this._id}`), await this.courseData.serialize());

@@ -368,6 +368,18 @@ function main() {
                 const courseData = {};
                 if (!!req.body.title) courseData.title = req.body.title;
                 if (!!req.body.maker) courseData.maker = req.body.maker;
+                if (req.body.nintendoid != null) {
+                    const nId = req.body.nintendoid;
+                    if (nId === '') {
+                        courseData.nintendoid = '';
+                    } else {
+                        const a = nId.split("-");
+                        if (nintendoIdRegEx.test(nId) && a.length === 4 && a[0].length === 4 && a[1].length === 4 && a[2].length === 4 && a[3].length === 4) {
+                            courseData.nintendoid = nId;
+                        }
+                    }
+                }
+                if (req.body.videoid != null) courseData.videoid = req.body.videoid;
                 await course.update(courseData);
                 res.json(course);
             }

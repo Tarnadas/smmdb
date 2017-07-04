@@ -20,8 +20,10 @@ import {
     setCourse, setCourseSelf
 } from '../../actions'
 
-const MAX_LENGTH_TITLE = 32;
-const MAX_LENGTH_MAKER = 10;
+const MAX_LENGTH_TITLE   = 32;
+const MAX_LENGTH_MAKER   = 10;
+const MAX_LENGTH_NNID    = 19;
+const MAX_LENGTH_VIDEOID = 10;
 
 class CoursePanel extends React.PureComponent {
     constructor (props) {
@@ -32,14 +34,18 @@ class CoursePanel extends React.PureComponent {
             saved: false,
             title: props.course.title,
             maker: props.course.maker,
+            nnId: props.course.nintendoid ? props.course.nintendoid : '',
+            videoId: props.course.videoid ? props.course.videoid : '',
             shouldDelete: false
         };
         this.onShowDetails = this.onShowDetails.bind(this);
         this.onHideDetails = this.onHideDetails.bind(this);
         this.onCourseSubmit = this.onCourseSubmit.bind(this);
         this.onCourseDelete = this.onCourseDelete.bind(this);
-        this.onTitleChange = this.onTitleChange.bind(this);
-        this.onMakerChange = this.onMakerChange.bind(this);
+        this.onTitleChange = this.onStringChange.bind(this, 'title', MAX_LENGTH_TITLE);
+        this.onMakerChange = this.onStringChange.bind(this, 'maker', MAX_LENGTH_MAKER);
+        this.onNintendoIdChange = this.onStringChange.bind(this, 'nnId', MAX_LENGTH_NNID);
+        this.onVideoIdChange = this.onStringChange.bind(this, 'videoId', MAX_LENGTH_VIDEOID);
     }
     componentWillReceiveProps (nextProps, nextContext) {
         if (nextProps.course.title !== this.state.title) {
@@ -50,6 +56,16 @@ class CoursePanel extends React.PureComponent {
         if (nextProps.course.maker !== this.state.maker) {
             this.setState({
                 maker: nextProps.course.maker
+            });
+        }
+        if (nextProps.course.nintendoid !== this.state.nnId) {
+            this.setState({
+                nnId: nextProps.course.nintendoid ? nextProps.course.nintendoid : ''
+            });
+        }
+        if (nextProps.course.videoid !== this.state.videoId) {
+            this.setState({
+                videoId: nextProps.course.videoid ? nextProps.course.videoid : ''
             });
         }
     }
@@ -67,12 +83,15 @@ class CoursePanel extends React.PureComponent {
         });
     }
     onCourseSubmit () {
-        if (this.state.title === this.props.course.title && this.state.maker === this.props.course.maker) return;
+        if (this.state.title === this.props.course.title && this.state.maker === this.props.course.maker && this.state.nnId === this.props.course.nintendoid && this.state.videoId === this.props.course.videoid) return;
         (async () => {
             const course = {
                 title: this.state.title,
-                maker: this.state.maker
+                maker: this.state.maker,
+                nintendoid: this.state.nnId,
+                videoid: this.state.videoId
             };
+            console.log(course);
             const res = (await got(resolve(domain, `/api/updatecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`), {
                 method: 'POST',
                 body: course,
@@ -88,6 +107,8 @@ class CoursePanel extends React.PureComponent {
                     changed: false,
                     saved: true
                 });
+            } else {
+                console.log(res.err);
             }
         })();
     }
@@ -97,7 +118,6 @@ class CoursePanel extends React.PureComponent {
                 const res = (await got(resolve(domain, `/api/deletecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`), {
                     json: true
                 })).body;
-                console.log(res);
                 if (!res.err) {
                     this.props.onCourseDelete(this.props.id);
                 }
@@ -108,27 +128,17 @@ class CoursePanel extends React.PureComponent {
             })
         }
     }
-    onTitleChange (e) {
-        let title = e.target.value;
-        if (title.length > MAX_LENGTH_TITLE) {
-            title = title.substr(0, MAX_LENGTH_TITLE);
+    onStringChange (value, limit, e) {
+        let val = e.target.value;
+        if (val.length > limit) {
+            val = val.substr(0, limit);
         }
-        this.setState({
-            title,
+        const res = {
             changed: true,
             saved: false
-        });
-    }
-    onMakerChange (e) {
-        let maker = e.target.value;
-        if (maker.length > MAX_LENGTH_MAKER) {
-            maker = title.substr(0, MAX_LENGTH_MAKER);
-        }
-        this.setState({
-            maker,
-            changed: true,
-            saved: false
-        });
+        };
+        res[value] = val;
+        this.setState(res);
     }
     render () {
         const screenSize = this.props.screenSize;
@@ -451,8 +461,20 @@ class CoursePanel extends React.PureComponent {
                                                 </div>
                                                 <input style={styles.input} value={this.state.maker} onChange={this.onMakerChange} />
                                             </div>
+                                            <div style={styles.option}>
+                                                <div style={styles.value}>
+                                                    Nintendo ID:
+                                                </div>
+                                                <input style={styles.input} value={this.state.nnId} onChange={this.onNintendoIdChange} />
+                                            </div>
+                                            <div style={styles.option}>
+                                                <div style={styles.value}>
+                                                    YouTube ID:
+                                                </div>
+                                                <input style={styles.input} value={this.state.videoId} onChange={this.onVideoIdChange} />
+                                            </div>
                                             <SMMButton text="Save" iconSrc="/img/submit.png" fontSize="13px" padding="3px" colorScheme={colorScheme} onClick={this.onCourseSubmit} />
-                                            <SMMButton text={this.state.shouldDelete ? 'Click again' : 'Delete'} iconSrc="/img/delete.png" fontSize="13px" padding="3px" colorScheme={colorScheme} onClick={this.onCourseDelete} />
+                                            <SMMButton text={this.state.shouldDelete ? 'Click again' : 'Delete'} iconSrc="/img/delete.png" fontSize="13px" padding="3px" onClick={this.onCourseDelete} />
                                         </div>
                                     )
                                 }
