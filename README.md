@@ -24,7 +24,7 @@ All API calls are subject to change.
 
 **Request**: `getcourses`
 
-**Protocol**: GET
+**Method**: GET
 
 **Querystring**: (default values are *italic*)
 
@@ -58,7 +58,7 @@ Receive courses 121 to 170 in lastmodified descending order with indentation.
 
 **Request**: `downloadcourse`
 
-**Protocol**: GET
+**Method**: GET
 
 **Querystring**: (default values are *italic*)
 
@@ -71,11 +71,25 @@ Receive courses 121 to 170 in lastmodified descending order with indentation.
 
 Downloads course with ID `ihavenoidea` as zip-compressed folder.
 
+### Upload Course
+
+**Request**: `uploadcourse`
+
+**Method**: POST
+
+**Querystring**: 
+
+| Query | Value | Description |
+| --- | --- | --- |
+| apikey | `{string}` | User identification |
+
+**POST body**: Raw binary data with header `{ 'Content-Type': 'application/octet-stream' }'`. Server assumes zip/rar/7z compressed files to contain Wii U courses. Raw binary data is checked, if it is a 3DS course. Server accepts gzipped/deflated streams.
+
 ### Profile Update
 
 **Request**: `setaccountdata`
 
-**Protocol**: POST
+**Method**: POST
 
 **Querystring**:
 
