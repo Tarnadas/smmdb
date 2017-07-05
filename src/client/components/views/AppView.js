@@ -33,7 +33,6 @@ class AppView extends React.PureComponent {
     constructor (props) {
         super(props);
         this.doUpdate = false;
-        //this.index = props.courses.toJS().length;
         this.queryString = stringify(props.filter.toJS());
         this.fetchCourses = this.fetchCourses.bind(this);
         this.onVideoHide = this.onVideoHide.bind(this);
@@ -65,7 +64,6 @@ class AppView extends React.PureComponent {
     componentWillReceiveProps (nextProps, nextContext) {
         if (nextProps.filter === this.props.filter) return;
         this.queryString = stringify(nextProps.filter.toJS());
-        //this.index = 0;
         //this.scrollBar.scrollToTop(); // TODO for mobile
         (async () => {
             await this.fetchCourses();
@@ -78,11 +76,13 @@ class AppView extends React.PureComponent {
         }
     }
     async fetchCourses (shouldConcat = false, limit = LIMIT, start = 0) {
-        const courses = (await got(resolve(domain, `/api/getcourses?limit=${limit}&start=${start}${!!this.queryString ? `&${this.queryString}` : ''}`), {
-            json: true
-        })).body;
-        if (!courses.err) {
+        try {
+            const courses = (await got(resolve(domain, `/api/getcourses?limit=${limit}&start=${start}${!!this.queryString ? `&${this.queryString}` : ''}`), {
+                json: true
+            })).body;
             this.props.dispatch(setCourses(courses, shouldConcat));
+        } catch (err) {
+            console.error(err.response.body);
         }
     }
     onVideoHide () {
@@ -99,7 +99,6 @@ class AppView extends React.PureComponent {
         if (shouldUpdate) {
             this.doUpdate = true;
             (async () => {
-                //this.index += STEP_LIMIT;
                 await this.fetchCourses(true, STEP_LIMIT, this.props.courses.size/*this.index*/);
             })();
         }

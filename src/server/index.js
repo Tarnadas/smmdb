@@ -110,34 +110,32 @@ function main() {
 
         let idToken = req.body.tokenObj.id_token;
         if (!idToken) {
-            res.json({
-                err: 'idToken not found'
-            });
+            res.status(400).send('idToken not found');
         } else {
             verifier.verify(idToken, clientId, async (err, tokenInfo) => {
-                if (!err) {
-
-                    // create account if it does not exist
-                    let googleId = tokenInfo.sub;
-
-                    let account;
-                    if (!Account.exists(googleId)) {
-                        // create new account
-                        let username = tokenInfo.email.split("@")[0];
-                        account = new Account({
-                            googleid: googleId,
-                            username
-                        });
-                        await Database.addAccount(account);
-                    } else {
-                        account = Account.getAccountByGoogleId(googleId);
-                        account.login(idToken);
-                    }
-                    req.session.idtoken = idToken;
-
-                    res.json(account);
-
+                if (err) {
+                    res.status(400).send('idToken not verified');
                 }
+
+                // create account if it does not exist
+                let googleId = tokenInfo.sub;
+
+                let account;
+                if (!Account.exists(googleId)) {
+                    // create new account
+                    let username = tokenInfo.email.split("@")[0];
+                    account = new Account({
+                        googleid: googleId,
+                        username
+                    });
+                    await Database.addAccount(account);
+                } else {
+                    account = Account.getAccountByGoogleId(googleId);
+                    account.login(idToken);
+                }
+                req.session.idtoken = idToken;
+
+                res.json(account);
             });
         }
 
@@ -148,16 +146,12 @@ function main() {
         log("[200] " + req.method + " to " + req.url);
 
         if (!req.session.idtoken) {
-            res.json({
-                err: 'No idToken submitted. Have you enabled cookies?'
-            });
+            res.status(400).send('No idToken submitted. Have you enabled cookies?');
             return;
         }
         let account = Account.getAccountBySession(req.session.idtoken);
         if (!account) {
-            res.json({
-                err: 'Account not found'
-            });
+            res.status(400).send('Account not found');
             return;
         }
         res.json(account);
@@ -169,22 +163,16 @@ function main() {
         log("[200] " + req.method + " to " + req.url);
 
         if (!req.session.idtoken) {
-            res.json({
-                err: 'No idToken submitted. Have you enabled cookies?'
-            });
+            res.status(400).send('No idToken submitted. Have you enabled cookies?');
             return;
         }
         let account = Account.getAccountBySession(req.session.idtoken);
         if (!account) {
-            res.json({
-                err: 'Account not found'
-            });
+            res.status(400).send('Account not found');
             return;
         }
         account.logout(req.session.idtoken);
-        res.json({
-            message: 'success'
-        });
+        res.header(200).send('OK');
 
     });
 
@@ -201,9 +189,7 @@ function main() {
             }
             
             if (!apiCall) {
-                res.json({
-                    err: "Wrong syntax"
-                });
+                res.status(400).send('Wrong syntax');
             } else if (apiCall === "getstats") {
                 const result = {
                     courses: Course.getCourseAmount(),
@@ -228,9 +214,7 @@ function main() {
             } else if (apiCall === "downloadcourse") {
                 const course = Course.getCourse(apiData.id);
                 if (!course) {
-                    res.json({
-                        err: 'Course not found'
-                    });
+                    res.status(400).send(`Course with ID ${apiData.id} not found`);
                     return;
                 }
                 if (apiData.type === 'zip') {
@@ -239,9 +223,7 @@ function main() {
                         res.setHeader("Content-Type", "application/zip");
                         res.download(file);
                     } else {
-                        res.json({
-                            err: 'Could not compress file'
-                        });
+                        res.status(500).send('Could not compress file');
                     }
                 } else if (apiData.type === 'json') {
                     res.json(await course.getObject());
@@ -277,43 +259,30 @@ function main() {
                 }
             } else if (apiCall === "deletecourse") {
                 if (!apiData.apikey) {
-                    res.json({
-                        err: "API key required"
-                    });
+                    res.status(403).send('API key required');
                     return;
                 }
                 const account = Account.getAccountByAPIKey(apiData.apikey);
                 if (account == null) {
-                    res.json({
-                        err: `Account with API key ${apiData.apikey} not found`
-                    });
+                    res.status(400).send(`Account with API key ${apiData.apikey} not found`);
                     return;
                 }
                 const course = Course.getCourse(apiData.id);
                 if (!course) {
-                    res.json({
-                        err: 'Course not found'
-                    });
+                    res.status(400).send(`Course with ID ${apiData.id} not found`);
                     return;
                 }
                 if (!course.owner.equals(account._id)) {
-                    res.json({
-                        err: `Course with ID ${apiData.id} is not owned by account with API key ${apiData.apikey}`
-                    });
+                    res.status(403).send(`Course with ID ${apiData.id} is not owned by account with API key ${apiData.apikey}`);
                     return;
                 }
                 course.delete();
                 res.json({message: 'success'});
             } else {
-                res.json({
-                    err: "Wrong syntax"
-                });
+                res.status(400).send('Wrong syntax');
             }
-            
         } else {
-            res.json({
-                err: "Wrong syntax"
-            });
+            res.status(400).send('Wrong syntax');
         }
         
     }).post(async (req, res) => {
@@ -328,94 +297,74 @@ function main() {
 
         if (apiCall === "uploadcourse") {
             if (!apiData.apikey) {
-                res.json({
-                    err: "API key required"
-                });
+                res.status(403).send('API key required');
+                return;
+            }
+            const account = Account.getAccountByAPIKey(apiData.apikey);
+            if (account == null) {
+                res.status(400).send(`Account with API key ${apiData.apikey} not found`);
+                return;
+            }
+            const courses = await Course.fromBuffer(req.body, account);
+            if (!courses) {
+                res.status(500).send('Could not read course');
             } else {
-                const account = Account.getAccountByAPIKey(apiData.apikey);
-                if (account == null) {
-                    res.json({
-                        err: `Account with API key ${apiData.apikey} not found`
-                    });
-                } else {
-                    const courses = await Course.fromBuffer(req.body, account);
-                    if (!courses) {
-                        res.json({
-                            err: 'Could not read course'
-                        })
-                    } else {
-                        res.json(courses);
-                    }
-                }
+                res.json(courses);
             }
         } else if (apiCall === "updatecourse") {
             if (!apiData.apikey) {
-                res.json({
-                    err: "API key required"
-                });
-            } else if (!apiData.id) {
-                res.json({
-                    err: "No course ID submitted"
-                });
-            } else {
-                const account = Account.getAccountByAPIKey(apiData.apikey);
-                if (account == null) {
-                    res.json({
-                        err: `Account with API key ${apiData.apikey} not found`
-                    });
-                    return;
-                }
-                const course = Course.getCourse(apiData.id);
-                if (course == null) {
-                    res.json({
-                        err: `Course with ID ${apiData.id} not found`
-                    });
-                    return;
-                }
-                if (!course.owner.equals(account._id)) {
-                    res.json({
-                        err: `Course with ID ${apiData.id} is not owned by account with API key ${apiData.apikey}`
-                    });
-                    return;
-                }
-                const courseData = {};
-                if (!!req.body.title) courseData.title = req.body.title;
-                if (!!req.body.maker) courseData.maker = req.body.maker;
-                if (req.body.nintendoid != null) {
-                    const nId = req.body.nintendoid;
-                    if (nId === '') {
-                        courseData.nintendoid = '';
-                    } else {
-                        const a = nId.split("-");
-                        if (nintendoIdRegEx.test(nId) && a.length === 4 && a[0].length === 4 && a[1].length === 4 && a[2].length === 4 && a[3].length === 4) {
-                            courseData.nintendoid = nId;
-                        }
+                res.status(403).send('API key required');
+                return;
+            }
+            if (!apiData.id) {
+                res.status(400).send('No course ID submitted');
+                return;
+            }
+            const account = Account.getAccountByAPIKey(apiData.apikey);
+            if (account == null) {
+                res.status(400).send(`Account with API key ${apiData.apikey} not found`);
+                return;
+            }
+            const course = Course.getCourse(apiData.id);
+            if (course == null) {
+                res.status(400).send(`Course with ID ${apiData.id} not found`);
+                return;
+            }
+            if (!course.owner.equals(account._id)) {
+                res.status(403).send(`Course with ID ${apiData.id} is not owned by account with API key ${apiData.apikey}`);
+                return;
+            }
+            const courseData = {};
+            if (!!req.body.title) courseData.title = req.body.title;
+            if (!!req.body.maker) courseData.maker = req.body.maker;
+            if (req.body.nintendoid != null) {
+                const nId = req.body.nintendoid;
+                if (nId === '') {
+                    courseData.nintendoid = '';
+                } else {
+                    const a = nId.split("-");
+                    if (nintendoIdRegEx.test(nId) && a.length === 4 && a[0].length === 4 && a[1].length === 4 && a[2].length === 4 && a[3].length === 4) {
+                        courseData.nintendoid = nId;
                     }
                 }
-                if (req.body.videoid != null) courseData.videoid = req.body.videoid;
-                await course.update(courseData);
-                res.json(course);
             }
+            if (req.body.videoid != null) courseData.videoid = req.body.videoid;
+            await course.update(courseData);
+            res.json(course);
         } else if (apiCall === "setaccountdata") {
             if (!apiData.apikey) {
-                res.json({
-                    err: "API key required"
-                });
-            } else {
-                const account = Account.getAccountByAPIKey(apiData.apikey);
-                if (account == null) {
-                    res.json({
-                        err: `Account with API key ${apiData.apikey} not found`
-                    });
-                } else {
-                    if (!!req.body.username) await account.setUsername(req.body.username);
-                    res.json(account);
-                }
+                res.status(403).send('API key required');
+                return;
             }
+            const account = Account.getAccountByAPIKey(apiData.apikey);
+            if (account == null) {
+                res.status(400).send(`Account with API key ${apiData.apikey} not found`);
+                return;
+            }
+            if (!!req.body.username) await account.setUsername(req.body.username);
+            res.json(account);
         } else {
-            res.json({
-                err: "Wrong syntax"
-            });
+            res.status(400).send('Wrong syntax');
         }
         
     });

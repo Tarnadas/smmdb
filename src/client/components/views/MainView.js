@@ -41,11 +41,13 @@ class MainView extends React.PureComponent {
         this.scrollBar.scrollToTop();
     }
     async fetchCourses () {
-        const courses = (await got(resolve(domain, `/api/getcourses?limit=10`), {
-            json: true
-        })).body;
-        if (!courses.err) {
+        try {
+            const courses = (await got(resolve(domain, `/api/getcourses?limit=10`), {
+                json: true
+            })).body;
             this.props.dispatch(setCourses(courses, false));
+        } catch (err) {
+            console.error(err.response.body);
         }
     }
     renderCourses (courses) {

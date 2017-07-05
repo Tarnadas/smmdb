@@ -85,19 +85,18 @@ class CoursePanel extends React.PureComponent {
     onCourseSubmit () {
         if (this.state.title === this.props.course.title && this.state.maker === this.props.course.maker && this.state.nnId === this.props.course.nintendoid && this.state.videoId === this.props.course.videoid) return;
         (async () => {
-            const course = {
-                title: this.state.title,
-                maker: this.state.maker,
-                nintendoid: this.state.nnId,
-                videoid: this.state.videoId
-            };
-            console.log(course);
-            const res = (await got(resolve(domain, `/api/updatecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`), {
-                method: 'POST',
-                body: course,
-                json: true
-            })).body;
-            if (!res.err) {
+            try {
+                const course = {
+                    title: this.state.title,
+                    maker: this.state.maker,
+                    nintendoid: this.state.nnId,
+                    videoid: this.state.videoId
+                };
+                const res = (await got(resolve(domain, `/api/updatecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`), {
+                    method: 'POST',
+                    body: course,
+                    json: true
+                })).body;
                 if (this.props.isSelf) {
                     this.props.dispatch(setCourseSelf(this.props.id, res));
                 } else {
@@ -107,19 +106,21 @@ class CoursePanel extends React.PureComponent {
                     changed: false,
                     saved: true
                 });
-            } else {
-                console.log(res.err);
+            } catch (err) {
+                console.error(err.response.body);
             }
         })();
     }
     onCourseDelete () {
         if (this.state.shouldDelete) {
             (async () => {
-                const res = (await got(resolve(domain, `/api/deletecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`), {
-                    json: true
-                })).body;
-                if (!res.err) {
+                try {
+                    const res = (await got(resolve(domain, `/api/deletecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`), {
+                        json: true
+                    })).body;
                     this.props.onCourseDelete(this.props.id);
+                } catch (err) {
+                    console.error(err.response.body);
                 }
             })();
         } else {

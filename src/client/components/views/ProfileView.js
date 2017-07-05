@@ -49,13 +49,15 @@ class ProfileView extends React.PureComponent {
             const profile = {
                 username: this.state.username
             };
-            const res = (await got(resolve(domain, `/api/setaccountdata?apikey=${this.props.accountData.get('apikey')}`), {
-                method: 'POST',
-                body: profile,
-                json: true
-            })).body;
-            if (!res.err) {
+            try {
+                const res = (await got(resolve(domain, `/api/setaccountdata?apikey=${this.props.accountData.get('apikey')}`), {
+                    method: 'POST',
+                    body: profile,
+                    json: true
+                })).body;
                 this.props.dispatch(setAccountData(res));
+            } catch (err) {
+                console.error(err.response.body);
             }
         })();
     }

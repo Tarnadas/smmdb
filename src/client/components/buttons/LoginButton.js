@@ -29,14 +29,16 @@ class LoginButton extends React.PureComponent {
     }
     componentDidMount () {
         (async () => {
-            const res = (await got(resolve(domain, '/signin'), {
-                method: 'POST',
-                json: true
-            })).body;
-            if (!res.err) {
+            try {
+                const res = (await got(resolve(domain, '/signin'), {
+                    method: 'POST',
+                    json: true
+                })).body;
                 setTimeout(() => { // TODO this is just a workaround to prevent a warning
                     this.props.dispatch(setAccountData(res));
                 }, 1000);
+            } catch (err) {
+                console.error(err.response.body);
             }
         })();
     }
@@ -51,25 +53,29 @@ class LoginButton extends React.PureComponent {
         });
     }
     async onGoogleLoginSuccess (response) {
-        const res = (await got(resolve(domain, '/tokensignin'), {
-            method: 'POST',
-            body: Object.assign({}, response),
-            json: true
-        })).body;
-        this.props.dispatch(setAccountData(res));
+        try {
+            const res = (await got(resolve(domain, '/tokensignin'), {
+                method: 'POST',
+                body: Object.assign({}, response),
+                json: true
+            })).body;
+            this.props.dispatch(setAccountData(res));
+        } catch (err) {
+            console.error(err.response.body);
+        }
     }
     onGoogleLoginFailure (response) {
         console.log(response);
     }
     async onLogOut () {
-        const res = (await got(resolve(domain, '/signout'), {
-            method: 'POST',
-            json: true
-        })).body;
-        if (!res.err) {
+        try {
+            const res = (await got(resolve(domain, '/signout'), {
+                method: 'POST',
+                json: true
+            })).body;
             this.props.dispatch(setAccountData());
-        } else {
-            console.log(res.err);
+        } catch (err) {
+            console.error(err.response.body);
         }
     }
     render () {

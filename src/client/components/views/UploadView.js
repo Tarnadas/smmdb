@@ -30,7 +30,6 @@ class UploadView extends React.PureComponent {
     constructor (props) {
         super(props);
         this.doUpdate = false;
-        //this.index = 0;
         this.fetchCourses = this.fetchCourses.bind(this);
         this.renderCourses = this.renderCourses.bind(this);
         this.onCourseDelete = this.onCourseDelete.bind(this);
@@ -46,17 +45,18 @@ class UploadView extends React.PureComponent {
         if (nextProps.courses !== this.props.courses) this.doUpdate = false;
         if (nextProps.accountData === this.props.accountData || !nextProps.accountData.get('id')) return;
         this.doUpdate = false;
-        //this.index = 0;
         (async () => {
             await this.fetchCourses(nextProps.accountData.get('apikey'));
         })();
     }
     async fetchCourses (apiKey, shouldConcat = false, limit = LIMIT, start = 0) {
-        const courses = (await got(resolve(domain, `/api/getcourses?limit=${limit}&start=${start}&apikey=${apiKey}`), {
-            json: true
-        })).body;
-        if (!courses.err) {
+        try {
+            const courses = (await got(resolve(domain, `/api/getcourses?limit=${limit}&start=${start}&apikey=${apiKey}`), {
+                json: true
+            })).body;
             this.props.dispatch(setCoursesSelf(courses, shouldConcat));
+        } catch (err) {
+            console.error(err.response.body);
         }
     }
     renderCourses (courses, recently = false) {
@@ -83,8 +83,7 @@ class UploadView extends React.PureComponent {
         if (shouldUpdate) {
             this.doUpdate = true;
             (async () => {
-                //this.index += STEP_LIMIT;
-                await this.fetchCourses(this.props.accountData.get('apikey'), true, STEP_LIMIT, this.props.courses.size/*this.index*/);
+                await this.fetchCourses(this.props.accountData.get('apikey'), true, STEP_LIMIT, this.props.courses.size);
             })();
         }
     }

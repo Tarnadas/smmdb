@@ -23,18 +23,18 @@ class UploadArea extends React.PureComponent {
         this.handleChange = this.handleChange.bind(this);
     }
     sendCourse (course) {
-        const req = got.stream.post(resolve(domain, `/api/uploadcourse?apikey=${this.props.apiKey}`), {
-            headers: { "Content-Type": "application/octet-stream" }
-        });
-        req.pipe(concat(buf => {
-            const courses = JSON.parse(new TextDecoder("utf-8").decode(buf));
-            if (!courses.err) {
+        try {
+            const req = got.stream.post(resolve(domain, `/api/uploadcourse?apikey=${this.props.apiKey}`), {
+                headers: { "Content-Type": "application/octet-stream" }
+            });
+            req.pipe(concat(buf => {
+                const courses = JSON.parse(new TextDecoder("utf-8").decode(buf));
                 this.props.dispatch(setCoursesUploaded(courses, true));
-            } else {
-                console.log(courses.err);
-            }
-        }));
-        stream(course).pipe(req);
+            }));
+            stream(course).pipe(req);
+        } catch (err) {
+            console.log(err.response.body);
+        }
     }
     handleChange (e) {
         this.setState({

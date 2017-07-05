@@ -2,9 +2,6 @@ import React from 'react'
 import {
     connect
 } from 'react-redux'
-import {
-    Link
-} from 'react-router-dom'
 
 import LoginButton from '../buttons/LoginButton'
 import SMMButton   from '../buttons/SMMButton'
