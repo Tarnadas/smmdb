@@ -131,7 +131,7 @@ export default class Database {
                     await this.addCourse(course);
                     await course.finalize();
                     course.setId();
-                    await this.updateCourse(course);
+                    await this.updateCourse(course._id, course);
                 }
                 progress.tick();
             }
