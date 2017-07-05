@@ -115,9 +115,7 @@ class CoursePanel extends React.PureComponent {
         if (this.state.shouldDelete) {
             (async () => {
                 try {
-                    const res = (await got(resolve(domain, `/api/deletecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`), {
-                        json: true
-                    })).body;
+                    await got(resolve(domain, `/api/deletecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`));
                     this.props.onCourseDelete(this.props.id);
                 } catch (err) {
                     console.error(err.response.body);

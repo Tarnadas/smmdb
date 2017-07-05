@@ -69,10 +69,9 @@ class LoginButton extends React.PureComponent {
     }
     async onLogOut () {
         try {
-            const res = (await got(resolve(domain, '/signout'), {
-                method: 'POST',
-                json: true
-            })).body;
+            await got(resolve(domain, '/signout'), {
+                method: 'POST'
+            });
             this.props.dispatch(setAccountData());
         } catch (err) {
             console.error(err.response.body);

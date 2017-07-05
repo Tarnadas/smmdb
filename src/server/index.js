@@ -172,7 +172,7 @@ function main() {
             return;
         }
         account.logout(req.session.idtoken);
-        res.header(200).send('OK');
+        res.send('OK');
 
     });
 
@@ -277,7 +277,7 @@ function main() {
                     return;
                 }
                 course.delete();
-                res.json({message: 'success'});
+                res.send('OK');
             } else {
                 res.status(400).send('Wrong syntax');
             }

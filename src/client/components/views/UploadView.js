@@ -33,6 +33,7 @@ class UploadView extends React.PureComponent {
         this.fetchCourses = this.fetchCourses.bind(this);
         this.renderCourses = this.renderCourses.bind(this);
         this.onCourseDelete = this.onCourseDelete.bind(this);
+        this.onCourseDeleteRecent = this.onCourseDeleteRecent.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
     }
     componentWillMount () {
@@ -133,7 +134,7 @@ class UploadView extends React.PureComponent {
                                                     <div style={{height:'auto', color:'#000', fontSize:'15px'}}>
                                                         Recently uploaded:
                                                         {
-                                                            this.renderCourses(uploadedCourses)
+                                                            this.renderCourses(uploadedCourses, true)
                                                         }
                                                         <div style={styles.line} />
                                                         All uploads:
