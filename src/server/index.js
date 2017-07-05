@@ -1,7 +1,7 @@
 import express       from 'express'
 import compression   from 'compression'
 import bodyParser    from 'body-parser'
-import range         from 'express-range'
+import parseRange    from 'range-parser'
 import cheerio       from 'cheerio'
 import cookieSession from 'cookie-session'
 import verifier      from 'google-id-token-verifier'
@@ -92,9 +92,6 @@ function main() {
     }));
     app.use(bodyParser.raw({
         limit: '6mb'
-    }));
-    app.use(range({
-        accept: 'bytes'
     }));
     app.use(favicon(path.join(__dirname, '../../favicon.ico')));
     app.use('/img', express.static(path.join(__dirname, '../client/images'), { maxAge: cacheMaxAgeImg }));
@@ -250,13 +247,29 @@ function main() {
                     res.json(await course.getObject());
                 } else if (apiData.type === '3ds') {
                     res.setHeader('Content-Type', 'application/3ds');
-                    res.range({
-                        first: req.range.first,
-                        last: req.range.last,
-                        length: bytes.length
-                    });
-                    const course = await course.get3DS();
-                    res.send(course.slice(req.range.first, req.range.last));
+                    const course3ds = await course.get3DS();
+                    if (req.headers.range) {
+                        const range = parseRange(course3ds.length, req.headers.range, { combine: true });
+                        if (range === -1) {
+                            res.status(400).send('Unsatisfiable range');
+                            return;
+                        }
+                        if (range === -2) {
+                            res.status(400).send('Malformed header string');
+                            return;
+                        }
+                        let resBuffer = Buffer.alloc(0);
+                        if (range.type === 'bytes') {
+                            range.forEach(r => {
+                                resBuffer.concat([resBuffer, course3ds.slice(r.start, r.end)]);
+                            });
+                            res.send(resBuffer);
+                        } else {
+                            res.status(400).send('Unknown range type');
+                        }
+                    } else {
+                        res.send(course3ds);
+                    }
                 } else {
                     res.set('Content-Encoding', 'gzip');
                     res.set('Content-Type', 'application/wiiu');
