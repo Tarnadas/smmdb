@@ -19,6 +19,7 @@ class FilterArea extends React.PureComponent {
     this.getFilter = this.getFilter.bind(this)
     this.setFilter = this.setFilter.bind(this)
     this.onFilterHide = this.onFilterHide.bind(this)
+    this.handleKeyPress = this.handleKeyPress.bind(this)
     this.onTitleChange = this.onStringChange.bind(this, 'title', MAX_LENGTH_TITLE)
     this.onMakerChange = this.onStringChange.bind(this, 'maker', MAX_LENGTH_MAKER)
     this.onUploaderChange = this.onStringChange.bind(this, 'uploader', MAX_LENGTH_UPLOADER)
@@ -94,6 +95,10 @@ class FilterArea extends React.PureComponent {
     const filter = this.getFilter()
     this.props.dispatch(setFilter(filter))
     this.props.dispatch(showFilter(false))
+  }
+  handleKeyPress (e) {
+    if (e.key !== 'Enter') return
+    this.setFilter()
   }
   onStringChange (value, limit, e) {
     let val = e.target.value
@@ -181,19 +186,19 @@ class FilterArea extends React.PureComponent {
           <div style={styles.value}>
             Title:
           </div>
-          <input style={styles.input} value={this.state.title} onChange={this.onTitleChange} />
+          <input style={styles.input} value={this.state.title} onChange={this.onTitleChange} onKeyPress={this.handleKeyPress} />
         </div><br />
         <div style={styles.option}>
           <div style={styles.value}>
             Maker:
           </div>
-          <input style={styles.input} value={this.state.maker} onChange={this.onMakerChange} />
+          <input style={styles.input} value={this.state.maker} onChange={this.onMakerChange} onKeyPress={this.handleKeyPress} />
         </div>
         <div style={styles.option}>
           <div style={styles.value}>
             Uploader:
           </div>
-          <input style={styles.input} value={this.state.uploader} onChange={this.onUploaderChange} />
+          <input style={styles.input} value={this.state.uploader} onChange={this.onUploaderChange} onKeyPress={this.handleKeyPress} />
         </div>
         <div style={styles.option}>
           <div style={styles.value}>
