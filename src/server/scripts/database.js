@@ -66,6 +66,11 @@ export default class Database {
     return res
   }
 
+  static async finalizeCourse (id) {
+    const res = await this.courses.updateOne({ '_id': ObjectID(id) }, { $unset: { serialized: '', courseData: '' } })
+    return res
+  }
+
   static async deleteCourse (id) {
     const res = await this.courses.removeOne({ '_id': ObjectID(id) })
     return res
@@ -133,6 +138,7 @@ export default class Database {
           await course.finalize()
           course.setId()
           await this.updateCourse(course._id, course)
+          await this.finalizeCourse(course._id)
         }
         progress.tick()
       }

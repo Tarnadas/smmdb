@@ -60,12 +60,12 @@ class UploadView extends React.PureComponent {
       console.error(err.response.body)
     }
   }
-  renderCourses (courses, recently = false) {
+  renderCourses (courses, uploaded = false) {
     let self = this
     return Array.from((function * () {
       for (let i in courses) {
         yield (
-          <CoursePanel canEdit isSelf course={courses[i]} apiKey={self.props.accountData.get('apikey')} id={i} key={courses[i].id} onCourseDelete={recently ? self.onCourseDeleteRecent : self.onCourseDelete} />
+          <CoursePanel canEdit isSelf uploaded={uploaded} course={courses[i]} apiKey={self.props.accountData.get('apikey')} id={i} key={courses[i].id} onCourseDelete={uploaded ? self.onCourseDeleteRecent : self.onCourseDelete} />
         )
       }
     })())

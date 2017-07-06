@@ -10,7 +10,17 @@ export default function courseDataSelf (state, action) {
       return state
     case 'SET_COURSES_SELF':
       if (action.concat) {
-        state = state.concat(action.courses)
+        if (action.courses.length === 0) return state
+        let list = state.concat(action.courses)
+        const a = []
+        list = list.filter(x => {
+          if (!a.includes(x.id)) {
+            a.push(x.id)
+            return true
+          }
+          return false
+        })
+        state = list
       } else {
         state = List(action.courses)
       }

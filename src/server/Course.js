@@ -201,7 +201,7 @@ export default class Course {
       return true
     }
     const createCourse = async (courseData) => {
-      const course = await (new Course(courseData))
+      const course = new Course(courseData)
       course.owner = account._id
       course.nintendoid = null
       course.videoid = null
@@ -216,6 +216,7 @@ export default class Course {
       delete course.soundsSub
       delete course.thumbnail
       delete course.thumbnailPreview
+      // delete course.serialized
       await Database.addCourse(course)
       fs.writeFileSync(join(__dirname, `../client/courseimg/${course._id}.jpg`), courseData.thumbnailPreview)
       fs.writeFileSync(join(__dirname, `../client/courseimg/${course._id}_full.jpg`), courseData.thumbnail)
@@ -236,11 +237,14 @@ export default class Course {
         fs.unlinkSync(tmpFile)
         return courses
       } else if (is3DS()) {
-        const course = await createCourse(await loadCourse(tmpFile, 0, false))
+        const courseData = await loadCourse(tmpFile, 0, false)
+        await courseData.loadThumbnail()
+        const course = await createCourse(courseData)
         fs.unlinkSync(tmpFile)
         return [course]
       }
     } catch (err) {
+      console.log(err)
       fs.unlinkSync(tmpFile)
       return null
     }

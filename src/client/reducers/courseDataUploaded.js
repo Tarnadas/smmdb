@@ -10,7 +10,7 @@ export default function courseDataUploaded (state, action) {
       return state
     case 'SET_COURSES_UPLOADED':
       if (action.concat) {
-        state = state.concat(action.courses)
+        state = List([...new Set(state.concat(action.courses))])
       } else {
         state = List(action.courses)
       }

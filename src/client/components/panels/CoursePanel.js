@@ -17,7 +17,7 @@ import {
   domain
 } from '../../../static'
 import {
-  setCourse, setCourseSelf
+  setCourse, setCourseSelf, setCourseUploaded
 } from '../../actions'
 
 const MAX_LENGTH_TITLE = 32
@@ -97,17 +97,25 @@ class CoursePanel extends React.PureComponent {
           body: course,
           json: true
         })).body
-        if (this.props.isSelf) {
-          this.props.dispatch(setCourseSelf(this.props.id, res))
+        if (this.props.uploaded) {
+          this.props.dispatch(setCourseUploaded(this.props.id, res))
         } else {
-          this.props.dispatch(setCourse(this.props.id, res))
+          if (this.props.isSelf) {
+            this.props.dispatch(setCourseSelf(this.props.id, res))
+          } else {
+            this.props.dispatch(setCourse(this.props.id, res))
+          }
         }
         this.setState({
           changed: false,
           saved: true
         })
       } catch (err) {
-        console.error(err.response.body)
+        if (err.response.body.includes('not found')) {
+          this.props.onCourseDelete(this.props.id)
+        } else {
+          console.error(err.response.body)
+        }
       }
     })()
   }
@@ -118,7 +126,11 @@ class CoursePanel extends React.PureComponent {
           await got(resolve(domain, `/api/deletecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`))
           this.props.onCourseDelete(this.props.id)
         } catch (err) {
-          console.error(err.response.body)
+          if (err.response.body.includes('not found')) {
+            this.props.onCourseDelete(this.props.id)
+          } else {
+            console.error(err.response.body)
+          }
         }
       })()
     } else {
