@@ -1,27 +1,21 @@
 import User from './User'
 
 export default class Lobby {
+  constructor () {
+    this.users = {}
 
-    constructor () {
+    this.addUser = this.addUser.bind(this)
+    this.removeUser = this.removeUser.bind(this)
+  }
 
-        this.users = {};
+  addUser (userId, userName, client) {
+    this.users[userId] = new User(userId, userName, client)
+  }
 
-        this.addUser = this.addUser.bind(this);
-        this.removeUser = this.removeUser.bind(this);
-
+  removeUser (userId) {
+    let user = this.users[userId]
+    if (user) {
+      delete this.users[userId]
     }
-
-    addUser (userId, userName, client) {
-        this.users[userId] = new User(userId, userName, client);
-    }
-
-    removeUser (userId) {
-
-        let user = this.users[userId];
-        if (!!user) {
-            delete this.users[userId];
-        }
-
-    }
-
+  }
 }

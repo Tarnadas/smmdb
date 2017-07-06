@@ -1,370 +1,283 @@
-import * as fs from 'fs'
+import parseRange from 'range-parser'
 
-import Database from './database'
-import Sorting  from './sorting'
-import Account  from '../Account'
+import Sorting from './sorting'
+import Account from '../Account'
+import Course from '../Course'
 
-const MAX_LIMIT = 100;
+const MAX_FILTER_LIMIT = 100
+
+const nintendoIdRegEx = /^[0-9A-Z|\\-]+$/
 
 export default class API {
+  static getStats (res) {
+    const result = {
+      courses: Course.getCourseAmount(),
+      accounts: Account.getAccountAmount()
+    }
+    res.json(result)
+  }
 
-    static getCourses (loggedIn, accountId, filterData) {
+  static getCourses (app, res, apiData) {
+    let loggedIn = false
+    let accountId
+    const account = Account.getAccountByAPIKey(apiData.apikey)
+    if (account) {
+      loggedIn = true
+      accountId = account.id
+      apiData.uploader = account.username
+    }
+    if (apiData.prettify) {
+      app.set('json spaces', 2)
+    }
+    res.json(this.filterCourses(loggedIn, accountId, apiData))
+    if (apiData.prettify) {
+      app.set('json spaces', 0)
+    }
+  }
 
-        let orderBy = "lastmodified", dir = "desc";
+  static filterCourses (loggedIn, accountId, filterData) {
+    let orderBy = 'lastmodified'
+    let dir = 'desc'
 
-        if (!!filterData && !!filterData.order && !!filterData.dir) {
-            orderBy = filterData.order;
-            dir = filterData.dir;
-        }
-        let courses = Sorting.getCoursesBySorting(orderBy, dir);
-        if (!courses) {
-            return {
-                err: 'Wrong order and/or dir property'
-            }
-        }
-
-        const limit = (!!filterData && !!filterData.limit) ? (+filterData.limit) : MAX_LIMIT;
-        const start = (!!filterData && !!filterData.start) ? (+filterData.start) : 0;
-        delete filterData.limit;
-        delete filterData.start;
-        let filteredResult = filterData !== {} ? [] : courses;
-        for (let i in courses) {
-
-            let course = courses[i];
-            if (!course) break;
-            if (filteredResult.length >= (start + limit)) break;
-
-            if (!!filterData) {
-                if (!!filterData.lastmodifiedfrom) {
-                    if (parseInt(filterData.lastmodifiedfrom) > course.lastmodified) {
-                        continue;
-                    }
-                }
-                if (!!filterData.lastmodifiedto) {
-                    if (parseInt(filterData.lastmodifiedto) < course.lastmodified) {
-                        continue;
-                    }
-                }
-                if (!!filterData.uploadedfrom) {
-                    if (parseInt(filterData.uploadedfrom) > course.uploaded) {
-                        continue;
-                    }
-                }
-                if (!!filterData.uploadedto) {
-                    if (parseInt(filterData.uploadedto) < course.uploaded) {
-                        continue;
-                    }
-                }
-                if (!!filterData.difficultyfrom) {
-                    if (parseInt(filterData.difficultyfrom) > course.difficulty || course.difficulty == null) {
-                        continue;
-                    }
-                }
-                if (!!filterData.difficultyto) {
-                    if (parseInt(filterData.difficultyto) < course.difficulty || course.difficulty == null) {
-                        continue;
-                    }
-                }
-                if (!!filterData.title) {
-                    if (!course.title.toLowerCase().includes(filterData.title.toLowerCase())) {
-                        continue;
-                    }
-                }
-                if (!!filterData.maker) {
-                    if (filterData.maker.toLowerCase() !== course.maker.toLowerCase()) {
-                        continue;
-                    }
-                }
-                if (!!filterData.uploader) {
-                    if (filterData.uploader.toLowerCase() !== Account.getAccount(course.owner).username.toLowerCase()) {
-                        continue;
-                    }
-                }
-                if (!!filterData.gamestyle) {
-                    if (parseInt(filterData.gamestyle) !== course.gameStyle) {
-                        continue;
-                    }
-                }
-                if (!!filterData.coursetheme) {
-                    if (parseInt(filterData.coursetheme) !== course.courseTheme) {
-                        continue;
-                    }
-                }
-                if (!!filterData.coursethemesub) {
-                    if (parseInt(filterData.coursethemesub) !== course.courseThemeSub) {
-                        continue;
-                    }
-                }
-                if (!!filterData.autoscroll) {
-                    const autoScroll = parseInt(filterData.autoscroll);
-                    if (autoScroll !== course.autoScroll && autoScroll !== course.autoScrollSub) {
-                        continue;
-                    }
-                }
-            }
-            let resultCourse = course.toJSON(loggedIn, accountId);
-            filteredResult.push(resultCourse);
-
-        }
-
-        return filteredResult.splice(start, limit);
-
+    if (!!filterData && !!filterData.order && !!filterData.dir) {
+      orderBy = filterData.order
+      dir = filterData.dir
+    }
+    let courses = Sorting.getCoursesBySorting(orderBy, dir)
+    if (!courses) {
+      return {
+        err: 'Wrong order and/or dir property'
+      }
     }
 
-    static async starCourse (accountId, data) {
+    const limit = (!!filterData && !!filterData.limit) ? (+filterData.limit) : MAX_FILTER_LIMIT
+    const start = (!!filterData && !!filterData.start) ? (+filterData.start) : 0
+    delete filterData.limit
+    delete filterData.start
+    let filteredResult = filterData !== {} ? [] : courses
 
-        if (!data.courseid) {
-            return {
-                err: "Course ID not found"
-            };
+    for (let i in courses) {
+      let course = courses[i]
+      if (!course) break
+      if (filteredResult.length >= (start + limit)) break
+
+      if (filterData) {
+        if (filterData.lastmodifiedfrom) {
+          if (parseInt(filterData.lastmodifiedfrom) > course.lastmodified) {
+            continue
+          }
+        }
+        if (filterData.lastmodifiedto) {
+          if (parseInt(filterData.lastmodifiedto) < course.lastmodified) {
+            continue
+          }
+        }
+        if (filterData.uploadedfrom) {
+          if (parseInt(filterData.uploadedfrom) > course.uploaded) {
+            continue
+          }
+        }
+        if (filterData.uploadedto) {
+          if (parseInt(filterData.uploadedto) < course.uploaded) {
+            continue
+          }
+        }
+        if (filterData.difficultyfrom) {
+          if (parseInt(filterData.difficultyfrom) > course.difficulty || course.difficulty == null) {
+            continue
+          }
+        }
+        if (filterData.difficultyto) {
+          if (parseInt(filterData.difficultyto) < course.difficulty || course.difficulty == null) {
+            continue
+          }
+        }
+        if (filterData.title) {
+          if (!course.title.toLowerCase().includes(filterData.title.toLowerCase())) {
+            continue
+          }
+        }
+        if (filterData.maker) {
+          if (filterData.maker.toLowerCase() !== course.maker.toLowerCase()) {
+            continue
+          }
+        }
+        if (filterData.uploader) {
+          if (filterData.uploader.toLowerCase() !== Account.getAccount(course.owner).username.toLowerCase()) {
+            continue
+          }
+        }
+        if (filterData.gamestyle) {
+          if (parseInt(filterData.gamestyle) !== course.gameStyle) {
+            continue
+          }
+        }
+        if (filterData.coursetheme) {
+          if (parseInt(filterData.coursetheme) !== course.courseTheme) {
+            continue
+          }
+        }
+        if (filterData.coursethemesub) {
+          if (parseInt(filterData.coursethemesub) !== course.courseThemeSub) {
+            continue
+          }
+        }
+        if (filterData.autoscroll) {
+          const autoScroll = parseInt(filterData.autoscroll)
+          if (autoScroll !== course.autoScroll && autoScroll !== course.autoScrollSub) {
+            continue
+          }
+        }
+      }
+      let resultCourse = course.toJSON(loggedIn, accountId)
+      filteredResult.push(resultCourse)
+    }
+
+    return filteredResult.splice(start, limit)
+  }
+
+  static async downloadCourse (req, res, apiData) {
+    const course = Course.getCourse(apiData.id)
+    if (!course) {
+      res.status(400).send(`Course with ID ${apiData.id} not found`)
+      return
+    }
+    if (apiData.type === 'zip') {
+      let file = await course.getCompressed()
+      if (typeof (file) === 'string') {
+        res.setHeader('Content-Type', 'application/zip')
+        res.download(file)
+      } else {
+        res.status(500).send('Could not compress file')
+      }
+    } else if (apiData.type === 'json') {
+      res.json(await course.getObject())
+    } else if (apiData.type === '3ds') {
+      res.setHeader('Content-Type', 'application/3ds')
+      const course3ds = await course.get3DS()
+      if (req.headers.range) {
+        const range = parseRange(course3ds.length, req.headers.range, { combine: true })
+        if (range === -1) {
+          res.status(400).send('Unsatisfiable range')
+          return
+        }
+        if (range === -2) {
+          res.status(400).send('Malformed header string')
+          return
+        }
+        let resBuffer = Buffer.alloc(0)
+        if (range.type === 'bytes') {
+          range.forEach(r => {
+            resBuffer.concat([resBuffer, course3ds.slice(r.start, r.end)])
+          })
+          res.send(resBuffer)
         } else {
-            let courseId = parseInt(data.courseid);
-            if (!this.courses[courseId]) {
-                return {
-                    err: "Course not found"
-                };
-            } else {
-                if (!!data.dostar && data.dostar === "0") {
-                    if (!starredByUserId[accountId] || !!starredByUserId[accountId] && starredByUserId[accountId].includes(courseId)) {
-                        try {
-                            courses[courseId].stars--;
-
-                            database.unstarCourse(accountId, courseId);
-                            sorting.unstarUpload(courseId);
-
-                            let index = starredByUserId[accountId].indexOf(courseId);
-                            starredByUserId[accountId].splice(index, 1);
-
-                            if (!!starredByCourseId[courseId]) {
-                                index = starredByCourseId[courseId].indexOf(accountId);
-                                starredByCourseId[courseId].splice(index, 1);
-                            }
-
-                            users[courses[courseId].owner].points -= pointsPerStar;
-
-                            return {
-                                user: accountId,
-                                username: users[accountId].username,
-                                owner: courses[courseId].owner,
-                                ownername: courses[courseId].username,
-                                points: users[courses[courseId].owner].points,
-                                courseid: courseId,
-                                starredself: 0
-                            };
-                        } catch (err) {
-                            console.log(err);
-                            return {
-                                err: "Internal Server Error"
-                            };
-                        }
-                    } else {
-                        return {
-                            err: "Tried to unstar course that is not starred"
-                        };
-                    }
-                } else {
-                    if (!starredByUserId[accountId] || !!starredByUserId[accountId] && !starredByUserId[accountId].includes(courseId)) {
-                        try {
-                            courses[courseId].stars++;
-
-                            await Database.starCourse(accountId, courseId);
-                            sorting.starUpload(courseId);
-
-                            if (!starredByUserId[accountId]) {
-                                starredByUserId[accountId] = [courseId];
-                            } else {
-                                starredByUserId[accountId].push(courseId);
-                            }
-                            if (!starredByCourseId[courseId]) {
-                                starredByCourseId[courseId] = [accountId];
-                            } else {
-                                starredByCourseId[courseId].push(accountId);
-                            }
-
-                            users[courses[courseId].owner].points += pointsPerStar;
-
-                            return {
-                                user: accountId,
-                                username: users[accountId].username,
-                                owner: courses[courseId].owner,
-                                ownername: courses[courseId].username,
-                                points: users[courses[courseId].owner].points,
-                                courseid: courseId,
-                                starredself: 1
-                            };
-                        } catch (err) {
-                            console.log(err);
-                            return {
-                                err: "Internal Server Error"
-                            };
-                        }
-                    } else {
-                        return {
-                            err: "Tried to star course that is already starred"
-                        };
-                    }
-                }
-            }
+          res.status(400).send('Unknown range type')
         }
+      } else {
+        res.send(course3ds)
+      }
+    } else {
+      res.set('Content-Encoding', 'gzip')
+      res.set('Content-Type', 'application/wiiu')
+      res.send(await course.getSerialized())
     }
+  }
 
-    static async completeCourse (accountId, data) {
+  static async uploadCourse (req, res, apiData) {
+    if (!apiData.apikey) {
+      res.status(403).send('API key required')
+      return
+    }
+    const account = Account.getAccountByAPIKey(apiData.apikey)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiData.apikey} not found`)
+      return
+    }
+    const courses = await Course.fromBuffer(req.body, account)
+    if (!courses) {
+      res.status(500).send('Could not read course')
+    } else {
+      res.json(courses)
+    }
+  }
 
-        if (!data.courseid) {
-            return {
-                err: "Course ID not found"
-            };
-        } else {
-            let courseId = parseInt(data.courseid);
-            if (!courses[courseId]) {
-                return {
-                    err: "Course not found"
-                };
-            } else {
-                if (data.hasOwnProperty('docomplete') && !data.docomplete) {
-                    if (!completedByUserId[accountId] || !!completedByUserId[accountId] && completedByUserId[accountId].includes(courseId)) {
-                        try {
-                            courses[courseId].completed--;
-
-                            await Database.uncompleteCourse(accountId, courseId);
-                            sorting.uncompleteUpload(courseId);
-
-                            let index = completedByUserId[accountId].indexOf(courseId);
-                            completedByUserId[accountId].splice(index, 1);
-
-                            if (!!completedByCourseId[courseId]) {
-                                index = completedByCourseId[courseId].indexOf(accountId);
-                                completedByCourseId[courseId].splice(index, 1);
-                            }
-
-                            return {
-                                user: accountId,
-                                username: users[accountId].username,
-                                owner: courses[courseId].owner,
-                                ownername: courses[courseId].ownername,
-                                courseid: courseId,
-                                completedself: 0
-                            };
-                        } catch (err) {
-                            console.log(err);
-                            return {
-                                err: "Internal Server Error"
-                            };
-                        }
-                    } else {
-                        return {
-                            err: "Tried to uncomplete course that is not completed"
-                        };
-                    }
-                } else {
-                    if (!completedByUserId[accountId] || !!completedByUserId[accountId] && !completedByUserId[accountId].includes(courseId)) {
-                        try {
-                            courses[courseId].completed++;
-
-                            database.completeCourse(accountId, courseId);
-                            sorting.completeUpload(courseId);
-
-                            if (!completedByUserId[accountId]) {
-                                completedByUserId[accountId] = [courseId];
-                            } else {
-                                completedByUserId[accountId].push(courseId);
-                            }
-                            if (!completedByCourseId[courseId]) {
-                                completedByCourseId[courseId] = [accountId];
-                            } else {
-                                completedByCourseId[courseId].push(accountId);
-                            }
-
-                            return {
-                                user: accountId,
-                                username: users[accountId].username,
-                                owner: courses[courseId].owner,
-                                ownername: courses[courseId].ownername,
-                                courseid: courseId,
-                                completedself: 1
-                            };
-                        } catch (err) {
-                            console.log(err);
-                            return {
-                                err: "Internal Server Error"
-                            };
-                        }
-                    } else {
-                        return {
-                            err: "Tried to complete course that is already completed"
-                        };
-                    }
-                }
-            }
+  static async updateCourse (req, res, apiData) {
+    if (!apiData.apikey) {
+      res.status(403).send('API key required')
+      return
+    }
+    if (!apiData.id) {
+      res.status(400).send('No course ID submitted')
+      return
+    }
+    const account = Account.getAccountByAPIKey(apiData.apikey)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiData.apikey} not found`)
+      return
+    }
+    const course = Course.getCourse(apiData.id)
+    if (course == null) {
+      res.status(400).send(`Course with ID ${apiData.id} not found`)
+      return
+    }
+    if (!course.owner.equals(account._id)) {
+      res.status(403).send(`Course with ID ${apiData.id} is not owned by account with API key ${apiData.apikey}`)
+      return
+    }
+    const courseData = {}
+    if (req.body.title) courseData.title = req.body.title
+    if (req.body.maker) courseData.maker = req.body.maker
+    if (req.body.nintendoid != null) {
+      const nId = req.body.nintendoid
+      if (nId === '') {
+        courseData.nintendoid = ''
+      } else {
+        const a = nId.split('-')
+        if (nintendoIdRegEx.test(nId) && a.length === 4 && a[0].length === 4 && a[1].length === 4 && a[2].length === 4 && a[3].length === 4) {
+          courseData.nintendoid = nId
         }
-
+      }
     }
+    if (req.body.videoid != null) courseData.videoid = req.body.videoid
+    await course.update(courseData)
+    res.json(course)
+  }
 
-    static async uploadCourse (req, accountId) {
-
-        return new Promise(async (resolve) => {
-
-            if (!accountId) {
-                resolve(JSON.stringify({
-                    err: "Invalid API key"
-                }));
-            } else {
-                req.pipe(req.busboy);
-                req.busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-                    if (!mimetype.includes("zip-compressed") && !mimetype.includes("octet-stream")) {
-                        resolve(JSON.stringify({
-                            err: "Wrong MIME type"
-                        }));
-                    } else {
-
-                        let limitReached = false;
-                        file.fileRead = [];
-                        let size = 0;
-
-                        file.on('data', (chunk) => {
-                            file.fileRead.push(chunk);
-                            size += chunk.length;
-                        });
-
-                        file.on('limit', () => {
-                            limitReached = true;
-                            file.resume();
-                            resolve(JSON.stringify({
-                                err: "File size too big"
-                            }));
-                        });
-
-                        file.on('end', async () => {
-                            if (!limitReached) {
-                                let split = filename.split(".");
-                                let newFileName = Date.now() + "." + split[split.length - 1];
-
-                                let buffer = Buffer.concat(file.fileRead, size);
-                                let fstream = fs.createWriteStream(__dirname + '/../courses/' + newFileName);
-                                fstream.write(buffer);
-
-                                console.log("Upload Finished of " + filename);
-
-                                // create DB entry
-                                let title = "";
-                                for (let i = 0; i < split.length - 1; i++) {
-                                    title += split[i];
-                                }
-                                let path = "courses/";
-
-                                users[accountId].points += pointsPerUpload;
-
-                                let result = await database.saveCourse(title, accountId, path + newFileName);
-                                Sorting.insertUpload(result.id);
-
-                                resolve(JSON.stringify(result));
-                            }
-                        });
-                    }
-                });
-            }
-        });
-
+  static deleteCourse (res, apiData) {
+    if (!apiData.apikey) {
+      res.status(403).send('API key required')
+      return
     }
+    const account = Account.getAccountByAPIKey(apiData.apikey)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiData.apikey} not found`)
+      return
+    }
+    const course = Course.getCourse(apiData.id)
+    if (!course) {
+      res.status(400).send(`Course with ID ${apiData.id} not found`)
+      return
+    }
+    if (!course.owner.equals(account._id)) {
+      res.status(403).send(`Course with ID ${apiData.id} is not owned by account with API key ${apiData.apikey}`)
+      return
+    }
+    course.delete()
+    res.send('OK')
+  }
 
+  static async setAccountData (req, res, apiData) {
+    if (!apiData.apikey) {
+      res.status(403).send('API key required')
+      return
+    }
+    const account = Account.getAccountByAPIKey(apiData.apikey)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiData.apikey} not found`)
+      return
+    }
+    if (req.body.username) await account.setUsername(req.body.username)
+    res.json(account)
+  }
 }

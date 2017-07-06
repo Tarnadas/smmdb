@@ -1,62 +1,62 @@
 import {
-    createStore, applyMiddleware
+  createStore, applyMiddleware
 } from 'redux'
 import {
-    combineReducers
+  combineReducers
 } from 'redux-immutable'
 import {
-    fromJS
+  fromJS
 } from 'immutable'
 import {
-    routerMiddleware
+  routerMiddleware
 } from 'react-router-redux'
 
-import router     from './router'
-import chat       from './chat'
-import stats      from './stats'
+import router from './router'
+import chat from './chat'
+import stats from './stats'
 import courseData from './courseData'
 import courseDataSelf from './courseDataSelf'
 import courseDataUploaded from './courseDataUploaded'
-import filter     from './filter'
+import filter from './filter'
 import showFilter from './showFilter'
-import userData   from './userData'
+import userData from './userData'
 import mediaQuery from './mediaQuery'
 
-export default function initReducer(preloadedState, history) {
-    const initialState = fromJS({
-        router: {
-            location: null
-        },
-        chat: {
-            global: {}
-        },
-        stats: {},
-        courseData: [],
-        courseDataSelf: [],
-        courseDataUploaded: [],
-        filter: {
-            nextFilter: {},
-            currentFilter: {}
-        },
-        showFilter: false,
-        userData: {
-            accountData: {}
-        },
-        mediaQuery: {
-            screenSize: 2
-        }
-    });
-    const reducer = combineReducers({
-        router,
-        chat,
-        stats,
-        courseData,
-        courseDataSelf,
-        courseDataUploaded,
-        filter,
-        showFilter,
-        userData,
-        mediaQuery
-    });
-    return createStore(reducer, !!preloadedState ? preloadedState : initialState, applyMiddleware(routerMiddleware(history)));
+export default function initReducer (preloadedState, history) {
+  const initialState = preloadedState || fromJS({
+    router: {
+      location: null
+    },
+    chat: {
+      global: {}
+    },
+    stats: {},
+    courseData: [],
+    courseDataSelf: [],
+    courseDataUploaded: [],
+    filter: {
+      nextFilter: {},
+      currentFilter: {}
+    },
+    showFilter: false,
+    userData: {
+      accountData: {}
+    },
+    mediaQuery: {
+      screenSize: 2
+    }
+  })
+  const reducer = combineReducers({
+    router,
+    chat,
+    stats,
+    courseData,
+    courseDataSelf,
+    courseDataUploaded,
+    filter,
+    showFilter,
+    userData,
+    mediaQuery
+  })
+  return createStore(reducer, initialState, applyMiddleware(routerMiddleware(history)))
 }
