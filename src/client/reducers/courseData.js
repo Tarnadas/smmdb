@@ -32,21 +32,22 @@ export default function courseData (state, action) {
       state = state.setIn(['self', action.id], action.course)
       return state
     case 'SET_COURSES_SELF':
+      if (action.courses.length === 0) return state
+      let list
       if (action.concat) {
-        if (action.courses.length === 0) return state
-        let list = state.get('self').concat(action.courses)
-        const a = state.get('uploaded').map(course => course.id)
-        list = list.filter(x => {
-          if (!a.includes(x.id)) {
-            a.push(x.id)
-            return true
-          }
-          return false
-        })
-        state = state.set('self', list)
+        list = state.get('self').concat(action.courses)
       } else {
-        state = state.set('self', List(action.courses))
+        list = List(action.courses)
       }
+      const a = state.get('uploaded').map(course => course.id).toJS()
+      list = list.filter(x => {
+        if (!a.includes(x.id)) {
+          a.push(x.id)
+          return true
+        }
+        return false
+      })
+      state = state.set('self', list)
       return state
     case 'DELETE_COURSE_SELF':
       state = state.deleteIn(['self', action.courseId])

@@ -242,6 +242,8 @@ export default class Course {
         const course = await createCourse(courseData)
         fs.unlinkSync(tmpFile)
         return [course]
+      } else {
+        return null
       }
     } catch (err) {
       console.log(err)

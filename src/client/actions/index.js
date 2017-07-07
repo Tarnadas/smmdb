@@ -81,6 +81,21 @@ export function deleteCourseUploaded (courseId) {
   }
 }
 
+export function setUpload (id, upload) {
+  return {
+    type: 'SET_UPLOAD',
+    id,
+    upload
+  }
+}
+
+export function deleteUpload (id) {
+  return {
+    type: 'DELETE_UPLOAD',
+    id
+  }
+}
+
 export function showFilter (showFilter) {
   return {
     type: 'SHOW_FILTER',

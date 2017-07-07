@@ -20,6 +20,7 @@ import {
   domain
 } from '../../../static'
 import CoursePanel from '../panels/CoursePanel'
+import ProgressPanel from '../panels/ProgressPanel'
 import UploadArea from '../areas/UploadArea'
 
 const UPDATE_OFFSET = 500
@@ -64,9 +65,16 @@ class UploadView extends React.PureComponent {
     let self = this
     return Array.from((function * () {
       for (let i in courses) {
-        yield (
-          <CoursePanel canEdit isSelf uploaded={uploaded} course={courses[i]} apiKey={self.props.accountData.get('apikey')} id={i} key={courses[i].id} onCourseDelete={uploaded ? self.onCourseDeleteRecent : self.onCourseDelete} />
-        )
+        const course = courses[i]
+        if (course.eta != null) {
+          yield (
+            <ProgressPanel course={course} key={course.id} />
+          )
+        } else {
+          yield (
+            <CoursePanel canEdit isSelf uploaded={uploaded} course={course} apiKey={self.props.accountData.get('apikey')} id={i} key={course.id} onCourseDelete={uploaded ? self.onCourseDeleteRecent : self.onCourseDelete} />
+          )
+        }
       }
     })())
   }
@@ -92,6 +100,7 @@ class UploadView extends React.PureComponent {
     const screenSize = this.props.screenSize
     const accountData = this.props.accountData.toJS()
     const courses = this.props.courses.toJS()
+    const uploads = this.props.uploads.toList().toJS()
     const uploadedCourses = this.props.uploadedCourses.toJS()
     const styles = {
       main: {
@@ -119,6 +128,23 @@ class UploadView extends React.PureComponent {
         margin: '10px 0'
       }
     }
+    const content =
+      <div>
+        {
+          uploadedCourses.length > 0 && (
+          <div style={{height: 'auto', color: '#000', fontSize: '15px'}}>
+            Recently uploaded:
+            {
+              this.renderCourses([...uploads, ...uploadedCourses], true)
+            }
+            <div style={styles.line} />
+            All uploads:
+          </div>
+        )}
+        {
+          this.renderCourses([...uploads, ...courses])
+        }
+      </div>
     return (
       <div style={styles.main}>
         <div style={styles.upload}>
@@ -129,38 +155,10 @@ class UploadView extends React.PureComponent {
                 {
                   screenSize === ScreenSize.LARGE ? (
                     <Scrollbars universal style={{height: '100%'}} onScroll={this.handleScroll} ref={input => { this.scrollBar = input }}>
-                      {
-                        uploadedCourses.length > 0 && (
-                        <div style={{height: 'auto', color: '#000', fontSize: '15px'}}>
-                          Recently uploaded:
-                          {
-                            this.renderCourses(uploadedCourses, true)
-                          }
-                          <div style={styles.line} />
-                          All uploads:
-                        </div>
-                      )}
-                      {
-                        this.renderCourses(courses)
-                      }
+                      { content }
                     </Scrollbars>
                   ) : (
-                    <div>
-                      {
-                        uploadedCourses.length > 0 && (
-                        <div style={{height: 'auto', color: '#000', fontSize: '15px'}}>
-                          Recently uploaded:
-                          {
-                            this.renderCourses(uploadedCourses, true)
-                          }
-                          <div style={styles.line} />
-                          All uploads:
-                        </div>
-                      )}
-                      {
-                        this.renderCourses(courses)
-                      }
-                    </div>
+                    content
                   )
                 }
               </div>
@@ -177,5 +175,6 @@ export default connect(state => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize']),
   accountData: state.getIn(['userData', 'accountData']),
   courses: state.getIn(['courseData', 'self']),
+  uploads: state.get('uploads'),
   uploadedCourses: state.getIn(['courseData', 'uploaded'])
 }))(UploadView)

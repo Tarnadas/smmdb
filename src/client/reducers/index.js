@@ -15,6 +15,7 @@ import router from './router'
 import chat from './chat'
 import stats from './stats'
 import courseData from './courseData'
+import uploads from './uploads'
 import filter from './filter'
 import showFilter from './showFilter'
 import userData from './userData'
@@ -34,6 +35,7 @@ export default function initReducer (preloadedState, history) {
       self: [],
       uploaded: []
     },
+    uploads: {},
     filter: {
       nextFilter: {},
       currentFilter: {}
@@ -51,6 +53,7 @@ export default function initReducer (preloadedState, history) {
     chat,
     stats,
     courseData,
+    uploads,
     filter,
     showFilter,
     userData,

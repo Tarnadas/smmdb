@@ -2,7 +2,7 @@ import {
   Map
 } from 'immutable'
 
-export default function socket (state, action) {
+export default function stats (state, action) {
   if (!action) return state
   switch (action.type) {
     case 'SET_STATS':

@@ -2,36 +2,84 @@ import React from 'react'
 import {
   connect
 } from 'react-redux'
+import {
+  List
+} from 'immutable'
 import got from 'got'
 import stream from 'filereader-stream'
 import concat from 'concat-stream'
+import progress from 'progress-stream'
 
 import { resolve } from 'url'
 
 import { domain } from '../../../static'
 import {
-  setCoursesUploaded
+  setCoursesUploaded, setUpload, deleteUpload
 } from '../../actions'
+
+const SERVER_TIMEOUT = 10000
 
 class UploadArea extends React.PureComponent {
   constructor (props) {
     super(props)
     this.state = {
-      value: ''
+      value: '',
+      uploads: List()
     }
+    this.currentUpload = 0
     this.sendCourse = this.sendCourse.bind(this)
     this.handleChange = this.handleChange.bind(this)
   }
   sendCourse (course) {
     try {
+      let abort
+      let timeout
+      const id = this.currentUpload
+      this.currentUpload++
       const req = got.stream.post(resolve(domain, `/api/uploadcourse?apikey=${this.props.apiKey}`), {
         headers: { 'Content-Type': 'application/octet-stream' }
+      })
+      req.on('request', r => {
+        abort = r.abort
+      })
+      req.on('response', () => {
+        if (timeout) {
+          clearTimeout(timeout)
+          this.props.dispatch(deleteUpload(id))
+        }
+      })
+      const prog = progress({
+        length: course.size,
+        time: 1000
+      })
+      prog.on('progress', progress => {
+        if (progress.percentage === 100) {
+          timeout = setTimeout(() => {
+            if (abort) {
+              abort()
+              this.props.dispatch(deleteUpload(id))
+            }
+          }, SERVER_TIMEOUT)
+        } else {
+          this.props.dispatch(setUpload(id, {
+            id,
+            title: course.name,
+            percentage: progress.percentage,
+            eta: progress.eta
+          }))
+        }
       })
       req.pipe(concat(buf => {
         const courses = JSON.parse(new TextDecoder('utf-8').decode(buf))
         this.props.dispatch(setCoursesUploaded(courses, true))
       }))
-      stream(course).pipe(req)
+      stream(course).pipe(prog).pipe(req)
+      this.props.dispatch(setUpload(id, {
+        id,
+        title: course.name,
+        percentage: 0,
+        eta: 0
+      }))
     } catch (err) {
       console.log(err.response.body)
     }
