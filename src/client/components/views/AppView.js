@@ -201,19 +201,11 @@ class AppView extends React.PureComponent {
     )
   }
 }
-export default connect(state => {
-  const screenSize = state.getIn(['mediaQuery', 'screenSize'])
-  const userName = state.getIn(['userData', 'userName'])
-  const videoId = state.getIn(['userData', 'videoId'])
-  const courses = state.get('courseData')
-  const showFilter = state.get('showFilter')
-  const filter = state.getIn(['filter', 'currentFilter'])
-  return {
-    screenSize,
-    userName: userName || '',
-    videoId: videoId || '',
-    courses,
-    showFilter,
-    filter
-  }
-})(AppView)
+export default connect(state => ({
+  screenSize: state.getIn(['mediaQuery', 'screenSize']),
+  userName: state.getIn(['userData', 'userName']) || '',
+  videoId: state.getIn(['userData', 'videoId']) || '',
+  courses: state.getIn(['courseData', 'main']),
+  showFilter: state.get('showFilter'),
+  filter: state.getIn(['filter', 'currentFilter'])
+}))(AppView)

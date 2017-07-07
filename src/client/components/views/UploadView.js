@@ -176,6 +176,6 @@ class UploadView extends React.PureComponent {
 export default connect(state => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize']),
   accountData: state.getIn(['userData', 'accountData']),
-  courses: state.get('courseDataSelf'),
-  uploadedCourses: state.get('courseDataUploaded')
+  courses: state.getIn(['courseData', 'self']),
+  uploadedCourses: state.getIn(['courseData', 'uploaded'])
 }))(UploadView)

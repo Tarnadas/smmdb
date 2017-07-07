@@ -121,7 +121,7 @@ class MainView extends React.PureComponent {
 }
 export default connect(state => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize']),
-  courses: state.get('courseData'),
+  courses: state.getIn(['courseData', 'main']),
   filter: state.getIn(['filter', 'currentFilter']),
   accountData: state.getIn(['userData', 'accountData'])
 }))(MainView)
