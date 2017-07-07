@@ -131,7 +131,7 @@ class UploadView extends React.PureComponent {
     const content =
       <div>
         {
-          uploadedCourses.length > 0 && (
+          (uploadedCourses.length > 0 || uploads.length > 0) && (
           <div style={{height: 'auto', color: '#000', fontSize: '15px'}}>
             Recently uploaded:
             {
@@ -142,7 +142,7 @@ class UploadView extends React.PureComponent {
           </div>
         )}
         {
-          this.renderCourses([...uploads, ...courses])
+          this.renderCourses(courses)
         }
       </div>
     return (

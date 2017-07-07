@@ -29,6 +29,7 @@ class UploadArea extends React.PureComponent {
     this.currentUpload = 0
     this.sendCourse = this.sendCourse.bind(this)
     this.handleChange = this.handleChange.bind(this)
+    this.handleClick = this.handleClick.bind(this)
   }
   sendCourse (course) {
     try {
@@ -48,11 +49,23 @@ class UploadArea extends React.PureComponent {
           this.props.dispatch(deleteUpload(id))
         }
       })
+      req.on('error', () => {
+        if (timeout) {
+          clearTimeout(timeout)
+          this.props.dispatch(deleteUpload(id))
+        }
+      })
       const prog = progress({
         length: course.size,
         time: 1000
       })
       prog.on('progress', progress => {
+        this.props.dispatch(setUpload(id, {
+          id,
+          title: course.name,
+          percentage: progress.percentage,
+          eta: progress.eta
+        }))
         if (progress.percentage === 100) {
           timeout = setTimeout(() => {
             if (abort) {
@@ -60,18 +73,15 @@ class UploadArea extends React.PureComponent {
               this.props.dispatch(deleteUpload(id))
             }
           }, SERVER_TIMEOUT)
-        } else {
-          this.props.dispatch(setUpload(id, {
-            id,
-            title: course.name,
-            percentage: progress.percentage,
-            eta: progress.eta
-          }))
         }
       })
       req.pipe(concat(buf => {
-        const courses = JSON.parse(new TextDecoder('utf-8').decode(buf))
-        this.props.dispatch(setCoursesUploaded(courses, true))
+        try {
+          const courses = JSON.parse(new TextDecoder('utf-8').decode(buf))
+          this.props.dispatch(setCoursesUploaded(courses, true))
+        } catch (err) {
+          // ignore
+        }
       }))
       stream(course).pipe(prog).pipe(req)
       this.props.dispatch(setUpload(id, {
@@ -89,6 +99,11 @@ class UploadArea extends React.PureComponent {
       value: e.target.value
     })
     this.sendCourse(e.target.files[0])
+  }
+  handleClick () {
+    this.setState({
+      value: ''
+    })
   }
   render () {
     const styles = {
@@ -120,7 +135,7 @@ class UploadArea extends React.PureComponent {
     }
     return (
       <div style={styles.drag}>
-        <input style={styles.input} type='file' value={this.state.value} onChange={this.handleChange} />
+        <input style={styles.input} type='file' multiple value={this.state.value} onChange={this.handleChange} onClick={this.handleClick} />
         Drag and drop or click here to upload a course
       </div>
     )
