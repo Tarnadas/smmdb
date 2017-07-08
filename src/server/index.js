@@ -117,12 +117,13 @@ function main () {
         let account
         if (!Account.exists(googleId)) {
           // create new account
-          let username = tokenInfo.email.split('@')[0]
           account = new Account({
             googleid: googleId,
-            username
+            username: tokenInfo.email.split('@')[0],
+            email: tokenInfo.email
           })
           await Database.addAccount(account)
+          account.setId()
         } else {
           account = Account.getAccountByGoogleId(googleId)
           account.login(idToken)
