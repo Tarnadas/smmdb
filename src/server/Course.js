@@ -155,20 +155,22 @@ export default class Course {
   }
 
   async getCompressed () {
-    let tmpDir = await new Promise((resolve, reject) => {
-      tmp.dir({}, (err, path) => {
-        if (err) reject(err)
-        resolve(path)
-      })
+    const tmpDir = tmp.dirSync({
+      unsafeCleanup: true
     })
-    await (await deserialize(fs.readFileSync(join(__dirname, `../client/coursedata/${this._id}`)))).writeToSave(0, tmpDir)
-    const outPath = join(tmpDir, `${this.title}.zip`)
+    const zipDir = join(tmpDir.name, 'course000')
+    fs.mkdirSync(zipDir)
+    await (await deserialize(fs.readFileSync(join(__dirname, `../client/coursedata/${this._id}`)))).writeToSave(0, zipDir)
+    const outPath = join(tmpDir.name, `${this.title}.zip`)
     const res = await new Promise(resolve => {
-      zip(tmpDir, outPath, err => {
+      zip(zipDir, outPath, err => {
         if (err) throw err
         resolve(outPath)
       })
     })
+    setTimeout(() => {
+      tmpDir.removeCallback()
+    }, 20000)
     return res
   }
 

@@ -143,7 +143,7 @@ export default class API {
       return
     }
     if (apiData.type === 'zip') {
-      let file = await course.getCompressed()
+      const file = await course.getCompressed()
       if (typeof (file) === 'string') {
         res.setHeader('Content-Type', 'application/zip')
         res.download(file)
@@ -175,6 +175,7 @@ export default class API {
           res.status(400).send('Unknown range type')
         }
       } else {
+        res.set('Content-disposition', `attachment;filename=${course.title}.3ds`)
         res.send(course3ds)
       }
     } else {
