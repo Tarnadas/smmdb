@@ -6,6 +6,7 @@ import {
 } from 'cross-unzip'
 import tmp from 'tmp'
 import fileType from 'file-type'
+import randomString from 'crypto-random-string'
 
 import { resolve, join } from 'path'
 import * as fs from 'fs'
@@ -186,7 +187,7 @@ export default class Course {
   }
 
   static async fromBuffer (buffer, account) {
-    const tmpFile = resolve(__dirname, 'course')
+    const tmpFile = resolve(__dirname, randomString(10))
     fs.writeFileSync(tmpFile, buffer)
     const type = fileType(buffer)
     const mime = type && type.mime

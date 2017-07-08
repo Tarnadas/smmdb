@@ -32,16 +32,22 @@ class UploadArea extends React.PureComponent {
     this.handleClick = this.handleClick.bind(this)
   }
   sendCourse (course) {
+    let timeout
+    const id = this.currentUpload
+    this.currentUpload++
     try {
       let abort
-      let timeout
-      const id = this.currentUpload
-      this.currentUpload++
       const req = got.stream.post(resolve(domain, `/api/uploadcourse?apikey=${this.props.apiKey}`), {
         headers: { 'Content-Type': 'application/octet-stream' }
       })
       req.on('request', r => {
         abort = r.abort
+        this.props.dispatch(setUpload(id, {
+          id,
+          title: course.name,
+          percentage: 0,
+          eta: 0
+        }))
       })
       req.on('response', () => {
         if (timeout) {
@@ -49,7 +55,8 @@ class UploadArea extends React.PureComponent {
           this.props.dispatch(deleteUpload(id))
         }
       })
-      req.on('error', () => {
+      req.on('error', err => {
+        console.log(err)
         if (timeout) {
           clearTimeout(timeout)
           this.props.dispatch(deleteUpload(id))
@@ -80,25 +87,40 @@ class UploadArea extends React.PureComponent {
           const courses = JSON.parse(new TextDecoder('utf-8').decode(buf))
           this.props.dispatch(setCoursesUploaded(courses, true))
         } catch (err) {
-          // ignore
+          if (timeout) {
+            clearTimeout(timeout)
+            this.props.dispatch(deleteUpload(id))
+          }
         }
       }))
-      stream(course).pipe(prog).pipe(req)
-      this.props.dispatch(setUpload(id, {
-        id,
-        title: course.name,
-        percentage: 0,
-        eta: 0
-      }))
+      const s = stream(course)
+      s.pipe(prog).pipe(req)
     } catch (err) {
-      console.log(err.response.body)
+      console.log(err)
+      if (err.response.body) {
+        console.log(err.response.body)
+      }
+      if (timeout) {
+        clearTimeout(timeout)
+        this.props.dispatch(deleteUpload(id))
+      }
     }
   }
   handleChange (e) {
     this.setState({
       value: e.target.value
     })
-    this.sendCourse(e.target.files[0])
+    const files = e.target.files
+    for (let i in files) {
+      const file = files[i]
+      if (!(file instanceof Blob)) continue
+      if (file.size > 6 * 1024 * 1024) continue
+      const reader = new FileReader()
+      reader.onload = () => {
+        this.sendCourse(file)
+      }
+      reader.readAsText(file)
+    }
   }
   handleClick () {
     this.setState({
@@ -136,7 +158,7 @@ class UploadArea extends React.PureComponent {
     return (
       <div style={styles.drag}>
         <input style={styles.input} type='file' multiple value={this.state.value} onChange={this.handleChange} onClick={this.handleClick} />
-        Drag and drop or click here to upload a course
+        Drag and drop or click here to upload a course (max 6MB)
       </div>
     )
   }
