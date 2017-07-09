@@ -25,10 +25,12 @@ class ProfileView extends React.PureComponent {
     const accountData = props.accountData.toJS()
     this.state = {
       username: accountData.username ? accountData.username : '',
+      changed: false,
       saved: false
     }
     this.onProfileSubmit = this.onProfileSubmit.bind(this)
     this.onUsernameChange = this.onUsernameChange.bind(this)
+    this.onDownloadFormatChange = this.onSelectChange.bind(this, 'downloadFormat')
   }
   componentWillReceiveProps (nextProps, nextContext) {
     if (nextProps.accountData === this.props.accountData) return
@@ -56,6 +58,10 @@ class ProfileView extends React.PureComponent {
           json: true
         })).body
         this.props.dispatch(setAccountData(res))
+        this.setState({
+          changed: false,
+          saved: true
+        })
       } catch (err) {
         console.error(err.response.body)
       }
@@ -68,24 +74,36 @@ class ProfileView extends React.PureComponent {
     }
     this.setState({
       username,
+      changed: true,
       saved: false
     })
+  }
+  onSelectChange (value, e) {
+    const val = e.target.value
+    const res = {
+      changed: true,
+      saved: false
+    }
+    res[value] = val
+    this.setState(res)
   }
   render () {
     const screenSize = this.props.screenSize
     const accountData = this.props.accountData.toJS()
-    const usernameChanged = accountData.username !== this.state.username
-    const colorScheme = usernameChanged ? COLOR_SCHEME.RED : (this.state.saved ? COLOR_SCHEME.GREEN : COLOR_SCHEME.YELLOW)
+    const colorScheme = this.state.changed ? COLOR_SCHEME.RED : (this.state.saved ? COLOR_SCHEME.GREEN : COLOR_SCHEME.YELLOW)
     const styles = {
+      main: {
+        display: screenSize === ScreenSize.LARGE ? 'flex' : 'flex',
+        flexDirection: screenSize === ScreenSize.LARGE ? 'column' : 'column',
+        alignItems: screenSize === ScreenSize.LARGE ? 'center' : 'center'
+      },
       profile: {
         width: screenSize === ScreenSize.LARGE ? 'calc(100% - 260px)' : '100%',
+        maxWidth: '926px',
         height: screenSize === ScreenSize.LARGE ? 'calc(100% - 40px)' : 'auto',
         overflow: 'hidden',
-        position: screenSize === ScreenSize.LARGE ? 'absolute' : '',
         zIndex: '10',
-        top: screenSize === ScreenSize.LARGE ? '40px' : '',
-        left: screenSize === ScreenSize.LARGE ? '140px' : '',
-        marginTop: screenSize === ScreenSize.LARGE ? '' : '30px',
+        marginTop: '40px',
         color: '#fff'
       },
       flex: {
@@ -105,25 +123,42 @@ class ProfileView extends React.PureComponent {
       input: {
         height: '32px',
         fontSize: '18px'
+      },
+      select: {
+        width: 'auto',
+        height: '32px',
+        fontSize: '18px'
       }
     }
     return (
-      <div style={styles.profile}>
-        {
-          accountData.id ? (
-            <div style={styles.flex}>
-              <div style={styles.option}>
-                <div style={styles.value}>
-                  Username:
+      <div style={styles.main}>
+        <div style={styles.profile}>
+          {
+            accountData.id ? (
+              <div style={styles.flex}>
+                <div style={styles.option}>
+                  <div style={styles.value}>
+                    Username:
+                  </div>
+                  <input style={styles.input} value={this.state.username} onChange={this.onUsernameChange} />
                 </div>
-                <input style={styles.input} value={this.state.username} onChange={this.onUsernameChange} />
+                <div style={styles.option}>
+                  <div style={styles.value}>
+                    Preferred download format:
+                  </div>
+                  <select style={styles.select} value={this.state.downloadFormat} onChange={this.onDownloadFormatChange}>
+                    <option value='wiiu'>Wii U</option>
+                    <option value='3ds'>3DS</option>
+                    <option value='protobuf'>Protocol Buffer</option>
+                  </select>
+                </div>
+                <SMMButton text='Save' iconSrc='/img/profile.png' fontSize='13px' padding='3px' colorScheme={colorScheme} onClick={this.onProfileSubmit} />
               </div>
-              <SMMButton text='Save' iconSrc='/img/profile.png' fontSize='13px' padding='3px' colorScheme={colorScheme} onClick={this.onProfileSubmit} />
-            </div>
-          ) : (
-            <div style={styles.flex}>You are not logged in</div>
-          )
-        }
+            ) : (
+              <div style={styles.flex}>You are not logged in</div>
+            )
+          }
+        </div>
       </div>
     )
   }

@@ -66,13 +66,23 @@ let properties;
 })()
 
 export default class Sorting {
+  static initialize () {
+    for (let i = 0; i < properties.length; i++) {
+      const property = properties[i]
+      coursesSorted[property.name] = {
+        desc: [],
+        asc: []
+      }
+    }
+  }
+
   static getCoursesBySorting (sorting, direction) {
     return coursesSorted[sorting][direction]
   }
 
   static sortCourses () {
     for (let i = 0; i < properties.length; i++) {
-      let property = properties[i]
+      const property = properties[i]
       let sortable = []
       for (let key in courses) {
         if (courses.hasOwnProperty(key)) {
@@ -100,100 +110,114 @@ export default class Sorting {
     let index = 0
     let upper = []
     let lower = []
-    let current = coursesSorted.title.desc
     let iterations = 0
     const maxIterations = 1000
-    while (iterations < maxIterations) {
-      iterations++
-      if (current.length === 1) {
-        if (course.title > current[0].title) {
-          index++
+    let current = coursesSorted.title.desc
+    if (current.length === 0) {
+      coursesSorted.title.desc.push(course)
+    } else {
+      while (iterations < maxIterations) {
+        iterations++
+        if (current.length === 1) {
+          if (course.title > current[0].title) {
+            index++
+          }
+          break
         }
-        break
+        let middle = Math.trunc((current.length - 1) / 2) + 1
+        upper = current.slice(0, middle)
+        lower = current.slice(middle, current.length)
+        if (course.title < current[middle].title) {
+          current = upper
+        } else {
+          current = lower
+          index += middle
+        }
       }
-      let middle = Math.trunc((current.length - 1) / 2) + 1
-      upper = current.slice(0, middle)
-      lower = current.slice(middle, current.length)
-      if (course.title < current[middle].title) {
-        current = upper
-      } else {
-        current = lower
-        index += middle
-      }
+      coursesSorted.title.desc.splice(index, 0, course)
     }
-    coursesSorted.title.desc.splice(index, 0, course)
 
     index = 0
+    iterations = 0
     current = coursesSorted.title.asc
-    iterations = 0
-    while (iterations < maxIterations) {
-      iterations++
-      if (current.length === 1) {
-        if (course.title < current[0].title) {
-          index++
+    if (current.length === 0) {
+      coursesSorted.title.asc.push(course)
+    } else {
+      iterations = 0
+      while (iterations < maxIterations) {
+        iterations++
+        if (current.length === 1) {
+          if (course.title < current[0].title) {
+            index++
+          }
+          break
         }
-        break
+        let middle = Math.trunc((current.length - 1) / 2) + 1
+        upper = current.slice(0, middle)
+        lower = current.slice(middle, current.length)
+        if (course.title > current[middle].title) {
+          current = upper
+        } else {
+          current = lower
+          index += middle
+        }
       }
-      let middle = Math.trunc((current.length - 1) / 2) + 1
-      upper = current.slice(0, middle)
-      lower = current.slice(middle, current.length)
-      if (course.title > current[middle].title) {
-        current = upper
-      } else {
-        current = lower
-        index += middle
-      }
+      coursesSorted.title.asc.splice(index, 0, course)
     }
-    coursesSorted.title.asc.splice(index, 0, course)
 
     index = 0
+    iterations = 0
     current = coursesSorted.lastmodified.desc
-    iterations = 0
-    while (iterations < maxIterations) {
-      iterations++
-      if (current.length === 1) {
-        if (course.lastmodified < current[0].lastmodified) {
-          index++
+    if (current.length === 0) {
+      coursesSorted.lastmodified.desc.push(course)
+    } else {
+      while (iterations < maxIterations) {
+        iterations++
+        if (current.length === 1) {
+          if (course.lastmodified < current[0].lastmodified) {
+            index++
+          }
+          break
         }
-        break
+        let middle = Math.trunc((current.length - 1) / 2) + 1
+        upper = current.slice(0, middle)
+        lower = current.slice(middle, current.length)
+        if (course.lastmodified > current[middle].lastmodified) {
+          current = upper
+        } else {
+          current = lower
+          index += middle
+        }
       }
-      let middle = Math.trunc((current.length - 1) / 2) + 1
-      upper = current.slice(0, middle)
-      lower = current.slice(middle, current.length)
-      if (course.lastmodified > current[middle].lastmodified) {
-        current = upper
-      } else {
-        current = lower
-        index += middle
-      }
+      coursesSorted.lastmodified.desc.splice(index, 0, course)
     }
-    coursesSorted.lastmodified.desc.splice(index, 0, course)
 
     index = 0
-    current = coursesSorted.lastmodified.asc
     iterations = 0
-    while (iterations < maxIterations) {
-      iterations++
-      if (current.length === 1) {
-        if (course.lastmodified < current[0].lastmodified) {
-          index++
+    current = coursesSorted.lastmodified.asc
+    if (current.length === 0) {
+      coursesSorted.lastmodified.asc.push(course)
+    } else {
+      while (iterations < maxIterations) {
+        iterations++
+        if (current.length === 1) {
+          if (course.lastmodified < current[0].lastmodified) {
+            index++
+          }
+          break
         }
-        break
+        let middle = Math.trunc((current.length - 1) / 2) + 1
+        upper = current.slice(0, middle)
+        lower = current.slice(middle, current.length)
+        if (course.lastmodified > current[middle].lastmodified) {
+          current = upper
+        } else {
+          current = lower
+          index += middle
+        }
       }
-      let middle = Math.trunc((current.length - 1) / 2) + 1
-      upper = current.slice(0, middle)
-      lower = current.slice(middle, current.length)
-      if (course.lastmodified > current[middle].lastmodified) {
-        current = upper
-      } else {
-        current = lower
-        index += middle
-      }
+      coursesSorted.lastmodified.asc.splice(index, 0, course)
     }
-    coursesSorted.lastmodified.asc.splice(index, 0, course)
-
-    // coursesSorted.lastmodified.desc.splice(0, 0, course);
-    // coursesSorted.lastmodified.asc.push(course);
 
     coursesSorted.uploaded.desc.splice(0, 0, course)
     coursesSorted.uploaded.asc.push(course)
