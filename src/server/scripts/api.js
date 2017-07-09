@@ -175,7 +175,7 @@ export default class API {
           res.status(400).send('Unknown range type')
         }
       } else {
-        res.set('Content-disposition', `attachment;filename=${course.title}.3ds`)
+        res.set('Content-disposition', `attachment;filename=${encodeURI(course.title)}.3ds`)
         res.send(course3ds)
       }
     } else {
