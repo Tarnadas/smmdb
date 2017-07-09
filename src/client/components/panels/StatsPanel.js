@@ -2,8 +2,32 @@ import React from 'react'
 import {
   connect
 } from 'react-redux'
+import got from 'got'
+
+import { resolve } from 'url'
+
+import {
+  setStats
+} from '../../actions'
+import {
+  domain
+} from '../../../static'
 
 class StatsPanel extends React.PureComponent {
+  componentWillMount () {
+    (async () => {
+      try {
+        const stats = (await got(resolve(domain, `/api/getstats`), {
+          json: true
+        })).body
+        this.props.dispatch(setStats(stats))
+      } catch (err) {
+        if (!err.response) {
+          console.error(err.response.body)
+        }
+      }
+    })()
+  }
   render () {
     const stats = this.props.stats.toJS()
     const styles = {
