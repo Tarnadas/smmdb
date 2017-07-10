@@ -1,11 +1,18 @@
 import React from 'react'
+import {
+  connect
+} from 'react-redux'
 
 import {
   ScreenSize
 } from '../../reducers/mediaQuery'
+import {
+  DOWNLOAD_FORMAT
+} from '../../reducers/userData'
 
-export default class CourseDownloadButton extends React.PureComponent {
+class CourseDownloadButton extends React.PureComponent {
   render () {
+    const downloadFormat = this.props.downloadFormat ? this.props.downloadFormat : DOWNLOAD_FORMAT.WII_U
     const screenSize = this.props.screenSize
     const styles = {
       href: {
@@ -45,7 +52,12 @@ export default class CourseDownloadButton extends React.PureComponent {
       }
     }
     return (
-      <a style={styles.href} href={`/api/downloadcourse?id=${this.props.courseId}&type=zip`} download>
+      <a style={styles.href} href={`/api/downloadcourse?id=${this.props.courseId}&type=${
+        downloadFormat === DOWNLOAD_FORMAT.WII_U ? 'zip'
+          : (
+            downloadFormat === DOWNLOAD_FORMAT.N3DS ? '3ds' : 'protobuf'
+          )
+      }`} download>
         <div style={styles.button}>
           <div style={styles.icon}>
             <img style={styles.iconImg} src='/img/coursebot.png' />
@@ -58,3 +70,6 @@ export default class CourseDownloadButton extends React.PureComponent {
     )
   }
 }
+export default connect(state => ({
+  downloadFormat: state.getIn(['userData', 'accountData', 'downloadformat'])
+}))(CourseDownloadButton)

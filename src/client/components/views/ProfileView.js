@@ -16,6 +16,9 @@ import {
 import {
   setAccountData
 } from '../../actions'
+import {
+  DOWNLOAD_FORMAT
+} from '../../reducers/userData'
 
 const MAX_LENGTH_USERNAME = 20
 
@@ -23,8 +26,10 @@ class ProfileView extends React.PureComponent {
   constructor (props) {
     super(props)
     const accountData = props.accountData.toJS()
+    console.log(accountData)
     this.state = {
       username: accountData.username ? accountData.username : '',
+      downloadFormat: accountData.downloadformat ? accountData.downloadformat : DOWNLOAD_FORMAT.WII_U,
       changed: false,
       saved: false
     }
@@ -34,22 +39,32 @@ class ProfileView extends React.PureComponent {
   }
   componentWillReceiveProps (nextProps, nextContext) {
     if (nextProps.accountData === this.props.accountData) return
-    const username = nextProps.accountData.toJS().username
+    const nextAccountData = nextProps.accountData.toJS()
     const accountData = this.props.accountData.toJS()
-    if (username === accountData.username) return
-    this.setState({
-      username
-    })
-    if (accountData.id !== nextProps.accountData.toJS().id) return
-    this.setState({
-      saved: true
-    })
+    const username = nextAccountData.username
+    if (username !== accountData.username) {
+      this.setState({
+        username
+      })
+    }
+    const downloadFormat = nextAccountData.downloadformat
+    if (downloadFormat !== accountData.downloadformat) {
+      this.setState({
+        downloadFormat
+      })
+    }
+    if (accountData.id === nextProps.accountData.toJS().id) {
+      this.setState({
+        saved: true
+      })
+    }
   }
   onProfileSubmit () {
     (async () => {
-      if (this.state.username === this.props.accountData.toJS().username) return
+      if (!this.state.changed) return
       const profile = {
-        username: this.state.username
+        username: this.state.username,
+        downloadformat: this.state.downloadFormat
       }
       try {
         const res = (await got(resolve(domain, `/api/setaccountdata?apikey=${this.props.accountData.get('apikey')}`), {
@@ -63,6 +78,7 @@ class ProfileView extends React.PureComponent {
           saved: true
         })
       } catch (err) {
+        console.log(err)
         console.error(err.response.body)
       }
     })()
@@ -113,7 +129,6 @@ class ProfileView extends React.PureComponent {
       },
       option: {
         height: 'auto',
-        width: '50%',
         padding: '10px'
       },
       value: {
@@ -125,7 +140,6 @@ class ProfileView extends React.PureComponent {
         fontSize: '18px'
       },
       select: {
-        width: 'auto',
         height: '32px',
         fontSize: '18px'
       }
@@ -147,9 +161,9 @@ class ProfileView extends React.PureComponent {
                     Preferred download format:
                   </div>
                   <select style={styles.select} value={this.state.downloadFormat} onChange={this.onDownloadFormatChange}>
-                    <option value='wiiu'>Wii U</option>
-                    <option value='3ds'>3DS</option>
-                    <option value='protobuf'>Protocol Buffer</option>
+                    <option value={DOWNLOAD_FORMAT.WII_U}>Wii U</option>
+                    <option value={DOWNLOAD_FORMAT.N3DS}>3DS</option>
+                    <option value={DOWNLOAD_FORMAT.PROTOBUF}>Protocol Buffer</option>
                   </select>
                 </div>
                 <SMMButton text='Save' iconSrc='/img/profile.png' fontSize='13px' padding='3px' colorScheme={colorScheme} onClick={this.onProfileSubmit} />

@@ -2,6 +2,12 @@ import {
   Map
 } from 'immutable'
 
+export const DOWNLOAD_FORMAT = {
+  WII_U: 0,
+  N3DS: 1,
+  PROTOBUF: 2
+}
+
 export default function userData (state, action) {
   if (!action) return state
   switch (action.type) {

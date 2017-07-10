@@ -1,5 +1,6 @@
 import parseRange from 'range-parser'
 
+import Database from './database'
 import Sorting from './sorting'
 import Account from '../Account'
 import Course from '../Course'
@@ -278,7 +279,17 @@ export default class API {
       res.status(400).send(`Account with API key ${apiData.apikey} not found`)
       return
     }
-    if (req.body.username) await account.setUsername(req.body.username)
+    const accountData = {}
+    if (req.body.username) {
+      account.setUsername(req.body.username)
+      accountData.username = req.body.username
+    }
+    if (req.body.downloadformat) {
+      const downloadFormat = typeof (req.body.downloadformat) !== 'number' ? parseInt(req.body.downloadformat) : req.body.downloadformat
+      account.setDownloadFormat(downloadFormat)
+      accountData.downloadformat = downloadFormat
+    }
+    await Database.updateAccount(account._id, accountData)
     res.json(account)
   }
 }

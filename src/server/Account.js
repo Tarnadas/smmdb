@@ -48,10 +48,12 @@ export default class Account {
   setId () {
     accounts[this._id] = this
   }
-  async setUsername (username) {
+  setUsername (username) {
     this.username = username
-    await Database.updateAccount(this._id, { username })
     return null
+  }
+  setDownloadFormat (downloadFormat) {
+    this.downloadformat = downloadFormat
   }
   static exists (googleId) {
     return !!accountsByGoogleId[googleId]
@@ -69,6 +71,7 @@ export default class Account {
     return {
       username: this.username,
       id: this._id,
+      downloadformat: this.downloadformat != null ? this.downloadformat : 0,
       apikey: this.apikey,
       completed: this[completed],
       starred: this[starred],
