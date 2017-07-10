@@ -219,7 +219,6 @@ export default class Course {
       delete course.soundsSub
       delete course.thumbnail
       delete course.thumbnailPreview
-      // delete course.serialized
       await Database.addCourse(course)
       fs.writeFileSync(join(__dirname, `../client/courseimg/${course._id}.jpg`), courseData.thumbnailPreview)
       fs.writeFileSync(join(__dirname, `../client/courseimg/${course._id}_full.jpg`), courseData.thumbnail)

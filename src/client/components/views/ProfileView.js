@@ -26,7 +26,6 @@ class ProfileView extends React.PureComponent {
   constructor (props) {
     super(props)
     const accountData = props.accountData.toJS()
-    console.log(accountData)
     this.state = {
       username: accountData.username ? accountData.username : '',
       downloadFormat: accountData.downloadformat ? accountData.downloadformat : DOWNLOAD_FORMAT.WII_U,
