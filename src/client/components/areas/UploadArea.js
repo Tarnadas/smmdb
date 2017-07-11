@@ -17,7 +17,7 @@ import {
   setCoursesUploaded, setUpload, deleteUpload
 } from '../../actions'
 
-const SERVER_TIMEOUT = 10000
+const SERVER_TIMEOUT = 30000
 
 class UploadArea extends React.PureComponent {
   constructor (props) {
