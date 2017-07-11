@@ -43,7 +43,8 @@ class MainView extends React.PureComponent {
   async fetchCourses () {
     try {
       const courses = (await got(resolve(domain, `/api/getcourses?limit=10`), {
-        json: true
+        json: true,
+        useElectronNet: false
       })).body
       this.props.dispatch(setCourses(courses, false))
     } catch (err) {

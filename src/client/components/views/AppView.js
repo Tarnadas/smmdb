@@ -78,11 +78,16 @@ class AppView extends React.PureComponent {
   async fetchCourses (shouldConcat = false, limit = LIMIT, start = 0) {
     try {
       const courses = (await got(resolve(domain, `/api/getcourses?limit=${limit}&start=${start}${this.queryString ? `&${this.queryString}` : ''}`), {
-        json: true
+        json: true,
+        useElectronNet: false
       })).body
       this.props.dispatch(setCourses(courses, shouldConcat))
     } catch (err) {
-      console.error(err.response.body)
+      console.log('error')
+      console.log(err)
+      if (!err.response) {
+        console.error(err.response.body)
+      }
     }
   }
   onVideoHide () {

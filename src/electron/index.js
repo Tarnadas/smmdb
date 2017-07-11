@@ -42,6 +42,9 @@ const BrowserWindow = electron.BrowserWindow;
     }, err => {
       if (err) console.error('Failed to register protocol')
     })
+    /* protocol.interceptHttpProtocol('http', (request, callback) => {
+      console.log(request)
+    }) */
 
     require('electron-debug')({showDevTools: true})
     mainWindow = new BrowserWindow({

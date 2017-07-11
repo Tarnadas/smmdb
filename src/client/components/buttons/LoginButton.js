@@ -32,7 +32,8 @@ class LoginButton extends React.PureComponent {
       try {
         const res = (await got(resolve(domain, '/signin'), {
           method: 'POST',
-          json: true
+          json: true,
+          useElectronNet: false
         })).body
         setTimeout(() => { // TODO this is just a workaround to prevent a warning
           this.props.dispatch(setAccountData(res))
