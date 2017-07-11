@@ -19,7 +19,7 @@ module.exports = [
     },
     output: {
       filename: 'app.[hash].js',
-      path: path.join(__dirname, 'build/client/script')
+      path: path.join(__dirname, 'build/client/scripts')
     },
     node: {
       __dirname: false,
@@ -44,8 +44,8 @@ module.exports = [
         keepFnName: true
       }),
       new HtmlWebpackPlugin({
-        filename: '../views/index.html',
-        template: 'build/client/views/template.html'
+        filename: 'index.html',
+        template: 'build/static/views/template.html'
       }),
       new ScriptExtHtmlWebpackPlugin({
         preload: /\.js/

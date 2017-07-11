@@ -35,7 +35,7 @@ import { port } from '../static'
 
 export const lobby = new Lobby()
 
-const $index = cheerio.load(fs.readFileSync(path.join(__dirname, '../client/views/index.html')))
+const $index = cheerio.load(fs.readFileSync(path.join(__dirname, '../client/index.html')))
 
 export const pointsPerDownload = 1
 export const pointsPerStar = 15
@@ -89,10 +89,10 @@ function main () {
     limit: '6mb'
   }))
   app.use(favicon(path.join(__dirname, '../../favicon.ico')))
-  app.use('/img', express.static(path.join(__dirname, '../client/images'), { maxAge: cacheMaxAgeImg }))
-  app.use('/courseimg', express.static(path.join(__dirname, '../client/courseimg'), { maxAge: cacheMaxAgeImg }))
-  app.use('/styles', express.static(path.join(__dirname, '../client/styles'), { maxAge: cacheMaxAgeCSS }))
-  app.use('/script', express.static(path.join(__dirname, '../client/script'), { maxAge: cacheMaxAgeJS }))
+  app.use('/img', express.static(path.join(__dirname, '../static/images'), { maxAge: cacheMaxAgeImg }))
+  app.use('/courseimg', express.static(path.join(__dirname, '../static/courseimg'), { maxAge: cacheMaxAgeImg }))
+  app.use('/styles', express.static(path.join(__dirname, '../static/styles'), { maxAge: cacheMaxAgeCSS }))
+  app.use('/scripts', express.static(path.join(__dirname, '../client/scripts'), { maxAge: cacheMaxAgeJS }))
   app.use(cookieSession({
     name: 'session',
     keys: cookieCredentials,

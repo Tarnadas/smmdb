@@ -47,7 +47,7 @@ export default class Course {
       if (!!thumbnail && fs.existsSync(thumbnail)) {
         await this.courseData.setThumbnail(thumbnail)
       } else {
-        await this.courseData.setThumbnail(join(__dirname, '../client/images/icon_default.jpg'))
+        await this.courseData.setThumbnail(join(__dirname, '../static/images/icon_default.jpg'))
       }
     }
     return this
@@ -66,13 +66,13 @@ export default class Course {
     this.width = this.courseData.width
     this.widthSub = this.courseData.widthSub
 
-    let thumbnailPath = join(__dirname, `../client/courseimg/${this._id}.jpg`)
+    let thumbnailPath = join(__dirname, `../static/courseimg/${this._id}.jpg`)
     if (!fs.existsSync(thumbnailPath)) {
       fs.writeFileSync(thumbnailPath, this.courseData.thumbnailPreview)
-      fs.writeFileSync(join(__dirname, `../client/courseimg/${this._id}_full.jpg`), this.courseData.thumbnail)
+      fs.writeFileSync(join(__dirname, `../static/courseimg/${this._id}_full.jpg`), this.courseData.thumbnail)
     }
-    fs.writeFileSync(join(__dirname, `../client/coursedata/${this._id}`), await this.courseData.serialize())
-    fs.writeFileSync(join(__dirname, `../client/coursedata/${this._id}.gz`), await this.courseData.serializeGzipped())
+    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}`), await this.courseData.serialize())
+    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}.gz`), await this.courseData.serializeGzipped())
     delete this.courseData
     delete this.serialized
     return this
@@ -160,7 +160,7 @@ export default class Course {
     })
     const zipDir = join(tmpDir.name, 'course000')
     fs.mkdirSync(zipDir)
-    await (await deserialize(fs.readFileSync(join(__dirname, `../client/coursedata/${this._id}`)))).writeToSave(0, zipDir)
+    await (await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${this._id}`)))).writeToSave(0, zipDir)
     const outPath = join(tmpDir.name, `${this.title}.zip`)
     const res = await new Promise(resolve => {
       zip(zipDir, outPath, err => {
@@ -175,16 +175,16 @@ export default class Course {
   }
 
   async getObject () {
-    const res = await deserialize(fs.readFileSync(join(__dirname, `../client/coursedata/${this._id}`)))
+    const res = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${this._id}`)))
     return res
   }
 
   getSerialized () {
-    return fs.readFileSync(join(__dirname, `../client/coursedata/${this._id}.gz`))
+    return fs.readFileSync(join(__dirname, `../static/coursedata/${this._id}.gz`))
   }
 
   async get3DS () {
-    const res = await (await deserialize(fs.readFileSync(join(__dirname, `../client/coursedata/${this._id}`)))).to3DS()
+    const res = await (await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${this._id}`)))).to3DS()
     return res
   }
 
@@ -220,10 +220,10 @@ export default class Course {
       delete course.thumbnail
       delete course.thumbnailPreview
       await Database.addCourse(course)
-      fs.writeFileSync(join(__dirname, `../client/courseimg/${course._id}.jpg`), courseData.thumbnailPreview)
-      fs.writeFileSync(join(__dirname, `../client/courseimg/${course._id}_full.jpg`), courseData.thumbnail)
-      fs.writeFileSync(join(__dirname, `../client/coursedata/${course._id}`), await courseData.serialize())
-      fs.writeFileSync(join(__dirname, `../client/coursedata/${course._id}.gz`), await courseData.serializeGzipped())
+      fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}.jpg`), courseData.thumbnailPreview)
+      fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}_full.jpg`), courseData.thumbnail)
+      fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}`), await courseData.serialize())
+      fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}.gz`), await courseData.serializeGzipped())
       course.setId()
       Sorting.insertCourse(course)
       return course
@@ -255,7 +255,7 @@ export default class Course {
   }
 
   async update ({ title, maker, nintendoid, videoid }) {
-    const course = await deserialize(fs.readFileSync(join(__dirname, `../client/coursedata/${this._id}`)))
+    const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${this._id}`)))
     const update = {}
     if (title) {
       this.title = title
@@ -276,8 +276,8 @@ export default class Course {
       update.videoid = videoid
     }
     this.courseData = course
-    fs.writeFileSync(join(__dirname, `../client/coursedata/${this._id}`), await this.courseData.serialize())
-    fs.writeFileSync(join(__dirname, `../client/coursedata/${this._id}.gz`), await this.courseData.serializeGzipped())
+    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}`), await this.courseData.serialize())
+    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}.gz`), await this.courseData.serializeGzipped())
     await Database.updateCourse(this._id, update)
     return null
   }
@@ -286,10 +286,10 @@ export default class Course {
     Sorting.deleteCourse(this._id)
     delete courses[this._id]
     await Database.deleteCourse(this._id)
-    fs.unlinkSync(join(__dirname, `../client/courseimg/${this._id}.jpg`))
-    fs.unlinkSync(join(__dirname, `../client/courseimg/${this._id}_full.jpg`))
-    fs.unlinkSync(join(__dirname, `../client/coursedata/${this._id}`))
-    fs.unlinkSync(join(__dirname, `../client/coursedata/${this._id}.gz`))
+    fs.unlinkSync(join(__dirname, `../static/courseimg/${this._id}.jpg`))
+    fs.unlinkSync(join(__dirname, `../static/courseimg/${this._id}_full.jpg`))
+    fs.unlinkSync(join(__dirname, `../static/coursedata/${this._id}`))
+    fs.unlinkSync(join(__dirname, `../static/coursedata/${this._id}.gz`))
   }
 
   static getCourseAmount () {

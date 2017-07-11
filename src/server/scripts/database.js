@@ -93,12 +93,12 @@ export default class Database {
     } catch (err) {}
     this.courses = this.db.collection('courses')
     this.accounts = this.db.collection('accounts')
-    let courseImagePath = path.join(__dirname, '../client/courseimg')
+    let courseImagePath = path.join(__dirname, '../static/courseimg')
     if (fs.existsSync(courseImagePath)) {
       await rimraf(courseImagePath)
     }
     fs.mkdirSync(courseImagePath)
-    let courseDataPath = path.join(__dirname, '../client/coursedata')
+    let courseDataPath = path.join(__dirname, '../static/coursedata')
     if (fs.existsSync(courseDataPath)) {
       await rimraf(courseDataPath)
     }
@@ -130,7 +130,7 @@ export default class Database {
       for (let i = 0; i < rows.length; i++) {
         let id = rows[i].id
         let courses = await Course.convertFromMySQL(rows[i])
-        let thumbnail = path.join(__dirname, `../client/img/courses/${id}.pic`)
+        let thumbnail = path.join(__dirname, `../static/img/courses/${id}.pic`)
         for (let j = 0; j < courses.length; j++) {
           courses[j].owner = accountIds[courses[j].owner]
           let course = await (new Course(courses[j])).fix(thumbnail)

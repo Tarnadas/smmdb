@@ -9,7 +9,7 @@ module.exports = [
     entry: path.join(__dirname, 'src/client/renderer.js'),
     output: {
       filename: 'app.js',
-      path: path.join(__dirname, 'build/client/script')
+      path: path.join(__dirname, 'build/client/scripts')
     },
     devtool: 'inline-source-map',
     node: {
@@ -27,8 +27,8 @@ module.exports = [
       new webpack.EnvironmentPlugin('NODE_ENV'),
       // new webpack.optimize.ModuleConcatenationPlugin(),
       new HtmlWebpackPlugin({
-        filename: '../views/index.html',
-        template: 'build/client/views/template.html'
+        filename: '../index.html',
+        template: 'build/static/views/template.html'
       }),
       new ScriptExtHtmlWebpackPlugin({
         preload: /\.js/
@@ -64,7 +64,7 @@ module.exports = [
     }
   },
   {
-    target: "node",
+    target: 'node',
     entry: path.join(__dirname, 'src/server/index.js'),
     output: {
       filename: 'index.js',

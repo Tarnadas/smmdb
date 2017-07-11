@@ -112,7 +112,7 @@ class LoginButton extends React.PureComponent {
       iconSrc = '/img/logout.png'
       text = 'Sign out'
     } else {
-      iconSrc = '//developers.google.com/identity/sign-in/g-normal.png'
+      iconSrc = 'https://developers.google.com/identity/sign-in/g-normal.png'
       text = 'Sign in'
     }
     return (

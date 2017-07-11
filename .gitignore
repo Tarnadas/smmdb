@@ -4,10 +4,11 @@
 /.idea/
 /db/
 /courses/
-/build/client/img/
-/build/client/courseimg/
-/build/client/coursedata/
+/build/static/img/
+/build/static/courseimg/
+/build/static/coursedata/
 /src/static.js
-/build/client/script/
-/build/client/views/index.html
-/build/server/index.js
+/build/server/
+/build/electron/
+/build/client/
+
