@@ -8,7 +8,7 @@ module.exports = [
   {
     target: 'electron-renderer',
     entry: {
-      renderer: path.join(__dirname, 'src/client/renderer.js')
+      renderer: path.join(__dirname, 'src/electron/renderer.js')
     },
     output: {
       filename: 'renderer.js',
@@ -16,7 +16,7 @@ module.exports = [
     },
     devtool: 'inline-source-map',
     node: {
-      __dirname: false,
+      __dirname: true,
       __filename: false,
       console: true,
       fs: 'empty',
@@ -24,14 +24,18 @@ module.exports = [
       tls: 'empty'
     },
     plugins: [
-      new webpack.EnvironmentPlugin('NODE_ENV'),
+      new webpack.EnvironmentPlugin({
+        NODE_ENV: process.env.NODE_ENV,
+        ELECTRON: process.env.ELECTRON
+      }),
       new HtmlWebpackPlugin({
         filename: 'index.html',
         template: 'build/static/views/template.html'
       }),
       new ScriptExtHtmlWebpackPlugin({
         preload: /\.js/
-      })
+      }),
+      new webpack.IgnorePlugin(/vertx/)
     ],
     module: {
       loaders: [

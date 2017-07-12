@@ -22,6 +22,7 @@ import {
 import CoursePanel from '../panels/CoursePanel'
 import ProgressPanel from '../panels/ProgressPanel'
 import UploadArea from '../areas/UploadArea'
+import EnterAPIKeyArea from '../areas/EnterAPIKeyArea'
 
 const UPDATE_OFFSET = 500
 const LIMIT = 10
@@ -163,7 +164,11 @@ class UploadView extends React.PureComponent {
                 }
               </div>
             ) : (
-              <div style={styles.flex}>You are not logged in</div>
+              process.env.ELECTRON ? (
+                <EnterAPIKeyArea />
+              ) : (
+                <div style={styles.flex}>You are not logged in</div>
+              )
             )
           }
         </div>

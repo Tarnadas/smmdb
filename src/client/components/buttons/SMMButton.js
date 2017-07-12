@@ -36,7 +36,8 @@ export default class SMMButton extends React.PureComponent {
       smmButton: {
         margin: '0 10px 10px 10px',
         lineHeight: '40px',
-        width: '120px',
+        minWidth: '120px',
+        width: 'auto',
         height: '40px',
         backgroundColor: colorScheme === COLOR_SCHEME.YELLOW ? (
           this.state.hover ? '#323245' : '#ffe500'

@@ -44,7 +44,7 @@ module.exports = [
         keepFnName: true
       }),
       new HtmlWebpackPlugin({
-        filename: 'index.html',
+        filename: '../index.html',
         template: 'build/static/views/template.html'
       }),
       new ScriptExtHtmlWebpackPlugin({

@@ -21,8 +21,15 @@ import showFilter from './showFilter'
 import userData from './userData'
 import mediaQuery from './mediaQuery'
 
-export default function initReducer (preloadedState, history) {
-  const initialState = preloadedState || fromJS({
+import electron from '../../electron/reducers/electron'
+
+const APP_SAVE_DATA = {
+  cemuSavePath: [],
+  apiKey: ''
+}
+
+export default function initReducer (preloadedState, history, appSaveData = APP_SAVE_DATA) {
+  let initialState = preloadedState || fromJS({
     router: {
       location: null
     },
@@ -48,7 +55,7 @@ export default function initReducer (preloadedState, history) {
       screenSize: 2
     }
   })
-  const reducer = combineReducers({
+  let reducers = {
     router,
     chat,
     stats,
@@ -58,6 +65,18 @@ export default function initReducer (preloadedState, history) {
     showFilter,
     userData,
     mediaQuery
-  })
-  return createStore(reducer, initialState, applyMiddleware(routerMiddleware(history)))
+  }
+  if (process.env.ELECTRON) {
+    initialState = initialState.merge(fromJS({
+      electron: {
+        appSaveData,
+        cemuSave: null,
+        currentSave: 0
+      }
+    }))
+    Object.assign(reducers, {
+      electron
+    })
+  }
+  return createStore(combineReducers(reducers), initialState, applyMiddleware(routerMiddleware(history)))
 }

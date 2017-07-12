@@ -78,9 +78,9 @@
   },
   "scripts": {
     "start": "set NODE_ENV=development&& webpack --env=dev&& node ./build/server",
-    "start-electron": "set NODE_ENV=development&& webpack --env=electron-dev&& electron ./build/electron/main.js",
+    "start-electron": "set NODE_ENV=development&& set ELECTRON=true&& webpack --env=electron-dev&& electron ./build/electron/main.js",
     "build": "set NODE_ENV=production&& webpack --env=prod",
-    "build-electron": "set NODE_ENV=production&& webpack --env=electron-prod&& node ./build-electron"
+    "build-electron": "set NODE_ENV=production&& set ELECTRON=true&& webpack --env=electron-prod&& node ./build-electron"
   },
   "author": "Mario Reder",
   "license": "MIT"

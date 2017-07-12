@@ -32,13 +32,21 @@ class TopBarArea extends React.PureComponent {
           <SMMButton link='/' text='Courses' iconSrc='/img/courses.png' iconColor='dark' />
           <SMMButton link='/upload' text='Upload' iconSrc='/img/upload.png' iconColor='dark' />
           <SMMButton link='/profile' text='Profile' iconSrc='/img/profile.png' iconColor='dark' />
-          <SMMButton link='https://github.com/Tarnadas/smmdb' blank text='API' iconSrc='/img/api.png' iconColor='dark' />
-          <SMMButton link='https://github.com/Tarnadas/cemu-smmdb/releases' blank text='Client' iconSrc='/img/client.png' iconColor='dark' />
-          <SMMButton link='https://www.reddit.com/r/CemuMarioMaker' blank text='Reddit' iconSrc='/img/reddit.png' iconColor='dark' />
-          <SMMButton link='https://discord.gg/hK2fsTq' blank text='Discord' iconSrc='/img/discord.png' iconColor='dark' />
+          {
+            !process.env.ELECTRON && (
+            <div>
+              <SMMButton link='https://github.com/Tarnadas/smmdb' blank text='API' iconSrc='/img/api.png' iconColor='dark' />
+              <SMMButton link='https://github.com/Tarnadas/cemu-smmdb/releases' blank text='Client' iconSrc='/img/client.png' iconColor='dark' />
+              <SMMButton link='https://www.reddit.com/r/CemuMarioMaker' blank text='Reddit' iconSrc='/img/reddit.png' iconColor='dark' />
+              <SMMButton link='https://discord.gg/hK2fsTq' blank text='Discord' iconSrc='/img/discord.png' iconColor='dark' />
+            </div>
+          )
+          }
         </div>
         <div style={styles.button}>
-          <LoginButton />
+          {
+            !process.env.ELECTRON && <LoginButton />
+          }
         </div>
       </div>
     )
