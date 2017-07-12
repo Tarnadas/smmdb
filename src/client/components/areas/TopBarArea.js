@@ -34,7 +34,7 @@ class TopBarArea extends React.PureComponent {
           <SMMButton link='/profile' text='Profile' iconSrc='/img/profile.png' iconColor='dark' />
           {
             !process.env.ELECTRON && (
-            <div>
+            <div style={{ width: 'auto', height: 'auto' }}>
               <SMMButton link='https://github.com/Tarnadas/smmdb' blank text='API' iconSrc='/img/api.png' iconColor='dark' />
               <SMMButton link='https://github.com/Tarnadas/cemu-smmdb/releases' blank text='Client' iconSrc='/img/client.png' iconColor='dark' />
               <SMMButton link='https://www.reddit.com/r/CemuMarioMaker' blank text='Reddit' iconSrc='/img/reddit.png' iconColor='dark' />

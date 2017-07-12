@@ -19,6 +19,9 @@ import {
 import {
   setCourse, setCourseSelf, setCourseUploaded
 } from '../../actions'
+import {
+  DIFFICULTY
+} from '../../reducers/courseData'
 
 const MAX_LENGTH_TITLE = 32
 const MAX_LENGTH_MAKER = 10
@@ -36,6 +39,7 @@ class CoursePanel extends React.PureComponent {
       maker: props.course.maker,
       nnId: props.course.nintendoid ? props.course.nintendoid : '',
       videoId: props.course.videoid ? props.course.videoid : '',
+      difficulty: props.course.difficulty,
       shouldDelete: false
     }
     this.onShowDetails = this.onShowDetails.bind(this)
@@ -46,6 +50,7 @@ class CoursePanel extends React.PureComponent {
     this.onMakerChange = this.onStringChange.bind(this, 'maker', MAX_LENGTH_MAKER)
     this.onNintendoIdChange = this.onStringChange.bind(this, 'nnId', MAX_LENGTH_NNID)
     this.onVideoIdChange = this.onStringChange.bind(this, 'videoId', MAX_LENGTH_VIDEOID)
+    this.onDifficultyChange = this.onSelectChange.bind(this, 'difficulty')
   }
   componentWillReceiveProps (nextProps, nextContext) {
     if (nextProps.course.title !== this.state.title) {
@@ -68,6 +73,11 @@ class CoursePanel extends React.PureComponent {
         videoId: nextProps.course.videoid ? nextProps.course.videoid : ''
       })
     }
+    if (nextProps.course.difficulty !== this.state.difficulty) {
+      this.setState({
+        difficulty: nextProps.course.difficulty
+      })
+    }
   }
   onShowDetails () {
     if (!this.state.showDetails) {
@@ -83,14 +93,19 @@ class CoursePanel extends React.PureComponent {
     })
   }
   onCourseSubmit () {
-    if (this.state.title === this.props.course.title && this.state.maker === this.props.course.maker && this.state.nnId === this.props.course.nintendoid && this.state.videoId === this.props.course.videoid) return;
+    if (this.state.title === this.props.course.title &&
+      this.state.maker === this.props.course.maker &&
+      this.state.nnId === this.props.course.nintendoid &&
+      this.state.videoId === this.props.course.videoid &&
+      this.state.difficulty === this.props.course.difficulty) return;
     (async () => {
       try {
         const course = {
           title: this.state.title,
           maker: this.state.maker,
           nintendoid: this.state.nnId,
-          videoid: this.state.videoId
+          videoid: this.state.videoId,
+          difficulty: this.state.difficulty
         }
         const res = (await got(resolve(domain, `/api/updatecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`), {
           method: 'POST',
@@ -151,6 +166,15 @@ class CoursePanel extends React.PureComponent {
     res[value] = val
     this.setState(res)
   }
+  onSelectChange (value, e) {
+    const val = e.target.value
+    const res = {
+      changed: true,
+      saved: false
+    }
+    res[value] = val
+    this.setState(res)
+  }
   render () {
     const screenSize = this.props.screenSize
     const colorScheme = this.state.changed ? COLOR_SCHEME.RED : (this.state.saved ? COLOR_SCHEME.GREEN : COLOR_SCHEME.YELLOW)
@@ -164,7 +188,6 @@ class CoursePanel extends React.PureComponent {
         margin: '10px',
         color: '#000',
         overflow: 'hidden',
-        transition: 'height 0.8s', // TODO
         display: 'flex'
       },
       top: {
@@ -482,6 +505,18 @@ class CoursePanel extends React.PureComponent {
                     </div>
                     <input style={styles.input} value={this.state.videoId} onChange={this.onVideoIdChange} />
                   </div>
+                  <div style={styles.option}>
+                    <div style={styles.value}>
+                      Estimated difficulty:
+                    </div>
+                    <select style={styles.input} value={this.state.difficulty} onChange={this.onDifficultyChange}>
+                      <option value={DIFFICULTY.EASY}>Easy</option>
+                      <option value={DIFFICULTY.NORMAL}>Normal</option>
+                      <option value={DIFFICULTY.EXPERT}>Expert</option>
+                      <option value={DIFFICULTY.SUPER_EXPERT}>Super Expert</option>
+                    </select>
+                  </div>
+                  <div style={styles.option} />
                   <SMMButton text='Save' iconSrc='/img/submit.png' fontSize='13px' padding='3px' colorScheme={colorScheme} onClick={this.onCourseSubmit} />
                   <SMMButton text={this.state.shouldDelete ? 'Click again' : 'Delete'} iconSrc='/img/delete.png' fontSize='13px' padding='3px' onClick={this.onCourseDelete} />
                 </div>

@@ -242,6 +242,14 @@ export default class API {
       }
     }
     if (req.body.videoid != null) courseData.videoid = req.body.videoid
+    if (req.body.difficulty != null) {
+      try {
+        const difficulty = JSON.parse(req.body.difficulty)
+        if (difficulty >= 0 && difficulty <= 3) {
+          courseData.difficulty = difficulty
+        }
+      } catch (err) {}
+    }
     await course.update(courseData)
     res.json(course)
   }

@@ -2,6 +2,13 @@ import {
   List
 } from 'immutable'
 
+export const DIFFICULTY = {
+  EASY: 0,
+  NORMAL: 1,
+  EXPERT: 2,
+  SUPER_EXPERT: 3
+}
+
 export default function courseData (state, action) {
   if (!action) return state
   switch (action.type) {

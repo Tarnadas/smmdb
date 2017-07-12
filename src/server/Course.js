@@ -254,18 +254,23 @@ export default class Course {
     }
   }
 
-  async update ({ title, maker, nintendoid, videoid }) {
-    const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${this._id}`)))
+  async update ({ title, maker, nintendoid, videoid, difficulty }) {
     const update = {}
-    if (title) {
-      this.title = title
-      update.title = title
-      await course.setTitle(title)
-    }
-    if (maker) {
-      this.maker = maker
-      update.maker = maker
-      await course.setMaker(maker)
+    if (title || maker) {
+      const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${this._id}`)))
+      if (title) {
+        this.title = title
+        update.title = title
+        await course.setTitle(title)
+      }
+      if (maker) {
+        this.maker = maker
+        update.maker = maker
+        await course.setMaker(maker)
+      }
+      this.courseData = course
+      fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}`), await this.courseData.serialize())
+      fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}.gz`), await this.courseData.serializeGzipped())
     }
     if (nintendoid != null) {
       this.nintendoid = nintendoid
@@ -275,9 +280,10 @@ export default class Course {
       this.videoid = videoid
       update.videoid = videoid
     }
-    this.courseData = course
-    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}`), await this.courseData.serialize())
-    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}.gz`), await this.courseData.serializeGzipped())
+    if (difficulty != null) {
+      this.difficulty = difficulty
+      update.difficulty = difficulty
+    }
     await Database.updateCourse(this._id, update)
     return null
   }
