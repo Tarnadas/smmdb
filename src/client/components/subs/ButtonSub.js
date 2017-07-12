@@ -10,7 +10,8 @@ export default class ButtonSub extends React.PureComponent {
       text: {
         color: this.props.hover ? '#fff' : '#323245',
         float: 'left',
-        width: 'auto'
+        width: 'auto',
+        paddingRight: '5px'
       }
     }
     return (

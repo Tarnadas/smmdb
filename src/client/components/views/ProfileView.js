@@ -30,11 +30,13 @@ class ProfileView extends React.PureComponent {
       username: accountData.username ? accountData.username : '',
       downloadFormat: accountData.downloadformat ? accountData.downloadformat : DOWNLOAD_FORMAT.WII_U,
       changed: false,
-      saved: false
+      saved: false,
+      showAPIKey: false
     }
     this.onProfileSubmit = this.onProfileSubmit.bind(this)
     this.onUsernameChange = this.onUsernameChange.bind(this)
     this.onDownloadFormatChange = this.onSelectChange.bind(this, 'downloadFormat')
+    this.onAPIKeyShow = this.onAPIKeyShow.bind(this)
   }
   componentWillReceiveProps (nextProps, nextContext) {
     if (nextProps.accountData === this.props.accountData) return
@@ -102,9 +104,15 @@ class ProfileView extends React.PureComponent {
     res[value] = val
     this.setState(res)
   }
+  onAPIKeyShow () {
+    this.setState(prevState => ({
+      showAPIKey: !prevState.showAPIKey
+    }))
+  }
   render () {
     const screenSize = this.props.screenSize
     const accountData = this.props.accountData.toJS()
+    const apiKey = accountData && this.state.showAPIKey ? accountData.apikey : ''
     const colorScheme = this.state.changed ? COLOR_SCHEME.RED : (this.state.saved ? COLOR_SCHEME.GREEN : COLOR_SCHEME.YELLOW)
     const styles = {
       main: {
@@ -124,7 +132,8 @@ class ProfileView extends React.PureComponent {
       flex: {
         overflow: 'hidden',
         display: screenSize === ScreenSize.LARGE ? 'flex' : 'block',
-        flexDirection: screenSize === ScreenSize.LARGE ? 'column' : ''
+        flexDirection: screenSize === ScreenSize.LARGE ? 'column' : '',
+        alignItems: screenSize === ScreenSize.LARGE ? 'left' : ''
       },
       option: {
         height: 'auto',
@@ -166,6 +175,11 @@ class ProfileView extends React.PureComponent {
                   </select>
                 </div>
                 <SMMButton text='Save' iconSrc='/img/profile.png' fontSize='13px' padding='3px' colorScheme={colorScheme} onClick={this.onProfileSubmit} />
+                <div style={{ height: '30px' }} />
+                <div style={styles.option}>
+                  <input style={styles.input} value={apiKey} readOnly />
+                </div>
+                <SMMButton text={apiKey ? 'Hide API Key' : 'Show API Key'} iconSrc='/img/api.png' fontSize='13px' padding='3px' onClick={this.onAPIKeyShow} />
               </div>
             ) : (
               <div style={styles.flex}>You are not logged in</div>
