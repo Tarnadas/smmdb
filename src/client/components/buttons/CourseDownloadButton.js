@@ -17,7 +17,6 @@ class CourseDownloadButton extends React.PureComponent {
     const styles = {
       href: {
         height: screenSize === ScreenSize.LARGE ? '180px' : 'auto',
-        // width: 'calc(50% - 10px)',
         margin: '0 5px',
         width: '100%'
       },

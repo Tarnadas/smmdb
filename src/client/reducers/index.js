@@ -69,11 +69,11 @@ export default function initReducer (preloadedState, history, electronSave) {
     mediaQuery
   }
   if (process.env.ELECTRON) {
-    // const appSaveData = electronSave.appSaveData || APP_SAVE_DATA
+    const appSaveData = electronSave.appSaveData || APP_SAVE_DATA
     const appSavePath = electronSave.appSavePath || ''
     initialState = initialState.merge(fromJS({
       electron: {
-        // appSaveData,
+        appSaveData,
         appSavePath,
         cemuSave: null,
         currentSave: 0

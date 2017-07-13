@@ -14,7 +14,7 @@ All API calls are subject to change.
 
 **Request**: `getstats`
 
-**Protocol**: GET
+**Method**: GET
 
 **Querystring**: empty
 
@@ -25,6 +25,12 @@ All API calls are subject to change.
 **Request**: `getcourses`
 
 **Method**: GET
+
+**Header**:
+
+| Directives | Description |
+| --- | --- |
+| Authorization: APIKEY \<apiKey> | Optional user identification |
 
 **Querystring**: (default values are *italic*)
 
@@ -77,13 +83,66 @@ Downloads course with ID `ihavenoidea` as zip-compressed folder.
 
 **Method**: POST
 
-**Querystring**: 
+**Header**:
+
+| Directives | Description |
+| --- | --- |
+| Content-Type: application/octet-stream | |
+| Authorization: APIKEY \<apiKey> | User identification |
+
+**Querystring**: empty
+
+**POST body**: Raw binary data with header `{ 'Content-Type': 'application/octet-stream', 'Authorization': 'APIKEY myapikey' }'`. Server assumes zip/rar/7z compressed files to contain Wii U courses. Raw binary data is checked, if it is a 3DS course. Server accepts gzipped/deflated streams.
+
+### Update course
+
+**Request**: `updatecourse`
+
+**Method**: POST
+
+**Header**:
+
+| Directives | Description |
+| --- | --- |
+| Content-Type: application/octet-stream | |
+| Authorization: APIKEY \<apiKey> | User identification |
+
+**Querystring**:
 
 | Query | Value | Description |
 | --- | --- | --- |
-| apikey | `{string}` | User identification |
+| id | `{string}` | Course ID |
 
-**POST body**: Raw binary data with header `{ 'Content-Type': 'application/octet-stream' }'`. Server assumes zip/rar/7z compressed files to contain Wii U courses. Raw binary data is checked, if it is a 3DS course. Server accepts gzipped/deflated streams.
+**POST body**: Must contain JSON.stringified Object with Object properties to change.
+
+**Example**: `http://smm-test.alextc.de/api/updatecourse?id=mycourseid`
+with header `{ 'Authorization': 'APIKEY myapikey' }'` and body `{ 'maker': 'newMaker' }`
+
+Changes maker of course with specified course ID.
+
+### Delete course
+
+**Request**: `deletecourse`
+
+**Method**: POST
+
+**Header**:
+
+| Directives | Description |
+| --- | --- |
+| Content-Type: application/octet-stream | |
+| Authorization: APIKEY \<apiKey> | User identification |
+
+**Querystring**:
+
+| Query | Value | Description |
+| --- | --- | --- |
+| id | `{string}` | Course ID |
+
+**Example**: `http://smm-test.alextc.de/api/deletecourse?id=mycourseid`
+with header `{ 'Authorization': 'APIKEY myapikey' }'`
+
+Deletes course with specified course ID.
 
 ### Profile Update
 
@@ -91,16 +150,19 @@ Downloads course with ID `ihavenoidea` as zip-compressed folder.
 
 **Method**: POST
 
-**Querystring**:
+**Header**:
 
-| Query | Value | Description |
-| --- | --- | --- |
-| apikey | `{string}` | User's API key |
+| Directives | Description |
+| --- | --- |
+| Content-Type: application/octet-stream | |
+| Authorization: APIKEY \<apiKey> | User identification |
+
+**Querystring**: empty
 
 **POST body**: Must contain JSON.stringified Object with Object properties to change.
 
-**Example**: `http://smm-test.alextc.de/api/setaccountdata?apikey=myAPIKey`
-with body `{ "username": "newUsername" }`
+**Example**: `http://smm-test.alextc.de/api/setaccountdata`
+with header `{ 'Authorization': 'APIKEY myapikey' }'` and body `{ 'username': 'newUsername' }`
 
 Changes username of user with specified API key.
 

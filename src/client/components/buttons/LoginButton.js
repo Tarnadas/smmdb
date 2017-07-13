@@ -62,7 +62,9 @@ class LoginButton extends React.PureComponent {
       })).body
       this.props.dispatch(setAccountData(res))
     } catch (err) {
-      console.error(err.response.body)
+      if (err.response) {
+        console.error(err.response.body)
+      }
     }
   }
   onGoogleLoginFailure (response) {
@@ -75,7 +77,9 @@ class LoginButton extends React.PureComponent {
       })
       this.props.dispatch(setAccountData())
     } catch (err) {
-      console.error(err.response.body)
+      if (err.response) {
+        console.error(err.response.body)
+      }
     }
   }
   render () {

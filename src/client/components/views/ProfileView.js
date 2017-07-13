@@ -68,7 +68,10 @@ class ProfileView extends React.PureComponent {
         downloadformat: this.state.downloadFormat
       }
       try {
-        const res = (await got(resolve(domain, `/api/setaccountdata?apikey=${this.props.accountData.get('apikey')}`), {
+        const res = (await got(resolve(domain, '/api/setaccountdata'), {
+          headers: {
+            'Authorization': `APIKEY ${this.props.accountData.get('apikey')}`
+          },
           method: 'POST',
           body: profile,
           json: true
@@ -79,7 +82,6 @@ class ProfileView extends React.PureComponent {
           saved: true
         })
       } catch (err) {
-        console.log(err)
         console.error(err.response.body)
       }
     })()

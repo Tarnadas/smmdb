@@ -9,7 +9,7 @@ import {
 } from '../../actions'
 
 const MAX_LENGTH_TITLE = 0x20
-const MAX_LENGTH_MAKER = 0x20
+const MAX_LENGTH_MAKER = 10
 const MAX_LENGTH_UPLOADER = 0x20
 
 class FilterArea extends React.PureComponent {

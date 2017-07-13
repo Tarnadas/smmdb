@@ -54,7 +54,10 @@ class UploadView extends React.PureComponent {
   }
   async fetchCourses (apiKey, shouldConcat = false, limit = LIMIT, start = 0) {
     try {
-      const courses = (await got(resolve(domain, `/api/getcourses?limit=${limit}&start=${start}&apikey=${apiKey}`), {
+      const courses = (await got(resolve(domain, `/api/getcourses?limit=${limit}&start=${start}`), {
+        headers: {
+          'Authorization': `APIKEY ${apiKey}`
+        },
         json: true
       })).body
       this.props.dispatch(setCoursesSelf(courses, shouldConcat))

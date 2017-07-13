@@ -42,10 +42,15 @@ class MainView extends React.PureComponent {
   }
   async fetchCourses () {
     try {
-      const courses = (await got(resolve(domain, `/api/getcourses?limit=10`), {
+      const apiKey = this.props.accountData.get('apikey')
+      const courses = (await got(resolve(domain, `/api/getcourses?limit=10`), Object.assign({
         json: true,
         useElectronNet: false
-      })).body
+      }, apiKey ? {
+        headers: {
+          'Authorization': `APIKEY ${apiKey}`
+        }
+      } : null))).body
       this.props.dispatch(setCourses(courses, false))
     } catch (err) {
       console.error(err.response.body)
@@ -88,11 +93,6 @@ class MainView extends React.PureComponent {
         overflow: 'hidden',
         zIndex: '10',
         marginTop: '40px'
-      },
-      flex: {
-        // color: '#fff',
-        // overflow: 'hidden',
-        // display: screenSize === ScreenSize.LARGE ? 'flex' : 'block'
       }
     }
     return (
@@ -102,7 +102,7 @@ class MainView extends React.PureComponent {
           screenSize === ScreenSize.LARGE && <SideBarArea />
         }
         <div style={styles.content}>
-          <div style={styles.flex}>
+          <div>
             {
               screenSize === ScreenSize.LARGE ? (
                 <Scrollbars universal style={{height: '100%'}} onScroll={this.handleScroll} ref={input => { this.scrollBar = input }}>

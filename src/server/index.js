@@ -181,11 +181,11 @@ function main () {
       } else if (apiCall === 'getstats') {
         API.getStats(res)
       } else if (apiCall === 'getcourses') {
-        API.getCourses(app, res, apiData)
+        API.getCourses(app, req, res, apiData)
       } else if (apiCall === 'downloadcourse') {
         await API.downloadCourse(req, res, apiData)
       } else if (apiCall === 'deletecourse') {
-        API.deleteCourse(res, apiData)
+        API.deleteCourse(req, res, apiData)
       } else {
         res.status(400).send('Wrong syntax')
       }
@@ -202,11 +202,11 @@ function main () {
     }
 
     if (apiCall === 'uploadcourse') {
-      await API.uploadCourse(req, res, apiData)
+      await API.uploadCourse(req, res)
     } else if (apiCall === 'updatecourse') {
       await API.updateCourse(req, res, apiData)
     } else if (apiCall === 'setaccountdata') {
-      await API.setAccountData(req, res, apiData)
+      await API.setAccountData(req, res)
     } else {
       res.status(400).send('Wrong syntax')
     }

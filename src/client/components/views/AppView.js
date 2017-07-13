@@ -77,10 +77,14 @@ class AppView extends React.PureComponent {
   }
   async fetchCourses (shouldConcat = false, limit = LIMIT, start = 0) {
     try {
-      const courses = (await got(resolve(domain, `/api/getcourses?limit=${limit}&start=${start}${this.queryString ? `&${this.queryString}` : ''}`), {
+      const courses = (await got(resolve(domain, `/api/getcourses?limit=${limit}&start=${start}${this.queryString ? `&${this.queryString}` : ''}`), Object.assign({
         json: true,
         useElectronNet: false
-      })).body
+      }, this.props.apiKey ? {
+        headers: {
+          'Authorization': `APIKEY ${this.props.apiKey}`
+        }
+      } : null))).body
       this.props.dispatch(setCourses(courses, shouldConcat))
     } catch (err) {
       console.log('error')
@@ -212,5 +216,6 @@ export default connect(state => ({
   videoId: state.getIn(['userData', 'videoId']) || '',
   courses: state.getIn(['courseData', 'main']),
   showFilter: state.get('showFilter'),
-  filter: state.getIn(['filter', 'currentFilter'])
+  filter: state.getIn(['filter', 'currentFilter']),
+  apiKey: state.getIn(['userData', 'accountData', 'apikey'])
 }))(AppView)

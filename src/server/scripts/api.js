@@ -18,10 +18,12 @@ export default class API {
     res.json(result)
   }
 
-  static getCourses (app, res, apiData) {
+  static getCourses (app, req, res, apiData) {
     let loggedIn = false
     let accountId
-    const account = Account.getAccountByAPIKey(apiData.apikey)
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    const account = Account.getAccountByAPIKey(apiKey)
     if (account) {
       loggedIn = true
       accountId = account.id
@@ -186,14 +188,16 @@ export default class API {
     }
   }
 
-  static async uploadCourse (req, res, apiData) {
-    if (!apiData.apikey) {
-      res.status(403).send('API key required')
+  static async uploadCourse (req, res) {
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
       return
     }
-    const account = Account.getAccountByAPIKey(apiData.apikey)
+    const account = Account.getAccountByAPIKey(apiKey)
     if (account == null) {
-      res.status(400).send(`Account with API key ${apiData.apikey} not found`)
+      res.status(400).send(`Account with API key ${apiKey} not found`)
       return
     }
     const courses = await Course.fromBuffer(req.body, account)
@@ -205,17 +209,19 @@ export default class API {
   }
 
   static async updateCourse (req, res, apiData) {
-    if (!apiData.apikey) {
-      res.status(403).send('API key required')
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
       return
     }
     if (!apiData.id) {
       res.status(400).send('No course ID submitted')
       return
     }
-    const account = Account.getAccountByAPIKey(apiData.apikey)
+    const account = Account.getAccountByAPIKey(apiKey)
     if (account == null) {
-      res.status(400).send(`Account with API key ${apiData.apikey} not found`)
+      res.status(400).send(`Account with API key ${apiKey} not found`)
       return
     }
     const course = Course.getCourse(apiData.id)
@@ -254,14 +260,16 @@ export default class API {
     res.json(course)
   }
 
-  static deleteCourse (res, apiData) {
-    if (!apiData.apikey) {
-      res.status(403).send('API key required')
+  static deleteCourse (req, res, apiData) {
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
       return
     }
-    const account = Account.getAccountByAPIKey(apiData.apikey)
+    const account = Account.getAccountByAPIKey(apiKey)
     if (account == null) {
-      res.status(400).send(`Account with API key ${apiData.apikey} not found`)
+      res.status(400).send(`Account with API key ${apiKey} not found`)
       return
     }
     const course = Course.getCourse(apiData.id)
@@ -270,21 +278,23 @@ export default class API {
       return
     }
     if (!course.owner.equals(account._id)) {
-      res.status(403).send(`Course with ID ${apiData.id} is not owned by account with API key ${apiData.apikey}`)
+      res.status(403).send(`Course with ID ${apiData.id} is not owned by account with API key ${apiKey}`)
       return
     }
     course.delete()
     res.send('OK')
   }
 
-  static async setAccountData (req, res, apiData) {
-    if (!apiData.apikey) {
-      res.status(403).send('API key required')
+  static async setAccountData (req, res) {
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
       return
     }
-    const account = Account.getAccountByAPIKey(apiData.apikey)
+    const account = Account.getAccountByAPIKey(apiKey)
     if (account == null) {
-      res.status(400).send(`Account with API key ${apiData.apikey} not found`)
+      res.status(400).send(`Account with API key ${apiKey} not found`)
       return
     }
     const accountData = {}

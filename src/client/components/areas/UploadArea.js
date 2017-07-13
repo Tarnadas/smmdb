@@ -37,8 +37,11 @@ class UploadArea extends React.PureComponent {
     this.currentUpload++
     try {
       let abort
-      const req = got.stream.post(resolve(domain, `/api/uploadcourse?apikey=${this.props.apiKey}`), {
-        headers: { 'Content-Type': 'application/octet-stream' }
+      const req = got.stream.post(resolve(domain, '/api/uploadcourse'), {
+        headers: {
+          'Content-Type': 'application/octet-stream',
+          'Authorization': `APIKEY ${this.props.apiKey}`
+        }
       })
       req.on('request', r => {
         abort = r.abort

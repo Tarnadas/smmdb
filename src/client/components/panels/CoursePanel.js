@@ -107,7 +107,10 @@ class CoursePanel extends React.PureComponent {
           videoid: this.state.videoId,
           difficulty: this.state.difficulty
         }
-        const res = (await got(resolve(domain, `/api/updatecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`), {
+        const res = (await got(resolve(domain, `/api/updatecourse?id=${this.props.course.id}`), {
+          headers: {
+            'Authorization': `APIKEY ${this.props.apiKey}`
+          },
           method: 'POST',
           body: course,
           json: true
@@ -138,7 +141,11 @@ class CoursePanel extends React.PureComponent {
     if (this.state.shouldDelete) {
       (async () => {
         try {
-          await got(resolve(domain, `/api/deletecourse?apikey=${this.props.apiKey}&id=${this.props.course.id}`))
+          await got(resolve(domain, `/api/deletecourse?id=${this.props.course.id}`), {
+            headers: {
+              'Authorization': `APIKEY ${this.props.apiKey}`
+            }
+          })
           this.props.onCourseDelete(this.props.id)
         } catch (err) {
           if (err.response.body.includes('not found')) {
