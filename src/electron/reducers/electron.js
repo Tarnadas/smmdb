@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 
-export default function appSaveData (state, action) {
+export default function electron (state, action) {
   if (!action) return state
   let appSaveData, cemuSavePath
   try {
@@ -30,6 +30,10 @@ export default function appSaveData (state, action) {
       case 'LOAD_SAVE':
         state = state.set('cemuSave', action.cemuSave)
         state = state.set('currentSave', action.saveId)
+        return state
+      case 'ADD_API_KEY':
+        state = state.setIn(['appSaveData', 'apiKey'], action.apiKey)
+        saveState(state)
         return state
     }
   } catch (err) {

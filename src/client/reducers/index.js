@@ -24,11 +24,13 @@ import mediaQuery from './mediaQuery'
 import electron from '../../electron/reducers/electron'
 
 const APP_SAVE_DATA = {
+  cemuSaveData: {},
   cemuSavePath: [],
-  apiKey: ''
+  apiKey: '',
+  downloads: {}
 }
 
-export default function initReducer (preloadedState, history, appSaveData = APP_SAVE_DATA) {
+export default function initReducer (preloadedState, history, electronSave) {
   let initialState = preloadedState || fromJS({
     router: {
       location: null
@@ -67,9 +69,12 @@ export default function initReducer (preloadedState, history, appSaveData = APP_
     mediaQuery
   }
   if (process.env.ELECTRON) {
+    // const appSaveData = electronSave.appSaveData || APP_SAVE_DATA
+    const appSavePath = electronSave.appSavePath || ''
     initialState = initialState.merge(fromJS({
       electron: {
-        appSaveData,
+        // appSaveData,
+        appSavePath,
         cemuSave: null,
         currentSave: 0
       }

@@ -133,7 +133,7 @@ class ProfileView extends React.PureComponent {
         overflow: 'hidden',
         display: screenSize === ScreenSize.LARGE ? 'flex' : 'block',
         flexDirection: screenSize === ScreenSize.LARGE ? 'column' : '',
-        alignItems: screenSize === ScreenSize.LARGE ? 'left' : ''
+        alignItems: screenSize === ScreenSize.LARGE ? (accountData.id ? 'left' : 'center') : ''
       },
       option: {
         height: 'auto',

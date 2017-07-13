@@ -4,14 +4,14 @@ import {
 } from 'react-redux'
 
 import LoadSaveView from './LoadSaveView'
-import MainView from '../../../client/components/views/MainView'
+import AppView from '../../../client/components/views/AppView'
 
 class ElectronView extends React.PureComponent {
   render () {
     return (
       this.props.cemuSave ? (
         <div>
-          <MainView editor={this.props.editor} />
+          <AppView editor={this.props.editor} />
         </div>
       ) : (
         <div>

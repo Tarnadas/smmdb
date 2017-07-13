@@ -66,9 +66,11 @@ class LoadSaveView extends React.Component {
   }
   onLoadSave () {
     (async (savePath, saveId) => {
+      this.setState({
+        loading: true
+      })
       try {
         const cemuSave = await loadCemuSave(savePath)
-        this.props.onLoadSuccess()
         await cemuSave.reorder()
         await cemuSave.loadCourses()
         await cemuSave.exportThumbnail()
@@ -109,11 +111,21 @@ class LoadSaveView extends React.Component {
     const split = this.savePath.split('\\')
     return `Load ${split[split.length - 4]} ${split[split.length - 1]}`
   }
+  listCemuSaves (cemuSaves) {
+    const self = this
+    return Array.from((function * () {
+      for (let i = 0; i < cemuSaves.length; i++) {
+        self.savePath = cemuSaves[i]
+        self.saveId = i
+        yield (
+          <SMMButton key={i} text={self.getSaveName()} iconSrc='/img/profile.png' fontSize='13px' padding='3px' onClick={self.onLoadSave} />
+        )
+      }
+    })())
+  }
   render () {
     const apiKey = this.props.apiKey
     const cemuSaves = this.props.cemuSavePath.toArray()
-    console.log(apiKey)
-    console.log(cemuSaves)
     const styles = {
       center: {
         display: 'flex',
@@ -193,28 +205,10 @@ class LoadSaveView extends React.Component {
         margin: '4px'
       }
     }
-    const self = this
-    console.log(!apiKey)
     return (
       <div>
         {
-          cemuSaves.length === 0 ? (
-            <div>
-              <div style={styles.center}>
-                {
-                  !apiKey && (
-                  <div style={styles.showApiKey}>
-                    <SMMButton text='Add API Key' iconSrc='/img/api.png' fontSize='13px' padding='3px' onClick={this.showApiKey} />
-                  </div>
-                )
-                }
-                <SMMButton text='Please select your Cemu SMM folder' iconSrc='/img/profile.png' fontSize='13px' padding='3px' onClick={this.onAddSave} />
-              </div>
-              <div style={styles.text}>
-                Your SMM save folder is located at<br />'path\to\cemu\mlc01\emulatorSave\#saveID#'
-              </div>
-            </div>
-          ) : (
+          <div>
             <div style={styles.center}>
               {
                 !apiKey && (
@@ -224,19 +218,19 @@ class LoadSaveView extends React.Component {
               )
               }
               {
-                Array.from((function * () {
-                  for (let i = 0; i < cemuSaves.length; i++) {
-                    self.savePath = cemuSaves[i]
-                    self.saveId = i
-                    yield (
-                      <SMMButton key={i} text={this.getSaveName()} iconSrc='/img/profile.png' fontSize='13px' padding='3px' onClick={this.onLoadSave} />
-                    )
-                  }
-                })())
+                cemuSaves.length > 0 && (
+                  this.listCemuSaves(cemuSaves)
+                )
               }
-              <SMMButton text='Load another Cemu SMM folder' iconSrc='/img/profile.png' fontSize='13px' padding='3px' onClick={this.onAddSave} />
+              <SMMButton text={cemuSaves.length === 0 ? 'Please select your Cemu SMM folder' : 'Load another Cemu SMM folder'} iconSrc='/img/profile.png' fontSize='13px' padding='3px' onClick={this.onAddSave} />
             </div>
-          )
+            {
+              cemuSaves.length === 0 && (
+              <div style={styles.text}>
+                Your SMM save folder is located at<br />'path\to\cemu\mlc01\emulatorSave\#saveID#'
+              </div>
+            )}
+          </div>
         }
         {
           this.state.loading && (

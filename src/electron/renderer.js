@@ -11,14 +11,17 @@ import {
 import {
   ConnectedRouter
 } from 'react-router-redux'
+import {
+  remote
+} from 'electron'
 import createHistory from 'history/createBrowserHistory'
 
 import initReducer from '../client/reducers'
 import ElectronView from './components/views/ElectronView'
 
 const history = createHistory()
-
-const store = initReducer(null, history)
+const save = remote.getGlobal('save')
+const store = initReducer(null, history, save)
 
 render(
   <Provider store={store}>
