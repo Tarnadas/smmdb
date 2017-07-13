@@ -113,7 +113,8 @@ class CoursePanel extends React.PureComponent {
           },
           method: 'POST',
           body: course,
-          json: true
+          json: true,
+          useElectronNet: false
         })).body
         if (this.props.uploaded) {
           this.props.dispatch(setCourseUploaded(this.props.id, res))
@@ -144,7 +145,8 @@ class CoursePanel extends React.PureComponent {
           await got(resolve(domain, `/api/deletecourse?id=${this.props.course.id}`), {
             headers: {
               'Authorization': `APIKEY ${this.props.apiKey}`
-            }
+            },
+            useElectronNet: false
           })
           this.props.onCourseDelete(this.props.id)
         } catch (err) {

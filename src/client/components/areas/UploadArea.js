@@ -41,7 +41,8 @@ class UploadArea extends React.PureComponent {
         headers: {
           'Content-Type': 'application/octet-stream',
           'Authorization': `APIKEY ${this.props.apiKey}`
-        }
+        },
+        useElectronNet: false
       })
       req.on('request', r => {
         abort = r.abort

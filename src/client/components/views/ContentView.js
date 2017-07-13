@@ -9,7 +9,6 @@ import ProfileView from './ProfileView'
 
 class ContentView extends React.PureComponent {
   render () {
-    console.log('render')
     const styles = {
       content: {
         backgroundColor: '#24997e',

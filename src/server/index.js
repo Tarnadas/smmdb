@@ -35,7 +35,6 @@ import {
 } from './scripts/util'
 import { port } from '../static'
 
-export const lobby = new Lobby()
 export const Bot = new DiscordBot()
 
 const $index = cheerio.load(fs.readFileSync(path.join(__dirname, '../client/index.html')))
@@ -49,11 +48,9 @@ export const cacheMaxAgeImg = '7d'
 export const cacheMaxAgeCSS = '1d'
 export const cacheMaxAgeJS = '1y';
 
-// const usernameRegEx = /^[a-z0-9A-Z|.]+$/
 // const usernameMinCharacters = 3
 // const usernameMaxCharacters = 30
 
-// const levelnameRegEx  = /^[a-z0-9A-Z| |.|\\-]+$/
 // const videoIdRegEx    = /^[a-z0-9A-Z| |.|\\_|\\-]+$/
 
 // initialize database
@@ -191,6 +188,8 @@ async function main () {
         await API.downloadCourse(req, res, apiData)
       } else if (apiCall === 'deletecourse') {
         API.deleteCourse(req, res, apiData)
+      } else if (apiCall === 'getaccountdata') {
+        await API.getAccountData(req, res)
       } else {
         res.status(400).send('Wrong syntax')
       }

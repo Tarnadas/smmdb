@@ -7,6 +7,7 @@ import got from 'got'
 import { resolve } from 'url'
 
 import SMMButton, { COLOR_SCHEME } from '../buttons/SMMButton'
+import EnterAPIKeyArea from '../areas/EnterAPIKeyArea'
 import {
   ScreenSize
 } from '../../reducers/mediaQuery'
@@ -74,7 +75,8 @@ class ProfileView extends React.PureComponent {
           },
           method: 'POST',
           body: profile,
-          json: true
+          json: true,
+          useElectronNet: false
         })).body
         this.props.dispatch(setAccountData(res))
         this.setState({
@@ -177,14 +179,23 @@ class ProfileView extends React.PureComponent {
                   </select>
                 </div>
                 <SMMButton text='Save' iconSrc='/img/profile.png' fontSize='13px' padding='3px' colorScheme={colorScheme} onClick={this.onProfileSubmit} />
-                <div style={{ height: '30px' }} />
-                <div style={styles.option}>
-                  <input style={styles.input} value={apiKey} readOnly />
-                </div>
-                <SMMButton text={apiKey ? 'Hide API Key' : 'Show API Key'} iconSrc='/img/api.png' fontSize='13px' padding='3px' onClick={this.onAPIKeyShow} />
+                {
+                  !process.env.ELECTRON && (
+                  <div>
+                    <div style={{ height: '30px' }} />
+                    <div style={styles.option}>
+                      <input style={styles.input} value={apiKey} readOnly />
+                    </div>
+                    <SMMButton text={apiKey ? 'Hide API Key' : 'Show API Key'} iconSrc='/img/api.png' fontSize='13px' padding='3px' onClick={this.onAPIKeyShow} />
+                  </div>
+                )}
               </div>
             ) : (
-              <div style={styles.flex}>You are not logged in</div>
+              process.env.ELECTRON ? (
+                <EnterAPIKeyArea />
+              ) : (
+                <div style={styles.flex}>You are not logged in</div>
+              )
             )
           }
         </div>

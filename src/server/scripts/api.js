@@ -287,6 +287,21 @@ export default class API {
     res.send('OK')
   }
 
+  static async getAccountData (req, res) {
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
+      return
+    }
+    const account = Account.getAccountByAPIKey(apiKey)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiKey} not found`)
+      return
+    }
+    res.json(account)
+  }
+
   static async setAccountData (req, res) {
     const auth = req.get('Authorization')
     const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
