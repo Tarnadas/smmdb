@@ -10,12 +10,6 @@ export default class Bot {
     this.client.on('ready', () => {
       console.log('Discord bot initialized')
     })
-
-    /* this.client.on('message', message => {
-      if (message.content.startsWith('ping')) {
-        message.channel.send('pong!')
-      }
-    }) */
   }
 
   async login () {

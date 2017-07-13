@@ -1,8 +1,5 @@
 import React from 'react'
 import {
-  connect
-} from 'react-redux'
-import {
   Route, withRouter
 } from 'react-router-dom'
 
@@ -12,6 +9,7 @@ import ProfileView from './ProfileView'
 
 class ContentView extends React.PureComponent {
   render () {
+    console.log('render')
     const styles = {
       content: {
         backgroundColor: '#24997e',
@@ -31,4 +29,4 @@ class ContentView extends React.PureComponent {
     )
   }
 }
-export default withRouter(connect()(ContentView))
+export default withRouter(ContentView)

@@ -2,6 +2,9 @@ import React from 'react'
 import {
   connect
 } from 'react-redux'
+import {
+  Route
+} from 'react-router-dom'
 
 import LoadSaveView from './LoadSaveView'
 import AppView from '../../../client/components/views/AppView'
@@ -11,7 +14,7 @@ class ElectronView extends React.PureComponent {
     return (
       this.props.cemuSave ? (
         <div>
-          <AppView editor={this.props.editor} />
+          <Route path='/' component={AppView} />
         </div>
       ) : (
         <div>

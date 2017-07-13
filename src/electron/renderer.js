@@ -14,7 +14,7 @@ import {
 import {
   remote
 } from 'electron'
-import createHistory from 'history/createBrowserHistory'
+import createHistory from 'history/createMemoryHistory'
 
 import initReducer from '../client/reducers'
 import ElectronView from './components/views/ElectronView'
