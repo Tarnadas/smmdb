@@ -25,6 +25,8 @@ import API from './scripts/api'
 import Database from './scripts/database'
 import Sorting from './scripts/sorting'
 // import Parsing from './scripts/parsing'
+import DiscordBot from './Discord'
+
 import {
   clientId, cookie as cookieCredentials
 } from './scripts/credentials'
@@ -34,6 +36,7 @@ import {
 import { port } from '../static'
 
 export const lobby = new Lobby()
+export const Bot = new DiscordBot()
 
 const $index = cheerio.load(fs.readFileSync(path.join(__dirname, '../client/index.html')))
 
@@ -61,19 +64,21 @@ export const cacheMaxAgeJS = '1y';
     if (convert) {
       await Database.convertMySQL()
     }
-    main()
+    await main()
   } catch (err) {
     console.log(err)
   }
 })()
 
-function main () {
+async function main () {
   console.log()
   log('Database initialized')
 
   calculatePoints()
   // Parsing.parseNintendoCourses()
   Sorting.sortCourses()
+
+  await Bot.login()
 
   // initialize app engine
   const app = express()

@@ -4,6 +4,7 @@ import Database from './database'
 import Sorting from './sorting'
 import Account from '../Account'
 import Course from '../Course'
+import { Bot } from '..'
 
 const MAX_FILTER_LIMIT = 100
 
@@ -204,6 +205,7 @@ export default class API {
     if (!courses) {
       res.status(500).send('Could not read course')
     } else {
+      Bot.uploadCourse(courses)
       res.json(courses)
     }
   }
