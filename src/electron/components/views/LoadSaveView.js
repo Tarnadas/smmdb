@@ -14,8 +14,17 @@ import {
 
 import SMMButton from '../../../client/components/buttons/SMMButton'
 import {
+  LENGTH_API_KEY
+} from '../areas/EnterAPIKeyArea'
+import {
   addApiKey, addSave, loadSave
 } from '../../actions'
+import {
+  setAccountData
+} from '../../../client/actions'
+import {
+  initAccount
+} from '../../renderer'
 
 const dialog = remote.dialog
 
@@ -90,10 +99,12 @@ class LoadSaveView extends React.Component {
       showApiKey: false
     })
   }
-  addApiKey () {
-    if (this.state.apiKey.length === 30) {
-      this.props.dispatch(addApiKey(this.state.apiKey))
-    }
+  async addApiKey () {
+    if (this.state.apiKey.length !== LENGTH_API_KEY) return
+    const account = await initAccount(this.state.apiKey)
+    if (!account) return
+    this.props.dispatch(setAccountData(account))
+    this.props.dispatch(addApiKey(this.state.apiKey))
     this.setState({
       showApiKey: false
     })
@@ -219,9 +230,8 @@ class LoadSaveView extends React.Component {
               }
               {
                 cemuSaves.length > 0 && (
-                  this.listCemuSaves(cemuSaves)
-                )
-              }
+                this.listCemuSaves(cemuSaves)
+              )}
               <SMMButton text={cemuSaves.length === 0 ? 'Please select your Cemu SMM folder' : 'Load another Cemu SMM folder'} iconSrc='/img/profile.png' fontSize='13px' padding='3px' onClick={this.onAddSave} />
             </div>
             {

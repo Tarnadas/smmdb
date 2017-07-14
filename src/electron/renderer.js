@@ -30,12 +30,7 @@ import {
   domain
 } from '../static'
 
-const history = createHistory()
-const save = remote.getGlobal('save')
-const saveFileEditor = new SaveFileEditor(save.appSavePath, !!save.appSaveData && save.appSaveData.downloads)
-const store = initReducer(null, history, save, saveFileMiddleware(saveFileEditor), saveFileEditor)
-
-const initAccount = async apiKey => {
+export const initAccount = async apiKey => {
   try {
     const account = (await got(resolve(domain, '/api/getaccountdata'), {
       headers: {
@@ -44,21 +39,34 @@ const initAccount = async apiKey => {
       json: true,
       useElectronNet: false
     })).body
-    store.dispatch(setAccountData(account))
+    return account
   } catch (err) {
     console.error(err.response.body)
   }
-}
-if (save != null && save.appSaveData != null && save.appSaveData.apiKey != null) {
-  (async (apiKey) => {
-    await initAccount(apiKey)
-  })(save.appSaveData.apiKey)
+  return null
 }
 
-render(
-  <Provider store={store}>
-    <ConnectedRouter history={history}>
-      <Route path='/' component={ElectronView} />
-    </ConnectedRouter>
-  </Provider>, document.getElementById('root')
-)
+(async () => {
+  const history = createHistory()
+  const save = remote.getGlobal('save')
+  let account
+  if (save != null && save.appSaveData != null && save.appSaveData.apiKey) {
+    account = await initAccount(save.appSaveData.apiKey)
+    if (!account) {
+      save.appSaveData.apiKey = ''
+    }
+  }
+  const saveFileEditor = new SaveFileEditor(save.appSavePath, !!save.appSaveData && save.appSaveData.downloads)
+  const store = initReducer(null, history, save, saveFileMiddleware(saveFileEditor), saveFileEditor)
+  if (account) {
+    store.dispatch(setAccountData(account))
+  }
+
+  render(
+    <Provider store={store}>
+      <ConnectedRouter history={history}>
+        <Route path='/' component={ElectronView} />
+      </ConnectedRouter>
+    </Provider>, document.getElementById('root')
+  )
+})()

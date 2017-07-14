@@ -10,19 +10,15 @@ const BrowserWindow = electron.BrowserWindow;
 
 (async () => {
   let mainWindow = null
-  let appSavePath = path.resolve(`${app.getPath('appData')}/cemu-smmdb`)
-  let appSaveData = {}
+  const appSavePath = path.resolve(`${app.getPath('appData')}/cemu-smmdb`)
   if (!fs.existsSync(appSavePath)) {
     fs.mkdirSync(appSavePath)
   }
-  if (fs.existsSync(path.join(appSavePath, 'save.json'))) {
-    appSaveData = JSON.parse(fs.readFileSync(path.join(appSavePath, 'save.json')))
-  } else {
-    fs.writeFileSync(path.join(appSavePath, 'save.json'), '{}')
-  }
   global.save = {
-    appSaveData: appSaveData,
-    appSavePath: appSavePath
+    appSavePath
+  }
+  if (fs.existsSync(path.join(appSavePath, 'save.json'))) {
+    global.save.appSaveData = JSON.parse(fs.readFileSync(path.join(appSavePath, 'save.json')))
   }
 
   const onReady = () => {

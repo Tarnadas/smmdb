@@ -228,7 +228,8 @@ class CoursePanel extends React.PureComponent {
       },
       title: {
         height: '44px',
-        paddingLeft: '10px',
+        width: 'auto',
+        margin: '0 10px',
         textAlign: 'left',
         fontSize: screenSize === ScreenSize.SMALL ? '16px' : '22px',
         display: 'flex',

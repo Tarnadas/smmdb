@@ -22,7 +22,7 @@ import {
 import CoursePanel from '../panels/CoursePanel'
 import ProgressPanel from '../panels/ProgressPanel'
 import UploadArea from '../areas/UploadArea'
-import EnterAPIKeyArea from '../areas/EnterAPIKeyArea'
+import EnterAPIKeyArea from '../../../electron/components/areas/EnterAPIKeyArea'
 
 const UPDATE_OFFSET = 500
 const LIMIT = 10

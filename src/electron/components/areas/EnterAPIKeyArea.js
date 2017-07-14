@@ -2,19 +2,19 @@ import React from 'react'
 import {
   connect
 } from 'react-redux'
-import got from 'got'
 
-import { resolve } from 'url'
-
-import SMMButton from '../buttons/SMMButton'
+import SMMButton from '../../../client/components/buttons/SMMButton'
 import {
-  setAccountData
+  addApiKey
 } from '../../actions'
 import {
-  domain
-} from '../../../static'
+  setAccountData
+} from '../../../client/actions'
+import {
+  initAccount
+} from '../../renderer'
 
-const MAX_LENGTH_API_KEY = 20
+export const LENGTH_API_KEY = 30
 
 class EnterAPIKeyArea extends React.PureComponent {
   constructor (props) {
@@ -26,23 +26,16 @@ class EnterAPIKeyArea extends React.PureComponent {
     this.onAPIKeyChange = this.onAPIKeyChange.bind(this)
   }
   async onAPIKeySubmit () {
-    try {
-      const account = (await got(resolve(domain, '/api/getaccountdata'), {
-        headers: {
-          'Authorization': `APIKEY ${this.props.apiKey}`
-        },
-        json: true,
-        useElectronNet: false
-      })).body
-      this.props.dispatch(setAccountData(account))
-    } catch (err) {
-      console.error(err.response.body)
-    }
+    if (this.state.apiKey.length !== LENGTH_API_KEY) return
+    const account = await initAccount(this.state.apiKey)
+    if (!account) return
+    this.props.dispatch(setAccountData(account))
+    this.props.dispatch(addApiKey(this.state.apiKey))
   }
   onAPIKeyChange (e) {
     let apiKey = e.target.value
-    if (apiKey.length > MAX_LENGTH_API_KEY) {
-      apiKey = apiKey.substr(0, MAX_LENGTH_API_KEY)
+    if (apiKey.length > LENGTH_API_KEY) {
+      apiKey = apiKey.substr(0, LENGTH_API_KEY)
     }
     this.setState({
       apiKey

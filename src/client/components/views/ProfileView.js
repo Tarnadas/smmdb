@@ -7,7 +7,7 @@ import got from 'got'
 import { resolve } from 'url'
 
 import SMMButton, { COLOR_SCHEME } from '../buttons/SMMButton'
-import EnterAPIKeyArea from '../areas/EnterAPIKeyArea'
+import EnterAPIKeyArea from '../../../electron/components/areas/EnterAPIKeyArea'
 import {
   ScreenSize
 } from '../../reducers/mediaQuery'
