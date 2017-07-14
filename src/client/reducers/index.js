@@ -30,7 +30,7 @@ const APP_SAVE_DATA = {
   downloads: {}
 }
 
-export default function initReducer (preloadedState, history, electronSave) {
+export default function initReducer (preloadedState, history, electronSave, electronMiddleware, saveFileEditor) {
   let initialState = preloadedState || fromJS({
     router: {
       location: null
@@ -76,12 +76,14 @@ export default function initReducer (preloadedState, history, electronSave) {
         appSaveData,
         appSavePath,
         cemuSave: null,
-        currentSave: 0
+        currentSave: 0,
+        saveFileEditor
       }
     }))
     Object.assign(reducers, {
       electron
     })
   }
-  return createStore(combineReducers(reducers), initialState, applyMiddleware(routerMiddleware(history)))
+  const middleware = process.env.ELECTRON ? applyMiddleware(routerMiddleware(history), electronMiddleware) : applyMiddleware(routerMiddleware(history))
+  return createStore(combineReducers(reducers), initialState, middleware)
 }

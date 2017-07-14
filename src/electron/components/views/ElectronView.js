@@ -7,19 +7,15 @@ import {
 } from 'react-router-dom'
 
 import LoadSaveView from './LoadSaveView'
-import AppView from '../../../client/components/views/AppView'
+import MainView from './MainView'
 
 class ElectronView extends React.PureComponent {
   render () {
     return (
       this.props.cemuSave ? (
-        <div>
-          <Route path='/' component={AppView} />
-        </div>
+        <Route path='/' component={MainView} />
       ) : (
-        <div>
-          <LoadSaveView />
-        </div>
+        <LoadSaveView />
       )
     )
   }

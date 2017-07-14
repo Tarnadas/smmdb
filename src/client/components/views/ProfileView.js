@@ -181,7 +181,7 @@ class ProfileView extends React.PureComponent {
                 <SMMButton text='Save' iconSrc='/img/profile.png' fontSize='13px' padding='3px' colorScheme={colorScheme} onClick={this.onProfileSubmit} />
                 {
                   !process.env.ELECTRON && (
-                  <div>
+                  <div style={{ height: 'auto' }}>
                     <div style={{ height: '30px' }} />
                     <div style={styles.option}>
                       <input style={styles.input} value={apiKey} readOnly />

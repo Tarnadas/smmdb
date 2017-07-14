@@ -21,6 +21,8 @@ import { resolve } from 'url'
 
 import initReducer from '../client/reducers'
 import ElectronView from './components/views/ElectronView'
+import saveFileMiddleware from './util/SaveFileMiddleware'
+import SaveFileEditor from './util/SaveFileEditor'
 import {
   setAccountData
 } from '../client/actions'
@@ -30,7 +32,8 @@ import {
 
 const history = createHistory()
 const save = remote.getGlobal('save')
-const store = initReducer(null, history, save)
+const saveFileEditor = new SaveFileEditor(save.appSavePath, !!save.appSaveData && save.appSaveData.downloads)
+const store = initReducer(null, history, save, saveFileMiddleware(saveFileEditor), saveFileEditor)
 
 const initAccount = async apiKey => {
   try {

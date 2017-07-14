@@ -227,21 +227,20 @@ class CoursePanel extends React.PureComponent {
         height: '44px'
       },
       title: {
-        width: `calc(100% - ${this.state.showDetails ? '135' : '91'}px)`,
         height: '44px',
         paddingLeft: '10px',
         textAlign: 'left',
         fontSize: screenSize === ScreenSize.SMALL ? '16px' : '22px',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        flexGrow: '1'
       },
       close: {
         display: this.state.showDetails ? '' : 'none',
         cursor: 'pointer',
         width: '32px',
         height: '32px',
-        float: 'right',
         margin: '6px',
         backgroundColor: '#11c2b0',
         borderRadius: '5px',

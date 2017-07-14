@@ -36,7 +36,13 @@ const BrowserWindow = electron.BrowserWindow;
         path.normalize(`${__dirname}/../static/${url}`)
       ) : (
         url.length === 1 ? path.normalize(`${__dirname}/index.html`)
-          : path.normalize(`${__dirname}/${url}`)
+          : (
+            url.includes(':') ? (
+              url.substr(1)
+            ) : (
+              path.normalize(`${__dirname}/${url}`)
+            )
+          )
       )
       callback(urlPath)
     }, err => {
