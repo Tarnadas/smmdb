@@ -84,6 +84,7 @@ class LoadSaveView extends React.Component {
         await cemuSave.loadCourses()
         await cemuSave.exportThumbnail()
         this.props.dispatch(loadSave(cemuSave, saveId))
+        this.props.saveFileEditor.setCemuSave(cemuSave)
       } catch (err) {
         console.log(err)
       }
@@ -270,5 +271,6 @@ class LoadSaveView extends React.Component {
 }
 export default connect((state) => ({
   cemuSavePath: state.getIn(['electron', 'appSaveData', 'cemuSavePath']),
-  apiKey: state.getIn(['electron', 'appSaveData', 'apiKey'])
+  apiKey: state.getIn(['electron', 'appSaveData', 'apiKey']),
+  saveFileEditor: state.getIn(['electron', 'saveFileEditor'])
 }))(LoadSaveView)

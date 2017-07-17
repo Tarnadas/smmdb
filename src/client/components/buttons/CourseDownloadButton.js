@@ -10,20 +10,30 @@ import {
   DOWNLOAD_FORMAT
 } from '../../reducers/userData'
 import {
-  downloadCourse
+  downloadCourse, addCourse
 } from '../../../electron/actions'
 
 class CourseDownloadButton extends React.PureComponent {
   constructor (props) {
     super(props)
+    this.onAddCourse = this.onAddCourse.bind(this)
     this.onDownloadCourse = this.onDownloadCourse.bind(this)
   }
+  onAddCourse () {
+    if (this.props.added) return
+    this.props.dispatch(addCourse(this.props.courseId))
+  }
   onDownloadCourse () {
-    this.props.dispatch(downloadCourse(this.props.courseId, this.props.modified))
+    if (this.props.progress) return
+    this.props.dispatch(downloadCourse(this.props.courseId, this.props.lastModified))
   }
   render () {
     const downloadFormat = this.props.downloadFormat ? this.props.downloadFormat : DOWNLOAD_FORMAT.WII_U
     const screenSize = this.props.screenSize
+    const modified = this.props.modified
+    const progress = this.props.progress
+    const added = this.props.added
+    const downloaded = progress === 100
     const styles = {
       href: {
         height: screenSize === ScreenSize.LARGE ? '180px' : 'auto',
@@ -31,7 +41,31 @@ class CourseDownloadButton extends React.PureComponent {
         width: '100%'
       },
       button: {
-        backgroundColor: '#11c2b0',
+        background: process.env.ELECTRON ? (
+          downloaded ? (
+            added ? (
+              '#019C16'
+            ) : (
+              '#11c2b0'
+            )
+          ) : (
+            progress ? (
+              modified ? (
+                `linear-gradient(90deg, #019C16 ${progress}%, #df4e20 ${progress}%)`
+              ) : (
+                `linear-gradient(90deg, #019C16 ${progress}%, #11c2b0 ${progress}%)`
+              )
+            ) : (
+              modified ? (
+                '#df4e20'
+              ) : (
+                '#11c2b0'
+              )
+            )
+          )
+        ) : (
+          '#11c2b0'
+        ),
         color: '#fff',
         borderRadius: '5px',
         border: screenSize === ScreenSize.LARGE ? '8px solid #0f9989' : '4px solid #0f9989',
@@ -62,13 +96,19 @@ class CourseDownloadButton extends React.PureComponent {
     }
     return (
       process.env.ELECTRON ? (
-        <div style={styles.href} onClick={this.onDownloadCourse}>
+        <div style={styles.href} onClick={(downloaded && !modified) ? this.onAddCourse : this.onDownloadCourse}>
           <div style={styles.button}>
             <div style={styles.icon}>
               <img style={styles.iconImg} src='/img/coursebot.png' />
             </div>
             <div style={styles.text}>
-              Download
+              {
+                modified ? (
+                  'Update'
+                ) : (
+                  downloaded ? 'Add to save' : 'Download'
+                )
+              }
             </div>
           </div>
         </div>
@@ -76,9 +116,9 @@ class CourseDownloadButton extends React.PureComponent {
         <a style={styles.href} href={`/api/downloadcourse?id=${this.props.courseId}&type=${
           downloadFormat === DOWNLOAD_FORMAT.WII_U ? 'zip'
             : (
-            downloadFormat === DOWNLOAD_FORMAT.N3DS ? '3ds' : 'protobuf'
-          )
-          }`} download>
+              downloadFormat === DOWNLOAD_FORMAT.N3DS ? '3ds' : 'protobuf'
+            )
+        }`} download>
           <div style={styles.button}>
             <div style={styles.icon}>
               <img style={styles.iconImg} src='/img/coursebot.png' />
@@ -93,5 +133,6 @@ class CourseDownloadButton extends React.PureComponent {
   }
 }
 export default connect(state => ({
-  downloadFormat: state.getIn(['userData', 'accountData', 'downloadformat'])
+  downloadFormat: state.getIn(['userData', 'accountData', 'downloadformat']),
+  saveFull: state.getIn(['electron', 'saveFull'])
 }))(CourseDownloadButton)

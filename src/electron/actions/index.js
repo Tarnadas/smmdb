@@ -59,3 +59,20 @@ export function finishDownloadCourse (course, smmdbId) {
     smmdbId
   }
 }
+
+export function addCourse (courseId) {
+  return {
+    type: 'SAVE_ADD_COURSE',
+    courseId
+  }
+}
+
+export function finishAddCourse (cemuSave, smmdbId, saveId, success) {
+  return {
+    type: 'FINISH_ADD_COURSE',
+    cemuSave,
+    smmdbId,
+    saveId,
+    success
+  }
+}

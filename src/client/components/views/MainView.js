@@ -53,18 +53,30 @@ class MainView extends React.PureComponent {
       } : null))).body
       this.props.dispatch(setCourses(courses, false))
     } catch (err) {
-      console.error(err.response.body)
+      if (err.response) {
+        console.error(err.response.body)
+      } else {
+        console.error(err)
+      }
     }
   }
   renderCourses (courses) {
-    const self = this
+    const downloads = this.props.downloads
+    const currentDownloads = this.props.currentDownloads
+    const accountData = this.props.accountData
+    const onCourseDelete = this.onCourseDelete
+    const smmdb = this.props.smmdb
     return Array.from((function * () {
       for (let i in courses) {
+        const course = courses[i]
+        const downloadedCourse = downloads.get(String(course.id))
+        const progress = currentDownloads.get(String(course.id))
+        const added = smmdb.getIn([String(course.id), 'addedToSave'])
         yield (
-          self.props.accountData.get('id') && courses[i].owner === self.props.accountData.get('id') ? (
-            <CoursePanel canEdit course={courses[i]} apiKey={self.props.accountData.get('apikey')} id={i} key={courses[i].id} onCourseDelete={self.onCourseDelete} />
+          accountData.get('id') && course.owner === accountData.get('id') ? (
+            <CoursePanel key={course.id} canEdit course={course} downloadedCourse={downloadedCourse} progress={progress} added={added} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />
           ) : (
-            <CoursePanel course={courses[i]} key={courses[i].id} />
+            <CoursePanel key={course.id} course={course} downloadedCourse={downloadedCourse} progress={progress} added={added} />
           )
         )
       }
@@ -124,5 +136,8 @@ export default connect(state => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize']),
   courses: state.getIn(['courseData', 'main']),
   filter: state.getIn(['filter', 'currentFilter']),
-  accountData: state.getIn(['userData', 'accountData'])
+  accountData: state.getIn(['userData', 'accountData']),
+  downloads: state.getIn(['electron', 'appSaveData', 'downloads']),
+  currentDownloads: state.getIn(['electron', 'currentDownloads']),
+  smmdb: state.getIn(['electron', 'appSaveData', 'cemuSaveData', state.getIn(['electron', 'currentSave']), 'smmdb'])
 }))(MainView)

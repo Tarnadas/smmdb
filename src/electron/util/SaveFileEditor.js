@@ -1,4 +1,10 @@
 import DownloadedCourse from './DownloadedCourse'
+import {
+  deserialize
+} from 'cemu-smm'
+
+import * as fs from 'fs'
+import * as path from 'path'
 
 export default class SaveFileEditor {
   constructor (appSavePath, downloadedCourses) {
@@ -22,9 +28,13 @@ export default class SaveFileEditor {
     let success = false
     let saveId = -1
     try {
-      let filePath = this.downloadedCourses[smmdbId].filePath
-      saveId = await this.cemuSave.addCourse(filePath[0])
-      await this.cemuSave.courses[`course${saveId.padStart(3, '000')}`].exportThumbnail()
+      const filePath = path.join(this.appSavePath, `downloads/${smmdbId}`)
+      const course = await deserialize(fs.readFileSync(filePath))
+      saveId = await this.cemuSave.addCourse(course)
+      if (saveId === -1) {
+        throw new Error()
+      }
+      await this.cemuSave.courses[`course${(saveId + '').padStart(3, '000')}`].exportThumbnail()
       success = true
     } catch (err) {
       success = false

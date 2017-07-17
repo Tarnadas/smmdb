@@ -50,6 +50,7 @@
     "serve-favicon": "^2.3.2",
     "smm-protobuf": "git+https://github.com/Tarnadas/smm-protobuf.git",
     "tmp": "0.0.31",
+    "uws": "^8.14.0",
     "webpack-md5-hash": "0.0.5",
     "win-7zip": "^0.1.1"
   },

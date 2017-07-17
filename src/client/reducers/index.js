@@ -24,7 +24,12 @@ import mediaQuery from './mediaQuery'
 import electron from '../../electron/reducers/electron'
 
 const APP_SAVE_DATA = {
-  cemuSaveData: {},
+  cemuSaveData: [
+    {
+      smmdb: {},
+      save: {}
+    }
+  ],
   cemuSavePath: [],
   apiKey: '',
   downloads: {}
@@ -77,6 +82,7 @@ export default function initReducer (preloadedState, history, electronSave, elec
         appSavePath,
         cemuSave: null,
         currentSave: 0,
+        currentDownloads: {},
         saveFileEditor
       }
     }))

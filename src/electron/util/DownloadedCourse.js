@@ -1,8 +1,5 @@
 import got from 'got'
 import concat from 'concat-stream'
-import {
-  deserialize
-} from 'cemu-smm'
 
 import * as fs from 'fs'
 import * as path from 'path'
@@ -35,8 +32,6 @@ export default class DownloadedCourse {
       onProgress(courseId, chunk.length)
     })
     req.pipe(concat(async buf => {
-      // const course = await deserialize(buf)
-      // console.log(course)
       this.modified = modified
       const filePath = path.join(appSavePath, `downloads/${courseId}`)
       fs.writeFileSync(filePath, buf)
