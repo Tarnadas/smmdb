@@ -1,3 +1,7 @@
+import {
+  List, Map
+} from 'immutable'
+
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -33,6 +37,17 @@ export default function electron (state, action) {
         return state
       case 'ADD_API_KEY':
         state = state.setIn(['appSaveData', 'apiKey'], action.apiKey)
+        saveState(state)
+        return state
+      case 'START_DOWNLOAD_COURSE':
+        state = state.setIn(['currentDownloads', action.courseId], List([0, action.dataLength]))
+        return state
+      case 'PROGRESS_DOWNLOAD_COURSE':
+        state = state.setIn(['currentDownloads', action.courseId, '0'], state.getIn(['currentDownloads', action.courseId, '0']) + action.dataLength)
+        return state
+      case 'FINISH_DOWNLOAD_COURSE':
+        state = state.setIn(['currentDownloads', action.smmdbId, '0'], state.getIn(['currentDownloads', action.smmdbId, '1']))
+        state = state.setIn(['appSaveData', 'downloads', action.smmdbId], Map(action.course))
         saveState(state)
         return state
     }

@@ -1,18 +1,18 @@
 import DownloadedCourse from './DownloadedCourse'
 
 export default class SaveFileEditor {
-  constructor (appSavePath, downloadedCourses = {}) {
+  constructor (appSavePath, downloadedCourses) {
     this.appSavePath = appSavePath
-    this.downloadedCourses = downloadedCourses
+    this.downloadedCourses = typeof (downloadedCourses) === 'object' ? downloadedCourses : {}
   }
 
   setCemuSave (cemuSave) {
     this.cemuSave = cemuSave
   }
 
-  async downloadCourse (onStart, onProgress, onFinish, smmdbId, courseName, ownerName, videoId, courseType, modified) {
+  async downloadCourse (onStart, onProgress, onFinish, smmdbId, modified) {
     try {
-      this.downloadedCourses[smmdbId] = await (new DownloadedCourse(this.appSavePath)).download(onStart, onProgress, onFinish, smmdbId, courseName, ownerName, videoId, courseType, modified)
+      this.downloadedCourses[smmdbId] = await (new DownloadedCourse(this.appSavePath)).download(onStart, onProgress, onFinish, smmdbId, modified)
     } catch (err) {
       throw err
     }

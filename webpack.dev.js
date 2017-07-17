@@ -18,7 +18,8 @@ module.exports = [
       console: true,
       fs: 'empty',
       net: 'empty',
-      tls: 'empty'
+      tls: 'empty',
+      child_process: 'empty'
     },
     externals: [{
       electron: true

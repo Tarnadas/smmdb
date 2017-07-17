@@ -534,7 +534,7 @@ class CoursePanel extends React.PureComponent {
                 <img src={`/courseimg/${this.props.course.id}.jpg`} />
               </div>
               <div style={styles.buttonPanel}>
-                <CourseDownloadButton courseId={this.props.course.id} screenSize={screenSize} />
+                <CourseDownloadButton courseId={this.props.course.id} modified={this.props.course.lastmodified} screenSize={screenSize} />
                 {
                   !!this.props.course.videoid && (
                   <CourseVideoButton videoId={this.props.course.videoid} screenSize={screenSize} />

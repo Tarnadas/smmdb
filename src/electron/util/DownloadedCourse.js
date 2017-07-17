@@ -1,5 +1,8 @@
 import got from 'got'
 import concat from 'concat-stream'
+import {
+  deserialize
+} from 'cemu-smm'
 
 import * as fs from 'fs'
 import * as path from 'path'
@@ -16,16 +19,13 @@ export default class DownloadedCourse {
     appSavePath = path
   }
 
-  async download (onStart, onProgress, onFinish, courseId, courseName, ownerName, videoId, courseType, modified) {
-    this.smmdbId = courseId
-
+  async download (onStart, onProgress, onFinish, courseId, modified) {
     if (!fs.existsSync(path.join(appSavePath, 'downloads'))) {
       fs.mkdirSync(path.join(appSavePath, 'downloads'))
     }
 
-    this.filePath = path.join(appSavePath, `downloads/${courseId}`)
-
     const req = got.stream.get(resolve(domain, `/api/downloadcourse?id=${courseId}`), {
+      decompress: false,
       useElectronNet: false
     })
     req.on('response', data => {
@@ -34,9 +34,13 @@ export default class DownloadedCourse {
     req.on('data', chunk => {
       onProgress(courseId, chunk.length)
     })
-    req.pipe(concat(buf => {
-      // TODO
-      onFinish(this)
+    req.pipe(concat(async buf => {
+      // const course = await deserialize(buf)
+      // console.log(course)
+      this.modified = modified
+      const filePath = path.join(appSavePath, `downloads/${courseId}`)
+      fs.writeFileSync(filePath, buf)
+      onFinish(this, courseId)
     }))
 
     return this

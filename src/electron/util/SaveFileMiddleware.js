@@ -10,8 +10,8 @@ export default function saveFileMiddleware (saveFileEditor) {
     const onProgress = (courseId, dataLength) => {
       dispatch(progressDownloadCourse(courseId, dataLength))
     }
-    const onFinish = (courseId) => {
-      dispatch(finishDownloadCourse(courseId))
+    const onFinish = (course, smmdbId) => {
+      dispatch(finishDownloadCourse(course, smmdbId))
     }
     const onAddFinish = (cemuSave, smmdbId, saveId, success) => {
       dispatch(finishAddCourse(cemuSave, smmdbId, saveId, success))
@@ -20,13 +20,13 @@ export default function saveFileMiddleware (saveFileEditor) {
       dispatch(finishDeleteCourse(cemuSave, smmdbId, saveId, success))
     }
     switch (action.type) {
-      case 'DOWNLOAD_COURSE':
-        saveFileEditor.downloadCourse(onStart, onProgress, onFinish, action.courseId, action.courseName, action.ownerName, action.videoId, action.courseType, action.modified)
+      case 'SAVE_DOWNLOAD_COURSE':
+        saveFileEditor.downloadCourse(onStart, onProgress, onFinish, action.courseId, action.modified)
         break
-      case 'ADD_COURSE':
+      case 'SAVE_ADD_COURSE':
         saveFileEditor.addCourse(onAddFinish, action.courseId)
         break
-      case 'DELETE_COURSE':
+      case 'SAVE_DELETE_COURSE':
         saveFileEditor.deleteCourse(onDeleteFinish, action.smmdbId, action.saveId)
         break
     }

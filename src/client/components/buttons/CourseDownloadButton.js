@@ -9,8 +9,18 @@ import {
 import {
   DOWNLOAD_FORMAT
 } from '../../reducers/userData'
+import {
+  downloadCourse
+} from '../../../electron/actions'
 
 class CourseDownloadButton extends React.PureComponent {
+  constructor (props) {
+    super(props)
+    this.onDownloadCourse = this.onDownloadCourse.bind(this)
+  }
+  onDownloadCourse () {
+    this.props.dispatch(downloadCourse(this.props.courseId, this.props.modified))
+  }
   render () {
     const downloadFormat = this.props.downloadFormat ? this.props.downloadFormat : DOWNLOAD_FORMAT.WII_U
     const screenSize = this.props.screenSize
@@ -51,21 +61,34 @@ class CourseDownloadButton extends React.PureComponent {
       }
     }
     return (
-      <a style={styles.href} href={`/api/downloadcourse?id=${this.props.courseId}&type=${
-        downloadFormat === DOWNLOAD_FORMAT.WII_U ? 'zip'
-          : (
-            downloadFormat === DOWNLOAD_FORMAT.N3DS ? '3ds' : 'protobuf'
-          )
-      }`} download>
-        <div style={styles.button}>
-          <div style={styles.icon}>
-            <img style={styles.iconImg} src='/img/coursebot.png' />
-          </div>
-          <div style={styles.text}>
-            Download
+      process.env.ELECTRON ? (
+        <div style={styles.href} onClick={this.onDownloadCourse}>
+          <div style={styles.button}>
+            <div style={styles.icon}>
+              <img style={styles.iconImg} src='/img/coursebot.png' />
+            </div>
+            <div style={styles.text}>
+              Download
+            </div>
           </div>
         </div>
-      </a>
+      ) : (
+        <a style={styles.href} href={`/api/downloadcourse?id=${this.props.courseId}&type=${
+          downloadFormat === DOWNLOAD_FORMAT.WII_U ? 'zip'
+            : (
+            downloadFormat === DOWNLOAD_FORMAT.N3DS ? '3ds' : 'protobuf'
+          )
+          }`} download>
+          <div style={styles.button}>
+            <div style={styles.icon}>
+              <img style={styles.iconImg} src='/img/coursebot.png' />
+            </div>
+            <div style={styles.text}>
+              Download
+            </div>
+          </div>
+        </a>
+      )
     )
   }
 }
