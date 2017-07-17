@@ -13,21 +13,21 @@ export default function saveFileMiddleware (saveFileEditor) {
     const onFinish = (course, smmdbId) => {
       dispatch(finishDownloadCourse(course, smmdbId))
     }
-    const onAddFinish = (cemuSave, smmdbId, saveId, success) => {
-      dispatch(finishAddCourse(cemuSave, smmdbId, saveId, success))
+    const onAddFinish = (smmdbId, saveId, success) => {
+      dispatch(finishAddCourse(smmdbId, saveId, success))
     }
-    const onDeleteFinish = (cemuSave, smmdbId, saveId, success) => {
-      dispatch(finishDeleteCourse(cemuSave, smmdbId, saveId, success))
+    const onDeleteFinish = (smmdbId, courseId, success) => {
+      dispatch(finishDeleteCourse(smmdbId, courseId, success))
     }
     switch (action.type) {
       case 'SAVE_DOWNLOAD_COURSE':
         saveFileEditor.downloadCourse(onStart, onProgress, onFinish, action.courseId, action.modified)
         break
       case 'SAVE_ADD_COURSE':
-        saveFileEditor.addCourse(onAddFinish, action.courseId)
+        saveFileEditor.addCourse(onAddFinish, getState().getIn(['electron', 'cemuSave']), action.courseId)
         break
       case 'SAVE_DELETE_COURSE':
-        saveFileEditor.deleteCourse(onDeleteFinish, action.smmdbId, action.saveId)
+        saveFileEditor.deleteCourse(onDeleteFinish, getState().getIn(['electron', 'cemuSave']), action.smmdbId, action.courseId)
         break
     }
     return next(action)

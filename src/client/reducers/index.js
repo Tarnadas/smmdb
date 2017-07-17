@@ -81,7 +81,7 @@ export default function initReducer (preloadedState, history, electronSave, elec
         appSaveData,
         appSavePath,
         cemuSave: null,
-        currentSave: 0,
+        currentSave: null,
         currentDownloads: {},
         saveFileEditor
       }

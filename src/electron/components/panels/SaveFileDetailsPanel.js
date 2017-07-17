@@ -1,8 +1,21 @@
 import React from 'react'
+import {
+  connect
+} from 'react-redux'
 
 import SMMButton from '../../../client/components/buttons/SMMButton'
+import {
+  deleteCourse
+} from '../../actions'
 
-export default class SaveFileDetailsPanel extends React.PureComponent {
+class SaveFileDetailsPanel extends React.PureComponent {
+  constructor (props) {
+    super(props)
+    this.onDeleteCourse = this.onDeleteCourse.bind(this)
+  }
+  onDeleteCourse () {
+    this.props.dispatch(deleteCourse(this.props.smmdbId, this.props.courseId))
+  }
   render () {
     const course = this.props.course
     const path = course ? course.getPath() : null
@@ -73,9 +86,10 @@ export default class SaveFileDetailsPanel extends React.PureComponent {
         height: '240px'
       },
       navigation: {
-        display: 'inline-block',
+        display: 'inline-flex',
+        flexDirection: 'column',
+        alignItems: 'center',
         verticalAlign: 'top',
-        textAlign: 'center',
         height: '240px',
         margin: '20px',
         width: 'calc(100% - 400px)'
@@ -108,7 +122,7 @@ export default class SaveFileDetailsPanel extends React.PureComponent {
             <div style={styles.body}>
               <img style={styles.bodyImg} src={`${path}/thumbnail1.jpg`} />
               <div style={styles.navigation}>
-                <SMMButton type='deleteCourse' text='Delete' iconSrc='/img/delete.png' padding='3px' smmdbId={this.props.smmdbId} courseId={this.props.courseId} saveId={this.props.saveId} />
+                <SMMButton type='deleteCourse' text='Delete' iconSrc='/img/delete.png' padding='3px' onClick={this.onDeleteCourse} />
               </div>
             </div>
             <div style={styles.line} />
@@ -123,3 +137,4 @@ export default class SaveFileDetailsPanel extends React.PureComponent {
     )
   }
 }
+export default connect()(SaveFileDetailsPanel)

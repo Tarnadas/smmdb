@@ -53,7 +53,7 @@ class MainView extends React.PureComponent {
           <div style={styles.global}>
             <ChangeViewButton onClick={this.handleClick} view={this.state.currentView} />
             <div style={styles.content}>
-              <SaveView editor={this.props.editor} />
+              <SaveView />
             </div>
           </div>
         )

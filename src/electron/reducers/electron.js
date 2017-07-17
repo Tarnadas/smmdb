@@ -51,15 +51,27 @@ export default function electron (state, action) {
         saveState(state)
         return state
       case 'FINISH_ADD_COURSE':
-        if (state.getIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'smmdb', action.smmdbId, 'addedToSave'])) {
+        if (state.getIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'smmdb', String(action.smmdbId), 'addedToSave'])) {
           return state
         }
         if (!action.success) {
           state = state.set('saveFull', true)
           return state
         }
-        state = state.setIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'smmdb', action.smmdbId, 'addedToSave'], true)
-        state = state.setIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'save', action.saveId, 'smmdbId'], action.smmdbId)
+        state = state.setIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'smmdb', String(action.smmdbId), 'addedToSave'], true)
+        state = state.setIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'save', String(action.courseId), 'smmdbId'], action.smmdbId)
+        saveState(state)
+        return state
+      case 'FINISH_DELETE_COURSE':
+        console.log(action)
+        if (state.has('saveFull')) {
+          state = state.set('saveFull', false)
+        }
+        state = state.set('forceUpdate', {})
+        if (action.smmdbId) {
+          state = state.deleteIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'smmdb', String(action.smmdbId)])
+        }
+        state = state.deleteIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'save', String(action.courseId)])
         saveState(state)
         return state
     }

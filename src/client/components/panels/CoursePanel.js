@@ -190,12 +190,26 @@ class CoursePanel extends React.PureComponent {
     const modified = this.props.downloadedCourse && this.props.downloadedCourse.get('modified') !== this.props.course.lastmodified
     const p = this.props.progress && this.props.progress.toJS()
     const progress = (p && (100 * p[0] / p[1])) || (this.props.downloadedCourse && 100)
+    const added = this.props.added
+    const downloaded = progress === 100
     const styles = {
       panel: {
         height: this.state.showDetails ? 'auto' : '169px',
         width: 'calc(100% - 20px)',
         maxWidth: '906px',
-        backgroundColor: '#d4dda5',
+        backgroundColor: process.env.ELECTRON ? (
+          downloaded ? (
+            added ? (
+              '#a5ddb5'
+            ) : (
+              '#bbdda5'
+            )
+          ) : (
+            '#d4dda5'
+          )
+        ) : (
+          '#d4dda5'
+        ),
         borderRadius: '10px',
         margin: '10px',
         color: '#000',
@@ -537,7 +551,7 @@ class CoursePanel extends React.PureComponent {
                 <img src={`/courseimg/${this.props.course.id}.jpg`} />
               </div>
               <div style={styles.buttonPanel}>
-                <CourseDownloadButton courseId={this.props.course.id} lastModified={this.props.course.lastmodified} modified={modified} progress={progress} added={this.props.added} screenSize={screenSize} />
+                <CourseDownloadButton courseId={this.props.course.id} lastModified={this.props.course.lastmodified} modified={modified} progress={progress} added={added} screenSize={screenSize} />
                 {
                   !!this.props.course.videoid && (
                   <CourseVideoButton videoId={this.props.course.videoid} screenSize={screenSize} />

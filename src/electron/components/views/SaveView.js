@@ -14,17 +14,24 @@ class SaveView extends React.Component {
       course: null
     }
     for (let i = 0; i < 120; i++) {
-      this.state.courseNames.push(`course${pad(i, 3)}`)
+      this.state.courseNames.push(`course${String(i).padStart(3, '000')}`)
     }
     this.showSaveDetails = this.showSaveDetails.bind(this)
     this.hideSaveDetails = this.hideSaveDetails.bind(this)
+    this.renderCourses = this.renderCourses.bind(this)
   }
-  showSaveDetails (course, smmdbId, courseId, saveId) {
+  componentWillReceiveProps (nextProps, nextContext) {
+    if (this.state.course && !nextProps.cemuSave.courses[`course${String(this.state.courseId).padStart(3, '000')}`]) {
+      this.setState({
+        course: null
+      })
+    }
+  }
+  showSaveDetails (course, smmdbId, courseId) {
     this.setState({
       course,
       smmdbId,
-      courseId,
-      saveId
+      courseId
     })
   }
   hideSaveDetails () {
@@ -32,16 +39,21 @@ class SaveView extends React.Component {
       course: null
     })
   }
-  componentWillReceiveProps (nextProps, nextContext) {
-    if (!!this.state.course && !nextProps.courses[`course${pad(this.state.course.id, 3)}`]) {
-      this.setState({
-        course: null
-      })
-    }
+  renderCourses (courses) {
+    const save = this.props.save
+    const showSaveDetails = this.showSaveDetails
+    return Array.from((function * () {
+      for (let i = 0; i < 120; i++) {
+        const courseName = `course${String(i).padStart(3, '000')}`
+        const course = courses.hasOwnProperty(courseName) ? courses[courseName] : null
+        yield (
+          <SaveFilePanel key={i} onClick={showSaveDetails} course={course} smmdbId={save.getIn([String(i), 'smmdbId'])} courseId={i} />
+        )
+      }
+    })())
   }
   render () {
     const courses = this.props.cemuSave.courses
-    const save = this.props.save ? this.props.save.toJS() : null
     const styles = {
       div: {
         width: '100%',
@@ -60,22 +72,12 @@ class SaveView extends React.Component {
         listStyleType: 'none'
       }
     }
-    const self = this;
     return (
       <div style={styles.div}>
-        <SaveFileDetailsPanel course={this.state.course} smmdbId={this.state.smmdbId} courseId={this.state.courseId} saveId={this.state.saveId} onClick={this.hideSaveDetails} />
+        <SaveFileDetailsPanel course={this.state.course} smmdbId={this.state.smmdbId} courseId={this.state.courseId} onClick={this.hideSaveDetails} />
         <ul style={styles.ul}>
           {
-            Array.from((function* () {
-              for (let i = 0; i < 120; i++) {
-                let course = courses[self.state.courseNames[i]]
-                yield <SaveFilePanel onClick={self.showSaveDetails} course={course} smmdbId={
-                  save && save[i] && save[i].smmdbId && save[i].smmdbId
-                } courseId={
-                  save && save[i] && save[i].courseId && save[i].courseId
-                } saveId={i} key={self.state.courseNames[i]} />
-              }
-            })())
+            this.renderCourses(courses)
           }
         </ul>
       </div>
@@ -83,15 +85,8 @@ class SaveView extends React.Component {
   }
 }
 export default connect(state => ({
+  update: state.getIn(['electron', 'forceUpdate']),
   cemuSave: state.getIn(['electron', 'cemuSave']),
-  save: state.getIn(['electron', 'appSaveData', 'cemuSaveData', state.get('currentSave'), 'save']),
+  save: state.getIn(['electron', 'appSaveData', 'cemuSaveData', state.getIn(['electron', 'currentSave']), 'save']),
   saveFileEditor: state.getIn(['electron', 'saveFileEditor'])
 }))(SaveView)
-
-const pad = (n, size) => {
-  let s = String(n)
-  while (s.length < (size || 2)) {
-    s = '0' + s
-  }
-  return s
-}

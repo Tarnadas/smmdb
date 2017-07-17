@@ -12,10 +12,6 @@ export default class SaveFileEditor {
     this.downloadedCourses = typeof (downloadedCourses) === 'object' ? downloadedCourses : {}
   }
 
-  setCemuSave (cemuSave) {
-    this.cemuSave = cemuSave
-  }
-
   async downloadCourse (onStart, onProgress, onFinish, smmdbId, modified) {
     try {
       this.downloadedCourses[smmdbId] = await (new DownloadedCourse(this.appSavePath)).download(onStart, onProgress, onFinish, smmdbId, modified)
@@ -24,32 +20,32 @@ export default class SaveFileEditor {
     }
   }
 
-  async addCourse (onFinish, smmdbId) {
+  async addCourse (onFinish, cemuSave, smmdbId) {
     let success = false
-    let saveId = -1
+    let courseId = -1
     try {
       const filePath = path.join(this.appSavePath, `downloads/${smmdbId}`)
       const course = await deserialize(fs.readFileSync(filePath))
-      saveId = await this.cemuSave.addCourse(course)
-      if (saveId === -1) {
+      courseId = await cemuSave.addCourse(course)
+      if (courseId === -1) {
         throw new Error()
       }
-      await this.cemuSave.courses[`course${(saveId + '').padStart(3, '000')}`].exportThumbnail()
+      await cemuSave.courses[`course${String(courseId).padStart(3, '000')}`].exportThumbnail()
       success = true
     } catch (err) {
       success = false
     }
-    onFinish(this.cemuSave, smmdbId, saveId, success)
+    onFinish(smmdbId, courseId, success)
   }
 
-  async deleteCourse (onFinish, smmdbId, saveId) {
+  async deleteCourse (onFinish, cemuSave, smmdbId, courseId) {
     let success = false
     try {
-      await this.cemuSave.deleteCourse(saveId)
+      await cemuSave.deleteCourse(courseId)
       success = true
     } catch (err) {
-      console.log(err)
+      console.error(err)
     }
-    onFinish(this.cemuSave, smmdbId, saveId, success)
+    onFinish(smmdbId, courseId, success)
   }
 }

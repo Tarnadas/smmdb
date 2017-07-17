@@ -67,12 +67,28 @@ export function addCourse (courseId) {
   }
 }
 
-export function finishAddCourse (cemuSave, smmdbId, saveId, success) {
+export function finishAddCourse (smmdbId, courseId, success) {
   return {
     type: 'FINISH_ADD_COURSE',
-    cemuSave,
     smmdbId,
-    saveId,
+    courseId,
+    success
+  }
+}
+
+export function deleteCourse (smmdbId, courseId) {
+  return {
+    type: 'SAVE_DELETE_COURSE',
+    smmdbId,
+    courseId
+  }
+}
+
+export function finishDeleteCourse (smmdbId, courseId, success) {
+  return {
+    type: 'FINISH_DELETE_COURSE',
+    smmdbId,
+    courseId,
     success
   }
 }

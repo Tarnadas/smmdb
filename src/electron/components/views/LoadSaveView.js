@@ -84,7 +84,6 @@ class LoadSaveView extends React.Component {
         await cemuSave.loadCourses()
         await cemuSave.exportThumbnail()
         this.props.dispatch(loadSave(cemuSave, saveId))
-        this.props.saveFileEditor.setCemuSave(cemuSave)
       } catch (err) {
         console.log(err)
       }
