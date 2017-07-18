@@ -44,7 +44,9 @@ class MainView extends React.PureComponent {
         alignItems: 'flex-start'
       },
       content: {
-        flexGrow: '1'
+        flex: '1 1 0%',
+        height: 'auto',
+        maxHeight: 'calc(100% - 60px)'
       }
     }
     switch (this.state.currentView) {
