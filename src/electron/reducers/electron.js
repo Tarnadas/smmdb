@@ -63,7 +63,6 @@ export default function electron (state, action) {
         saveState(state)
         return state
       case 'FINISH_DELETE_COURSE':
-        console.log(action)
         if (state.has('saveFull')) {
           state = state.set('saveFull', false)
         }

@@ -33,7 +33,8 @@ module.exports = [
       }),
       new ScriptExtHtmlWebpackPlugin({
         preload: /\.js/
-      })
+      }),
+      new webpack.IgnorePlugin(/^.*electron\/components.*$/)
     ],
     module: {
       loaders: [
@@ -77,7 +78,8 @@ module.exports = [
       __filename: false
     },
     plugins: [
-      new webpack.EnvironmentPlugin('NODE_ENV')
+      new webpack.EnvironmentPlugin('NODE_ENV'),
+      new webpack.IgnorePlugin(/^.*electron\/components.*$/)
     ],
     externals: [require('webpack-node-externals')()],
     module: {

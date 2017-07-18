@@ -26,9 +26,9 @@ import {
   initAccount
 } from '../../renderer'
 
-const dialog = remote.dialog
+const dialog = remote && remote.dialog
 
-class LoadSaveView extends React.Component {
+class LoadSaveView extends React.PureComponent {
   constructor (props) {
     super(props)
     this.state = {

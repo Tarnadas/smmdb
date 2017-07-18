@@ -61,17 +61,27 @@ class MainView extends React.PureComponent {
     }
   }
   renderCourses (courses) {
-    const downloads = this.props.downloads
-    const currentDownloads = this.props.currentDownloads
     const accountData = this.props.accountData
     const onCourseDelete = this.onCourseDelete
-    const smmdb = this.props.smmdb
+    let downloads
+    let currentDownloads
+    let smmdb
+    if (process.env.ELECTRON) {
+      downloads = this.props.downloads
+      currentDownloads = this.props.currentDownloads
+      smmdb = this.props.smmdb
+    }
     return Array.from((function * () {
       for (let i in courses) {
         const course = courses[i]
-        const downloadedCourse = downloads.get(String(course.id))
-        const progress = currentDownloads.get(String(course.id))
-        const added = smmdb.getIn([String(course.id), 'addedToSave'])
+        let downloadedCourse
+        let progress
+        let added
+        if (process.env.ELECTRON) {
+          downloadedCourse = downloads.get(String(course.id))
+          progress = currentDownloads.get(String(course.id))
+          added = smmdb.getIn([String(course.id), 'addedToSave'])
+        }
         yield (
           accountData.get('id') && course.owner === accountData.get('id') ? (
             <CoursePanel key={course.id} canEdit course={course} downloadedCourse={downloadedCourse} progress={progress} added={added} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />

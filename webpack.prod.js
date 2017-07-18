@@ -56,8 +56,9 @@ module.exports = [
         reportFilename: path.join(__dirname, 'report.html'),
         openAnalyzer: false,
         generateStatsFile: true,
-        statsFilename: path.join(__dirname, 'stats.json'),
-      })
+        statsFilename: path.join(__dirname, 'stats.json')
+      }),
+      new webpack.IgnorePlugin(/^.*electron\/components.*$/)
     ],
     module: {
       loaders: [
@@ -100,7 +101,8 @@ module.exports = [
     },
     plugins: [
       new webpack.EnvironmentPlugin('NODE_ENV'),
-      new BabiliPlugin()
+      new BabiliPlugin(),
+      new webpack.IgnorePlugin(/^.*electron\/components.*$/)
     ],
     externals: [require('webpack-node-externals')()],
     module: {

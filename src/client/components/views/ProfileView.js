@@ -7,7 +7,6 @@ import got from 'got'
 import { resolve } from 'url'
 
 import SMMButton, { COLOR_SCHEME } from '../buttons/SMMButton'
-import EnterAPIKeyArea from '../../../electron/components/areas/EnterAPIKeyArea'
 import {
   ScreenSize
 } from '../../reducers/mediaQuery'
@@ -20,6 +19,8 @@ import {
 import {
   DOWNLOAD_FORMAT
 } from '../../reducers/userData'
+
+const EnterAPIKeyArea = process.env.ELECTRON && require('../../../electron/components/areas/EnterAPIKeyArea').default
 
 const MAX_LENGTH_USERNAME = 20
 

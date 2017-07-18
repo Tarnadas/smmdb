@@ -22,7 +22,8 @@ import {
 import CoursePanel from '../panels/CoursePanel'
 import ProgressPanel from '../panels/ProgressPanel'
 import UploadArea from '../areas/UploadArea'
-import EnterAPIKeyArea from '../../../electron/components/areas/EnterAPIKeyArea'
+
+const EnterAPIKeyArea = process.env.ELECTRON && require('../../../electron/components/areas/EnterAPIKeyArea').default
 
 const UPDATE_OFFSET = 500
 const LIMIT = 10
