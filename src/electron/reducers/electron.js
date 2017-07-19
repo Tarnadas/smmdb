@@ -1,34 +1,27 @@
 import {
-  List, Map
+  List, Map, fromJS
 } from 'immutable'
 
 import * as fs from 'fs'
 import * as path from 'path'
 
+export const CEMU_SAVE_DATA = {
+  smmdb: {},
+  save: {}
+}
+
 export default function electron (state, action) {
   if (!action) return state
-  let appSaveData, cemuSavePath
   try {
     switch (action.type) {
       case 'ADD_SAVE':
-        cemuSavePath = state.getIn(['appSaveData', 'cemuSavePath']).push(action.cemuSavePath)
-        state = state.setIn(['appSaveData', 'cemuSavePath'], cemuSavePath)
-        state = state.set('currentSave', cemuSavePath.size - 1)
+        let cemuSaveData = state.getIn(['appSaveData', 'cemuSaveData']).push(fromJS(Object.assign(CEMU_SAVE_DATA, { path: action.cemuSavePath })))
+        state = state.setIn(['appSaveData', 'cemuSaveData'], cemuSaveData)
+        state = state.set('currentSave', cemuSaveData.size - 1)
         saveState(state)
         return state
-      case 'REMOVE_SAVE':
-        appSaveData = state.get('appSaveData')
-        cemuSavePath = appSaveData.get('cemuSavePath')
-        let index = 0
-        for (let i = 0; i < cemuSavePath.size; i++) {
-          if (cemuSavePath.get(i) === action.cemuSavePath) {
-            index = i
-            break
-          }
-        }
-        cemuSavePath = cemuSavePath.delete(index)
-        appSaveData = appSaveData.set('cemuSavePath', cemuSavePath)
-        state = state.set('appSaveData', appSaveData)
+      case 'DELETE_SAVE':
+        state = state.setIn(['appSaveData', 'cemuSaveData'], state.getIn(['appSaveData', 'cemuSaveData']).delete(action.saveId))
         saveState(state)
         return state
       case 'LOAD_SAVE':

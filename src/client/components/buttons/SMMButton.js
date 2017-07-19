@@ -15,10 +15,14 @@ export default class SMMButton extends React.PureComponent {
   constructor (props) {
     super(props)
     this.state = {
-      hover: false
+      hover: false,
+      deleteHover: false
     }
     this.mouseEnter = this.mouseEnter.bind(this)
     this.mouseLeave = this.mouseLeave.bind(this)
+    this.deleteEnter = this.deleteEnter.bind(this)
+    this.deleteLeave = this.deleteLeave.bind(this)
+    this.onDelete = this.onDelete.bind(this)
   }
   mouseEnter () {
     this.setState({
@@ -30,8 +34,23 @@ export default class SMMButton extends React.PureComponent {
       hover: false
     })
   }
+  deleteEnter () {
+    this.setState({
+      deleteHover: true
+    })
+  }
+  deleteLeave () {
+    this.setState({
+      deleteHover: false
+    })
+  }
+  onDelete (e) {
+    e.stopPropagation()
+    this.props.onDelete(this.props.saveId)
+  }
   render () {
     const colorScheme = this.props.colorScheme || COLOR_SCHEME.YELLOW
+    const onDelete = this.props.onDelete
     const styles = {
       smmButton: {
         margin: '0 10px 10px 10px',
@@ -40,7 +59,11 @@ export default class SMMButton extends React.PureComponent {
         width: 'auto',
         height: '40px',
         backgroundColor: colorScheme === COLOR_SCHEME.YELLOW ? (
-          this.state.hover ? '#323245' : '#ffe500'
+          this.state.deleteHover ? (
+            '#cc0008'
+          ) : (
+            this.state.hover ? '#323245' : '#ffe500'
+          )
         ) : (
           colorScheme === COLOR_SCHEME.GREEN ? (
             this.state.hover ? '#323245' : '#33cc33'
@@ -84,6 +107,18 @@ export default class SMMButton extends React.PureComponent {
         borderRadius: '4px',
         backgroundColor: '#000',
         padding: this.props.padding ? this.props.padding : ''
+      },
+      cancel: {
+        float: 'right',
+        margin: '3px',
+        width: '34px',
+        height: '34px',
+        borderRadius: '3px',
+        backgroundColor: '#f4f47b',
+        zIndex: '100'
+      },
+      cancelImg: {
+        padding: '3px'
       }
     }
     const iconStyle = this.props.iconColor === 'bright' ? styles.smmIcon : (this.state.hover ? styles.smmIconHover : styles.smmIconDark)
@@ -109,6 +144,12 @@ export default class SMMButton extends React.PureComponent {
             <ButtonSub iconStyle={iconStyle} iconSrc={this.props.iconSrc} text={text} hover={this.state.hover} />
           )
         }
+        {
+          onDelete && (
+          <div style={styles.cancel} onClick={this.onDelete} onMouseEnter={this.deleteEnter} onMouseLeave={this.deleteLeave}>
+            <img style={styles.cancelImg} src='/img/cancel_yellow.svg' />
+          </div>
+        )}
       </div>
     )
   }

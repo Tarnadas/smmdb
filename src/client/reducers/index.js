@@ -24,13 +24,7 @@ import mediaQuery from './mediaQuery'
 import electron from '../../electron/reducers/electron'
 
 const APP_SAVE_DATA = {
-  cemuSaveData: [
-    {
-      smmdb: {},
-      save: {}
-    }
-  ],
-  cemuSavePath: [],
+  cemuSaveData: [],
   apiKey: '',
   downloads: {}
 }

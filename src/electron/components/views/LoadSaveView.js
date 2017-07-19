@@ -17,7 +17,7 @@ import {
   LENGTH_API_KEY
 } from '../areas/EnterAPIKeyArea'
 import {
-  addApiKey, addSave, loadSave
+  addApiKey, addSave, loadSave, deleteSave
 } from '../../actions'
 import {
   setAccountData
@@ -37,6 +37,7 @@ class LoadSaveView extends React.PureComponent {
     }
     this.onAddSave = this.onAddSave.bind(this)
     this.onLoadSave = this.onLoadSave.bind(this)
+    this.onDeleteSave = this.onDeleteSave.bind(this)
     this.showApiKey = this.showApiKey.bind(this)
     this.hideApiKey = this.hideApiKey.bind(this)
     this.addApiKey = this.addApiKey.bind(this)
@@ -89,6 +90,9 @@ class LoadSaveView extends React.PureComponent {
       }
     })(this.savePath, this.saveId)
   }
+  onDeleteSave (saveId) {
+    this.props.dispatch(deleteSave(saveId))
+  }
   showApiKey () {
     this.setState({
       showApiKey: true
@@ -125,18 +129,18 @@ class LoadSaveView extends React.PureComponent {
   listCemuSaves (cemuSaves) {
     const self = this
     return Array.from((function * () {
-      for (let i = 0; i < cemuSaves.length; i++) {
-        self.savePath = cemuSaves[i]
+      for (let i = 0; i < cemuSaves.size; i++) {
+        self.savePath = cemuSaves.getIn([i, 'path'])
         self.saveId = i
         yield (
-          <SMMButton key={i} text={self.getSaveName()} iconSrc='/img/profile.png' fontSize='13px' padding='3px' onClick={self.onLoadSave} />
+          <SMMButton key={i} text={self.getSaveName()} iconSrc='/img/profile.png' fontSize='13px' padding='3px' onDelete={self.onDeleteSave} onClick={self.onLoadSave} saveId={i} />
         )
       }
     })())
   }
   render () {
     const apiKey = this.props.apiKey
-    const cemuSaves = this.props.cemuSavePath.toArray()
+    const cemuSaves = this.props.cemuSaveData
     const styles = {
       center: {
         display: 'flex',
@@ -229,13 +233,13 @@ class LoadSaveView extends React.PureComponent {
               )
               }
               {
-                cemuSaves.length > 0 && (
+                cemuSaves.size > 0 && (
                 this.listCemuSaves(cemuSaves)
               )}
-              <SMMButton text={cemuSaves.length === 0 ? 'Please select your Cemu SMM folder' : 'Load another Cemu SMM folder'} iconSrc='/img/profile.png' fontSize='13px' padding='3px' onClick={this.onAddSave} />
+              <SMMButton text={cemuSaves.size === 0 ? 'Please select your Cemu SMM folder' : 'Load another Cemu SMM folder'} iconSrc='/img/profile.png' fontSize='13px' padding='3px' onClick={this.onAddSave} />
             </div>
             {
-              cemuSaves.length === 0 && (
+              cemuSaves.size === 0 && (
               <div style={styles.text}>
                 Your SMM save folder is located at<br />'path\to\cemu\mlc01\emulatorSave\#saveID#'
               </div>
@@ -269,7 +273,7 @@ class LoadSaveView extends React.PureComponent {
   }
 }
 export default connect((state) => ({
-  cemuSavePath: state.getIn(['electron', 'appSaveData', 'cemuSavePath']),
+  cemuSaveData: state.getIn(['electron', 'appSaveData', 'cemuSaveData']),
   apiKey: state.getIn(['electron', 'appSaveData', 'apiKey']),
   saveFileEditor: state.getIn(['electron', 'saveFileEditor'])
 }))(LoadSaveView)

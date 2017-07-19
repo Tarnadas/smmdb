@@ -13,10 +13,10 @@ export function addSave (cemuSavePath, cemuSave) {
   }
 }
 
-export function removeSave (cemuSavePath) {
+export function deleteSave (saveId) {
   return {
-    type: 'REMOVE_SAVE',
-    cemuSavePath
+    type: 'DELETE_SAVE',
+    saveId
   }
 }
 
