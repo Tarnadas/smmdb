@@ -6,9 +6,18 @@ import { discordToken } from './scripts/credentials'
 export default class Bot {
   constructor () {
     this.client = new Discord.Client()
+    this.channel = this.client.channels.get('334977257456271360')
 
     this.client.on('ready', () => {
       console.log('Discord bot initialized')
+    })
+
+    this.client.on('guildMemberAdd', member => {
+      this.channel.send(`User "${member.user.username}" has joined the server`)
+    })
+
+    this.client.on('guildMemberRemove', member => {
+      this.channel.send(`User "${member.user.username}" has left the server`)
     })
   }
 
@@ -19,7 +28,6 @@ export default class Bot {
   uploadCourse (courses) {
     if (courses.length === 0) return
     const isMany = courses.length > 1
-    const channel = this.client.channels.get('334977257456271360')
     const ownerName = Account.getAccount(courses[0].owner).username
     const messages = []
     messages[0] = isMany ? `New courses have been uploaded by ${ownerName}:` : `A new course has been uploaded by ${ownerName}`
@@ -73,7 +81,7 @@ export default class Bot {
       messages[messageIndex] += append
     }
     for (let i in messages) {
-      channel.send(messages[i])
+      this.channel.send(messages[i])
     }
   }
 }

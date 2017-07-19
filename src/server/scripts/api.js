@@ -1,5 +1,8 @@
 import parseRange from 'range-parser'
 
+import * as fs from 'fs'
+import * as path from 'path'
+
 import Database from './database'
 import Sorting from './sorting'
 import Account from '../Account'
@@ -202,10 +205,19 @@ export default class API {
       return
     }
     const courses = await Course.fromBuffer(req.body, account)
-    if (!courses) {
+    if (!courses || courses.length === 0) {
       res.status(500).send('Could not read course')
     } else {
-      Bot.uploadCourse(courses)
+      const uploadPath = path.join(__dirname, '../../uploads')
+      if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath)
+      }
+      fs.writeFileSync(path.join(uploadPath, String(courses[0]._id)), req.body)
+      try {
+        Bot.uploadCourse(courses)
+      } catch (err) {
+        console.log(err)
+      }
       res.json(courses)
     }
   }

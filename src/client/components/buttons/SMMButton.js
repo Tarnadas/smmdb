@@ -71,6 +71,7 @@ export default class SMMButton extends React.PureComponent {
             this.state.hover ? '#323245' : '#CC7034'
           )
         ),
+        textAlign: 'left',
         cursor: 'pointer',
         outline: 'none',
         overflow: 'hidden',
