@@ -15,7 +15,7 @@ export default class ButtonSub extends React.PureComponent {
       }
     }
     return (
-      <div style={{ width: 'auto' }}>
+      <div>
         <div style={this.props.iconStyle}>
           <img style={styles.img} src={this.props.iconSrc} />
         </div>

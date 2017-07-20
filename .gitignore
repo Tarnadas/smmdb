@@ -4,6 +4,7 @@
 /.idea/
 /db/
 /courses/
+/uploads/
 /build/static/img/
 /build/static/courseimg/
 /build/static/coursedata/
@@ -11,4 +12,4 @@
 /build/server/
 /build/electron/
 /build/client/
-/uploads/
+/build/release/

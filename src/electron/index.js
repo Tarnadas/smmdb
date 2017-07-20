@@ -2,7 +2,9 @@ import electron from 'electron'
 
 import * as path from 'path'
 import * as fs from 'fs'
-// import { resolve } from 'url'
+import { resolve } from 'url'
+
+import { domain } from '../static'
 
 const app = electron.app
 const protocol = electron.protocol
@@ -24,21 +26,26 @@ const BrowserWindow = electron.BrowserWindow;
   const onReady = () => {
     protocol.interceptFileProtocol('file', (request, callback) => {
       let url = request.url.substr(7)
-      const isStatic = url.includes('styles') || url.includes('img') || url.includes('courseimg')
+      const isStatic = url.includes('styles') || url.includes('img')
+      const isUrl = url.includes('courseimg')
       if (url.includes('/img')) {
         url = url.replace('img', 'images')
       }
-      const urlPath = isStatic ? (
-        path.normalize(`${__dirname}/../static/${url}`)
+      const urlPath = isUrl ? (
+        resolve(domain, url)
       ) : (
-        url.length === 1 ? path.normalize(`${__dirname}/index.html`)
-          : (
-            url.includes(':') ? (
-              url.substr(1)
-            ) : (
-              path.normalize(`${__dirname}/${url}`)
+        isStatic ? (
+          path.normalize(`${__dirname}/../static/${url}`)
+        ) : (
+          url.length === 1 ? path.normalize(`${__dirname}/index.html`)
+            : (
+              url.includes(':') ? (
+                url.substr(1)
+              ) : (
+                path.normalize(`${__dirname}/${url}`)
+              )
             )
-          )
+        )
       )
       callback(urlPath)
     }, err => {
@@ -47,9 +54,10 @@ const BrowserWindow = electron.BrowserWindow;
 
     require('electron-debug')({showDevTools: true})
     mainWindow = new BrowserWindow({
-      width: 1500,
-      height: 800,
-      icon: path.join(__dirname, 'build/static/images/icon.png')
+      width: 2000,
+      height: 2000,
+      icon: path.join(__dirname, 'build/static/images/icon.png'),
+      title: 'Cemu SMMDB'
     })
 
     mainWindow.loadURL('file://')
@@ -75,5 +83,6 @@ const BrowserWindow = electron.BrowserWindow;
 
   app.on('uncaughtException', (err) => {
     fs.writeFileSync('./error_log.txt', err)
+    app.quit()
   })
 })()

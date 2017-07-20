@@ -169,16 +169,19 @@ class ProfileView extends React.PureComponent {
                   </div>
                   <input style={styles.input} value={this.state.username} onChange={this.onUsernameChange} />
                 </div>
-                <div style={styles.option}>
-                  <div style={styles.value}>
-                    Preferred download format:
+                {
+                  !process.env.ELECTRON && (
+                  <div style={styles.option}>
+                    <div style={styles.value}>
+                      Preferred download format:
+                    </div>
+                    <select style={styles.select} value={this.state.downloadFormat} onChange={this.onDownloadFormatChange}>
+                      <option value={DOWNLOAD_FORMAT.WII_U}>Wii U</option>
+                      <option value={DOWNLOAD_FORMAT.N3DS}>3DS</option>
+                      <option value={DOWNLOAD_FORMAT.PROTOBUF}>Protocol Buffer</option>
+                    </select>
                   </div>
-                  <select style={styles.select} value={this.state.downloadFormat} onChange={this.onDownloadFormatChange}>
-                    <option value={DOWNLOAD_FORMAT.WII_U}>Wii U</option>
-                    <option value={DOWNLOAD_FORMAT.N3DS}>3DS</option>
-                    <option value={DOWNLOAD_FORMAT.PROTOBUF}>Protocol Buffer</option>
-                  </select>
-                </div>
+                )}
                 <SMMButton text='Save' iconSrc='/img/profile.png' fontSize='13px' padding='3px' colorScheme={colorScheme} onClick={this.onProfileSubmit} />
                 {
                   !process.env.ELECTRON && (

@@ -110,8 +110,8 @@ export default class SMMButton extends React.PureComponent {
         padding: this.props.padding ? this.props.padding : ''
       },
       cancel: {
-        float: 'right',
-        margin: '3px',
+        margin: '0 37px 0 -37px',
+        top: '-3px',
         width: '34px',
         height: '34px',
         borderRadius: '3px',

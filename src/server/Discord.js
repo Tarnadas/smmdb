@@ -6,10 +6,10 @@ import { discordToken } from './scripts/credentials'
 export default class Bot {
   constructor () {
     this.client = new Discord.Client()
-    this.channel = this.client.channels.get('334977257456271360')
 
     this.client.on('ready', () => {
       console.log('Discord bot initialized')
+      this.channel = this.client.channels.get('334977257456271360')
     })
 
     this.client.on('guildMemberAdd', member => {

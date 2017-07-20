@@ -409,7 +409,7 @@ class CoursePanel extends React.PureComponent {
             <div style={styles.preview}>
               <div style={styles.previewImgWrapper}>
                 <LazyLoad height={81} offset={100} once>
-                  <img style={styles.previewImg} src={`/courseimg/${this.props.course.id}_full.jpg`} />
+                  <img style={styles.previewImg} src={`${domain}/courseimg/${this.props.course.id}_full.jpg`} />
                 </LazyLoad>
               </div>
             </div>
@@ -548,7 +548,7 @@ class CoursePanel extends React.PureComponent {
                 </div>
               )}
               <div style={styles.imageLarge}>
-                <img src={`/courseimg/${this.props.course.id}.jpg`} />
+                <img src={`${domain}/courseimg/${this.props.course.id}.jpg`} />
               </div>
               <div style={styles.buttonPanel}>
                 <CourseDownloadButton courseId={this.props.course.id} lastModified={this.props.course.lastmodified} modified={modified} progress={progress} added={added} screenSize={screenSize} />
