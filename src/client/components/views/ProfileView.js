@@ -22,6 +22,8 @@ import {
 
 const EnterAPIKeyArea = process.env.ELECTRON && require('../../../electron/components/areas/EnterAPIKeyArea').default
 
+const USERNAME = /^[a-z0-9A-Z|.]+$/
+const MIN_LENGTH_USERNAME = 3
 const MAX_LENGTH_USERNAME = 20
 
 class ProfileView extends React.PureComponent {
@@ -65,6 +67,14 @@ class ProfileView extends React.PureComponent {
   onProfileSubmit () {
     (async () => {
       if (!this.state.changed) return
+      if (this.state.username < MIN_LENGTH_USERNAME || this.state.username > MAX_LENGTH_USERNAME) {
+        console.log('Username must have between 3 and 20 characters') // TODO
+        return
+      }
+      if (!USERNAME.test(this.state.username)) {
+        console.log('Username contains invalid characters') // TODO
+        return
+      }
       const profile = {
         username: this.state.username,
         downloadformat: this.state.downloadFormat

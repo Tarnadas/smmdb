@@ -288,6 +288,29 @@ export default class Course {
     return null
   }
 
+  async setThumbnail (buffer, isWide, doClip) {
+    const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${this._id}`)))
+    const thumbnail = await course.setThumbnail(buffer, isWide, doClip)
+    this.courseData = course
+    fs.writeFileSync(join(__dirname, `../static/courseimg/${this._id}${isWide ? '_full' : ''}.jpg`), thumbnail)
+    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}`), await this.courseData.serialize())
+    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}.gz`), await this.courseData.serializeGzipped())
+    let update
+    if (isWide) {
+      this.vFull = this.vFull ? this.vFull + 1 : 1
+      update = {
+        vFull: this.vFull
+      }
+    } else {
+      this.vPrev = this.vPrev ? this.vPrev + 1 : 1
+      update = {
+        vPrev: this.vPrev
+      }
+    }
+    await Database.updateCourse(this._id, update)
+    return thumbnail
+  }
+
   async delete () {
     Sorting.deleteCourse(this._id)
     delete courses[this._id]

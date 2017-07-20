@@ -9,6 +9,7 @@
     "url": "https://github.com/Tarnadas/smmdb.git"
   },
   "dependencies": {
+    "base64-arraybuffer": "^0.1.5",
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.2",
     "bson": "^1.0.4",

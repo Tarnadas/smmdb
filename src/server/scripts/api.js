@@ -1,4 +1,5 @@
 import parseRange from 'range-parser'
+import fileType from 'file-type'
 
 import * as fs from 'fs'
 import * as path from 'path'
@@ -11,7 +12,11 @@ import { Bot } from '..'
 
 const MAX_FILTER_LIMIT = 100
 
-const nintendoIdRegEx = /^[0-9A-Z|\\-]+$/
+const NINTENDO_ID = /^[0-9A-Z|\\-]+$/
+const VIDEO_ID = /^[a-z0-9A-Z| |.|\\_|\\-]+$/
+const USERNAME = /^[a-z0-9A-Z|.|\\_|\\-]+$/
+const MIN_LENGTH_USERNAME = 3
+const MAX_LENGTH_USERNAME = 20
 
 export default class API {
   static getStats (res) {
@@ -256,12 +261,14 @@ export default class API {
         courseData.nintendoid = ''
       } else {
         const a = nId.split('-')
-        if (nintendoIdRegEx.test(nId) && a.length === 4 && a[0].length === 4 && a[1].length === 4 && a[2].length === 4 && a[3].length === 4) {
+        if (NINTENDO_ID.test(nId) && a.length === 4 && a[0].length === 4 && a[1].length === 4 && a[2].length === 4 && a[3].length === 4) {
           courseData.nintendoid = nId
         }
       }
     }
-    if (req.body.videoid != null) courseData.videoid = req.body.videoid
+    if (req.body.videoid != null && VIDEO_ID.test(req.body.videoid)) {
+      courseData.videoid = req.body.videoid
+    }
     if (req.body.difficulty != null) {
       try {
         const difficulty = JSON.parse(req.body.difficulty)
@@ -327,7 +334,7 @@ export default class API {
       return
     }
     const accountData = {}
-    if (req.body.username) {
+    if (req.body.username && req.body.username.length >= MIN_LENGTH_USERNAME && req.body.username.length <= MAX_LENGTH_USERNAME && USERNAME.test(req.body.username)) {
       account.setUsername(req.body.username)
       accountData.username = req.body.username
     }
@@ -338,5 +345,41 @@ export default class API {
     }
     await Database.updateAccount(account._id, accountData)
     res.json(account)
+  }
+
+  static async uploadImage (req, res, isWide) {
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
+      return
+    }
+    const account = Account.getAccountByAPIKey(apiKey)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiKey} not found`)
+      return
+    }
+    const courseId = req.get('course-id')
+    if (courseId == null) {
+      res.status(400).send('No course ID found. Please set a "course-id" HTTP header')
+      return
+    }
+    const course = Course.getCourse(courseId)
+    if (!course) {
+      res.status(400).send(`Course with ID ${courseId} not found`)
+      return
+    }
+    if (!course.owner.equals(account._id)) {
+      res.status(403).send(`Course with ID ${courseId} is not owned by account with API key ${apiKey}`)
+      return
+    }
+    const type = fileType(req.body)
+    const mime = type && type.mime
+    if (/^image\/.+$/.test(mime)) {
+      const thumbnail = await course.setThumbnail(req.body, isWide, !isWide)
+      res.send(thumbnail)
+    } else {
+      res.status(400).send(`Wrong mime type: ${mime}`)
+    }
   }
 }

@@ -10,6 +10,7 @@ import { resolve } from 'url'
 import CourseDownloadButton from '../buttons/CourseDownloadButton'
 import CourseVideoButton from '../buttons/CourseVideoButton'
 import SMMButton, { COLOR_SCHEME } from '../buttons/SMMButton'
+import UploadImageArea from '../areas/UploadImageArea'
 import {
   ScreenSize
 } from '../../reducers/mediaQuery'
@@ -27,6 +28,7 @@ const MAX_LENGTH_TITLE = 32
 const MAX_LENGTH_MAKER = 10
 const MAX_LENGTH_NNID = 19
 const MAX_LENGTH_VIDEOID = 10
+const VIDEO_ID = /^[a-z0-9A-Z| |.|\\_|\\-]+$/
 
 class CoursePanel extends React.PureComponent {
   constructor (props) {
@@ -51,6 +53,8 @@ class CoursePanel extends React.PureComponent {
     this.onNintendoIdChange = this.onStringChange.bind(this, 'nnId', MAX_LENGTH_NNID)
     this.onVideoIdChange = this.onStringChange.bind(this, 'videoId', MAX_LENGTH_VIDEOID)
     this.onDifficultyChange = this.onSelectChange.bind(this, 'difficulty')
+    this.onUploadFullComplete = this.onUploadFullComplete.bind(this)
+    this.onUploadPrevComplete = this.onUploadPrevComplete.bind(this)
   }
   componentWillReceiveProps (nextProps, nextContext) {
     if (nextProps.course.title !== this.state.title) {
@@ -106,6 +110,9 @@ class CoursePanel extends React.PureComponent {
           nintendoid: this.state.nnId,
           videoid: this.state.videoId,
           difficulty: this.state.difficulty
+        }
+        if (!VIDEO_ID.test(course.videoid)) {
+          delete course.videoid
         }
         const res = (await got(resolve(domain, `/api/updatecourse?id=${this.props.course.id}`), {
           headers: {
@@ -184,7 +191,15 @@ class CoursePanel extends React.PureComponent {
     res[value] = val
     this.setState(res)
   }
+  onUploadFullComplete (base64) {
+    this.full.src = `data:image/png;base64, ${base64}`
+  }
+  onUploadPrevComplete (base64) {
+    this.prev.src = `data:image/png;base64, ${base64}`
+  }
   render () {
+    const course = this.props.course
+    const style = parseInt(course.gameStyle)
     const screenSize = this.props.screenSize
     const colorScheme = this.state.changed ? COLOR_SCHEME.RED : (this.state.saved ? COLOR_SCHEME.GREEN : COLOR_SCHEME.YELLOW)
     const modified = this.props.downloadedCourse && this.props.downloadedCourse.get('modified') !== this.props.course.lastmodified
@@ -377,7 +392,6 @@ class CoursePanel extends React.PureComponent {
         alignItems: 'flex-start'
       }
     }
-    const style = parseInt(this.props.course.gameStyle)
     return (
       <div style={styles.panel} onClick={this.onShowDetails}>
         <div style={styles.rank} />
@@ -401,7 +415,7 @@ class CoursePanel extends React.PureComponent {
               } />
             </div>
             <div style={styles.title}>
-              { this.props.course.title }
+              { course.title }
             </div>
             <div style={styles.close} onClick={this.onHideDetails}>
               <img src='/img/cancel.svg' />
@@ -409,7 +423,7 @@ class CoursePanel extends React.PureComponent {
             <div style={styles.preview}>
               <div style={styles.previewImgWrapper}>
                 <LazyLoad height={81} offset={100} once>
-                  <img style={styles.previewImg} src={`${domain}/courseimg/${this.props.course.id}_full.jpg`} />
+                  <img style={styles.previewImg} src={`${domain}/courseimg/${course.id}_full.jpg${course.vFull ? `?v=${course.vFull}` : ''}`} ref={v => { this.full = v }} />
                 </LazyLoad>
               </div>
             </div>
@@ -421,20 +435,20 @@ class CoursePanel extends React.PureComponent {
             <div style={styles.footer}>
               <div style={styles.stats}>
                 <img style={styles.statsStars} src='/img/unstarred.png' />
-                { this.props.course.starred } /
+                { course.starred } /
                 <img style={styles.statsDownloads} src='/img/downloads.png' />
-                { this.props.course.downloads }
+                { course.downloads }
                 <img style={styles.statsDownloads} src={
-                  this.props.course.difficulty === 0 ? (
+                  course.difficulty === 0 ? (
                     '/img/easy.png'
                   ) : (
-                    this.props.course.difficulty === 1 ? (
+                    course.difficulty === 1 ? (
                       '/img/normal.png'
                     ) : (
-                      this.props.course.difficulty === 2 ? (
+                      course.difficulty === 2 ? (
                         '/img/expert.png'
                       ) : (
-                        this.props.course.difficulty === 3 ? (
+                        course.difficulty === 3 ? (
                           '/img/superexpert.png'
                         ) : (
                           '/img/normal.png'
@@ -447,16 +461,16 @@ class CoursePanel extends React.PureComponent {
                   screenSize !== ScreenSize.SMALL && (
                   <div style={styles.statsText}>
                     {
-                      this.props.course.difficulty === 0 ? (
+                      course.difficulty === 0 ? (
                         'easy'
                       ) : (
-                        this.props.course.difficulty === 1 ? (
+                        course.difficulty === 1 ? (
                           'normal'
                         ) : (
-                          this.props.course.difficulty === 2 ? (
+                          course.difficulty === 2 ? (
                             'expert'
                           ) : (
-                            this.props.course.difficulty === 3 ? (
+                            course.difficulty === 3 ? (
                               's. expert'
                             ) : (
                               '-'
@@ -468,13 +482,13 @@ class CoursePanel extends React.PureComponent {
                   </div>
                 )}
                 {
-                  this.props.course.autoScroll === 1 ? (
+                  course.autoScroll === 1 ? (
                     <img style={styles.statsAutoScroll} src='/img/slow.png' />
                   ) : (
-                    this.props.course.autoScroll === 2 ? (
+                    course.autoScroll === 2 ? (
                       <img style={styles.statsAutoScroll} src='/img/medium.png' />
                     ) : (
-                      this.props.course.autoScroll === 3 && (
+                      course.autoScroll === 3 && (
                         <img style={styles.statsAutoScroll} src='/img/fast.png' />
                       )
                     )
@@ -496,7 +510,7 @@ class CoursePanel extends React.PureComponent {
               </div>
               <div style={styles.maker}>
                 <div style={styles.makerName}>
-                  { this.props.course.maker }
+                  { course.maker }
                 </div>
               </div>
             </div>
@@ -507,6 +521,8 @@ class CoursePanel extends React.PureComponent {
               {
                 this.props.canEdit && (
                 <div style={styles.edit}>
+                  <UploadImageArea type='full' courseId={course.id} onUploadComplete={this.onUploadFullComplete} />
+                  <UploadImageArea type='prev' courseId={course.id} onUploadComplete={this.onUploadPrevComplete} />
                   <div style={styles.option}>
                     <div style={styles.value}>
                       Title:
@@ -548,13 +564,13 @@ class CoursePanel extends React.PureComponent {
                 </div>
               )}
               <div style={styles.imageLarge}>
-                <img src={`${domain}/courseimg/${this.props.course.id}.jpg`} />
+                <img src={`${domain}/courseimg/${course.id}.jpg${course.vPrev ? `?v=${course.vPrev}` : ''}`} ref={v => { this.prev = v }} />
               </div>
               <div style={styles.buttonPanel}>
-                <CourseDownloadButton courseId={this.props.course.id} lastModified={this.props.course.lastmodified} modified={modified} progress={progress} added={added} screenSize={screenSize} />
+                <CourseDownloadButton courseId={course.id} lastModified={course.lastmodified} modified={modified} progress={progress} added={added} screenSize={screenSize} />
                 {
-                  !!this.props.course.videoid && (
-                  <CourseVideoButton videoId={this.props.course.videoid} screenSize={screenSize} />
+                  course.videoid && (
+                  <CourseVideoButton videoId={course.videoid} screenSize={screenSize} />
                 )}
               </div>
             </div>

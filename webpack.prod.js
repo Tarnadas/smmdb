@@ -14,7 +14,7 @@ module.exports = [
       app: ['babel-polyfill', path.join(__dirname, 'src/client/renderer.js')],
       vendor: [
         'react', 'react-dom', 'react-redux', 'react-router', 'react-router-dom', 'react-router-redux', 'react-google-login', 'react-lazyload', 'react-custom-scrollbars',
-        'redux', 'redux-immutable', 'immutable', 'history', 'bluebird', 'got', 'concat-stream'
+        'redux', 'redux-immutable', 'immutable', 'history', 'bluebird', 'got', 'concat-stream', 'filereader-stream', 'progress-stream', 'base64-arraybuffer'
       ]
     },
     output: {

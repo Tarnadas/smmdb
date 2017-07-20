@@ -96,6 +96,36 @@ export function deleteUpload (id) {
   }
 }
 
+export function setUploadImageFull (id, upload) {
+  return {
+    type: 'SET_UPLOAD_IMAGE_FULL',
+    id,
+    upload
+  }
+}
+
+export function deleteUploadImageFull (id) {
+  return {
+    type: 'DELETE_UPLOAD_IMAGE_FULL',
+    id
+  }
+}
+
+export function setUploadImagePreview (id, upload) {
+  return {
+    type: 'SET_UPLOAD_IMAGE_PREVIEW',
+    id,
+    upload
+  }
+}
+
+export function deleteUploadImagePreview (id) {
+  return {
+    type: 'DELETE_UPLOAD_IMAGE_PREVIEW',
+    id
+  }
+}
+
 export function showFilter (showFilter) {
   return {
     type: 'SHOW_FILTER',

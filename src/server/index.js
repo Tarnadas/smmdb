@@ -18,7 +18,7 @@ import * as qs from 'querystring'
 
 import renderer from '../shared/renderer'
 
-import Lobby from './Lobby'
+// import Lobby from './Lobby'
 import Account from './Account'
 import Course from './Course'
 import API from './scripts/api'
@@ -42,16 +42,9 @@ const $index = cheerio.load(fs.readFileSync(path.join(__dirname, '../client/inde
 export const pointsPerDownload = 1
 export const pointsPerStar = 15
 
-export const maxFileSize = 6 * 1024 * 1024
-
 export const cacheMaxAgeImg = '7d'
 export const cacheMaxAgeCSS = '1d'
 export const cacheMaxAgeJS = '1y';
-
-// const usernameMinCharacters = 3
-// const usernameMaxCharacters = 30
-
-// const videoIdRegEx    = /^[a-z0-9A-Z| |.|\\_|\\-]+$/
 
 // initialize database
 (async () => {
@@ -211,6 +204,10 @@ async function main () {
       await API.updateCourse(req, res, apiData)
     } else if (apiCall === 'setaccountdata') {
       await API.setAccountData(req, res)
+    } else if (apiCall === 'uploadimagefull') {
+      await API.uploadImage(req, res, true)
+    } else if (apiCall === 'uploadimageprev') {
+      await API.uploadImage(req, res, false)
     } else {
       res.status(400).send('Wrong syntax')
     }
