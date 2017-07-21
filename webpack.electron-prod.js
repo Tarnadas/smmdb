@@ -33,9 +33,9 @@ module.exports = [
         template: 'build/static/views/template.html'
       }),
       new webpack.IgnorePlugin(/vertx/),
-      // new BabiliPlugin({
-      //   keepFnName: true
-      // }),
+      new BabiliPlugin({
+        keepFnName: true
+      }),
       new BundleAnalyzerPlugin({
         analyzerMode: 'static',
         reportFilename: path.join(__dirname, 'report_electron.html'),

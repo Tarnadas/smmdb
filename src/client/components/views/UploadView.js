@@ -42,7 +42,7 @@ class UploadView extends React.PureComponent {
   componentWillMount () {
     if (!this.props.accountData.get('id')) return;
     (async () => {
-      await this.fetchCourses(this.props.accountData.get('apikey'))
+      await this.fetchCourses(this.props)
     })()
   }
   componentWillReceiveProps (nextProps, nextContext) {
@@ -50,40 +50,28 @@ class UploadView extends React.PureComponent {
     if (nextProps.accountData === this.props.accountData || !nextProps.accountData.get('id')) return
     this.doUpdate = false;
     (async () => {
-      await this.fetchCourses(nextProps.accountData.get('apikey'))
+      await this.fetchCourses(nextProps)
     })()
   }
-  async fetchCourses (apiKey, shouldConcat = false, limit = LIMIT, start = 0) {
+  async fetchCourses (props, shouldConcat = false, limit = LIMIT, start = 0) {
+    const accountData = props.accountData
+    if (!accountData.get('id')) return
     try {
-      const courses = (await got(resolve(domain, `/api/getcourses?limit=${limit}&start=${start}`), {
+      const apiKey = accountData.get('apikey')
+      const courses = (await got(resolve(domain, `/api/getcourses?uploader=${accountData.get('username')}&limit=${limit}&start=${start}`), {
         headers: {
           'Authorization': `APIKEY ${apiKey}`
         },
         json: true,
         useElectronNet: false
       })).body
-      this.props.dispatch(setCoursesSelf(courses, shouldConcat))
+      if (courses && courses.length > 0) {
+        this.props.dispatch(setCoursesSelf(courses, shouldConcat))
+      }
     } catch (err) {
       console.error(err.response.body)
     }
   }
-  /* renderCourses (courses, uploaded = false) {
-    let self = this
-    return Array.from((function * () {
-      for (let i in courses) {
-        const course = courses[i]
-        if (course.eta != null) {
-          yield (
-            <ProgressPanel course={course} key={course.id} />
-          )
-        } else {
-          yield (
-            <CoursePanel canEdit isSelf uploaded={uploaded} course={course} apiKey={self.props.accountData.get('apikey')} id={i} key={course.id} onCourseDelete={uploaded ? self.onCourseDeleteRecent : self.onCourseDelete} />
-          )
-        }
-      }
-    })())
-  } */
   renderCourses (courses) {
     const accountData = this.props.accountData
     const onCourseDelete = this.onCourseDelete
@@ -132,7 +120,7 @@ class UploadView extends React.PureComponent {
     if (shouldUpdate) {
       this.doUpdate = true;
       (async () => {
-        await this.fetchCourses(this.props.accountData.get('apikey'), true, STEP_LIMIT, this.props.courses.size)
+        await this.fetchCourses(this.props, true, STEP_LIMIT, this.props.courses.size)
       })()
     }
   }

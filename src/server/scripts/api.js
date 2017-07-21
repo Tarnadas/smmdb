@@ -36,7 +36,6 @@ export default class API {
     if (account) {
       loggedIn = true
       accountId = account.id
-      apiData.uploader = account.username
     }
     if (apiData.prettify) {
       app.set('json spaces', 2)
@@ -51,7 +50,7 @@ export default class API {
     let orderBy = 'lastmodified'
     let dir = 'desc'
 
-    if (!!filterData && !!filterData.order && !!filterData.dir) {
+    if (filterData && filterData.order && filterData.dir) {
       orderBy = filterData.order
       dir = filterData.dir
     }
@@ -62,8 +61,8 @@ export default class API {
       }
     }
 
-    const limit = (!!filterData && !!filterData.limit) ? (+filterData.limit) : MAX_FILTER_LIMIT
-    const start = (!!filterData && !!filterData.start) ? (+filterData.start) : 0
+    const limit = (filterData && filterData.limit) ? (+filterData.limit) : MAX_FILTER_LIMIT
+    const start = (filterData && filterData.start) ? (+filterData.start) : 0
     delete filterData.limit
     delete filterData.start
     let filteredResult = filterData !== {} ? [] : courses
