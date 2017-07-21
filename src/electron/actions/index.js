@@ -67,6 +67,15 @@ export function addCourse (courseId) {
   }
 }
 
+export function updateCourse (courseId, smmdbId, modified) {
+  return {
+    type: 'SAVE_UPDATE_COURSE',
+    courseId,
+    smmdbId,
+    modified
+  }
+}
+
 export function finishAddCourse (smmdbId, courseId, success) {
   return {
     type: 'FINISH_ADD_COURSE',

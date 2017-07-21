@@ -29,6 +29,16 @@ export default function saveFileMiddleware (saveFileEditor) {
       case 'SAVE_DELETE_COURSE':
         saveFileEditor.deleteCourse(onDeleteFinish, getState().getIn(['electron', 'cemuSave']), action.smmdbId, action.courseId)
         break
+      case 'SAVE_UPDATE_COURSE':
+        saveFileEditor.updateCourse(action.courseId && [
+          onDeleteFinish, getState().getIn(['electron', 'cemuSave']), action.smmdbId, action.courseId
+        ], [
+          onStart, onProgress, onFinish, action.smmdbId, action.modified
+        ], action.courseId && [
+            onAddFinish, getState().getIn(['electron', 'cemuSave']), action.smmdbId
+          ]
+        )
+        break
     }
     return next(action)
   }

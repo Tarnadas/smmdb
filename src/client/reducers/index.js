@@ -16,6 +16,7 @@ import chat from './chat'
 import stats from './stats'
 import courseData from './courseData'
 import uploads from './uploads'
+import reuploads from './reuploads'
 import filter from './filter'
 import showFilter from './showFilter'
 import userData from './userData'
@@ -44,6 +45,7 @@ export default function initReducer (preloadedState, history, electronSave, elec
       uploaded: []
     },
     uploads: {},
+    reuploads: {},
     filter: {
       nextFilter: {},
       currentFilter: {}
@@ -62,6 +64,7 @@ export default function initReducer (preloadedState, history, electronSave, elec
     stats,
     courseData,
     uploads,
+    reuploads,
     filter,
     showFilter,
     userData,
@@ -69,6 +72,7 @@ export default function initReducer (preloadedState, history, electronSave, elec
   }
   if (process.env.ELECTRON) {
     const appSaveData = electronSave.appSaveData || APP_SAVE_DATA
+    appSaveData.version = process.env.npm_package_clientVersion
     const appSavePath = electronSave.appSavePath || ''
     initialState = initialState.merge(fromJS({
       electron: {

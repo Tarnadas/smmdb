@@ -35,9 +35,7 @@ class LoginButton extends React.PureComponent {
           json: true,
           useElectronNet: false
         })).body
-        setTimeout(() => { // TODO this is just a workaround to prevent a warning
-          this.props.dispatch(setAccountData(res))
-        }, 1000)
+        this.props.dispatch(setAccountData(res))
       } catch (err) {
         console.error(err.response.body)
       }

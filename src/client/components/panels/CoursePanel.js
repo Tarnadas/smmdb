@@ -10,6 +10,7 @@ import { resolve } from 'url'
 import CourseDownloadButton from '../buttons/CourseDownloadButton'
 import CourseVideoButton from '../buttons/CourseVideoButton'
 import SMMButton, { COLOR_SCHEME } from '../buttons/SMMButton'
+import ReuploadArea from '../areas/ReuploadArea'
 import UploadImageArea from '../areas/UploadImageArea'
 import {
   ScreenSize
@@ -53,6 +54,7 @@ class CoursePanel extends React.PureComponent {
     this.onNintendoIdChange = this.onStringChange.bind(this, 'nnId', MAX_LENGTH_NNID)
     this.onVideoIdChange = this.onStringChange.bind(this, 'videoId', MAX_LENGTH_VIDEOID)
     this.onDifficultyChange = this.onSelectChange.bind(this, 'difficulty')
+    this.onReuploadComplete = this.onReuploadComplete.bind(this)
     this.onUploadFullComplete = this.onUploadFullComplete.bind(this)
     this.onUploadPrevComplete = this.onUploadPrevComplete.bind(this)
   }
@@ -191,11 +193,28 @@ class CoursePanel extends React.PureComponent {
     res[value] = val
     this.setState(res)
   }
-  onUploadFullComplete (base64) {
-    this.full.src = `data:image/png;base64, ${base64}`
+  onReuploadComplete (course) {
+    if (this.props.isSelf) {
+      this.props.dispatch(setCourseSelf(this.props.id, course))
+    } else {
+      this.props.dispatch(setCourse(this.props.id, course))
+    }
   }
-  onUploadPrevComplete (base64) {
-    this.prev.src = `data:image/png;base64, ${base64}`
+  onUploadFullComplete (course) {
+    // this.full.src = `data:image/png;base64, ${base64}`
+    if (this.props.isSelf) {
+      this.props.dispatch(setCourseSelf(this.props.id, course))
+    } else {
+      this.props.dispatch(setCourse(this.props.id, course))
+    }
+  }
+  onUploadPrevComplete (course) {
+    // this.prev.src = `data:image/png;base64, ${base64}`
+    if (this.props.isSelf) {
+      this.props.dispatch(setCourseSelf(this.props.id, course))
+    } else {
+      this.props.dispatch(setCourse(this.props.id, course))
+    }
   }
   render () {
     const course = this.props.course
@@ -205,7 +224,7 @@ class CoursePanel extends React.PureComponent {
     const modified = this.props.downloadedCourse && this.props.downloadedCourse.get('modified') !== this.props.course.lastmodified
     const p = this.props.progress && this.props.progress.toJS()
     const progress = (p && (100 * p[0] / p[1])) || (this.props.downloadedCourse && 100)
-    const added = this.props.added
+    const saveId = this.props.saveId
     const downloaded = progress === 100
     const styles = {
       panel: {
@@ -214,10 +233,14 @@ class CoursePanel extends React.PureComponent {
         maxWidth: '906px',
         backgroundColor: process.env.ELECTRON ? (
           downloaded ? (
-            added ? (
-              '#a5ddb5'
+            modified ? (
+              '#DD8F33'
             ) : (
-              '#bbdda5'
+              saveId ? (
+                '#6ddd83'
+              ) : (
+                '#9fdd96'
+              )
             )
           ) : (
             '#d4dda5'
@@ -521,6 +544,7 @@ class CoursePanel extends React.PureComponent {
               {
                 this.props.canEdit && (
                 <div style={styles.edit}>
+                  <ReuploadArea courseId={course.id} onUploadComplete={this.onReuploadComplete} />
                   <UploadImageArea type='full' courseId={course.id} onUploadComplete={this.onUploadFullComplete} />
                   <UploadImageArea type='prev' courseId={course.id} onUploadComplete={this.onUploadPrevComplete} />
                   <div style={styles.option}>
@@ -567,7 +591,7 @@ class CoursePanel extends React.PureComponent {
                 <img src={`${domain}/courseimg/${course.id}.jpg${course.vPrev ? `?v=${course.vPrev}` : ''}`} ref={v => { this.prev = v }} />
               </div>
               <div style={styles.buttonPanel}>
-                <CourseDownloadButton courseId={course.id} lastModified={course.lastmodified} modified={modified} progress={progress} added={added} screenSize={screenSize} />
+                <CourseDownloadButton courseId={course.id} lastModified={course.lastmodified} modified={modified} progress={progress} saveId={saveId} screenSize={screenSize} />
                 {
                   course.videoid && (
                   <CourseVideoButton videoId={course.videoid} screenSize={screenSize} />

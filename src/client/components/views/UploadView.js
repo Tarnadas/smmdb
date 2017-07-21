@@ -67,7 +67,7 @@ class UploadView extends React.PureComponent {
       console.error(err.response.body)
     }
   }
-  renderCourses (courses, uploaded = false) {
+  /* renderCourses (courses, uploaded = false) {
     let self = this
     return Array.from((function * () {
       for (let i in courses) {
@@ -79,6 +79,40 @@ class UploadView extends React.PureComponent {
         } else {
           yield (
             <CoursePanel canEdit isSelf uploaded={uploaded} course={course} apiKey={self.props.accountData.get('apikey')} id={i} key={course.id} onCourseDelete={uploaded ? self.onCourseDeleteRecent : self.onCourseDelete} />
+          )
+        }
+      }
+    })())
+  } */
+  renderCourses (courses) {
+    const accountData = this.props.accountData
+    const onCourseDelete = this.onCourseDelete
+    let downloads
+    let currentDownloads
+    let smmdb
+    if (process.env.ELECTRON) {
+      downloads = this.props.downloads
+      currentDownloads = this.props.currentDownloads
+      smmdb = this.props.smmdb
+    }
+    return Array.from((function * () {
+      for (let i in courses) {
+        const course = courses[i]
+        if (course.eta != null) {
+          yield (
+            <ProgressPanel course={course} key={course.id} />
+          )
+        } else {
+          let downloadedCourse
+          let progress
+          let saveId
+          if (process.env.ELECTRON) {
+            downloadedCourse = downloads.get(String(course.id))
+            progress = currentDownloads.get(String(course.id))
+            saveId = smmdb.getIn([String(course.id), 'saveId'])
+          }
+          yield (
+            <CoursePanel key={course.id} canEdit isSelf course={course} downloadedCourse={downloadedCourse} progress={progress} saveId={saveId} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />
           )
         }
       }
@@ -186,5 +220,8 @@ export default connect(state => ({
   accountData: state.getIn(['userData', 'accountData']),
   courses: state.getIn(['courseData', 'self']),
   uploads: state.get('uploads'),
-  uploadedCourses: state.getIn(['courseData', 'uploaded'])
+  uploadedCourses: state.getIn(['courseData', 'uploaded']),
+  downloads: state.getIn(['electron', 'appSaveData', 'downloads']),
+  currentDownloads: state.getIn(['electron', 'currentDownloads']),
+  smmdb: state.getIn(['electron', 'appSaveData', 'cemuSaveData', state.getIn(['electron', 'currentSave']), 'smmdb'])
 }))(UploadView)

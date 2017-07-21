@@ -38,6 +38,12 @@ export default class SaveFileEditor {
     onFinish(smmdbId, courseId, success)
   }
 
+  async updateCourse (deleteObj, download, add) {
+    if (deleteObj) await this.deleteCourse(...deleteObj)
+    await this.downloadCourse(...download)
+    if (add) await this.addCourse(...add)
+  }
+
   async deleteCourse (onFinish, cemuSave, smmdbId, courseId) {
     let success = false
     try {

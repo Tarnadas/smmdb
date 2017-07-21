@@ -200,6 +200,8 @@ async function main () {
 
     if (apiCall === 'uploadcourse') {
       await API.uploadCourse(req, res)
+    } else if (apiCall === 'reuploadcourse') {
+      await API.reuploadCourse(req, res, apiData)
     } else if (apiCall === 'updatecourse') {
       await API.updateCourse(req, res, apiData)
     } else if (apiCall === 'setaccountdata') {

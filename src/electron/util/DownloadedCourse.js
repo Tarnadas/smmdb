@@ -31,6 +31,13 @@ export default class DownloadedCourse {
     req.on('data', chunk => {
       onProgress(courseId, chunk.length)
     })
+    req.on('error', err => {
+      if (err.response) {
+        console.log(err.response.body)
+      } else {
+        console.error(err)
+      }
+    })
     req.pipe(concat(async buf => {
       this.modified = modified
       const filePath = path.join(appSavePath, `downloads/${courseId}`)

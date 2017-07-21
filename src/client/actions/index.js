@@ -96,6 +96,21 @@ export function deleteUpload (id) {
   }
 }
 
+export function setReupload (id, upload) {
+  return {
+    type: 'SET_REUPLOAD',
+    id,
+    upload
+  }
+}
+
+export function deleteReupload (id) {
+  return {
+    type: 'DELETE_REUPLOAD',
+    id
+  }
+}
+
 export function setUploadImageFull (id, upload) {
   return {
     type: 'SET_UPLOAD_IMAGE_FULL',

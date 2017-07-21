@@ -9,13 +9,12 @@ import got from 'got'
 import stream from 'filereader-stream'
 import concat from 'concat-stream'
 import progress from 'progress-stream'
-// import { encode } from 'base64-arraybuffer'
 
 import { resolve } from 'url'
 
 import { domain } from '../../../static'
 import {
-  setUploadImageFull, setUploadImagePreview, deleteUploadImageFull, deleteUploadImagePreview
+  setReupload, deleteReupload
 } from '../../actions'
 
 const SERVER_TIMEOUT = 30000
@@ -36,11 +35,9 @@ class UploadArea extends React.PureComponent {
     let timeout
     const id = this.currentUpload
     this.currentUpload++
-    const setUpload = this.props.type === 'full' ? setUploadImageFull : setUploadImagePreview
-    const deleteUpload = this.props.type === 'full' ? deleteUploadImageFull : deleteUploadImagePreview
     try {
       let abort
-      const req = got.stream.post(resolve(domain, `/api/uploadimage${this.props.type}`), {
+      const req = got.stream.post(resolve(domain, '/api/reuploadcourse'), {
         headers: {
           'Content-Type': 'application/octet-stream',
           'Authorization': `APIKEY ${this.props.apiKey}`,
@@ -50,7 +47,7 @@ class UploadArea extends React.PureComponent {
       })
       req.on('request', r => {
         abort = r.abort
-        this.props.dispatch(setUpload(id, {
+        this.props.dispatch(setReupload(id, {
           id,
           title: course.name,
           percentage: 0,
@@ -60,18 +57,14 @@ class UploadArea extends React.PureComponent {
       req.on('response', () => {
         if (timeout) {
           clearTimeout(timeout)
-          this.props.dispatch(deleteUpload(id))
+          this.props.dispatch(deleteReupload(id))
         }
       })
       req.on('error', err => {
-        if (err.response) {
-          console.log(err.response.body)
-        } else {
-          console.error(err)
-        }
+        console.log(err)
         if (timeout) {
           clearTimeout(timeout)
-          this.props.dispatch(deleteUpload(id))
+          this.props.dispatch(deleteReupload(id))
         }
       })
       const prog = progress({
@@ -79,7 +72,7 @@ class UploadArea extends React.PureComponent {
         time: 1000
       })
       prog.on('progress', progress => {
-        this.props.dispatch(setUpload(id, {
+        this.props.dispatch(setReupload(id, {
           id,
           title: course.name,
           percentage: progress.percentage,
@@ -89,7 +82,7 @@ class UploadArea extends React.PureComponent {
           timeout = setTimeout(() => {
             if (abort) {
               abort()
-              this.props.dispatch(deleteUpload(id))
+              this.props.dispatch(deleteReupload(id))
             }
           }, SERVER_TIMEOUT)
         }
@@ -97,13 +90,11 @@ class UploadArea extends React.PureComponent {
       req.pipe(concat(buf => {
         try {
           const course = JSON.parse(new TextDecoder('utf-8').decode(buf))
-          // this.props.onUploadComplete(encode(buf.buffer))
           this.props.onUploadComplete(course)
         } catch (err) {
-          console.log(err)
           if (timeout) {
             clearTimeout(timeout)
-            this.props.dispatch(deleteUpload(id))
+            this.props.dispatch(deleteReupload(id))
           }
         }
       }))
@@ -116,7 +107,7 @@ class UploadArea extends React.PureComponent {
       }
       if (timeout) {
         clearTimeout(timeout)
-        this.props.dispatch(deleteUpload(id))
+        this.props.dispatch(deleteReupload(id))
       }
     }
   }
@@ -145,7 +136,7 @@ class UploadArea extends React.PureComponent {
     const styles = {
       drag: {
         height: 'auto',
-        width: 'calc(50% - 40px)',
+        width: 'calc(100% - 40px)',
         margin: '0 20px 10px',
         padding: '15px 20px',
         background: '#fff',
@@ -172,13 +163,7 @@ class UploadArea extends React.PureComponent {
     return (
       <div style={styles.drag}>
         <input style={styles.input} type='file' multiple value={this.state.value} onChange={this.handleChange} onClick={this.handleClick} />
-        {
-          this.props.type === 'full' ? (
-            'Upload full course image (max 6MB)'
-          ) : (
-            'Upload preview course image (max 6MB)'
-          )
-        }
+        Drag and drop or click here to reupload course (max 6MB)
       </div>
     )
   }

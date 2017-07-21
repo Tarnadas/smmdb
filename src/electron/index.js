@@ -1,4 +1,5 @@
 import electron from 'electron'
+import rimraf from 'rimraf'
 
 import * as path from 'path'
 import * as fs from 'fs'
@@ -12,7 +13,7 @@ const BrowserWindow = electron.BrowserWindow;
 
 (async () => {
   let mainWindow = null
-  const appSavePath = path.resolve(`${app.getPath('appData')}/cemu-smmdb`)
+  const appSavePath = path.resolve(`${app.getPath('appData')}/smmdb`)
   if (!fs.existsSync(appSavePath)) {
     fs.mkdirSync(appSavePath)
   }
@@ -20,7 +21,21 @@ const BrowserWindow = electron.BrowserWindow;
     appSavePath
   }
   if (fs.existsSync(path.join(appSavePath, 'save.json'))) {
-    global.save.appSaveData = JSON.parse(fs.readFileSync(path.join(appSavePath, 'save.json')))
+    const appSaveData = JSON.parse(fs.readFileSync(path.join(appSavePath, 'save.json')))
+    if (appSaveData == null || appSaveData.version == null) { // TODO add version control
+      await new Promise(resolve => {
+        rimraf(appSavePath, err => {
+          if (err) {
+            console.log(err)
+          } else {
+            fs.mkdirSync(appSavePath)
+          }
+          resolve()
+        })
+      })
+    } else {
+      global.save.appSaveData = appSaveData
+    }
   }
 
   const onReady = () => {
@@ -55,7 +70,7 @@ const BrowserWindow = electron.BrowserWindow;
     require('electron-debug')({showDevTools: true})
     mainWindow = new BrowserWindow({
       width: 2000,
-      height: 2000,
+      height: 1500,
       icon: path.join(__dirname, 'build/static/images/icon.png'),
       title: 'Cemu SMMDB'
     })

@@ -10,7 +10,7 @@ import {
   DOWNLOAD_FORMAT
 } from '../../reducers/userData'
 import {
-  downloadCourse, addCourse
+  downloadCourse, addCourse, updateCourse
 } from '../../../electron/actions'
 
 class CourseDownloadButton extends React.PureComponent {
@@ -18,21 +18,25 @@ class CourseDownloadButton extends React.PureComponent {
     super(props)
     this.onAddCourse = this.onAddCourse.bind(this)
     this.onDownloadCourse = this.onDownloadCourse.bind(this)
+    this.onUpdateCourse = this.onUpdateCourse.bind(this)
   }
   onAddCourse () {
-    if (this.props.added) return
+    if (this.props.saveId) return
     this.props.dispatch(addCourse(this.props.courseId))
   }
   onDownloadCourse () {
     if (this.props.progress) return
     this.props.dispatch(downloadCourse(this.props.courseId, this.props.lastModified))
   }
+  onUpdateCourse () {
+    this.props.dispatch(updateCourse(this.props.saveId, this.props.courseId, this.props.lastModified))
+  }
   render () {
     const downloadFormat = this.props.downloadFormat ? this.props.downloadFormat : DOWNLOAD_FORMAT.WII_U
     const screenSize = this.props.screenSize
     const modified = this.props.modified
     const progress = this.props.progress
-    const added = this.props.added
+    const saveId = this.props.saveId
     const downloaded = progress === 100
     const styles = {
       href: {
@@ -43,10 +47,14 @@ class CourseDownloadButton extends React.PureComponent {
       button: {
         background: process.env.ELECTRON ? (
           downloaded ? (
-            added ? (
-              '#019C16'
+            modified ? (
+              '#df4e20'
             ) : (
-              '#11c2b0'
+              saveId ? (
+                '#757473'
+              ) : (
+                '#11c2b0'
+              )
             )
           ) : (
             progress ? (
@@ -96,7 +104,7 @@ class CourseDownloadButton extends React.PureComponent {
     }
     return (
       process.env.ELECTRON ? (
-        <div style={styles.href} onClick={(downloaded && !modified) ? this.onAddCourse : this.onDownloadCourse}>
+        <div style={styles.href} onClick={modified ? this.onUpdateCourse : downloaded ? this.onAddCourse : this.onDownloadCourse}>
           <div style={styles.button}>
             <div style={styles.icon}>
               <img style={styles.iconImg} src='/img/coursebot.png' />

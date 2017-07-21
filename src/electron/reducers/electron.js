@@ -44,14 +44,14 @@ export default function electron (state, action) {
         saveState(state)
         return state
       case 'FINISH_ADD_COURSE':
-        if (state.getIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'smmdb', String(action.smmdbId), 'addedToSave'])) {
+        if (state.getIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'smmdb', String(action.smmdbId), 'saveId'])) {
           return state
         }
         if (!action.success) {
           state = state.set('saveFull', true)
           return state
         }
-        state = state.setIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'smmdb', String(action.smmdbId), 'addedToSave'], true)
+        state = state.setIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'smmdb', String(action.smmdbId), 'saveId'], action.courseId)
         state = state.setIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'save', String(action.courseId), 'smmdbId'], action.smmdbId)
         saveState(state)
         return state

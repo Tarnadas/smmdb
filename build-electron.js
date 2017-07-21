@@ -9,6 +9,7 @@ if (!fs.existsSync(out)) {
 }
 
 packager({
+  name: 'Cemu SMMDB',
   dir: './build/electron',
   out,
   arch: 'x64',
@@ -26,4 +27,8 @@ packager({
   fs.readdirSync('./build/static/images').map(val => `./build/static/images/${val}`).concat(fs.readdirSync('./build/static/styles').map(val => `./build/static/styles/${val}`)).forEach(file => {
     fs.createReadStream(file).pipe(fs.createWriteStream(path.join(appPaths[0], `resources/static/${file.split('static/')[1]}`)))
   })
+  fs.mkdirSync(path.join(appPaths[0], `node_modules`))
+  fs.mkdirSync(path.join(appPaths[0], `node_modules/win-7zip`))
+  fs.mkdirSync(path.join(appPaths[0], `node_modules/win-7zip/7zip-lite`))
+  fs.createReadStream('./7z.exe').pipe(fs.createWriteStream(path.join(appPaths[0], 'node_modules/win-7zip/7zip-lite/7z.exe')))
 })

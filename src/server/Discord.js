@@ -84,4 +84,49 @@ export default class Bot {
       this.channel.send(messages[i])
     }
   }
+
+  updateCourse (course) {
+    const ownerName = Account.getAccount(course.owner).username
+    let autoScroll = `${course.autoScroll === 1 ? (
+      '<:turtle:334989248526811146>'
+    ) : (
+      course.autoScroll === 2 ? (
+        '<:rabbit:334989248266633216>'
+      ) : (
+        course.autoScroll === 3 ? (
+          '<:cheetah:334989248191004673>'
+        ) : (
+          ''
+        )
+      )
+    )}`
+    autoScroll += `${course.autoScrollSub === 1 ? (
+      '<:turtle:334989248526811146>'
+    ) : (
+      course.autoScrollSub === 2 ? (
+        '<:rabbit:334989248266633216>'
+      ) : (
+        course.autoScrollSub === 3 ? (
+          '<:cheetah:334989248191004673>'
+        ) : (
+          ''
+        )
+      )
+    )}`
+    const message = `A course has been updated by ${ownerName}
+      ${course.gameStyle === 0 ? (
+    '    <:smb:334989248593920000>'
+  ) : (
+    course.gameStyle === 1 ? (
+      '    <:smb3:334989248749109248>'
+    ) : (
+      course.gameStyle === 2 ? (
+        '    <:smw:334989248539262978>'
+      ) : (
+        '    <:nsmbu:334989248975470592>'
+      )
+    )
+  )} ${course.title} by ${course.maker}${autoScroll ? ` ${autoScroll}` : ''}`
+    this.channel.send(message)
+  }
 }

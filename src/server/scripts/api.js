@@ -227,6 +227,46 @@ export default class API {
     }
   }
 
+  static async reuploadCourse (req, res) {
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
+      return
+    }
+    const account = Account.getAccountByAPIKey(apiKey)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiKey} not found`)
+      return
+    }
+    const courseId = req.get('course-id')
+    if (courseId == null) {
+      res.status(400).send('No course ID found. Please set a "course-id" HTTP header')
+      return
+    }
+    const course = Course.getCourse(courseId)
+    if (course == null) {
+      res.status(400).send(`Course with ID ${courseId} not found`)
+      return
+    }
+    const result = await course.reupload(req.body, account)
+    if (result == null) {
+      res.status(500).send('Could not read course')
+      return
+    }
+    const uploadPath = path.join(__dirname, '../../uploads')
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath)
+    }
+    fs.writeFileSync(path.join(uploadPath, String(course._id)), req.body)
+    try {
+      Bot.updateCourse(course)
+    } catch (err) {
+      console.log(err)
+    }
+    res.json(course)
+  }
+
   static async updateCourse (req, res, apiData) {
     const auth = req.get('Authorization')
     const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
@@ -306,6 +346,47 @@ export default class API {
     res.send('OK')
   }
 
+  static async uploadImage (req, res, isWide) {
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
+      return
+    }
+    const account = Account.getAccountByAPIKey(apiKey)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiKey} not found`)
+      return
+    }
+    const courseId = req.get('course-id')
+    if (courseId == null) {
+      res.status(400).send('No course ID found. Please set a "course-id" HTTP header')
+      return
+    }
+    const course = Course.getCourse(courseId)
+    if (!course) {
+      res.status(400).send(`Course with ID ${courseId} not found`)
+      return
+    }
+    if (!course.owner.equals(account._id)) {
+      res.status(403).send(`Course with ID ${courseId} is not owned by account with API key ${apiKey}`)
+      return
+    }
+    const type = fileType(req.body)
+    const mime = type && type.mime
+    if (mime && /^image\/.+$/.test(mime)) {
+      const thumbnail = await course.setThumbnail(req.body, isWide, !isWide)
+      if (thumbnail) {
+        await course.update({})
+        res.json(course)
+      } else {
+        res.status(500).send('Could not change course thumbnail')
+      }
+    } else {
+      res.status(400).send(`Wrong mime type: ${mime}`)
+    }
+  }
+
   static async getAccountData (req, res) {
     const auth = req.get('Authorization')
     const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
@@ -345,41 +426,5 @@ export default class API {
     }
     await Database.updateAccount(account._id, accountData)
     res.json(account)
-  }
-
-  static async uploadImage (req, res, isWide) {
-    const auth = req.get('Authorization')
-    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
-    if (!apiKey) {
-      res.status(401).send('API key required')
-      return
-    }
-    const account = Account.getAccountByAPIKey(apiKey)
-    if (account == null) {
-      res.status(400).send(`Account with API key ${apiKey} not found`)
-      return
-    }
-    const courseId = req.get('course-id')
-    if (courseId == null) {
-      res.status(400).send('No course ID found. Please set a "course-id" HTTP header')
-      return
-    }
-    const course = Course.getCourse(courseId)
-    if (!course) {
-      res.status(400).send(`Course with ID ${courseId} not found`)
-      return
-    }
-    if (!course.owner.equals(account._id)) {
-      res.status(403).send(`Course with ID ${courseId} is not owned by account with API key ${apiKey}`)
-      return
-    }
-    const type = fileType(req.body)
-    const mime = type && type.mime
-    if (/^image\/.+$/.test(mime)) {
-      const thumbnail = await course.setThumbnail(req.body, isWide, !isWide)
-      res.send(thumbnail)
-    } else {
-      res.status(400).send(`Wrong mime type: ${mime}`)
-    }
   }
 }

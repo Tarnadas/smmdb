@@ -94,9 +94,9 @@ module.exports = [
     },
     plugins: [
       new webpack.EnvironmentPlugin('NODE_ENV'),
-      // new BabiliPlugin({
-      //   keepFnName: true
-      // })
+      new BabiliPlugin({
+        keepFnName: true
+      })
     ]
   }
 ]
