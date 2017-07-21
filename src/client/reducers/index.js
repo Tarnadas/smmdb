@@ -72,7 +72,7 @@ export default function initReducer (preloadedState, history, electronSave, elec
   }
   if (process.env.ELECTRON) {
     const appSaveData = electronSave.appSaveData || APP_SAVE_DATA
-    appSaveData.version = process.env.npm_package_clientVersion
+    appSaveData.version = process.env.CLIENT_VERSION
     const appSavePath = electronSave.appSavePath || ''
     initialState = initialState.merge(fromJS({
       electron: {

@@ -45,7 +45,8 @@ export default class Course {
     }
     if (await this.courseData.isThumbnailBroken()) {
       if (!!thumbnail && fs.existsSync(thumbnail)) {
-        await this.courseData.setThumbnail(thumbnail)
+        await this.courseData.setThumbnail(thumbnail, false)
+        await this.courseData.setThumbnail(thumbnail, true)
       } else {
         await this.courseData.setThumbnail(join(__dirname, '../static/images/icon_default.jpg'))
       }
