@@ -195,7 +195,7 @@ export default class Course {
     return res
   }
 
-  static async fromBuffer (buffer, account, isReupload = false) {
+  static async fromBuffer (buffer, account) {
     const tmpFile = resolve(__dirname, randomString(10))
     fs.writeFileSync(tmpFile, buffer)
     const type = fileType(buffer)
@@ -237,14 +237,23 @@ export default class Course {
     }
     try {
       if (mime === 'application/x-rar-compressed' || mime === 'application/zip' || mime === 'application/x-7z-compressed' || mime === 'application/x-tar') {
-        const courseData = await decompress(tmpFile)
-        const courses = []
-        for (let i = 0; i < courseData.length; i++) {
-          const course = await createCourse(courseData[i])
-          courses.push(course)
+        try {
+          const courseData = await decompress(tmpFile)
+          if (courseData == null) {
+            fs.unlinkSync(tmpFile)
+            return null
+          }
+          const courses = []
+          for (let i = 0; i < courseData.length; i++) {
+            const course = await createCourse(courseData[i])
+            courses.push(course)
+          }
+          fs.unlinkSync(tmpFile)
+          return courses
+        } catch (err) {
+          fs.unlinkSync(tmpFile)
+          return null
         }
-        fs.unlinkSync(tmpFile)
-        return courses
       } else if (is3DS()) {
         const courseData = await loadCourse(tmpFile, 0, false)
         await courseData.loadThumbnail()
@@ -305,7 +314,7 @@ export default class Course {
     try {
       if (mime === 'application/x-rar-compressed' || mime === 'application/zip' || mime === 'application/x-7z-compressed' || mime === 'application/x-tar') {
         const courseData = await decompress(tmpFile)
-        if (courseData.length !== 1) return null
+        if (!courseData || courseData.length !== 1) return null
         await doUpdate(this, courseData[0])
         fs.unlinkSync(tmpFile)
         return this

@@ -157,7 +157,12 @@ export default class API {
       const file = await course.getCompressed()
       if (typeof (file) === 'string') {
         res.setHeader('Content-Type', 'application/zip')
-        res.download(file)
+        try {
+          res.download(file)
+        } catch (err) {
+          console.error(err)
+          console.error(`Unable to send file: ${file}`)
+        }
       } else {
         res.status(500).send('Could not compress file')
       }
@@ -179,7 +184,7 @@ export default class API {
         let resBuffer = Buffer.alloc(0)
         if (range.type === 'bytes') {
           range.forEach(r => {
-            resBuffer.concat([resBuffer, course3ds.slice(r.start, r.end)])
+            resBuffer = Buffer.concat([resBuffer, course3ds.slice(r.start, r.end)])
           })
           res.send(resBuffer)
         } else {

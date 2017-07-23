@@ -1,6 +1,6 @@
 {
   "name": "smmdb",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "clientVersion": "2.0.1",
   "description": "Super Mario Maker course database for Cemu",
   "main": "build/server",
@@ -78,7 +78,7 @@
     "url-loader": "^0.5.9",
     "webpack": "^3.3.0",
     "webpack-bundle-analyzer": "^2.8.3",
-    "webpack-dev-server": "^2.5.1",
+    "webpack-dev-server": "^2.6.1",
     "webpack-node-externals": "^1.5.4",
     "webpack-sources": "^1.0.1"
   },

@@ -95,8 +95,6 @@ async function main () {
   }))
 
   app.route('/tokensignin').post((req, res) => {
-    log('[200] ' + req.method + ' to ' + req.url)
-
     let idToken = req.body.tokenObj.id_token
     if (!idToken) {
       res.status(400).send('idToken not found')
@@ -131,8 +129,6 @@ async function main () {
   })
 
   app.route('/signin').post((req, res) => {
-    log('[200] ' + req.method + ' to ' + req.url)
-
     if (!req.session.idtoken) {
       res.status(400).send('No idToken submitted. Have you enabled cookies?')
       return
@@ -146,8 +142,6 @@ async function main () {
   })
 
   app.route('/signout').post((req, res) => {
-    log('[200] ' + req.method + ' to ' + req.url)
-
     if (!req.session.idtoken) {
       res.status(400).send('No idToken submitted. Have you enabled cookies?')
       return

@@ -90,6 +90,7 @@ module.exports = [
   },
   {
     target: 'node',
+    devtool: 'source-map',
     entry: path.join(__dirname, 'src/server/index.js'),
     output: {
       filename: 'index.js',
