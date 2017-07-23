@@ -60,14 +60,19 @@ class LoadSaveView extends React.PureComponent {
           this.setState({
             loading: true
           })
-          zip(cemuPath, `${cemuPath}_backup_${(new Date()).toISOString().slice(0, 10)}.zip`, async err => {
+          await cemuSave.reorder()
+          await cemuSave.loadCourses()
+          await cemuSave.exportThumbnail()
+          await cemuSave.unlockAmiibos()
+          this.props.dispatch(addSave(cemuPath, cemuSave))
+          /* zip(cemuPath, `${cemuPath}_backup_${(new Date()).toISOString().slice(0, 10)}.zip`, async err => {
             if (err) throw err
             await cemuSave.reorder()
             await cemuSave.loadCourses()
             await cemuSave.exportThumbnail()
             await cemuSave.unlockAmiibos()
             this.props.dispatch(addSave(cemuPath, cemuSave))
-          })
+          }) */
         } catch (err) {
           console.log(err)
         }
