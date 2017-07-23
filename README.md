@@ -18,7 +18,7 @@ All API calls are subject to change.
 
 **Querystring**: empty
 
-**Example**: `http://smm-test.alextc.de/api/getstats`
+**Example**: `http://smmdb.ddns.net/api/getstats`
 
 ### Receive course list
 
