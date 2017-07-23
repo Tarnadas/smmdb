@@ -2,13 +2,13 @@
 
 A cross console/emulator sharing platform for Super Mario Maker courses to rule them all.
 
-This server is not production ready. However a public test server is running on [http://smm-test.alextc.de](http://smm-test.alextc.de)
+Visit the server at [http://smmdb.ddns.net](http://smmdb.ddns.net)
 
 ## API
 
 All API calls are subject to change.
 
-`http://smm-test.alextc.de/api/request?querystring`
+`http://smmdb.ddns.net/api/request?querystring`
 
 ### Receive server statistics
 
@@ -36,7 +36,6 @@ All API calls are subject to change.
 
 | Query | Value | Description |
 | --- | --- | --- |
-| apikey | `{string}` | Optional user identification |
 | order | *`lastmodified`*` \| uploaded \| title \| stars \| downloads \| completed` | Order of courses |
 | dir | `asc \| `*`desc`* | Order direction of courses |
 | limit | `{number} \| `*`100`* | Limit maximum amount of sent courses (max: 100) |
@@ -56,7 +55,7 @@ All API calls are subject to change.
 | autoscroll | `{number} \| `*`0`* | Auto scroll speed (0: disabled, 1: slow, 2: medium, 3: fast) |
 | prettify | *`0`*` \| 1` | Pretty print json response |
 
-**Example**: `http://smm-test.alextc.de/api/getcourses?limit=50&start=121&prettify=1`
+**Example**: `http://smmdb.ddns.net/api/getcourses?limit=50&start=121&prettify=1`
 
 Receive courses 121 to 170 in lastmodified descending order with indentation.
 
@@ -73,7 +72,7 @@ Receive courses 121 to 170 in lastmodified descending order with indentation.
 | id | `{string}` | Course ID |
 | type | `zip \| 3ds \| json \| `*`protobuf`* | MIME type of response. 3ds supports Accept-Ranges: bytes HTTP header |
 
-**Example**: `http://smm-test.alextc.de/api/downloadcourse?id=ihavenoidea&type=zip`
+**Example**: `http://smmdb.ddns.net/api/downloadcourse?id=ihavenoidea&type=zip`
 
 Downloads course with ID `ihavenoidea` as zip-compressed folder.
 
@@ -115,7 +114,7 @@ Downloads course with ID `ihavenoidea` as zip-compressed folder.
 
 **POST body**: Must contain JSON.stringified Object with Object properties to change.
 
-**Example**: `http://smm-test.alextc.de/api/updatecourse?id=mycourseid`
+**Example**: `http://smmdb.ddns.net/api/updatecourse?id=mycourseid`
 with header `{ 'Authorization': 'APIKEY myapikey' }'` and body `{ 'maker': 'newMaker' }`
 
 Changes maker of course with specified course ID.
@@ -139,7 +138,7 @@ Changes maker of course with specified course ID.
 | --- | --- | --- |
 | id | `{string}` | Course ID |
 
-**Example**: `http://smm-test.alextc.de/api/deletecourse?id=mycourseid`
+**Example**: `http://smmdb.ddns.net/api/deletecourse?id=mycourseid`
 with header `{ 'Authorization': 'APIKEY myapikey' }'`
 
 Deletes course with specified course ID.
@@ -161,7 +160,7 @@ Deletes course with specified course ID.
 
 **POST body**: Must contain JSON.stringified Object with Object properties to change.
 
-**Example**: `http://smm-test.alextc.de/api/setaccountdata`
+**Example**: `http://smmdb.ddns.net/api/setaccountdata`
 with header `{ 'Authorization': 'APIKEY myapikey' }'` and body `{ 'username': 'newUsername' }`
 
 Changes username of user with specified API key.
