@@ -87,7 +87,7 @@ class LoginButton extends React.PureComponent {
       smmButton: {
         margin: '0 10px 10px 10px',
         lineHeight: '40px',
-        width: '120px',
+        width: 'auto',
         height: '40px',
         backgroundColor: this.state.hover ? '#323245' : '#ffe500',
         cursor: 'pointer',
@@ -116,10 +116,10 @@ class LoginButton extends React.PureComponent {
       text = 'Sign out'
     } else {
       iconSrc = 'https://developers.google.com/identity/sign-in/g-normal.png'
-      text = 'Sign in'
+      text = 'Sign in with Google'
     }
     return (
-      <div style={{float: 'right'}} onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}>
+      <div onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}>
         {
           loggedIn ? (
             <div style={styles.smmButton} onClick={this.onLogOut}>

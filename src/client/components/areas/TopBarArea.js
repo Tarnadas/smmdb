@@ -17,18 +17,21 @@ class TopBarArea extends React.PureComponent {
         width: '100%',
         height: 'auto',
         padding: '10px',
-        display: screenSize === ScreenSize.LARGE ? 'inline-flex' : 'none',
-        alignItems: 'flex-start',
+        display: screenSize === ScreenSize.LARGE ? 'flex' : 'none',
         flex: '0 0 auto'
+      },
+      bar: {
+        flex: '1 0 0%'
       },
       button: {
         width: 'auto',
-        height: 'auto'
+        height: 'auto',
+        flexShrink: '0'
       }
     }
     return (
       <div style={styles.topbar}>
-        <div>
+        <div style={styles.bar}>
           <SMMButton link='/' text='Courses' iconSrc='/img/courses.png' iconColor='dark' />
           <SMMButton link='/upload' text='Upload' iconSrc='/img/upload.png' iconColor='dark' />
           <SMMButton link='/profile' text='Profile' iconSrc='/img/profile.png' iconColor='dark' />

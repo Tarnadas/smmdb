@@ -136,16 +136,6 @@ class AppView extends React.PureComponent {
         display: 'inline-block',
         color: '#000'
       },
-      logoImage: {
-        display: 'inline-block',
-        position: 'absolute',
-        top: '200px',
-        right: '10px',
-        float: 'right',
-        height: '200px',
-        width: '174px',
-        zIndex: '2'
-      },
       footer: {
         paddingTop: '13px',
         fontSize: '11px',
@@ -182,9 +172,6 @@ class AppView extends React.PureComponent {
           <TopBarArea isLoggedIn={isLoggedIn} />
           <div style={styles.logo}>
             <div style={styles.logoFont}>SUPER MARIO MAKER DATABASE</div>
-            <div style={styles.logoImage}>
-              <img src='/img/Construction_Mario.png' />
-            </div>
           </div>
           <Route path='/' render={() => (
             <ContentView shouldUpdate={this.shouldUpdate} />

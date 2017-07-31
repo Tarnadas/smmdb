@@ -102,7 +102,6 @@ class MainView extends React.PureComponent {
   render () {
     const screenSize = this.props.screenSize
     const courses = this.props.courses.toJS()
-    // console.log(courses)
     const styles = {
       main: {
         display: screenSize === ScreenSize.LARGE ? 'flex' : 'flex',
