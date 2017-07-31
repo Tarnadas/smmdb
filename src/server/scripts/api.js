@@ -147,7 +147,7 @@ export default class API {
     return filteredResult.splice(start, limit)
   }
 
-  static async downloadCourse (req, res, apiData) {
+  static async downloadCourse (req, res, apiData, downloadMetrics) {
     const course = Course.getCourse(apiData.id)
     if (!course) {
       res.status(400).send(`Course with ID ${apiData.id} not found`)
@@ -159,6 +159,8 @@ export default class API {
         res.setHeader('Content-Type', 'application/zip')
         try {
           res.download(file)
+          downloadMetrics.downloadsPerDay.mark()
+          downloadMetrics.downloadsWiiUPerDay.mark()
         } catch (err) {
           console.error(err)
           console.error(`Unable to send file: ${file}`)
@@ -187,17 +189,23 @@ export default class API {
             resBuffer = Buffer.concat([resBuffer, course3ds.slice(r.start, r.end)])
           })
           res.send(resBuffer)
+          downloadMetrics.downloadsPerDay.mark()
+          downloadMetrics.downloads3DSPerDay.mark()
         } else {
           res.status(400).send('Unknown range type')
         }
       } else {
         res.set('Content-disposition', `attachment;filename=${encodeURI(course.title)}.3ds`)
         res.send(course3ds)
+        downloadMetrics.downloadsPerDay.mark()
+        downloadMetrics.downloads3DSPerDay.mark()
       }
     } else {
       res.set('Content-Encoding', 'gzip')
       res.set('Content-Type', 'application/wiiu')
       res.send(await course.getSerialized())
+      downloadMetrics.downloadsPerDay.mark()
+      downloadMetrics.downloadsProtoPerDay.mark()
     }
   }
 

@@ -10,6 +10,7 @@ import device from 'device'
 import {
   renderToString
 } from 'react-dom/server'
+import pmx from 'pmx'
 
 import * as http from 'http'
 import * as fs from 'fs'
@@ -36,6 +37,35 @@ import {
 import { port } from '../static'
 
 export const Bot = new DiscordBot()
+
+const usersPerDay = pmx.probe().meter({
+  name: 'users/day',
+  samples: 86400,
+  timeframe: 86400
+})
+
+const downloadMetrics = {
+  downloadsPerDay: pmx.probe().meter({
+    name: 'Downloads/day',
+    samples: 86400,
+    timeframe: 86400
+  }),
+  downloadsWiiUPerDay: pmx.probe().meter({
+    name: 'Downloads WiiU/day',
+    samples: 86400,
+    timeframe: 86400
+  }),
+  downloads3DSPerDay: pmx.probe().meter({
+    name: 'Downloads 3DS/day',
+    samples: 86400,
+    timeframe: 86400
+  }),
+  downloadsProtoPerDay: pmx.probe().meter({
+    name: 'Downloads Proto/day',
+    samples: 86400,
+    timeframe: 86400
+  })
+}
 
 const $index = cheerio.load(fs.readFileSync(path.join(__dirname, '../client/index.html')))
 
@@ -93,6 +123,19 @@ async function main () {
     keys: cookieCredentials,
     maxAge: 24 * 60 * 60 * 1000
   }))
+  const connections = {}
+  app.use((req, res, next) => {
+    const ip = req.ip
+    console.log(ip)
+    if (!connections.hasOwnProperty(ip)) {
+      usersPerDay.mark()
+      connections[ip] = {}
+      setTimeout(() => {
+        delete connections[ip]
+      }, 86400 * 1000)
+    }
+    next()
+  })
 
   app.route('/tokensignin').post((req, res) => {
     let idToken = req.body.tokenObj.id_token
@@ -172,7 +215,7 @@ async function main () {
       } else if (apiCall === 'getcourses') {
         API.getCourses(app, req, res, apiData)
       } else if (apiCall === 'downloadcourse') {
-        await API.downloadCourse(req, res, apiData)
+        await API.downloadCourse(req, res, apiData, downloadMetrics)
       } else if (apiCall === 'deletecourse') {
         API.deleteCourse(req, res, apiData)
       } else if (apiCall === 'getaccountdata') {

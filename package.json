@@ -1,6 +1,6 @@
 {
   "name": "smmdb",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "clientVersion": "2.0.1",
   "description": "Super Mario Maker course database for Cemu",
   "main": "build/server",
@@ -84,8 +84,11 @@
     "webpack-sources": "^1.0.1"
   },
   "scripts": {
-    "start": "set NODE_ENV=development&& webpack --env=dev&& node ./build/server",
+    "start": "npm run build-dev&& node ./build/server",
     "start-electron": "set NODE_ENV=development&& set ELECTRON=true&& webpack --env=electron-dev&& electron ./build/electron/main.js",
+    "start-pm2": "npm run build-dev&& pm2 ./build/server",
+    "restart-pm2": "npm run build-dev&& pm2 restart all",
+    "build-dev": "set NODE_ENV=development&& webpack --env=dev",
     "build": "set NODE_ENV=production&& webpack --env=prod",
     "build-electron": "set NODE_ENV=production&& set ELECTRON=true&& webpack --env=electron-prod&& node ./build-electron"
   },
