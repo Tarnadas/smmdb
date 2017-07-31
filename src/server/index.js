@@ -24,7 +24,7 @@ import Account from './Account'
 import Course from './Course'
 import API from './scripts/api'
 import Database from './scripts/database'
-import Sorting from './scripts/sorting'
+// import Sorting from './scripts/sorting'
 // import Parsing from './scripts/parsing'
 import DiscordBot from './Discord'
 
@@ -96,7 +96,7 @@ async function main () {
 
   calculatePoints()
   // Parsing.parseNintendoCourses()
-  Sorting.sortCourses()
+  // Sorting.sortCourses()
 
   await Bot.login()
 
@@ -126,7 +126,6 @@ async function main () {
   const connections = {}
   app.use((req, res, next) => {
     const ip = req.ip
-    console.log(ip)
     if (!connections.hasOwnProperty(ip)) {
       usersPerDay.mark()
       connections[ip] = {}
@@ -252,13 +251,13 @@ async function main () {
     }
   })
 
-  app.use('/', (req, res) => {
+  app.use('/', async (req, res) => {
     const stats = {
       courses: Course.getCourseAmount(),
       accounts: Account.getAccountAmount()
     }
     const d = device(req.get('user-agent'))
-    let [html, preloadedState] = renderer(true, renderToString, null, req, API.filterCourses(false, null, {limit: 10}), stats, d.is('phone') || d.is('tablet'))
+    let [html, preloadedState] = renderer(true, renderToString, null, req, await API.filterCourses(false, null, {limit: 10}), stats, d.is('phone') || d.is('tablet'))
     const index = cheerio.load($index.html())
     index('#root').html(html)
     index('body').prepend(`<script>window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')}</script>`)

@@ -16,7 +16,7 @@ import {
 } from '.'
 import Account from './Account'
 import Database from './scripts/database'
-import Sorting from './scripts/sorting'
+// import Sorting from './scripts/sorting'
 
 export const courses = {}
 
@@ -131,22 +131,22 @@ export default class Course {
     return courses[courseId]
   }
 
-  toJSON (loggedIn, accountId) {
+  static toJSON (loggedIn, accountId) {
     let result = Object.assign({}, this)
     result.id = this._id
-    result.completed = this[completed].length
-    result.starred = this[starred].length
-    result.downloads = this[downloads].length
-    if (loggedIn && this.completedByUser(accountId)) {
+    /* result.completed = course[completed].length // TODO
+    result.starred = course[starred].length
+    result.downloads = course[downloads].length
+    if (loggedIn && course.completedByUser(accountId)) {
       result.completedself = 1
     } else {
       result.completedself = 0
     }
-    if (loggedIn && this.starredByUser(accountId)) {
+    if (loggedIn && course.starredByUser(accountId)) {
       result.starredself = 1
     } else {
       result.starredself = 0
-    }
+    } */
     result.uploader = Account.getAccount(result.owner).username
     result.reputation = Account.getAccount(result.owner).getPoints()
     delete result._id
@@ -232,7 +232,7 @@ export default class Course {
       fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}`), await courseData.serialize())
       fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}.gz`), await courseData.serializeGzipped())
       course.setId()
-      Sorting.insertCourse(course)
+      // Sorting.insertCourse(course)
       return course
     }
     try {
@@ -393,7 +393,7 @@ export default class Course {
   }
 
   async delete () {
-    Sorting.deleteCourse(this._id)
+    // Sorting.deleteCourse(this._id)
     delete courses[this._id]
     await Database.deleteCourse(this._id)
     fs.unlinkSync(join(__dirname, `../static/courseimg/${this._id}.jpg`))

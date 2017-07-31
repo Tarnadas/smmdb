@@ -23,7 +23,7 @@ export default function renderer (isServer = false, cb, preloadedState, req, cou
 
   const store = initReducer(preloadedState, history)
   if (isServer) {
-    store.dispatch(setCourses(courses, false))
+    store.dispatch(setCourses(courses.map(course => course.toJSON()), false))
     store.dispatch(setStats(stats))
     if (isMobile) store.dispatch(mediaQuery(ScreenSize.SMALL))
   }

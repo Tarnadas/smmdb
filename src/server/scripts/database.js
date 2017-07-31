@@ -71,6 +71,11 @@ export default class Database {
     return res
   }
 
+  static filterCourses (filter, sort, skip, limit) {
+    const res = this.courses.find(filter).sort(sort).skip(skip).limit(limit)
+    return res
+  }
+
   static async deleteCourse (id) {
     const res = await this.courses.removeOne({ '_id': ObjectID(id) })
     return res

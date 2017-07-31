@@ -1,7 +1,7 @@
 import {
   generateAPIKey
 } from './scripts/util'
-import Database from './scripts/database'
+// import Database from './scripts/database'
 
 export const accounts = {}
 const accountsByGoogleId = {}

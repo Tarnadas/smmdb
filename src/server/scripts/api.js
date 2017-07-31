@@ -5,7 +5,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 import Database from './database'
-import Sorting from './sorting'
+// import Sorting from './sorting'
 import Account from '../Account'
 import Course from '../Course'
 import { Bot } from '..'
@@ -27,7 +27,7 @@ export default class API {
     res.json(result)
   }
 
-  static getCourses (app, req, res, apiData) {
+  static async getCourses (app, req, res, apiData) {
     let loggedIn = false
     let accountId
     const auth = req.get('Authorization')
@@ -40,34 +40,54 @@ export default class API {
     if (apiData.prettify) {
       app.set('json spaces', 2)
     }
-    res.json(this.filterCourses(loggedIn, accountId, apiData))
+    res.json(await this.filterCourses(loggedIn, accountId, apiData))
     if (apiData.prettify) {
       app.set('json spaces', 0)
     }
   }
 
-  static filterCourses (loggedIn, accountId, filterData) {
+  static async filterCourses (loggedIn, accountId, filterData) {
     let orderBy = 'lastmodified'
-    let dir = 'desc'
+    let dir = -1
 
     if (filterData && filterData.order && filterData.dir) {
       orderBy = filterData.order
-      dir = filterData.dir
+      dir = filterData.dir === 'asc' ? 1 : -1
     }
-    let courses = Sorting.getCoursesBySorting(orderBy, dir)
+    /* let courses = Sorting.getCoursesBySorting(orderBy, dir)
     if (!courses) {
       return {
         err: 'Wrong order and/or dir property'
       }
-    }
+    } */
 
     const limit = (filterData && filterData.limit) ? (+filterData.limit) : MAX_FILTER_LIMIT
     const start = (filterData && filterData.start) ? (+filterData.start) : 0
-    delete filterData.limit
-    delete filterData.start
-    let filteredResult = filterData !== {} ? [] : courses
 
-    for (let i in courses) {
+    const filter = {}
+    if (filterData.lastmodifiedfrom) {
+      if (!filter.lastmodified) filter.lastmodified = {}
+      filter.lastmodified.$gte = parseInt(filterData.lastmodifiedfrom)
+    }
+    if (filterData.lastmodifiedto) {
+      if (!filter.lastmodified) filter.lastmodified = {}
+      filter.lastmodified.$lte = parseInt(filterData.lastmodifiedto)
+    }
+    if (filterData.uploadedfrom) {
+      if (!filter.uploaded) filter.uploaded = {}
+      filter.uploaded.$gte = parseInt(filterData.uploadedfrom)
+    }
+    if (filterData.uploadedto) {
+      if (!filter.uploaded) filter.uploaded = {}
+      filter.uploaded.$lte = parseInt(filterData.uploadedto)
+    }
+    const res = await Database.filterCourses(filter, { [orderBy]: dir }, start, limit).toArray()
+    for (let i in res) {
+      res[i].toJSON = Course.toJSON.bind(res[i])
+    }
+    return res
+
+    /* for (let i in courses) {
       let course = courses[i]
       if (!course) break
       if (filteredResult.length >= (start + limit)) break
@@ -142,9 +162,9 @@ export default class API {
       }
       let resultCourse = course.toJSON(loggedIn, accountId)
       filteredResult.push(resultCourse)
-    }
+    } */
 
-    return filteredResult.splice(start, limit)
+    // return filteredResult.splice(start, limit)
   }
 
   static async downloadCourse (req, res, apiData, downloadMetrics) {
