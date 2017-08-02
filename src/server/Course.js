@@ -1,4 +1,7 @@
 import {
+  ObjectID
+} from 'mongodb'
+import {
   decompress, deserialize, loadCourse
 } from 'cemu-smm'
 import {
@@ -11,127 +14,18 @@ import randomString from 'crypto-random-string'
 import { resolve, join } from 'path'
 import * as fs from 'fs'
 
-import {
-  pointsPerStar, pointsPerDownload
-} from '.'
 import Account from './Account'
-import Database from './scripts/database'
-// import Sorting from './scripts/sorting'
-
-export const courses = {}
-
-const completed = Symbol('completed')
-const starred = Symbol('starred')
-const downloads = Symbol('downloads')
+import Database from './Database'
 
 export default class Course {
-  constructor (data) {
-    for (let entry in data) {
-      this[entry] = data[entry]
-    }
-    this[completed] = []
-    this[starred] = []
-    this[downloads] = []
-    if (data._id) {
-      courses[data._id] = this
-    }
-  }
-  async fix (thumbnail) {
-    if (!this.courseData.maker) {
-      await this.courseData.setMaker(Account.getAccount(this.owner).username)
-    }
-    if (!this.courseData.title) {
-      await this.courseData.setTitle(this.title)
-    }
-    if (await this.courseData.isThumbnailBroken()) {
-      if (!!thumbnail && fs.existsSync(thumbnail)) {
-        await this.courseData.setThumbnail(thumbnail, false)
-        await this.courseData.setThumbnail(thumbnail, true)
-      } else {
-        await this.courseData.setThumbnail(join(__dirname, '../static/images/icon_default.jpg'))
-      }
-    }
-    return this
-  }
-  static from (data) {
-    return new Course(data)
-  }
-  async finalize () {
-    this.maker = this.courseData.maker
-    this.gameStyle = this.courseData.gameStyle
-    this.courseTheme = this.courseData.courseTheme
-    this.courseThemeSub = this.courseData.courseThemeSub
-    this.time = this.courseData.time
-    this.autoScroll = this.courseData.autoScroll
-    this.autoScrollSub = this.courseData.autoScrollSub
-    this.width = this.courseData.width
-    this.widthSub = this.courseData.widthSub
-
-    let thumbnailPath = join(__dirname, `../static/courseimg/${this._id}.jpg`)
-    if (!fs.existsSync(thumbnailPath)) {
-      fs.writeFileSync(thumbnailPath, this.courseData.thumbnailPreview)
-      fs.writeFileSync(join(__dirname, `../static/courseimg/${this._id}_full.jpg`), this.courseData.thumbnail)
-    }
-    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}`), await this.courseData.serialize())
-    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}.gz`), await this.courseData.serializeGzipped())
-    delete this.courseData
-    delete this.serialized
-    return this
+  static async getCourse (courseId) {
+    const res = await Database.filterCourses({ _id: ObjectID(courseId) }).toArray()
+    if (!res || res.length === 0) return null
+    res[0].toJSON = Course.toJSON.bind(res[0])
+    return res[0]
   }
 
-  static async convertFromMySQL (data) {
-    if (!data.downloadpath || !fs.existsSync(data.downloadpath)) {
-      console.log('dropped course: ' + data.id)
-      return []
-    }
-    let result = []
-    try {
-      let courses = await decompress(data.downloadpath)
-      if (!courses) {
-        throw new Error()
-      }
-
-      if (!data.lastmodified) {
-        data.lastmodified = data.uploaded
-      }
-      delete data.id
-      delete data.updatereq
-      delete data.hasthumbnail
-      delete data.coursetype
-      delete data.ispackage
-      delete data.leveltype
-      delete data.hasimage
-      delete data.downloadpath
-
-      for (let i in courses) {
-        let course = Object.assign({}, data)
-        course.serialized = await courses[i].serializeGzipped()
-        course.courseData = courses[i]
-        result.push(course)
-      }
-      if (result.length > 1) {
-        for (let i in result) {
-          result[i].title = result[i].courseData.title
-        }
-      }
-    } catch (err) {
-      console.log()
-      console.log(err)
-      console.log('dropped course: ' + data.id)
-      console.log()
-    }
-    return result
-  }
-
-  setId () {
-    courses[this._id] = this
-  }
-
-  static getCourse (courseId) {
-    return courses[courseId]
-  }
-
-  static toJSON (loggedIn, accountId) {
+  static toJSON (accountId) {
     let result = Object.assign({}, this)
     result.id = this._id
     /* result.completed = course[completed].length // TODO
@@ -148,22 +42,21 @@ export default class Course {
       result.starredself = 0
     } */
     result.uploader = Account.getAccount(result.owner).username
-    result.reputation = Account.getAccount(result.owner).getPoints()
     delete result._id
     delete result.serialized
     delete result.courseData
     return result
   }
 
-  async getCompressed () {
+  static async getCompressed (courseDB) {
     const tmpDir = tmp.dirSync({
       unsafeCleanup: true
     })
     const zipDir = join(tmpDir.name, 'course000')
     fs.mkdirSync(zipDir)
-    const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${this._id}`)))
+    const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`)))
     await course.writeToSave(0, zipDir)
-    const outPath = join(tmpDir.name, `${this.title.replace(/[^a-z|A-Z|0-9| |\-|!]/g, '')}.zip`)
+    const outPath = join(tmpDir.name, `${courseDB.title.replace(/[^a-z|A-Z|0-9| |\-|!]/g, '')}.zip`)
     try {
       const res = await new Promise((resolve, reject) => {
         zip(zipDir, outPath, err => {
@@ -181,18 +74,16 @@ export default class Course {
     }
   }
 
-  async getObject () {
-    const res = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${this._id}`)))
-    return res
+  static getObject (courseId) {
+    return deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${courseId}`)))
   }
 
-  getSerialized () {
-    return fs.readFileSync(join(__dirname, `../static/coursedata/${this._id}.gz`))
+  static getSerialized (courseId) {
+    return fs.readFileSync(join(__dirname, `../static/coursedata/${courseId}.gz`))
   }
 
-  async get3DS () {
-    const res = await (await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${this._id}`)))).to3DS()
-    return res
+  static async get3DS (courseId) {
+    return (await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${courseId}`)))).to3DS()
   }
 
   static async fromBuffer (buffer, account) {
@@ -211,7 +102,7 @@ export default class Course {
       return true
     }
     const createCourse = async (courseData) => {
-      const course = new Course(courseData)
+      const course = Object.assign({}, courseData)
       course.owner = account._id
       course.nintendoid = null
       course.videoid = null
@@ -231,8 +122,7 @@ export default class Course {
       fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}_full.jpg`), courseData.thumbnail)
       fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}`), await courseData.serialize())
       fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}.gz`), await courseData.serializeGzipped())
-      course.setId()
-      // Sorting.insertCourse(course)
+      course.toJSON = Course.toJSON.bind(course)
       return course
     }
     try {
@@ -270,7 +160,7 @@ export default class Course {
     }
   }
 
-  async reupload (buffer) {
+  static async reupload (course, buffer) {
     const tmpFile = resolve(__dirname, randomString(10))
     fs.writeFileSync(tmpFile, buffer)
     const type = fileType(buffer)
@@ -315,13 +205,13 @@ export default class Course {
       if (mime === 'application/x-rar-compressed' || mime === 'application/zip' || mime === 'application/x-7z-compressed' || mime === 'application/x-tar') {
         const courseData = await decompress(tmpFile)
         if (!courseData || courseData.length !== 1) return null
-        await doUpdate(this, courseData[0])
+        await doUpdate(course, courseData[0])
         fs.unlinkSync(tmpFile)
         return this
       } else if (is3DS()) {
         const courseData = await loadCourse(tmpFile, 0, false)
         await courseData.loadThumbnail()
-        await doUpdate(this, courseData)
+        await doUpdate(course, courseData)
         fs.unlinkSync(tmpFile)
         return this
       } else {
@@ -334,121 +224,71 @@ export default class Course {
     }
   }
 
-  async update ({ title, maker, nintendoid, videoid, difficulty }) {
+  static async update (courseDB, { title, maker, nintendoid, videoid, difficulty }) {
     const update = {}
-    const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${this._id}`)))
+    const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`)))
     if (title) {
-      this.title = title
       update.title = title
+      courseDB.title = title
       await course.setTitle(title)
     }
     if (maker) {
-      this.maker = maker
       update.maker = maker
+      courseDB.maker = maker
       await course.setMaker(maker)
     }
     if (nintendoid != null) {
-      this.nintendoid = nintendoid
       update.nintendoid = nintendoid
+      courseDB.nintendoid = nintendoid
     }
     if (videoid != null) {
-      this.videoid = videoid
       update.videoid = videoid
+      courseDB.videoid = videoid
     }
     if (difficulty != null) {
-      this.difficulty = difficulty
       update.difficulty = difficulty
+      courseDB.difficulty = difficulty
     }
-    this.lastmodified = Math.trunc((new Date()).getTime() / 1000)
-    update.lastmodified = this.lastmodified
+    update.lastmodified = Math.trunc((new Date()).getTime() / 1000)
+    courseDB.lastmodified = update.lastmodified
     await course.setModified(update.lastmodified)
-    this.courseData = course
-    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}`), await this.courseData.serialize())
-    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}.gz`), await this.courseData.serializeGzipped())
-    await Database.updateCourse(this._id, update)
-    return null
+    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}`), await course.serialize())
+    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}.gz`), await course.serializeGzipped())
+    await Database.updateCourse(courseDB._id, update)
   }
 
-  async setThumbnail (buffer, isWide, doClip) {
-    const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${this._id}`)))
-    const thumbnail = await course.setThumbnail(buffer, isWide, doClip)
-    this.courseData = course
-    fs.writeFileSync(join(__dirname, `../static/courseimg/${this._id}${isWide ? '_full' : ''}.jpg`), thumbnail)
-    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}`), await this.courseData.serialize())
-    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}.gz`), await this.courseData.serializeGzipped())
+  static async setThumbnail (course, buffer, isWide, doClip) {
+    const deserialized = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${this._id}`)))
+    const thumbnail = await deserialized.setThumbnail(buffer, isWide, doClip)
+    course.courseData = deserialized
+    fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}${isWide ? '_full' : ''}.jpg`), thumbnail)
+    fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}`), await course.courseData.serialize())
+    fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}.gz`), await course.courseData.serializeGzipped())
     let update
     if (isWide) {
-      this.vFull = this.vFull ? this.vFull + 1 : 1
+      course.vFull = course.vFull ? course.vFull + 1 : 1
       update = {
-        vFull: this.vFull
+        vFull: course.vFull
       }
     } else {
-      this.vPrev = this.vPrev ? this.vPrev + 1 : 1
+      course.vPrev = course.vPrev ? course.vPrev + 1 : 1
       update = {
-        vPrev: this.vPrev
+        vPrev: course.vPrev
       }
     }
-    await Database.updateCourse(this._id, update)
+    await Database.updateCourse(course._id, update)
     return thumbnail
   }
 
-  async delete () {
-    // Sorting.deleteCourse(this._id)
-    delete courses[this._id]
-    await Database.deleteCourse(this._id)
-    fs.unlinkSync(join(__dirname, `../static/courseimg/${this._id}.jpg`))
-    fs.unlinkSync(join(__dirname, `../static/courseimg/${this._id}_full.jpg`))
-    fs.unlinkSync(join(__dirname, `../static/coursedata/${this._id}`))
-    fs.unlinkSync(join(__dirname, `../static/coursedata/${this._id}.gz`))
+  static async delete (courseId) {
+    await Database.deleteCourse(courseId)
+    fs.unlinkSync(join(__dirname, `../static/courseimg/${courseId}.jpg`))
+    fs.unlinkSync(join(__dirname, `../static/courseimg/${courseId}_full.jpg`))
+    fs.unlinkSync(join(__dirname, `../static/coursedata/${courseId}`))
+    fs.unlinkSync(join(__dirname, `../static/coursedata/${courseId}.gz`))
   }
 
   static getCourseAmount () {
-    return Object.keys(courses).length
-  }
-
-  addCompleted (accountId) {
-    this[completed].push(accountId)
-  }
-
-  removeCompleted (accountId) {
-    this[completed].splice(this[completed].indexOf(accountId), 1)
-  }
-
-  getCompleted () {
-    return this[completed].length
-  }
-
-  completedByUser (accountId) {
-    return this[completed].includes(accountId)
-  }
-
-  addStarred (accountId) {
-    this[starred].push(accountId)
-  }
-
-  removeStarred (accountId) {
-    this[starred].splice(this[starred].indexOf(accountId), 1)
-  }
-
-  getStarred () {
-    return this[starred].length
-  }
-
-  starredByUser (accountId) {
-    return this[starred].includes(accountId)
-  }
-
-  addDownload (ipAddress) {
-    if (!this[downloads].includes(ipAddress)) {
-      this[downloads].push(ipAddress)
-    }
-  }
-
-  getDownloads () {
-    return this[downloads].length
-  }
-
-  getPoints () {
-    return this[downloads].length * pointsPerDownload + this[starred].length * pointsPerStar
+    return Database.getCoursesCount()
   }
 }

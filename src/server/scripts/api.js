@@ -1,14 +1,15 @@
 import parseRange from 'range-parser'
 import fileType from 'file-type'
+import {
+  ObjectID
+} from 'mongodb'
 
 import * as fs from 'fs'
 import * as path from 'path'
 
-import Database from './database'
-// import Sorting from './sorting'
+import Database from '../Database'
 import Account from '../Account'
 import Course from '../Course'
-import { Bot } from '..'
 
 const MAX_FILTER_LIMIT = 100
 
@@ -19,50 +20,38 @@ const MIN_LENGTH_USERNAME = 3
 const MAX_LENGTH_USERNAME = 20
 
 export default class API {
-  static getStats (res) {
+  static async getStats (res) {
     const result = {
-      courses: Course.getCourseAmount(),
-      accounts: Account.getAccountAmount()
+      courses: await Course.getCourseAmount(),
+      accounts: await Account.getAccountAmount()
     }
     res.json(result)
   }
 
   static async getCourses (app, req, res, apiData) {
-    let loggedIn = false
-    let accountId
     const auth = req.get('Authorization')
     const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
-    const account = Account.getAccountByAPIKey(apiKey)
-    if (account) {
-      loggedIn = true
-      accountId = account.id
-    }
+    const account = await Account.getAccountByAPIKey(apiKey)
     if (apiData.prettify) {
       app.set('json spaces', 2)
     }
-    res.json(await this.filterCourses(loggedIn, accountId, apiData))
+    res.json(await this.filterCourses(account ? account._id : null, apiData))
     if (apiData.prettify) {
       app.set('json spaces', 0)
     }
   }
 
-  static async filterCourses (loggedIn, accountId, filterData) {
+  static async filterCourses (accountId, filterData = {}) {
     let orderBy = 'lastmodified'
     let dir = -1
 
-    if (filterData && filterData.order && filterData.dir) {
+    if (filterData.order && filterData.dir) {
       orderBy = filterData.order
       dir = filterData.dir === 'asc' ? 1 : -1
     }
-    /* let courses = Sorting.getCoursesBySorting(orderBy, dir)
-    if (!courses) {
-      return {
-        err: 'Wrong order and/or dir property'
-      }
-    } */
 
-    const limit = (filterData && filterData.limit) ? (+filterData.limit) : MAX_FILTER_LIMIT
-    const start = (filterData && filterData.start) ? (+filterData.start) : 0
+    const limit = filterData.limit ? +filterData.limit : MAX_FILTER_LIMIT
+    const start = filterData.start ? +filterData.start : 0
 
     const filter = {}
     if (filterData.lastmodifiedfrom) {
@@ -81,100 +70,74 @@ export default class API {
       if (!filter.uploaded) filter.uploaded = {}
       filter.uploaded.$lte = parseInt(filterData.uploadedto)
     }
+    if (filterData.difficultyfrom) {
+      if (!filter.difficulty) filter.difficulty = {}
+      filter.difficulty.$gte = parseInt(filterData.difficultyfrom)
+    }
+    if (filterData.difficultyto) {
+      if (!filter.difficulty) filter.difficulty = {}
+      filter.difficulty.$lte = parseInt(filterData.difficultyto)
+    }
+    if (filterData.title) {
+      filter.title = new RegExp(`.*${filterData.title}.*`, 'i')
+    }
+    if (filterData.maker) {
+      filter.maker = new RegExp(`${filterData.maker}`, 'i')
+    }
+    if (filterData.uploader) {
+      const acc = await Database.filterAccounts({ username: new RegExp(`^${filterData.uploader}$`, 'i') }).toArray()
+      if (acc.length !== 1 || !acc[0]._id) return []
+      filter.owner = ObjectID(acc[0]._id)
+    }
+    if (filterData.owner) {
+      filter.owner = ObjectID(filterData.owner)
+    }
+    if (filterData.gamestyle) {
+      filter.gameStyle = parseInt(filterData.gamestyle)
+    }
+    if (filterData.coursetheme) {
+      filter.courseTheme = parseInt(filterData.coursetheme)
+    }
+    if (filterData.coursethemesub) {
+      filter.courseThemeSub = parseInt(filterData.coursethemesub)
+    }
+    if (filterData.timefrom) {
+      if (!filter.time) filter.time = {}
+      filter.time.$gte = parseInt(filterData.timefrom)
+    }
+    if (filterData.timeto) {
+      if (!filter.time) filter.time = {}
+      filter.time.$lte = parseInt(filterData.timeto)
+    }
+    if (filterData.autoscroll) {
+      filter.autoScroll = parseInt(filterData.autoscroll)
+    }
+    if (filterData.autoscrollsub) {
+      filter.autoScrollSub = parseInt(filterData.autoscrollsub)
+    }
+    if (filterData.widthfrom) {
+      if (!filter.width) filter.width = {}
+      filter.width.$gte = parseInt(filterData.widthfrom)
+    }
+    if (filterData.widthto) {
+      if (!filter.width) filter.width = {}
+      filter.width.$lte = parseInt(filterData.widthto)
+    }
     const res = await Database.filterCourses(filter, { [orderBy]: dir }, start, limit).toArray()
     for (let i in res) {
       res[i].toJSON = Course.toJSON.bind(res[i])
     }
     return res
-
-    /* for (let i in courses) {
-      let course = courses[i]
-      if (!course) break
-      if (filteredResult.length >= (start + limit)) break
-
-      if (filterData) {
-        if (filterData.lastmodifiedfrom) {
-          if (parseInt(filterData.lastmodifiedfrom) > course.lastmodified) {
-            continue
-          }
-        }
-        if (filterData.lastmodifiedto) {
-          if (parseInt(filterData.lastmodifiedto) < course.lastmodified) {
-            continue
-          }
-        }
-        if (filterData.uploadedfrom) {
-          if (parseInt(filterData.uploadedfrom) > course.uploaded) {
-            continue
-          }
-        }
-        if (filterData.uploadedto) {
-          if (parseInt(filterData.uploadedto) < course.uploaded) {
-            continue
-          }
-        }
-        if (filterData.difficultyfrom) {
-          if (parseInt(filterData.difficultyfrom) > course.difficulty || course.difficulty == null) {
-            continue
-          }
-        }
-        if (filterData.difficultyto) {
-          if (parseInt(filterData.difficultyto) < course.difficulty || course.difficulty == null) {
-            continue
-          }
-        }
-        if (filterData.title) {
-          if (!course.title.toLowerCase().includes(filterData.title.toLowerCase())) {
-            continue
-          }
-        }
-        if (filterData.maker) {
-          if (filterData.maker.toLowerCase() !== course.maker.toLowerCase()) {
-            continue
-          }
-        }
-        if (filterData.uploader) {
-          if (filterData.uploader.toLowerCase() !== Account.getAccount(course.owner).username.toLowerCase()) {
-            continue
-          }
-        }
-        if (filterData.gamestyle) {
-          if (parseInt(filterData.gamestyle) !== course.gameStyle) {
-            continue
-          }
-        }
-        if (filterData.coursetheme) {
-          if (parseInt(filterData.coursetheme) !== course.courseTheme) {
-            continue
-          }
-        }
-        if (filterData.coursethemesub) {
-          if (parseInt(filterData.coursethemesub) !== course.courseThemeSub) {
-            continue
-          }
-        }
-        if (filterData.autoscroll) {
-          const autoScroll = parseInt(filterData.autoscroll)
-          if (autoScroll !== course.autoScroll && autoScroll !== course.autoScrollSub) {
-            continue
-          }
-        }
-      }
-      let resultCourse = course.toJSON(loggedIn, accountId)
-      filteredResult.push(resultCourse)
-    } */
-
-    // return filteredResult.splice(start, limit)
   }
 
   static async downloadCourse (req, res, apiData, downloadMetrics) {
-    const course = Course.getCourse(apiData.id)
+    const course = await Course.getCourse(apiData.id)
     if (!course) {
       res.status(400).send(`Course with ID ${apiData.id} not found`)
       return
     }
     if (apiData.type === 'zip') {
-      const file = await course.getCompressed()
+      const file = await Course.getCompressed(course)
       if (typeof (file) === 'string') {
         res.setHeader('Content-Type', 'application/zip')
         try {
@@ -189,10 +152,10 @@ export default class API {
         res.status(500).send('Could not compress file')
       }
     } else if (apiData.type === 'json') {
-      res.json(await course.getObject())
+      res.json(await Course.getObject(course._id))
     } else if (apiData.type === '3ds') {
       res.setHeader('Content-Type', 'application/3ds')
-      const course3ds = await course.get3DS()
+      const course3ds = await Course.get3DS(course._id)
       if (req.headers.range) {
         const range = parseRange(course3ds.length, req.headers.range, { combine: true })
         if (range === -1) {
@@ -223,7 +186,7 @@ export default class API {
     } else {
       res.set('Content-Encoding', 'gzip')
       res.set('Content-Type', 'application/wiiu')
-      res.send(await course.getSerialized())
+      res.send(await Course.getSerialized(course._id))
       downloadMetrics.downloadsPerDay.mark()
       downloadMetrics.downloadsProtoPerDay.mark()
     }
@@ -236,7 +199,7 @@ export default class API {
       res.status(401).send('API key required')
       return
     }
-    const account = Account.getAccountByAPIKey(apiKey)
+    const account = await Account.getAccountByAPIKey(apiKey)
     if (account == null) {
       res.status(400).send(`Account with API key ${apiKey} not found`)
       return
@@ -251,7 +214,7 @@ export default class API {
       }
       fs.writeFileSync(path.join(uploadPath, String(courses[0]._id)), req.body)
       try {
-        Bot.uploadCourse(courses)
+        // Bot.uploadCourse(courses)
       } catch (err) {
         console.log(err)
       }
@@ -266,7 +229,7 @@ export default class API {
       res.status(401).send('API key required')
       return
     }
-    const account = Account.getAccountByAPIKey(apiKey)
+    const account = await Account.getAccountByAPIKey(apiKey)
     if (account == null) {
       res.status(400).send(`Account with API key ${apiKey} not found`)
       return
@@ -276,12 +239,16 @@ export default class API {
       res.status(400).send('No course ID found. Please set a "course-id" HTTP header')
       return
     }
-    const course = Course.getCourse(courseId)
-    if (course == null) {
+    const course = await Course.getCourse(courseId)
+    if (!course) {
       res.status(400).send(`Course with ID ${courseId} not found`)
       return
     }
-    const result = await course.reupload(req.body, account)
+    if (!course.owner.equals(account._id)) {
+      res.status(403).send(`Course with ID ${courseId} is not owned by account with API key ${apiKey}`)
+      return
+    }
+    const result = await Course.reupload(course, req.body)
     if (result == null) {
       res.status(500).send('Could not read course')
       return
@@ -292,7 +259,7 @@ export default class API {
     }
     fs.writeFileSync(path.join(uploadPath, String(course._id)), req.body)
     try {
-      Bot.updateCourse(course)
+      // Bot.updateCourse(course)
     } catch (err) {
       console.log(err)
     }
@@ -310,13 +277,13 @@ export default class API {
       res.status(400).send('No course ID submitted')
       return
     }
-    const account = Account.getAccountByAPIKey(apiKey)
+    const account = await Account.getAccountByAPIKey(apiKey)
     if (account == null) {
       res.status(400).send(`Account with API key ${apiKey} not found`)
       return
     }
-    const course = Course.getCourse(apiData.id)
-    if (course == null) {
+    const course = await Course.getCourse(apiData.id)
+    if (!course) {
       res.status(400).send(`Course with ID ${apiData.id} not found`)
       return
     }
@@ -349,23 +316,23 @@ export default class API {
         }
       } catch (err) {}
     }
-    await course.update(courseData)
+    await Course.update(course, courseData)
     res.json(course)
   }
 
-  static deleteCourse (req, res, apiData) {
+  static async deleteCourse (req, res, apiData) {
     const auth = req.get('Authorization')
     const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
     if (!apiKey) {
       res.status(401).send('API key required')
       return
     }
-    const account = Account.getAccountByAPIKey(apiKey)
+    const account = await Account.getAccountByAPIKey(apiKey)
     if (account == null) {
       res.status(400).send(`Account with API key ${apiKey} not found`)
       return
     }
-    const course = Course.getCourse(apiData.id)
+    const course = await Course.getCourse(apiData.id)
     if (!course) {
       res.status(400).send(`Course with ID ${apiData.id} not found`)
       return
@@ -374,7 +341,7 @@ export default class API {
       res.status(403).send(`Course with ID ${apiData.id} is not owned by account with API key ${apiKey}`)
       return
     }
-    course.delete()
+    await Course.delete(course._id)
     res.send('OK')
   }
 
@@ -385,7 +352,7 @@ export default class API {
       res.status(401).send('API key required')
       return
     }
-    const account = Account.getAccountByAPIKey(apiKey)
+    const account = await Account.getAccountByAPIKey(apiKey)
     if (account == null) {
       res.status(400).send(`Account with API key ${apiKey} not found`)
       return
@@ -395,7 +362,7 @@ export default class API {
       res.status(400).send('No course ID found. Please set a "course-id" HTTP header')
       return
     }
-    const course = Course.getCourse(courseId)
+    const course = await Course.getCourse(courseId)
     if (!course) {
       res.status(400).send(`Course with ID ${courseId} not found`)
       return
@@ -407,9 +374,9 @@ export default class API {
     const type = fileType(req.body)
     const mime = type && type.mime
     if (mime && /^image\/.+$/.test(mime)) {
-      const thumbnail = await course.setThumbnail(req.body, isWide, !isWide)
+      const thumbnail = await Course.setThumbnail(course, req.body, isWide, !isWide)
       if (thumbnail) {
-        await course.update({})
+        await Course.update(course._id, {})
         res.json(course)
       } else {
         res.status(500).send('Could not change course thumbnail')
@@ -426,7 +393,7 @@ export default class API {
       res.status(401).send('API key required')
       return
     }
-    const account = Account.getAccountByAPIKey(apiKey)
+    const account = await Account.getAccountByAPIKey(apiKey)
     if (account == null) {
       res.status(400).send(`Account with API key ${apiKey} not found`)
       return
@@ -441,22 +408,19 @@ export default class API {
       res.status(401).send('API key required')
       return
     }
-    const account = Account.getAccountByAPIKey(apiKey)
+    const account = await Account.getAccountByAPIKey(apiKey)
     if (account == null) {
       res.status(400).send(`Account with API key ${apiKey} not found`)
       return
     }
-    const accountData = {}
+    const update = {}
     if (req.body.username && req.body.username.length >= MIN_LENGTH_USERNAME && req.body.username.length <= MAX_LENGTH_USERNAME && USERNAME.test(req.body.username)) {
-      account.setUsername(req.body.username)
-      accountData.username = req.body.username
+      update.username = req.body.username
     }
     if (req.body.downloadformat) {
-      const downloadFormat = typeof (req.body.downloadformat) !== 'number' ? parseInt(req.body.downloadformat) : req.body.downloadformat
-      account.setDownloadFormat(downloadFormat)
-      accountData.downloadformat = downloadFormat
+      update.downloadFormat = typeof (req.body.downloadformat) !== 'number' ? parseInt(req.body.downloadformat) : req.body.downloadformat
     }
-    await Database.updateAccount(account._id, accountData)
+    await Account.update(account, update)
     res.json(account)
   }
 }

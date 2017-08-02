@@ -2,9 +2,6 @@ import React from 'react'
 import {
   connect
 } from 'react-redux'
-import {
-  Scrollbars
-} from 'react-custom-scrollbars'
 import { forceCheck } from 'react-lazyload'
 import got from 'got'
 
@@ -25,14 +22,11 @@ import UploadArea from '../areas/UploadArea'
 
 const EnterAPIKeyArea = process.env.ELECTRON && require('../../../electron/components/areas/EnterAPIKeyArea').default
 
-const UPDATE_OFFSET = 500
 const LIMIT = 10
-const STEP_LIMIT = 10
 
 class UploadView extends React.PureComponent {
   constructor (props) {
     super(props)
-    this.doUpdate = false
     this.fetchCourses = this.fetchCourses.bind(this)
     this.renderCourses = this.renderCourses.bind(this)
     this.onCourseDelete = this.onCourseDelete.bind(this)
@@ -42,18 +36,17 @@ class UploadView extends React.PureComponent {
   componentWillMount () {
     if (!this.props.accountData.get('id')) return;
     (async () => {
-      await this.fetchCourses(this.props)
+      await this.fetchCourses()
     })()
   }
   componentWillReceiveProps (nextProps, nextContext) {
-    if (nextProps.courses !== this.props.courses) this.doUpdate = false
-    if (nextProps.accountData === this.props.accountData || !nextProps.accountData.get('id')) return
-    this.doUpdate = false;
+    if (nextProps.accountData === this.props.accountData || !nextProps.accountData.get('id')) return;
     (async () => {
-      await this.fetchCourses(nextProps)
+      await this.fetchCourses(false, LIMIT, 0, nextProps)
     })()
   }
-  async fetchCourses (props, shouldConcat = false, limit = LIMIT, start = 0) {
+  async fetchCourses (shouldConcat = false, limit = LIMIT, start = 0, props = this.props) {
+    console.log('fetch')
     const accountData = props.accountData
     if (!accountData.get('id')) return
     try {
@@ -65,16 +58,19 @@ class UploadView extends React.PureComponent {
         json: true,
         useElectronNet: false
       })).body
+      console.log(courses)
       if (courses && courses.length > 0) {
-        this.props.dispatch(setCoursesSelf(courses, shouldConcat))
+        props.dispatch(setCoursesSelf(courses, shouldConcat))
       }
     } catch (err) {
-      console.error(err.response.body)
+      if (!err.response) {
+        console.error(err.response.body)
+      }
     }
   }
-  renderCourses (courses) {
+  renderCourses (courses, uploaded) {
     const accountData = this.props.accountData
-    const onCourseDelete = this.onCourseDelete
+    const onCourseDelete = uploaded ? this.onCourseDeleteRecent : this.onCourseDelete
     let downloads
     let currentDownloads
     let smmdb
@@ -100,7 +96,7 @@ class UploadView extends React.PureComponent {
             saveId = smmdb.getIn([String(course.id), 'saveId'])
           }
           yield (
-            <CoursePanel key={course.id} canEdit isSelf course={course} downloadedCourse={downloadedCourse} progress={progress} saveId={saveId} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />
+            <CoursePanel key={course.id} canEdit isSelf uploaded={uploaded} course={course} downloadedCourse={downloadedCourse} progress={progress} saveId={saveId} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />
           )
         }
       }
@@ -112,17 +108,8 @@ class UploadView extends React.PureComponent {
   onCourseDeleteRecent (courseId) {
     this.props.dispatch(deleteCourseUploaded(courseId))
   }
-  handleScroll () {
-    forceCheck()
-    if (this.doUpdate) return
-    const values = this.scrollBar.getValues()
-    const shouldUpdate = values.scrollHeight - values.scrollTop - values.clientHeight < UPDATE_OFFSET
-    if (shouldUpdate) {
-      this.doUpdate = true;
-      (async () => {
-        await this.fetchCourses(this.props, true, STEP_LIMIT, this.props.courses.size)
-      })()
-    }
+  handleScroll (e) {
+    this.props.shouldUpdate(e.target, this.fetchCourses)
   }
   render () {
     const screenSize = this.props.screenSize
@@ -137,27 +124,32 @@ class UploadView extends React.PureComponent {
         alignItems: screenSize === ScreenSize.LARGE ? 'center' : 'center'
       },
       upload: {
-        width: screenSize === ScreenSize.LARGE ? 'calc(100% - 260px)' : '100%',
         maxWidth: '926px',
-        height: screenSize === ScreenSize.LARGE ? 'calc(100% - 40px)' : 'auto',
-        overflow: 'hidden',
+        overflowY: screenSize === ScreenSize.LARGE ? 'scroll' : '',
         zIndex: '10',
-        marginTop: '40px',
+        flex: '1',
         color: '#fff'
       },
       flex: {
         overflow: 'hidden',
         display: screenSize === ScreenSize.LARGE ? 'flex' : 'block',
-        flexDirection: screenSize === ScreenSize.LARGE ? 'column' : ''
+        flexDirection: screenSize === ScreenSize.LARGE ? 'column' : '',
+        height: 'auto'
       },
       line: {
         height: '5px',
         backgroundColor: '#000',
         margin: '10px 0'
+      },
+      text: {
+        height: 'auto',
+        display: 'block',
+        top: '50%',
+        transform: 'translateY(-50%)'
       }
     }
     const content =
-      <div>
+      <div style={{height: 'auto'}}>
         {
           (uploadedCourses.length > 0 || uploads.length > 0) && (
           <div style={{height: 'auto', color: '#000', fontSize: '15px'}}>
@@ -175,26 +167,20 @@ class UploadView extends React.PureComponent {
       </div>
     return (
       <div style={styles.main}>
-        <div style={styles.upload}>
+        <div style={styles.upload} onScroll={this.handleScroll}>
           {
             accountData.id ? (
               <div style={styles.flex}>
                 <UploadArea />
-                {
-                  screenSize === ScreenSize.LARGE ? (
-                    <Scrollbars universal style={{height: '100%'}} onScroll={this.handleScroll} ref={input => { this.scrollBar = input }}>
-                      { content }
-                    </Scrollbars>
-                  ) : (
-                    content
-                  )
-                }
+                <div style={{height: 'auto'}}>
+                  { content }
+                </div>
               </div>
             ) : (
               process.env.ELECTRON ? (
                 <EnterAPIKeyArea />
               ) : (
-                <div style={styles.flex}>You are not logged in</div>
+                <div style={styles.text}>You are not logged in</div>
               )
             )
           }

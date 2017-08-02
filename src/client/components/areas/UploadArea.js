@@ -137,7 +137,7 @@ class UploadArea extends React.PureComponent {
         height: 'auto',
         width: 'auto',
         padding: '40px 20px',
-        marginBottom: '10px',
+        margin: '10px 0',
         background: '#fff',
         color: '#000',
         fontSize: '20px',

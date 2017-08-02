@@ -64,7 +64,7 @@ class AppView extends React.PureComponent {
   componentWillReceiveProps (nextProps, nextContext) {
     if (nextProps.filter === this.props.filter) return
     this.queryString = stringify(nextProps.filter.toJS());
-    // this.scrollBar.scrollToTop(); // TODO for mobile
+    // this.scrollBar.scrollToTop(); // TODO
     (async () => {
       await this.fetchCourses()
     })()
@@ -85,10 +85,10 @@ class AppView extends React.PureComponent {
           'Authorization': `APIKEY ${this.props.apiKey}`
         }
       } : null))).body
-      this.props.dispatch(setCourses(courses, shouldConcat))
+      if (courses && courses.length > 0) {
+        this.props.dispatch(setCourses(courses, shouldConcat))
+      }
     } catch (err) {
-      console.log('error')
-      console.log(err)
       if (!err.response) {
         console.error(err.response.body)
       }
@@ -98,17 +98,17 @@ class AppView extends React.PureComponent {
     this.props.dispatch(setVideoId(''))
   }
   handleScroll (e) {
-    forceCheck()
     if (this.props.screenSize === ScreenSize.LARGE) return
     this.shouldUpdate(e.target)
   }
-  shouldUpdate (values) {
+  shouldUpdate (values, fetchCourses) {
+    forceCheck()
     if (this.doUpdate) return
     const shouldUpdate = values.scrollHeight - values.scrollTop - values.clientHeight < UPDATE_OFFSET
     if (shouldUpdate) {
       this.doUpdate = true;
       (async () => {
-        await this.fetchCourses(true, STEP_LIMIT, this.props.courses.size)
+        await fetchCourses ? fetchCourses(true, STEP_LIMIT, this.props.coursesSelf.size) : this.fetchCourses(true, STEP_LIMIT, this.props.courses.size)
       })()
     }
   }
@@ -121,7 +121,7 @@ class AppView extends React.PureComponent {
         height: '100%',
         maxHeight: '100%',
         overflowY: screenSize === ScreenSize.LARGE ? 'hidden' : 'scroll',
-        display: screenSize === ScreenSize.LARGE ? 'flex' : 'block',
+        display: 'flex',
         flexDirection: 'column'
       },
       logo: {
@@ -202,6 +202,7 @@ export default connect(state => ({
   userName: state.getIn(['userData', 'userName']) || '',
   videoId: state.getIn(['userData', 'videoId']) || '',
   courses: state.getIn(['courseData', 'main']),
+  coursesSelf: state.getIn(['courseData', 'self']),
   showFilter: state.get('showFilter'),
   filter: state.getIn(['filter', 'currentFilter']),
   apiKey: state.getIn(['userData', 'accountData', 'apikey'])

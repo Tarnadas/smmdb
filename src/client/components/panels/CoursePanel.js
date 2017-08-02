@@ -28,7 +28,7 @@ import {
 const MAX_LENGTH_TITLE = 32
 const MAX_LENGTH_MAKER = 10
 const MAX_LENGTH_NNID = 19
-const MAX_LENGTH_VIDEOID = 10
+const MAX_LENGTH_VIDEOID = 12
 const VIDEO_ID = /^[a-z0-9A-Z| |.|\\_|\\-]+$/
 
 class CoursePanel extends React.PureComponent {
@@ -194,26 +194,38 @@ class CoursePanel extends React.PureComponent {
     this.setState(res)
   }
   onReuploadComplete (course) {
-    if (this.props.isSelf) {
-      this.props.dispatch(setCourseSelf(this.props.id, course))
+    if (this.props.uploaded) {
+      this.props.dispatch(setCourseUploaded(this.props.id, course))
     } else {
-      this.props.dispatch(setCourse(this.props.id, course))
+      if (this.props.isSelf) {
+        this.props.dispatch(setCourseSelf(this.props.id, course))
+      } else {
+        this.props.dispatch(setCourse(this.props.id, course))
+      }
     }
   }
   onUploadFullComplete (course) {
     // this.full.src = `data:image/png;base64, ${base64}`
-    if (this.props.isSelf) {
-      this.props.dispatch(setCourseSelf(this.props.id, course))
+    if (this.props.uploaded) {
+      this.props.dispatch(setCourseUploaded(this.props.id, course))
     } else {
-      this.props.dispatch(setCourse(this.props.id, course))
+      if (this.props.isSelf) {
+        this.props.dispatch(setCourseSelf(this.props.id, course))
+      } else {
+        this.props.dispatch(setCourse(this.props.id, course))
+      }
     }
   }
   onUploadPrevComplete (course) {
-    // this.prev.src = `data:image/png;base64, ${base64}`
-    if (this.props.isSelf) {
-      this.props.dispatch(setCourseSelf(this.props.id, course))
+    // this.prev.src = `data:image/png;base64, ${base64}``
+    if (this.props.uploaded) {
+      this.props.dispatch(setCourseUploaded(this.props.id, course))
     } else {
-      this.props.dispatch(setCourse(this.props.id, course))
+      if (this.props.isSelf) {
+        this.props.dispatch(setCourseSelf(this.props.id, course))
+      } else {
+        this.props.dispatch(setCourse(this.props.id, course))
+      }
     }
   }
   render () {

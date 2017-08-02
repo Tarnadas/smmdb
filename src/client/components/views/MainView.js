@@ -2,10 +2,6 @@ import React from 'react'
 import {
   connect
 } from 'react-redux'
-import {
-  Scrollbars
-} from 'react-custom-scrollbars'
-import { forceCheck } from 'react-lazyload'
 import got from 'got'
 
 import { resolve } from 'url'
@@ -95,9 +91,8 @@ class MainView extends React.PureComponent {
   onCourseDelete (courseId) {
     this.props.dispatch(deleteCourse(courseId))
   }
-  handleScroll () {
-    forceCheck()
-    this.props.shouldUpdate(this.scrollBar.getValues())
+  handleScroll (e) {
+    this.props.shouldUpdate(e.target)
   }
   render () {
     const screenSize = this.props.screenSize
@@ -109,12 +104,10 @@ class MainView extends React.PureComponent {
         alignItems: screenSize === ScreenSize.LARGE ? 'center' : 'center'
       },
       content: {
-        width: screenSize === ScreenSize.LARGE ? 'calc(100% - 260px)' : '100%',
         maxWidth: '926px',
-        height: screenSize === ScreenSize.LARGE ? 'calc(100% - 40px)' : 'auto',
-        overflow: 'hidden',
+        overflowY: screenSize === ScreenSize.LARGE ? 'scroll' : '',
         zIndex: '10',
-        marginTop: '40px'
+        flex: '1'
       }
     }
     return (
@@ -123,20 +116,10 @@ class MainView extends React.PureComponent {
         {
           screenSize === ScreenSize.LARGE && <SideBarArea />
         }
-        <div style={styles.content}>
-          <div>
-            {
-              screenSize === ScreenSize.LARGE ? (
-                <Scrollbars universal style={{height: '100%'}} onScroll={this.handleScroll} ref={input => { this.scrollBar = input }}>
-                  {
-                    this.renderCourses(courses)
-                  }
-                </Scrollbars>
-              ) : (
-                this.renderCourses(courses)
-              )
-            }
-          </div>
+        <div style={styles.content} id='scroll' onScroll={this.handleScroll}>
+          {
+            this.renderCourses(courses)
+          }
         </div>
       </div>
     )

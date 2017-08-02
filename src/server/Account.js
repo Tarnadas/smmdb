@@ -1,116 +1,82 @@
 import {
+  ObjectID
+} from 'mongodb'
+import {
   generateAPIKey
 } from './scripts/util'
-// import Database from './scripts/database'
-
-export const accounts = {}
-const accountsByGoogleId = {}
-const accountsByAPIKey = {}
-const accountsBySession = {}
-
-const points = Symbol('points')
-const completed = Symbol('completed')
-const starred = Symbol('starred')
-const loggedIn = Symbol('loggedIn')
+import Database from './Database'
 
 export default class Account {
-  constructor (data, logIn = false) {
-    for (let entry in data) {
-      this[entry] = data[entry]
-    }
-    this[points] = 0
-    this[completed] = []
-    this[starred] = []
-    this[loggedIn] = logIn
-    accountsByGoogleId[data.googleid] = this
-    if (data.apikey) {
-      accountsByAPIKey[data.apikey] = this
-    } else {
-      let apiKey = generateAPIKey()
-      while (Object.keys(accountsByAPIKey).includes(apiKey)) {
-        apiKey = generateAPIKey()
-      }
-      this.apikey = apiKey
-      accountsByAPIKey[apiKey] = this
-    }
+  static async createAccount ({ googleid, username, email, idtoken }) {
+    return (await Database.addAccount({
+      googleid,
+      username,
+      email,
+      idtoken,
+      apikey: generateAPIKey()
+    })).ops[0]
   }
-  static convertFromMySQL (data) {
-    delete data.id
-    delete data.password
-    return data
+
+  static async getAccount ({ accountId, googleid, apikey, idtoken }) {
+    const filter = {}
+    if (accountId) filter._id = accountId
+    if (googleid) filter.googleid = googleid
+    if (apikey) filter.apikey = apikey
+    if (idtoken) filter.idtoken = idtoken
+    if (Object.keys(filter).length === 0) return null
+    let res = await Database.filterAccounts(filter).toArray()
+    if (res.length === 0) return null
+    res[0].toJSON = Account.toJSON.bind(res[0])
+    return res[0]
   }
-  static getAccount (accountId) {
-    return accounts[accountId]
+
+  static getAccountByAccountId (accountId) {
+    return Account.getAccount({ accountId: ObjectID(accountId) })
   }
-  static getAccountAmount () {
-    return Object.keys(accounts).length
-  }
-  setId () {
-    accounts[this._id] = this
-  }
-  setUsername (username) {
-    this.username = username
-    return null
-  }
-  setDownloadFormat (downloadFormat) {
-    this.downloadformat = downloadFormat
-  }
-  static exists (googleId) {
-    return !!accountsByGoogleId[googleId]
-  }
+
   static getAccountByGoogleId (googleId) {
-    return accountsByGoogleId[googleId]
+    return Account.getAccount({ googleid: googleId })
   }
+
   static getAccountByAPIKey (apiKey) {
-    return accountsByAPIKey[apiKey]
+    return Account.getAccount({ apikey: apiKey })
   }
+
   static getAccountBySession (idToken) {
-    return accountsBySession[idToken]
+    return Account.getAccount({ idtoken: idToken })
   }
-  toJSON () {
+
+  static getAccountAmount () {
+    return Database.getAccountsCount()
+  }
+
+  static async update (account, { username, downloadFormat }) {
+    const update = {}
+    if (username) {
+      update.username = username
+      account.username = username
+    }
+    if (downloadFormat != null) {
+      update.downloadformat = downloadFormat
+      account.downloadformat = downloadFormat
+    }
+    await Database.updateAccount(account._id, update)
+  }
+
+  static login (accountId, idToken) {
+    return Database.updateAccount(accountId, { idtoken: idToken })
+  }
+
+  static logout (accountId) {
+    return Database.updateAccount(accountId, { idtoken: undefined })
+  }
+
+  static toJSON () {
     return {
       username: this.username,
       id: this._id,
       downloadformat: this.downloadformat != null ? this.downloadformat : 0,
-      apikey: this.apikey,
-      completed: this[completed],
-      starred: this[starred],
-      points: this[points]
+      apikey: this.apikey
     }
-  }
-  addPoints (p) {
-    this[points] += p
-  }
-  getPoints () {
-    return this[points]
-  }
-  login (idToken) {
-    this[loggedIn] = true
-    accountsBySession[idToken] = this
-  }
-  logout (idToken) {
-    this[loggedIn] = false
-    delete accountsBySession[idToken]
-  }
-  isLoggedIn () {
-    return this[loggedIn]
-  }
-  addCompleted (courseId) {
-    this[completed].push(courseId)
-  }
-  removeCompleted (courseId) {
-    this[completed].splice(this[completed].indexOf(courseId), 1)
-  }
-  getCompletedAmount () {
-    return this[completed].length
-  }
-  addStarred (courseId) {
-    this[starred].push(courseId)
-  }
-  removeStarred (courseId) {
-    this[starred].splice(this[starred].indexOf(courseId), 1)
-  }
-  getStarredAmount () {
-    return this[starred].length
   }
 }

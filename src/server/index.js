@@ -5,7 +5,6 @@ import cheerio from 'cheerio'
 import cookieSession from 'cookie-session'
 import verifier from 'google-id-token-verifier'
 import favicon from 'serve-favicon'
-// import bytes from 'bytes'
 import device from 'device'
 import {
   renderToString
@@ -19,20 +18,17 @@ import * as qs from 'querystring'
 
 import renderer from '../shared/renderer'
 
-// import Lobby from './Lobby'
 import Account from './Account'
 import Course from './Course'
 import API from './scripts/api'
-import Database from './scripts/database'
-// import Sorting from './scripts/sorting'
-// import Parsing from './scripts/parsing'
+import Database from './Database'
 import DiscordBot from './Discord'
 
 import {
   clientId, cookie as cookieCredentials
 } from './scripts/credentials'
 import {
-  log, calculatePoints
+  log
 } from './scripts/util'
 import { port } from '../static'
 
@@ -69,9 +65,6 @@ const downloadMetrics = {
 
 const $index = cheerio.load(fs.readFileSync(path.join(__dirname, '../client/index.html')))
 
-export const pointsPerDownload = 1
-export const pointsPerStar = 15
-
 export const cacheMaxAgeImg = '7d'
 export const cacheMaxAgeCSS = '1d'
 export const cacheMaxAgeJS = '1y';
@@ -79,11 +72,7 @@ export const cacheMaxAgeJS = '1y';
 // initialize database
 (async () => {
   try {
-    let convert = process.argv.includes('convertmysql')
-    await Database.initialize(convert)
-    if (convert) {
-      await Database.convertMySQL()
-    }
+    await Database.initialize()
     await main()
   } catch (err) {
     console.log(err)
@@ -93,10 +82,6 @@ export const cacheMaxAgeJS = '1y';
 async function main () {
   console.log()
   log('Database initialized')
-
-  calculatePoints()
-  // Parsing.parseNintendoCourses()
-  // Sorting.sortCourses()
 
   await Bot.login()
 
@@ -149,33 +134,30 @@ async function main () {
         // create account if it does not exist
         let googleId = tokenInfo.sub
 
-        let account
-        if (!Account.exists(googleId)) {
+        let account = await Account.getAccountByGoogleId(googleId)
+        if (!account) {
           // create new account
-          account = new Account({
+          account = await Account.createAccount({
             googleid: googleId,
             username: tokenInfo.email.split('@')[0],
-            email: tokenInfo.email
+            email: tokenInfo.email,
+            idtoken: idToken
           })
-          await Database.addAccount(account)
-          account.setId()
         } else {
-          account = Account.getAccountByGoogleId(googleId)
-          account.login(idToken)
+          await Account.login(account._id, idToken)
         }
         req.session.idtoken = idToken
-
         res.json(account)
       })
     }
   })
 
-  app.route('/signin').post((req, res) => {
+  app.route('/signin').post(async (req, res) => {
     if (!req.session.idtoken) {
       res.status(400).send('No idToken submitted. Have you enabled cookies?')
       return
     }
-    let account = Account.getAccountBySession(req.session.idtoken)
+    let account = await Account.getAccountBySession(req.session.idtoken)
     if (!account) {
       res.status(400).send('Account not found')
       return
@@ -183,17 +165,17 @@ async function main () {
     res.json(account)
   })
 
-  app.route('/signout').post((req, res) => {
+  app.route('/signout').post(async (req, res) => {
     if (!req.session.idtoken) {
       res.status(400).send('No idToken submitted. Have you enabled cookies?')
       return
     }
-    let account = Account.getAccountBySession(req.session.idtoken)
+    let account = await Account.getAccountBySession(req.session.idtoken)
     if (!account) {
       res.status(400).send('Account not found')
       return
     }
-    account.logout(req.session.idtoken)
+    await Account.logout(account._id, req.session.idtoken)
     res.send('OK')
   })
 
@@ -202,9 +184,7 @@ async function main () {
       let apiCall = req.params.apicall
       let apiData = {}
       if (req.url.includes('?')) {
-        let split = req.url.split('?', 2)
-        let data = split[1]
-        apiData = qs.parse(data)
+        apiData = qs.parse(req.url.split('?', 2)[1])
       }
 
       if (!apiCall) {
@@ -214,7 +194,7 @@ async function main () {
       } else if (apiCall === 'getcourses') {
         API.getCourses(app, req, res, apiData)
       } else if (apiCall === 'downloadcourse') {
-        await API.downloadCourse(req, res, apiData, downloadMetrics)
+        API.downloadCourse(req, res, apiData, downloadMetrics)
       } else if (apiCall === 'deletecourse') {
         API.deleteCourse(req, res, apiData)
       } else if (apiCall === 'getaccountdata') {
@@ -235,17 +215,17 @@ async function main () {
     }
 
     if (apiCall === 'uploadcourse') {
-      await API.uploadCourse(req, res)
+      API.uploadCourse(req, res)
     } else if (apiCall === 'reuploadcourse') {
-      await API.reuploadCourse(req, res, apiData)
+      API.reuploadCourse(req, res, apiData)
     } else if (apiCall === 'updatecourse') {
-      await API.updateCourse(req, res, apiData)
+      API.updateCourse(req, res, apiData)
     } else if (apiCall === 'setaccountdata') {
-      await API.setAccountData(req, res)
+      API.setAccountData(req, res)
     } else if (apiCall === 'uploadimagefull') {
-      await API.uploadImage(req, res, true)
+      API.uploadImage(req, res, true)
     } else if (apiCall === 'uploadimageprev') {
-      await API.uploadImage(req, res, false)
+      API.uploadImage(req, res, false)
     } else {
       res.status(400).send('Wrong syntax')
     }
@@ -253,11 +233,11 @@ async function main () {
 
   app.use('/', async (req, res) => {
     const stats = {
-      courses: Course.getCourseAmount(),
-      accounts: Account.getAccountAmount()
+      courses: await Course.getCourseAmount(),
+      accounts: await Account.getAccountAmount()
     }
     const d = device(req.get('user-agent'))
-    let [html, preloadedState] = renderer(true, renderToString, null, req, await API.filterCourses(false, null, {limit: 10}), stats, d.is('phone') || d.is('tablet'))
+    let [html, preloadedState] = renderer(true, renderToString, null, req, await API.filterCourses(null, {limit: 10}), stats, d.is('phone') || d.is('tablet'))
     const index = cheerio.load($index.html())
     index('#root').html(html)
     index('body').prepend(`<script>window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')}</script>`)

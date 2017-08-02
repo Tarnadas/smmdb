@@ -36,9 +36,8 @@ class StatsPanel extends React.PureComponent {
         width: 'auto',
         height: 'auto',
         color: 'rgb(255, 229, 0)',
-        position: 'absolute',
-        top: '16px',
-        left: '20px'
+        margin: '16px 0 5px 20px',
+        alignSelf: 'flex-start'
       }
     }
     return (
