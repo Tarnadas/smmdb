@@ -41,6 +41,7 @@ module.exports = [
           exclude: /node_modules/,
           loader: 'babel-loader',
           query: {
+            babelrc: false,
             plugins: ['transform-react-jsx']
           }
         },

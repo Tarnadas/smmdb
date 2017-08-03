@@ -110,7 +110,11 @@ export default class Course {
       course.lastmodified = course.modified
       delete course.modified
       course.uploaded = Math.floor(new Date().getTime() / 1000)
-      if (!course.maker) course.maker = account.username
+      if (!course.maker) {
+        const username = account.username.substr(0, 10)
+        course.maker = username
+        await courseData.setMaker(username)
+      }
       delete course.tiles
       delete course.tilesSub
       delete course.sounds
@@ -138,11 +142,11 @@ export default class Course {
             const course = await createCourse(courseData[i])
             courses.push(course)
           }
-          fs.unlinkSync(tmpFile)
           return courses
         } catch (err) {
-          fs.unlinkSync(tmpFile)
           return null
+        } finally {
+          fs.unlinkSync(tmpFile)
         }
       } else if (is3DS()) {
         const courseData = await loadCourse(tmpFile, 0, false)
