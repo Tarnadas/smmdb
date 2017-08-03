@@ -1,13 +1,22 @@
 import {
   ObjectID
 } from 'mongodb'
+import randomString from 'crypto-random-string'
+
 import {
   generateAPIKey
 } from './scripts/util'
 import Database from './Database'
 
+const MAX_LENGTH_USERNAME = 20
+
 export default class Account {
   static async createAccount ({ googleid, username, email, idtoken }) {
+    if (username.length > MAX_LENGTH_USERNAME) username = username.substr(0, MAX_LENGTH_USERNAME)
+    const accountNames = (await Database.filterAccounts().toArray()).map(ac => ac.username)
+    while (accountNames.includes(username)) {
+      username = username.substr(0, 15) + randomString(3)
+    }
     return (await Database.addAccount({
       googleid,
       username,

@@ -15,6 +15,8 @@ export default class Database {
     if (isTest) {
       try {
         await this.db.collection('coursesTest').drop()
+      } catch (err) {}
+      try {
         await this.db.collection('accountsTest').drop()
       } catch (err) {}
       this.courses = this.db.collection('coursesTest')
