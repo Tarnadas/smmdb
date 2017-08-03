@@ -167,7 +167,7 @@ class UploadView extends React.PureComponent {
       </div>
     return (
       <div style={styles.main}>
-        <div style={styles.upload} onScroll={this.handleScroll}>
+        <div style={styles.upload} id='scroll' onScroll={this.handleScroll}>
           {
             accountData.id ? (
               <div style={styles.flex}>
