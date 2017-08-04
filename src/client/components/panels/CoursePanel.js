@@ -279,10 +279,10 @@ class CoursePanel extends React.PureComponent {
         height: 'auto',
         backgroundColor: '#d7db48',
         borderRadius: '10px 0 0 10px',
-        display: screenSize === ScreenSize.SMALL ? 'none' : 'block'
+        display: screenSize === ScreenSize.SUPER_SMALL ? 'none' : 'block'
       },
       details: {
-        width: screenSize === ScreenSize.SMALL ? '100%' : 'calc(100% - 100px)',
+        width: screenSize === ScreenSize.SUPER_SMALL ? '100%' : 'calc(100% - 100px)',
         maxWidth: '806px',
         display: 'inline-flex',
         flexWrap: 'wrap',
@@ -299,7 +299,7 @@ class CoursePanel extends React.PureComponent {
         maxWidth: 'calc(100% - 155px)',
         margin: '0 10px',
         textAlign: 'left',
-        fontSize: screenSize === ScreenSize.SMALL ? '16px' : '22px',
+        fontSize: screenSize === ScreenSize.SUPER_SMALL ? '16px' : '22px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -316,7 +316,7 @@ class CoursePanel extends React.PureComponent {
         padding: '6px'
       },
       preview: {
-        width: screenSize === ScreenSize.SMALL ? '100%' : 'calc(100% - 86px)',
+        width: screenSize === ScreenSize.SUPER_SMALL ? '100%' : 'calc(100% - 86px)',
         height: '81px',
         overflow: 'hidden'
       },
@@ -332,7 +332,7 @@ class CoursePanel extends React.PureComponent {
       mii: {
         height: '81px',
         width: '86px',
-        display: screenSize === ScreenSize.SMALL ? 'none' : 'block'
+        display: screenSize === ScreenSize.SUPER_SMALL ? 'none' : 'block'
       },
       miiImgWrapper: {
         width: '76px',
@@ -421,9 +421,9 @@ class CoursePanel extends React.PureComponent {
         height: 'auto'
       },
       buttonPanel: {
-        width: screenSize === ScreenSize.LARGE ? 'calc(100% - 360px)' : 'auto',
+        width: screenSize >= ScreenSize.MEDIUM ? 'calc(100% - 360px)' : 'auto',
         height: 'auto',
-        margin: screenSize !== ScreenSize.LARGE ? '20px' : '0 20px',
+        margin: screenSize < ScreenSize.MEDIUM ? '20px' : '0 20px',
         display: 'flex',
         alignItems: 'flex-start'
       }
@@ -494,7 +494,7 @@ class CoursePanel extends React.PureComponent {
                   )
                 } />
                 {
-                  screenSize !== ScreenSize.SMALL && (
+                  screenSize > ScreenSize.SUPER_SMALL && (
                   <div style={styles.statsText}>
                     {
                       course.difficulty === 0 ? (

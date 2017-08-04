@@ -99,13 +99,13 @@ class MainView extends React.PureComponent {
     const courses = this.props.courses.toJS()
     const styles = {
       main: {
-        display: screenSize === ScreenSize.LARGE ? 'flex' : 'flex',
-        flexDirection: screenSize === ScreenSize.LARGE ? 'column' : 'column',
-        alignItems: screenSize === ScreenSize.LARGE ? 'center' : 'center'
+        display: screenSize >= ScreenSize.MEDIUM ? 'flex' : 'flex',
+        flexDirection: screenSize >= ScreenSize.MEDIUM ? 'column' : 'column',
+        alignItems: screenSize >= ScreenSize.MEDIUM ? 'center' : 'center'
       },
       content: {
         maxWidth: '926px',
-        overflowY: screenSize === ScreenSize.LARGE ? 'scroll' : '',
+        overflowY: screenSize >= ScreenSize.MEDIUM ? 'scroll' : '',
         zIndex: '10',
         flex: '1'
       }
@@ -114,7 +114,7 @@ class MainView extends React.PureComponent {
       <div style={styles.main}>
         <StatsPanel />
         {
-          screenSize === ScreenSize.LARGE && <SideBarArea />
+          screenSize >= ScreenSize.MEDIUM && <SideBarArea />
         }
         <div style={styles.content} id='scroll' onScroll={this.handleScroll}>
           {

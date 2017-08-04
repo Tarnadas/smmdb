@@ -28,11 +28,13 @@ export default class SMMButton extends React.PureComponent {
     this.setState({
       hover: true
     })
+    if (this.props.onMouseEnter) this.props.onMouseEnter()
   }
   mouseLeave () {
     this.setState({
       hover: false
     })
+    if (this.props.onMouseLeave) this.props.onMouseLeave()
   }
   deleteEnter () {
     this.setState({

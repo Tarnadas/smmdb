@@ -131,14 +131,14 @@ class ProfileView extends React.PureComponent {
     const colorScheme = this.state.changed ? COLOR_SCHEME.RED : (this.state.saved ? COLOR_SCHEME.GREEN : COLOR_SCHEME.YELLOW)
     const styles = {
       main: {
-        display: screenSize === ScreenSize.LARGE ? 'flex' : 'flex',
-        flexDirection: screenSize === ScreenSize.LARGE ? 'column' : 'column',
-        alignItems: screenSize === ScreenSize.LARGE ? 'center' : 'center'
+        display: screenSize >= ScreenSize.MEDIUM ? 'flex' : 'flex',
+        flexDirection: screenSize >= ScreenSize.MEDIUM ? 'column' : 'column',
+        alignItems: screenSize >= ScreenSize.MEDIUM ? 'center' : 'center'
       },
       profile: {
-        width: screenSize === ScreenSize.LARGE ? 'calc(100% - 260px)' : '100%',
+        width: screenSize >= ScreenSize.MEDIUM ? 'calc(100% - 260px)' : '100%',
         maxWidth: '926px',
-        height: screenSize === ScreenSize.LARGE ? 'calc(100% - 40px)' : 'auto',
+        height: screenSize >= ScreenSize.MEDIUM ? 'calc(100% - 40px)' : 'auto',
         overflow: 'hidden',
         zIndex: '10',
         marginTop: '40px',
@@ -146,9 +146,9 @@ class ProfileView extends React.PureComponent {
       },
       flex: {
         overflow: 'hidden',
-        display: screenSize === ScreenSize.LARGE ? 'flex' : 'block',
-        flexDirection: screenSize === ScreenSize.LARGE ? 'column' : '',
-        alignItems: screenSize === ScreenSize.LARGE ? (accountData.id ? 'left' : 'center') : ''
+        display: screenSize >= ScreenSize.MEDIUM ? 'flex' : 'block',
+        flexDirection: screenSize >= ScreenSize.MEDIUM ? 'column' : '',
+        alignItems: screenSize >= ScreenSize.MEDIUM ? (accountData.id ? 'left' : 'center') : ''
       },
       option: {
         height: 'auto',

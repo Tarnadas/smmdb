@@ -237,7 +237,7 @@ async function main () {
       accounts: await Account.getAccountAmount()
     }
     const d = device(req.get('user-agent'))
-    let [html, preloadedState] = renderer(true, renderToString, null, req, await API.filterCourses(null, {limit: 10}), stats, d.is('phone') || d.is('tablet'))
+    let [html, preloadedState] = renderer(true, renderToString, null, req, await API.filterCourses(null, {limit: 10}), stats, d.is('phone'), d.is('tablet'))
     const index = cheerio.load($index.html())
     index('#root').html(html)
     index('body').prepend(`<script>window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')}</script>`)

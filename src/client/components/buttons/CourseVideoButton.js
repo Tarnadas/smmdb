@@ -25,8 +25,8 @@ class CourseVideoButton extends React.PureComponent {
         backgroundColor: '#11c2b0',
         color: '#fff',
         borderRadius: '5px',
-        border: screenSize === ScreenSize.LARGE ? '8px solid #0f9989' : '4px solid #0f9989',
-        height: screenSize === ScreenSize.LARGE ? '180px' : 'auto',
+        border: screenSize >= ScreenSize.MEDIUM ? '8px solid #0f9989' : '4px solid #0f9989',
+        height: screenSize >= ScreenSize.MEDIUM ? '180px' : 'auto',
         width: '100%',
         margin: '0 5px',
         boxShadow: '0px 5px 0px 0px rgba(0,0,0,0.4)',
@@ -41,15 +41,15 @@ class CourseVideoButton extends React.PureComponent {
       },
       iconImg: {
         width: 'auto',
-        height: screenSize === ScreenSize.LARGE ? '100%' : '80px'
+        height: screenSize >= ScreenSize.MEDIUM ? '100%' : '80px'
       },
       text: {
-        height: screenSize === ScreenSize.LARGE ? '70px' : 'auto',
-        width: screenSize === ScreenSize.LARGE ? '100%' : 'auto',
-        minWidth: screenSize === ScreenSize.LARGE ? '' : '90px',
-        margin: screenSize === ScreenSize.LARGE ? '' : '3px 0',
-        lineHeight: screenSize === ScreenSize.LARGE ? '70px' : '',
-        fontSize: screenSize === ScreenSize.LARGE ? '24px' : '16px'
+        height: screenSize >= ScreenSize.MEDIUM ? '70px' : 'auto',
+        width: screenSize >= ScreenSize.MEDIUM ? '100%' : 'auto',
+        minWidth: screenSize >= ScreenSize.MEDIUM ? '' : '90px',
+        margin: screenSize >= ScreenSize.MEDIUM ? '' : '3px 0',
+        lineHeight: screenSize >= ScreenSize.MEDIUM ? '70px' : '',
+        fontSize: screenSize >= ScreenSize.MEDIUM ? '24px' : '16px'
       }
     }
     return (

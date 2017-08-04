@@ -46,12 +46,14 @@ class AppView extends React.PureComponent {
         this.props.dispatch(mediaQuery(size))
       }
     }
-    const queryLarge = window.matchMedia('(min-width: 1000px)')
+    const queryLarge = window.matchMedia('(min-width: 1360px)')
     queryLarge.addListener(listener.bind(this, ScreenSize.LARGE))
-    const queryMedium = window.matchMedia('(max-width: 999px) and (min-width: 700px)')
+    const queryMedium = window.matchMedia('(max-width: 1359px) and (min-width: 1000px)')
     queryMedium.addListener(listener.bind(this, ScreenSize.MEDIUM))
-    const querySmall = window.matchMedia('(max-width: 699px)')
+    const querySmall = window.matchMedia('(max-width: 999px) and (min-width: 700px)')
     querySmall.addListener(listener.bind(this, ScreenSize.SMALL))
+    const queryMobile = window.matchMedia('(max-width: 699px)')
+    queryMobile.addListener(listener.bind(this, ScreenSize.SUPER_SMALL))
 
     if (queryLarge.matches) {
       this.props.dispatch(mediaQuery(ScreenSize.LARGE))
@@ -59,6 +61,8 @@ class AppView extends React.PureComponent {
       this.props.dispatch(mediaQuery(ScreenSize.MEDIUM))
     } else if (querySmall.matches) {
       this.props.dispatch(mediaQuery(ScreenSize.SMALL))
+    } else if (queryMobile.matches) {
+      this.props.dispatch(mediaQuery(ScreenSize.SUPER_SMALL))
     }
   }
   componentWillReceiveProps (nextProps, nextContext) {
@@ -98,7 +102,7 @@ class AppView extends React.PureComponent {
     this.props.dispatch(setVideoId(''))
   }
   handleScroll (e) {
-    if (this.props.screenSize === ScreenSize.LARGE) return
+    if (this.props.screenSize >= ScreenSize.MEDIUM) return
     this.shouldUpdate(e.target)
   }
   shouldUpdate (values, fetchCourses) {
@@ -120,7 +124,7 @@ class AppView extends React.PureComponent {
         maxWidth: '100%',
         height: '100%',
         maxHeight: '100%',
-        overflowY: screenSize === ScreenSize.LARGE ? 'hidden' : 'scroll',
+        overflowY: screenSize >= ScreenSize.MEDIUM ? 'hidden' : 'scroll',
         display: 'flex',
         flexDirection: 'column'
       },
@@ -130,11 +134,13 @@ class AppView extends React.PureComponent {
         textAlign: 'center',
         boxShadow: '0px 10px 20px 0px rgba(0,0,0,0.3)',
         zIndex: '1',
-        flex: '0 0'
+        flex: '0 0',
+        margin: '5px 0'
       },
       logoFont: {
         display: 'inline-block',
-        color: '#000'
+        color: '#000',
+        whiteSpace: 'nowrap'
       },
       footer: {
         paddingTop: '13px',
@@ -168,10 +174,22 @@ class AppView extends React.PureComponent {
     const isLoggedIn = !!this.props.userName
     return (
       <div>
+        <TopBarArea isLoggedIn={isLoggedIn} />
         <div style={styles.global} onScroll={this.handleScroll}>
-          <TopBarArea isLoggedIn={isLoggedIn} />
           <div style={styles.logo}>
-            <div style={styles.logoFont}>SUPER MARIO MAKER DATABASE</div>
+            <div style={styles.logoFont}>
+              {
+                screenSize === ScreenSize.LARGE ? (
+                  'SUPER MARIO MAKER DATABASE'
+                ) : (
+                  screenSize === ScreenSize.MEDIUM ? (
+                    'SMM DATABASE'
+                  ) : (
+                    'SMMDB'
+                  )
+                )
+              }
+            </div>
           </div>
           <Route path='/' render={() => (
             <ContentView shouldUpdate={this.shouldUpdate} />

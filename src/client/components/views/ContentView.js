@@ -20,7 +20,7 @@ class ContentView extends React.PureComponent {
     const styles = {
       content: {
         backgroundColor: '#24997e',
-        height: screenSize === ScreenSize.LARGE ? '0%' : 'auto',
+        height: screenSize >= ScreenSize.MEDIUM ? '0%' : 'auto',
         textAlign: 'center',
         flex: '1'
       }

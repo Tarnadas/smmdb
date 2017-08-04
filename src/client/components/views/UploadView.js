@@ -46,7 +46,6 @@ class UploadView extends React.PureComponent {
     })()
   }
   async fetchCourses (shouldConcat = false, limit = LIMIT, start = 0, props = this.props) {
-    console.log('fetch')
     const accountData = props.accountData
     if (!accountData.get('id')) return
     try {
@@ -58,7 +57,6 @@ class UploadView extends React.PureComponent {
         json: true,
         useElectronNet: false
       })).body
-      console.log(courses)
       if (courses && courses.length > 0) {
         props.dispatch(setCoursesSelf(courses, shouldConcat))
       }
@@ -119,21 +117,21 @@ class UploadView extends React.PureComponent {
     const uploadedCourses = this.props.uploadedCourses.toJS()
     const styles = {
       main: {
-        display: screenSize === ScreenSize.LARGE ? 'flex' : 'flex',
-        flexDirection: screenSize === ScreenSize.LARGE ? 'column' : 'column',
-        alignItems: screenSize === ScreenSize.LARGE ? 'center' : 'center'
+        display: screenSize >= ScreenSize.MEDIUM ? 'flex' : 'flex',
+        flexDirection: screenSize >= ScreenSize.MEDIUM ? 'column' : 'column',
+        alignItems: screenSize >= ScreenSize.MEDIUM ? 'center' : 'center'
       },
       upload: {
         maxWidth: '926px',
-        overflowY: screenSize === ScreenSize.LARGE ? 'scroll' : '',
+        overflowY: screenSize >= ScreenSize.MEDIUM ? 'scroll' : '',
         zIndex: '10',
         flex: '1',
         color: '#fff'
       },
       flex: {
         overflow: 'hidden',
-        display: screenSize === ScreenSize.LARGE ? 'flex' : 'block',
-        flexDirection: screenSize === ScreenSize.LARGE ? 'column' : '',
+        display: screenSize >= ScreenSize.MEDIUM ? 'flex' : 'block',
+        flexDirection: screenSize >= ScreenSize.MEDIUM ? 'column' : '',
         height: 'auto'
       },
       line: {
