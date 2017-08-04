@@ -17,7 +17,7 @@ export default function courseData (state, action) {
       return state
     case 'SET_COURSES':
       if (action.concat) {
-        if (action.courses.length === 0) return state
+        // if (action.courses.length === 0) return state
         let list = state.get('main').concat(action.courses)
         const a = []
         list = list.filter(x => {
@@ -39,7 +39,7 @@ export default function courseData (state, action) {
       state = state.setIn(['self', action.id], action.course)
       return state
     case 'SET_COURSES_SELF':
-      if (action.courses.length === 0) return state
+      // if (action.courses.length === 0) return state
       let list
       if (action.concat) {
         list = state.get('self').concat(action.courses)

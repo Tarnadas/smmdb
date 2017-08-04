@@ -33,8 +33,8 @@ class MainView extends React.PureComponent {
     })()
   }
   componentWillReceiveProps (nextProps, nextContext) {
-    if (nextProps.filter === this.props.filter) return
-    this.scrollBar.scrollToTop()
+    // if (nextProps.filter === this.props.filter) return
+    // this.scrollBar.scrollToTop() // TODO
   }
   async fetchCourses () {
     try {

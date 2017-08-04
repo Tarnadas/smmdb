@@ -10,6 +10,7 @@ import * as path from 'path'
 import Database from '../Database'
 import Account from '../Account'
 import Course from '../Course'
+import Bot from '..'
 
 const MAX_FILTER_LIMIT = 100
 
@@ -214,7 +215,7 @@ export default class API {
       }
       fs.writeFileSync(path.join(uploadPath, String(courses[0]._id)), req.body)
       try {
-        // Bot.uploadCourse(courses)
+        Bot.uploadCourse(courses)
       } catch (err) {
         console.log(err)
       }
@@ -259,7 +260,7 @@ export default class API {
     }
     fs.writeFileSync(path.join(uploadPath, String(course._id)), req.body)
     try {
-      // Bot.updateCourse(course)
+      Bot.updateCourse(course)
     } catch (err) {
       console.log(err)
     }

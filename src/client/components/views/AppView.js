@@ -75,7 +75,7 @@ class AppView extends React.PureComponent {
   }
   componentWillUpdate (nextProps, nextState, nextContext) {
     this.screenSize = 0
-    if (this.props.courses !== nextProps.courses) {
+    if (this.props.courses !== nextProps.courses || this.props.coursesSelf !== nextProps.coursesSelf) {
       this.doUpdate = false
     }
   }
@@ -89,7 +89,7 @@ class AppView extends React.PureComponent {
           'Authorization': `APIKEY ${this.props.apiKey}`
         }
       } : null))).body
-      if (courses && courses.length > 0) {
+      if (courses != null) {
         this.props.dispatch(setCourses(courses, shouldConcat))
       }
     } catch (err) {
