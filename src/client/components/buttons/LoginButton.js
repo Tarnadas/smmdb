@@ -41,6 +41,12 @@ class LoginButton extends React.PureComponent {
       }
     })()
   }
+  componentWillReceiveProps (nextProps, nextContext) {
+    if (this.props.accountData === nextProps.accountData) return
+    this.setState({
+      hover: false
+    })
+  }
   mouseEnter () {
     this.setState({
       hover: true
@@ -89,6 +95,7 @@ class LoginButton extends React.PureComponent {
         lineHeight: '40px',
         width: 'auto',
         height: '40px',
+        minHeight: '40px',
         backgroundColor: this.state.hover ? '#323245' : '#ffe500',
         cursor: 'pointer',
         outline: 'none',
@@ -100,6 +107,18 @@ class LoginButton extends React.PureComponent {
         boxShadow: '1px 4px 13px 0 rgba(0,0,0,0.5)',
         padding: '0',
         textAlign: 'left',
+        fontFamily: 'SuperMarioMakerExtended,SuperMarioMaker,Roboto,arial,sans-serif'
+      },
+      google: {
+        lineHeight: '40px',
+        width: 'auto',
+        height: '40px',
+        backgroundColor: this.state.hover ? '#323245' : '#ffe500',
+        cursor: 'pointer',
+        padding: '0',
+        textAlign: 'left',
+        border: '0',
+        borderRadius: '5px',
         fontFamily: 'SuperMarioMakerExtended,SuperMarioMaker,Roboto,arial,sans-serif'
       },
       smmIcon: {
@@ -119,16 +138,15 @@ class LoginButton extends React.PureComponent {
       text = 'Sign in with Google'
     }
     return (
-      <div onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave}>
+      <div style={styles.smmButton} onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave} onClick={this.props.onClick && this.props.onClick}>
         {
           loggedIn ? (
-            <div style={styles.smmButton} onClick={this.onLogOut}>
+            <div onClick={this.onLogOut}>
               <ButtonSub iconStyle={styles.smmIcon} iconSrc={iconSrc} text={text} hover={this.state.hover} />
             </div>
           ) : (
-            <GoogleLogin
+            <GoogleLogin style={styles.google}
               clientId='899493559187-bnvgqj1i8cnph7ilkl4h261836skee25.apps.googleusercontent.com'
-              style={styles.smmButton}
               onSuccess={this.onGoogleLoginSuccess}
               onFailure={this.onGoogleLoginFailure}
             >

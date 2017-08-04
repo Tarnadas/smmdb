@@ -17,10 +17,16 @@ class TopBarArea extends React.PureComponent {
       buttonHover: false,
       navHover: false
     }
+    this.onClick = this.onClick.bind(this)
     this.onMouseEnterButton = this.onMouseEnter.bind(this, 'buttonHover')
     this.onMouseLeaveButton = this.onMouseLeave.bind(this, 'buttonHover')
     this.onMouseEnterNav = this.onMouseEnter.bind(this, 'navHover')
     this.onMouseLeaveNav = this.onMouseLeave.bind(this, 'navHover')
+  }
+  onClick () {
+    this.setState(prevState => ({
+      buttonHover: !prevState.buttonHover
+    }))
   }
   onMouseEnter (type) {
     this.setState({
@@ -54,18 +60,44 @@ class TopBarArea extends React.PureComponent {
         width: 'auto',
         height: 'auto',
         flexShrink: '0'
+      },
+      icon: {
+        position: 'fixed',
+        width: '40px',
+        height: '40px',
+        padding: '4px',
+        top: '8px',
+        left: '0',
+        backgroundColor: '#ffcf00',
+        boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.75)',
+        borderRadius: '0 4px 4px 0',
+        transform: hover ? 'translateX(+240px)' : 'none',
+        transition: 'transform 0.5s linear',
+        willChange: 'transform'
+      },
+      img: {
+        width: '100%',
+        height: '100%'
       }
     }
     return (
       <div style={styles.topbar}>
         <div style={styles.padding}>
           <div style={styles.bar}>
-            <SMMButton text='Navigation' iconSrc='/img/menu.png' iconColor='bright' onMouseEnter={this.onMouseEnterButton} onMouseLeave={this.onMouseLeaveButton} />
+            {
+              screenSize < ScreenSize.MEDIUM ? (
+                <div style={styles.icon} onMouseEnter={this.onMouseEnterButton} onMouseLeave={this.onMouseLeaveButton} onClick={this.onClick}>
+                  <img style={styles.img} src='/img/menu.svg' />
+                </div>
+              ) : (
+                <SMMButton text='Navigation' iconSrc='/img/menu.png' iconColor='bright' onMouseEnter={this.onMouseEnterButton} onMouseLeave={this.onMouseLeaveButton} />
+              )
+            }
             <NavigationArea display={hover} onMouseEnter={this.onMouseEnterNav} onMouseLeave={this.onMouseLeaveNav} onClick={this.onMouseLeaveNav} />
           </div>
           <div style={styles.button}>
             {
-              !process.env.ELECTRON && <LoginButton />
+              !process.env.ELECTRON && screenSize >= ScreenSize.MEDIUM && <LoginButton />
             }
           </div>
         </div>

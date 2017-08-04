@@ -1,24 +1,38 @@
 import React from 'react'
+import {
+  connect
+} from 'react-redux'
 
 import NavigationButton from '../buttons/NavigationButton'
+import LoginButton from '../buttons/LoginButton'
+import {
+  ScreenSize
+} from '../../reducers/mediaQuery'
 
-export default class NavigationArea extends React.PureComponent {
+class NavigationArea extends React.PureComponent {
   render () {
+    const screenSize = this.props.screenSize
     const display = this.props.display
     const styles = {
       navigation: {
-        display: display ? 'flex' : 'none',
-        width: 'auto',
-        minWidth: '200px',
-        height: 'auto',
-        position: 'absolute',
-        top: '40px',
-        left: '10px',
-        flexDirection: 'column'
+        display: 'flex',
+        width: '240px',
+        height: screenSize >= ScreenSize.MEDIUM ? 'auto' : '100vh',
+        maxHeight: screenSize >= ScreenSize.MEDIUM ? display ? '500px' : '0' : '100vh',
+        position: screenSize >= ScreenSize.MEDIUM ? 'absolute' : 'fixed',
+        top: screenSize >= ScreenSize.MEDIUM ? '40px' : '0',
+        left: screenSize >= ScreenSize.MEDIUM ? '10px' : '0',
+        flexDirection: 'column',
+        backgroundColor: screenSize >= ScreenSize.MEDIUM ? '' : '#ffcf00',
+        overflowY: display ? screenSize >= ScreenSize.MEDIUM ? 'none' : 'auto' : 'hidden',
+        overflowX: 'hidden',
+        transform: screenSize >= ScreenSize.MEDIUM ? 'none' : display ? 'none' : 'translateX(-240px)',
+        transition: screenSize >= ScreenSize.MEDIUM ? 'max-height 1s linear' : 'transform 0.5s linear',
+        willChange: screenSize >= ScreenSize.MEDIUM ? 'max-height' : 'transform'
       }
     }
     return (
-      <div style={styles.navigation}
+      <div style={styles.navigation} id='scroll'
         onMouseEnter={this.props.onMouseEnter}
         onMouseLeave={this.props.onMouseLeave}
       >
@@ -42,7 +56,15 @@ export default class NavigationArea extends React.PureComponent {
           !process.env.ELECTRON &&
           <NavigationButton onClick={this.props.onClick} link='https://discord.gg/SPZsgSe' blank text='Discord' iconSrc='/img/discord.png' iconColor='dark' />
         }
+        <div style={{height: '20px', minHeight: '20px'}} />
+        {
+          screenSize < ScreenSize.MEDIUM && <LoginButton onClick={this.props.onClick} />
+        }
+        <div style={{height: '70px', minHeight: '70px'}} />
       </div>
     )
   }
 }
+export default connect(state => ({
+  screenSize: state.getIn(['mediaQuery', 'screenSize'])
+}))(NavigationArea)
