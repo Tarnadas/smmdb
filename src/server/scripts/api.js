@@ -10,7 +10,7 @@ import * as path from 'path'
 import Database from '../Database'
 import Account from '../Account'
 import Course from '../Course'
-import Bot from '..'
+import { Bot } from '..'
 
 const MAX_FILTER_LIMIT = 100
 
