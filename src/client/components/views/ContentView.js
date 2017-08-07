@@ -31,7 +31,7 @@ class ContentView extends React.PureComponent {
           <MainView shouldUpdate={this.props.shouldUpdate} />
         )} />
         <Route path='/upload' render={() => (
-          <UploadView shouldUpdate={this.props.shouldUpdate} />
+          <UploadView shouldUpdate={this.props.shouldUpdate} setFetchCourses={this.props.setFetchCourses} />
         )} />
         <Route path='/profile' component={ProfileView} />
       </div>

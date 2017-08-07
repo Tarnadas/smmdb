@@ -32,9 +32,13 @@ const STEP_LIMIT = 10
 class AppView extends React.PureComponent {
   constructor (props) {
     super(props)
+    this.state = {
+      fetchCourses: null
+    }
     this.doUpdate = false
     this.queryString = stringify(props.filter.toJS())
     this.fetchCourses = this.fetchCourses.bind(this)
+    this.setFetchCourses = this.setFetchCourses.bind(this)
     this.onVideoHide = this.onVideoHide.bind(this)
     this.handleScroll = this.handleScroll.bind(this)
     this.shouldUpdate = this.shouldUpdate.bind(this)
@@ -98,6 +102,11 @@ class AppView extends React.PureComponent {
       }
     }
   }
+  setFetchCourses (fetchCourses) {
+    this.setState({
+      fetchCourses
+    })
+  }
   onVideoHide () {
     this.props.dispatch(setVideoId(''))
   }
@@ -112,6 +121,7 @@ class AppView extends React.PureComponent {
     if (shouldUpdate) {
       this.doUpdate = true;
       (async () => {
+        if (this.state.fetchCourses) fetchCourses = this.state.fetchCourses
         await fetchCourses ? fetchCourses(true, STEP_LIMIT, this.props.coursesSelf.size) : this.fetchCourses(true, STEP_LIMIT, this.props.courses.size)
       })()
     }
@@ -192,7 +202,7 @@ class AppView extends React.PureComponent {
             </div>
           </div>
           <Route path='/' render={() => (
-            <ContentView shouldUpdate={this.shouldUpdate} />
+            <ContentView shouldUpdate={this.shouldUpdate} setFetchCourses={this.setFetchCourses} />
           )} />
           <div style={styles.footer}>
               Super Mario Maker Database (in short SMMDB) is not affiliated or associated with any other company.<br />

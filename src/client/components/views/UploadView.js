@@ -32,12 +32,16 @@ class UploadView extends React.PureComponent {
     this.onCourseDelete = this.onCourseDelete.bind(this)
     this.onCourseDeleteRecent = this.onCourseDeleteRecent.bind(this)
     this.handleScroll = this.handleScroll.bind(this)
+    props.setFetchCourses(this.fetchCourses)
   }
   componentWillMount () {
     if (!this.props.accountData.get('id')) return;
     (async () => {
       await this.fetchCourses()
     })()
+  }
+  componentWillUnmount () {
+    this.props.setFetchCourses(null)
   }
   componentWillReceiveProps (nextProps, nextContext) {
     if (nextProps.accountData === this.props.accountData || !nextProps.accountData.get('id')) return;

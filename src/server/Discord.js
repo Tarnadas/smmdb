@@ -1,6 +1,5 @@
 import Discord from 'discord.js'
 
-import Account from './Account'
 import { discordToken } from './scripts/credentials'
 
 export default class Bot {
@@ -25,10 +24,10 @@ export default class Bot {
     await this.client.login(discordToken)
   }
 
-  uploadCourse (courses) {
+  uploadCourse (courses, account) {
     if (courses.length === 0) return
     const isMany = courses.length > 1
-    const ownerName = Account.getAccount(courses[0].owner).username
+    const ownerName = account.username
     const messages = []
     messages[0] = isMany ? `New courses have been uploaded by ${ownerName}:` : `A new course has been uploaded by ${ownerName}`
     let messageIndex = 0
@@ -85,8 +84,8 @@ export default class Bot {
     }
   }
 
-  updateCourse (course) {
-    const ownerName = Account.getAccount(course.owner).username
+  updateCourse (course, account) {
+    const ownerName = account.username
     let autoScroll = `${course.autoScroll === 1 ? (
       '<:turtle:334989248526811146>'
     ) : (

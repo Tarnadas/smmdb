@@ -215,7 +215,7 @@ export default class API {
       }
       fs.writeFileSync(path.join(uploadPath, String(courses[0]._id)), req.body)
       try {
-        Bot.uploadCourse(courses)
+        Bot.uploadCourse(courses, account)
       } catch (err) {
         console.log(err)
       }
@@ -260,7 +260,7 @@ export default class API {
     }
     fs.writeFileSync(path.join(uploadPath, String(course._id)), req.body)
     try {
-      Bot.updateCourse(course)
+      Bot.updateCourse(course, account)
     } catch (err) {
       console.log(err)
     }
