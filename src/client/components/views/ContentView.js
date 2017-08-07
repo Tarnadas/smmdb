@@ -7,14 +7,21 @@ import {
 } from 'react-router-dom'
 
 import MainView from './MainView'
+import CoursesView from './CoursesView'
 import UploadView from './UploadView'
 import ProfileView from './ProfileView'
+import FAQView from './FAQView'
 
 import {
   ScreenSize
 } from '../../reducers/mediaQuery'
 
 class ContentView extends React.PureComponent {
+  componentDidUpdate (prevProps, prevState, prevContext) {
+    if (this.props.location !== prevProps.location) {
+      this.props.global.scrollTop = 0
+    }
+  }
   render () {
     const screenSize = this.props.screenSize
     const styles = {
@@ -27,13 +34,15 @@ class ContentView extends React.PureComponent {
     }
     return (
       <div style={styles.content}>
-        <Route exact path='/' render={() => (
-          <MainView shouldUpdate={this.props.shouldUpdate} />
+        <Route exact path='/' component={MainView} />
+        <Route path='/courses' render={() => (
+          <CoursesView shouldUpdate={this.props.shouldUpdate} />
         )} />
         <Route path='/upload' render={() => (
           <UploadView shouldUpdate={this.props.shouldUpdate} setFetchCourses={this.props.setFetchCourses} />
         )} />
         <Route path='/profile' component={ProfileView} />
+        <Route path='/faq' component={FAQView} />
       </div>
     )
   }

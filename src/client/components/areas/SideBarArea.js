@@ -9,10 +9,7 @@ export default class SideBarArea extends React.PureComponent {
       sideBar: {
         width: '100px',
         height: 'auto',
-        overflow: 'hidden',
-        position: 'absolute',
-        top: '200px',
-        left: '20px',
+        margin: '0 30px',
         color: '#6dd3bd',
         boxShadow: '0px 0px 4px 12px rgba(0,0,0,0.1)',
         display: 'flex',

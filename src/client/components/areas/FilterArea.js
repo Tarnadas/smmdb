@@ -2,10 +2,14 @@ import React from 'react'
 import {
   connect
 } from 'react-redux'
+import {
+  Link, withRouter
+} from 'react-router-dom'
 
 import SMMButton from '../buttons/SMMButton'
+import FilterCloseButton from '../buttons/FilterCloseButton'
 import {
-  applyFilter, setFilter, showFilter
+  applyFilter, setFilter
 } from '../../actions'
 
 const MAX_LENGTH_TITLE = 0x20
@@ -18,7 +22,6 @@ class FilterArea extends React.PureComponent {
     this.state = {}
     this.getFilter = this.getFilter.bind(this)
     this.setFilter = this.setFilter.bind(this)
-    this.onFilterHide = this.onFilterHide.bind(this)
     this.handleKeyPress = this.handleKeyPress.bind(this)
     this.onTitleChange = this.onStringChange.bind(this, 'title', MAX_LENGTH_TITLE)
     this.onMakerChange = this.onStringChange.bind(this, 'maker', MAX_LENGTH_MAKER)
@@ -88,13 +91,7 @@ class FilterArea extends React.PureComponent {
   setFilter () {
     const filter = this.getFilter()
     this.props.dispatch(setFilter(filter))
-    this.props.dispatch(showFilter(false))
     this.props.dispatch(applyFilter())
-  }
-  onFilterHide () {
-    const filter = this.getFilter()
-    this.props.dispatch(setFilter(filter))
-    this.props.dispatch(showFilter(false))
   }
   handleKeyPress (e) {
     if (e.key !== 'Enter') return
@@ -125,6 +122,10 @@ class FilterArea extends React.PureComponent {
   render () {
     const styles = {
       area: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        textAlign: 'left',
+        position: 'absolute',
         width: '1050px',
         height: 'auto',
         margin: 'auto',
@@ -141,16 +142,6 @@ class FilterArea extends React.PureComponent {
         fontSize: '34px',
         height: '40px',
         lineHeight: '40px'
-      },
-      close: {
-        cursor: 'pointer',
-        width: '32px',
-        height: '32px',
-        float: 'right',
-        margin: '6px',
-        backgroundColor: '#11c2b0',
-        borderRadius: '5px',
-        padding: '2px'
       },
       option: {
         height: 'auto',
@@ -179,9 +170,9 @@ class FilterArea extends React.PureComponent {
         <div style={styles.title}>
           Filters
         </div>
-        <div style={styles.close} onClick={this.onFilterHide}>
-          <img src='/img/cancel.svg' />
-        </div>
+        <Link to='/courses' style={{width: 'auto'}}>
+          <FilterCloseButton getFilter={this.getFilter} />
+        </Link>
         <div style={styles.option}>
           <div style={styles.value}>
             Title:
@@ -316,17 +307,19 @@ class FilterArea extends React.PureComponent {
             </select>
           </div>
         </div><br />
-        <SMMButton text='Apply' iconSrc='/img/filter.svg' fontSize='13px' padding='3px' onClick={this.setFilter} />
+        <Link to='/courses'>
+          <SMMButton text='Apply' iconSrc='/img/filter.svg' fontSize='13px' padding='3px' onClick={this.setFilter} />
+        </Link>
       </div>
     )
   }
 }
-export default connect(state => {
+export default withRouter(connect(state => {
   const filter = state.getIn(['filter', 'nextFilter'])
   return {
     filter
   }
-})(FilterArea)
+})(FilterArea))
 
 const pad = function (number, size) {
   let s = String(this)

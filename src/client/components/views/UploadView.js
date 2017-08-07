@@ -2,7 +2,6 @@ import React from 'react'
 import {
   connect
 } from 'react-redux'
-import { forceCheck } from 'react-lazyload'
 import got from 'got'
 
 import { resolve } from 'url'

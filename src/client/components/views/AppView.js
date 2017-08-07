@@ -11,9 +11,9 @@ import got from 'got'
 import { stringify } from 'querystring'
 import { resolve } from 'url'
 
+import ContentView from './ContentView'
 import TopBarArea from '../areas/TopBarArea'
 import FilterArea from '../areas/FilterArea'
-import ContentView from './ContentView'
 
 import {
   ScreenSize
@@ -182,10 +182,11 @@ class AppView extends React.PureComponent {
       }
     }
     const isLoggedIn = !!this.props.userName
+    const global = this.global
     return (
       <div>
         <TopBarArea isLoggedIn={isLoggedIn} />
-        <div style={styles.global} onScroll={this.handleScroll}>
+        <div style={styles.global} onScroll={this.handleScroll} ref={glob => { this.global = glob }}>
           <div style={styles.logo}>
             <div style={styles.logoFont}>
               {
@@ -202,7 +203,7 @@ class AppView extends React.PureComponent {
             </div>
           </div>
           <Route path='/' render={() => (
-            <ContentView shouldUpdate={this.shouldUpdate} setFetchCourses={this.setFetchCourses} />
+            <ContentView global={global} shouldUpdate={this.shouldUpdate} setFetchCourses={this.setFetchCourses} isServer={this.props.isServer} />
           )} />
           <div style={styles.footer}>
               Super Mario Maker Database (in short SMMDB) is not affiliated or associated with any other company.<br />
@@ -217,9 +218,7 @@ class AppView extends React.PureComponent {
         )}
         {
           this.props.showFilter && (
-          <div style={styles.overflow}>
-            <FilterArea />
-          </div>
+          <div />
         )}
       </div>
     )

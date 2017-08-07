@@ -1,20 +1,9 @@
 import React from 'react'
 import {
-  connect
-} from 'react-redux'
+  Link, withRouter
+} from 'react-router-dom'
 
-import {
-  showFilter
-} from '../../actions'
-
-class FilterButton extends React.PureComponent {
-  constructor (props) {
-    super(props)
-    this.onSetFilter = this.onSetFilter.bind(this)
-  }
-  onSetFilter () {
-    this.props.dispatch(showFilter(true))
-  }
+export default class FilterButton extends React.PureComponent {
   render () {
     const styles = {
       button: {
@@ -31,17 +20,19 @@ class FilterButton extends React.PureComponent {
         lineHeight: '22px',
         display: 'block',
         marginTop: '5px',
-        fontSize: '16px'
+        fontSize: '16px',
+        color: '#6dd3bd'
       }
     }
     return (
-      <div style={styles.button} onClick={this.onSetFilter}>
-        <img style={styles.img} src='/img/filter.svg' />
-        <div style={styles.text}>
-          Filter
+      <Link to='/courses/filter'>
+        <div style={styles.button} onClick={this.onSetFilter}>
+          <img style={styles.img} src='/img/filter.svg' />
+          <div style={styles.text}>
+            Filter
+          </div>
         </div>
-      </div>
+      </Link>
     )
   }
 }
-export default connect()(FilterButton)

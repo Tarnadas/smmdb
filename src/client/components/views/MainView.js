@@ -1,136 +1,20 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
-import got from 'got'
 
-import { resolve } from 'url'
-
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
-import {
-  setCourses, deleteCourse
-} from '../../actions'
-import {
-  domain
-} from '../../../static'
-import StatsPanel from '../panels/StatsPanel'
-import CoursePanel from '../panels/CoursePanel'
-import SideBarArea from '../areas/SideBarArea'
-
-class MainView extends React.PureComponent {
-  constructor (props) {
-    super(props)
-    this.fetchCourses = this.fetchCourses.bind(this)
-    this.renderCourses = this.renderCourses.bind(this)
-    this.onCourseDelete = this.onCourseDelete.bind(this)
-    this.handleScroll = this.handleScroll.bind(this)
-  }
-  componentWillMount () {
-    (async () => {
-      await this.fetchCourses()
-    })()
-  }
-  componentWillReceiveProps (nextProps, nextContext) {
-    // if (nextProps.filter === this.props.filter) return
-    // this.scrollBar.scrollToTop() // TODO
-  }
-  async fetchCourses () {
-    try {
-      const apiKey = this.props.accountData.get('apikey')
-      const courses = (await got(resolve(domain, `/api/getcourses?limit=10`), Object.assign({
-        json: true,
-        useElectronNet: false
-      }, apiKey ? {
-        headers: {
-          'Authorization': `APIKEY ${apiKey}`
-        }
-      } : null))).body
-      this.props.dispatch(setCourses(courses, false))
-    } catch (err) {
-      if (err.response) {
-        console.error(err.response.body)
-      } else {
-        console.error(err)
-      }
-    }
-  }
-  renderCourses (courses) {
-    const accountData = this.props.accountData
-    const onCourseDelete = this.onCourseDelete
-    let downloads
-    let currentDownloads
-    let smmdb
-    if (process.env.ELECTRON) {
-      downloads = this.props.downloads
-      currentDownloads = this.props.currentDownloads
-      smmdb = this.props.smmdb
-    }
-    return Array.from((function * () {
-      for (let i in courses) {
-        const course = courses[i]
-        let downloadedCourse
-        let progress
-        let saveId
-        if (process.env.ELECTRON) {
-          downloadedCourse = downloads.get(String(course.id))
-          progress = currentDownloads.get(String(course.id))
-          saveId = smmdb.getIn([String(course.id), 'saveId'])
-        }
-        yield (
-          accountData.get('id') && course.owner === accountData.get('id') ? (
-            <CoursePanel key={course.id} canEdit course={course} downloadedCourse={downloadedCourse} progress={progress} saveId={saveId} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />
-          ) : (
-            <CoursePanel key={course.id} course={course} downloadedCourse={downloadedCourse} progress={progress} saveId={saveId} />
-          )
-        )
-      }
-    })())
-  }
-  onCourseDelete (courseId) {
-    this.props.dispatch(deleteCourse(courseId))
-  }
-  handleScroll (e) {
-    this.props.shouldUpdate(e.target)
-  }
+export default class MainView extends React.PureComponent {
   render () {
-    const screenSize = this.props.screenSize
-    const courses = this.props.courses.toJS()
     const styles = {
       main: {
-        display: screenSize >= ScreenSize.MEDIUM ? 'flex' : 'flex',
-        flexDirection: screenSize >= ScreenSize.MEDIUM ? 'column' : 'column',
-        alignItems: screenSize >= ScreenSize.MEDIUM ? 'center' : 'center'
-      },
-      content: {
-        maxWidth: '926px',
-        overflowY: screenSize >= ScreenSize.MEDIUM ? 'scroll' : '',
-        zIndex: '10',
-        flex: '1'
+        display: 'flex'
       }
     }
     return (
       <div style={styles.main}>
-        <StatsPanel />
-        {
-          screenSize >= ScreenSize.MEDIUM && <SideBarArea />
-        }
-        <div style={styles.content} id='scroll' onScroll={this.handleScroll}>
-          {
-            this.renderCourses(courses)
-          }
-        </div>
+        Welcome to Super Mario Maker Database!
+        This is a website solely for the purpose to share Super Mario Maker courses platform independently.
+        It doesn't matter if you want to use courses on this website for Wii U, 3DS or an emulator. All platforms are supported.
+        To use all features on this website it is recommended to sign in with Google.
+        All shared content on this website is user-created. We do not share any copyrighted stuff.
       </div>
     )
   }
 }
-export default connect(state => ({
-  screenSize: state.getIn(['mediaQuery', 'screenSize']),
-  courses: state.getIn(['courseData', 'main']),
-  filter: state.getIn(['filter', 'currentFilter']),
-  accountData: state.getIn(['userData', 'accountData']),
-  downloads: state.getIn(['electron', 'appSaveData', 'downloads']),
-  currentDownloads: state.getIn(['electron', 'currentDownloads']),
-  smmdb: state.getIn(['electron', 'appSaveData', 'cemuSaveData', state.getIn(['electron', 'currentSave']), 'smmdb'])
-}))(MainView)
