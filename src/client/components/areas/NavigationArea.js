@@ -36,7 +36,7 @@ class NavigationArea extends React.PureComponent {
         onMouseEnter={this.props.onMouseEnter}
         onMouseLeave={this.props.onMouseLeave}
       >
-        <NavigationButton onClick={this.props.onClick} link='/' text='Home' iconSrc='/img/courses.png' iconColor='dark' />
+        <NavigationButton onClick={this.props.onClick} link='/' text='Home' iconSrc='/img/home.svg' iconColor='dark' />
         <NavigationButton onClick={this.props.onClick} link='/courses' text='Courses' iconSrc='/img/courses.png' iconColor='dark' />
         <NavigationButton onClick={this.props.onClick} link='/upload' text='Upload' iconSrc='/img/upload.png' iconColor='dark' />
         <NavigationButton onClick={this.props.onClick} link='/profile' text='Profile' iconSrc='/img/profile.png' iconColor='dark' />
