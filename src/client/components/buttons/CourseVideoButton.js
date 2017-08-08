@@ -28,10 +28,11 @@ class CourseVideoButton extends React.PureComponent {
         border: screenSize >= ScreenSize.MEDIUM ? '8px solid #0f9989' : '4px solid #0f9989',
         height: screenSize >= ScreenSize.MEDIUM ? '180px' : 'auto',
         width: '100%',
-        margin: '0 5px',
+        margin: '0px 5px 10px 5px',
         boxShadow: '0px 5px 0px 0px rgba(0,0,0,0.4)',
         cursor: 'pointer',
-        padding: '0 10px'
+        padding: '0 10px',
+        flex: '1 0 0%'
       },
       icon: {
         maxHeight: '110px',

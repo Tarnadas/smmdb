@@ -4,6 +4,7 @@ import {
   connect
 } from 'react-redux'
 import got from 'got'
+import QRCode from 'qrcode'
 
 import { resolve } from 'url'
 
@@ -420,12 +421,21 @@ class CoursePanel extends React.PureComponent {
         width: 'auto',
         height: 'auto'
       },
+      imgLarge: {
+        maxWidth: '320px',
+        maxHeight: '240px'
+      },
       buttonPanel: {
         width: screenSize >= ScreenSize.MEDIUM ? 'calc(100% - 360px)' : 'auto',
         height: 'auto',
         margin: screenSize < ScreenSize.MEDIUM ? '20px' : '0 20px',
         display: 'flex',
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
+        flexWrap: 'wrap'
+      },
+      qrCode: {
+        width: 'auto',
+        height: 'auto'
       }
     }
     return (
@@ -601,7 +611,7 @@ class CoursePanel extends React.PureComponent {
                 </div>
               )}
               <div style={styles.imageLarge}>
-                <img src={`${domain}/courseimg/${course.id}.jpg${course.vPrev ? `?v=${course.vPrev}` : ''}`} ref={v => { this.prev = v }} />
+                <img style={styles.imgLarge} src={`${domain}/courseimg/${course.id}.jpg${course.vPrev ? `?v=${course.vPrev}` : ''}`} ref={v => { this.prev = v }} />
               </div>
               <div style={styles.buttonPanel}>
                 <CourseDownloadButton courseId={course.id} lastModified={course.lastmodified} modified={modified} progress={progress} saveId={saveId} screenSize={screenSize} />
@@ -609,6 +619,13 @@ class CoursePanel extends React.PureComponent {
                   course.videoid && (
                   <CourseVideoButton videoId={course.videoid} screenSize={screenSize} />
                 )}
+                <img style={styles.qrCode} ref={qr => {
+                  QRCode.toDataURL(resolve(domain, `/api/downloadcourse?id=${this.props.course.id}&type=3ds`), (err, url) => {
+                    if (err) console.error(err)
+                    console.log(url)
+                    qr.src = url
+                  })
+                }} />
               </div>
             </div>
           )}
