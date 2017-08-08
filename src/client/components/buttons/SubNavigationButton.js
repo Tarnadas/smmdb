@@ -27,18 +27,19 @@ export default class SubNavigationButton extends React.PureComponent {
     const styles = {
       button: {
         width: 'auto',
-        height: '40px',
-        minHeight: '40px',
-        lineHeight: '40px',
+        height: '32px',
+        minHeight: '32px',
+        lineHeight: '32px',
         backgroundColor: hover ? '#ffd800' : 'rgba(255,229,0,0.7)',
         boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.75)',
         cursor: 'pointer',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        marginLeft: '20px'
       },
       icon: {
         margin: '4px',
-        width: '32px',
-        height: '32px',
+        width: '24px',
+        height: '24px',
         float: 'left',
         padding: '4px'
       },

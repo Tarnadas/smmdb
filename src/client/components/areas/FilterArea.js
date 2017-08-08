@@ -5,12 +5,18 @@ import {
 import {
   Link, withRouter
 } from 'react-router-dom'
+import {
+  push
+} from 'react-router-redux'
 
 import SMMButton from '../buttons/SMMButton'
 import FilterCloseButton from '../buttons/FilterCloseButton'
 import {
   applyFilter, setFilter
 } from '../../actions'
+import {
+  ScreenSize
+} from '../../reducers/mediaQuery'
 
 const MAX_LENGTH_TITLE = 0x20
 const MAX_LENGTH_MAKER = 10
@@ -96,6 +102,7 @@ class FilterArea extends React.PureComponent {
   handleKeyPress (e) {
     if (e.key !== 'Enter') return
     this.setFilter()
+    this.props.dispatch(push('/courses'))
   }
   onStringChange (value, limit, e) {
     let val = e.target.value
@@ -120,15 +127,18 @@ class FilterArea extends React.PureComponent {
     this.setState(res)
   }
   render () {
+    const screenSize = this.props.screenSize
     const styles = {
       area: {
-        display: 'flex',
-        flexWrap: 'wrap',
         textAlign: 'left',
-        position: 'absolute',
+        position: 'fixed',
         width: '1050px',
         height: 'auto',
-        margin: 'auto',
+        maxWidth: '100%',
+        maxHeight: '100%',
+        overflow: 'auto',
+        top: screenSize < ScreenSize.MEDIUM ? '0' : '',
+        left: screenSize < ScreenSize.MEDIUM ? '0' : '',
         backgroundColor: '#ffcf00',
         borderRadius: '12px',
         boxShadow: '0px 0px 4px 12px rgba(0,0,0,0.1)',
@@ -162,6 +172,8 @@ class FilterArea extends React.PureComponent {
       dateInput: {
         width: 'auto',
         height: '32px',
+        maxWidth: '100%',
+        maxHeight: '100%',
         fontSize: '18px'
       }
     }
@@ -314,12 +326,10 @@ class FilterArea extends React.PureComponent {
     )
   }
 }
-export default withRouter(connect(state => {
-  const filter = state.getIn(['filter', 'nextFilter'])
-  return {
-    filter
-  }
-})(FilterArea))
+export default withRouter(connect(state => ({
+  filter: state.getIn(['filter', 'nextFilter']),
+  screenSize: state.getIn(['mediaQuery', 'screenSize'])
+}))(FilterArea))
 
 const pad = function (number, size) {
   let s = String(this)

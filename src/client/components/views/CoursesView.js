@@ -105,15 +105,15 @@ class CoursesView extends React.PureComponent {
       main: {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        flexWrap: 'wrap'
       },
       content: {
         maxWidth: '926px',
         maxHeight: 'calc(100% - 34px)',
         overflowY: screenSize >= ScreenSize.MEDIUM ? 'scroll' : '',
         zIndex: '10',
-        flex: '1',
-        alignSelf: 'flex-end'
+        flex: '1'
       }
     }
     return (

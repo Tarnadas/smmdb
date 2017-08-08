@@ -33,13 +33,10 @@ class StatsPanel extends React.PureComponent {
     const stats = this.props.stats.toJS()
     const styles = {
       panel: {
-        position: 'absolute',
-        left: '0',
-        width: 'auto',
         height: 'auto',
+        textAlign: 'left',
         color: 'rgb(255, 229, 0)',
-        margin: '16px 0 5px 20px',
-        alignSelf: 'flex-start'
+        margin: '16px 0 5px 20px'
       }
     }
     return (
