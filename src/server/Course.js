@@ -20,7 +20,7 @@ import Database from './Database'
 export default class Course {
   static async getCourse (courseId) {
     const res = await Database.filterCourses({ _id: ObjectID(courseId) }).toArray()
-    if (!res || res.length === 0) return null
+    if (!res || res.length !== 1) return null
     res[0].toJSON = Course.toJSON.bind(res[0])
     return res[0]
   }
@@ -211,13 +211,13 @@ export default class Course {
         if (!courseData || courseData.length !== 1) return null
         await doUpdate(course, courseData[0])
         fs.unlinkSync(tmpFile)
-        return this
+        return course
       } else if (is3DS()) {
         const courseData = await loadCourse(tmpFile, 0, false)
         await courseData.loadThumbnail()
         await doUpdate(course, courseData)
         fs.unlinkSync(tmpFile)
-        return this
+        return course
       } else {
         return null
       }
@@ -256,31 +256,30 @@ export default class Course {
     update.lastmodified = Math.trunc((new Date()).getTime() / 1000)
     courseDB.lastmodified = update.lastmodified
     await course.setModified(update.lastmodified)
-    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}`), await course.serialize())
-    fs.writeFileSync(join(__dirname, `../static/coursedata/${this._id}.gz`), await course.serializeGzipped())
+    fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`), await course.serialize())
+    fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}.gz`), await course.serializeGzipped())
     await Database.updateCourse(courseDB._id, update)
   }
 
-  static async setThumbnail (course, buffer, isWide, doClip) {
-    const deserialized = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${this._id}`)))
-    const thumbnail = await deserialized.setThumbnail(buffer, isWide, doClip)
-    course.courseData = deserialized
-    fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}${isWide ? '_full' : ''}.jpg`), thumbnail)
-    fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}`), await course.courseData.serialize())
-    fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}.gz`), await course.courseData.serializeGzipped())
+  static async setThumbnail (courseDB, buffer, isWide, doClip) {
+    const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`)))
+    const thumbnail = await course.setThumbnail(buffer, isWide, doClip)
+    fs.writeFileSync(join(__dirname, `../static/courseimg/${courseDB._id}${isWide ? '_full' : ''}.jpg`), thumbnail)
+    fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`), await course.serialize())
+    fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}.gz`), await course.serializeGzipped())
     let update
     if (isWide) {
-      course.vFull = course.vFull ? course.vFull + 1 : 1
+      courseDB.vFull = courseDB.vFull ? courseDB.vFull + 1 : 1
       update = {
-        vFull: course.vFull
+        vFull: courseDB.vFull
       }
     } else {
-      course.vPrev = course.vPrev ? course.vPrev + 1 : 1
+      courseDB.vPrev = courseDB.vPrev ? courseDB.vPrev + 1 : 1
       update = {
-        vPrev: course.vPrev
+        vPrev: courseDB.vPrev
       }
     }
-    await Database.updateCourse(course._id, update)
+    await Database.updateCourse(courseDB._id, update)
     return thumbnail
   }
 
