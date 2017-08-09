@@ -12,7 +12,7 @@ class FAQView extends React.PureComponent {
     const screenSize = this.props.screenSize
     const styles = {
       faq: {
-        padding: screenSize === ScreenSize.SUPER_SMALL ? '6% 5%' : '6% 10%',
+        padding: '3% 5%',
         color: '#000',
         display: 'flex',
         textAlign: 'left',

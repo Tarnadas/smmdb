@@ -109,9 +109,9 @@ class CoursesView extends React.PureComponent {
         flexWrap: 'wrap'
       },
       content: {
-        maxWidth: '926px',
+        maxWidth: screenSize < ScreenSize.MEDIUM ? '100%' : '926px',
         maxHeight: 'calc(100% - 34px)',
-        overflowY: screenSize >= ScreenSize.MEDIUM ? 'scroll' : '',
+        overflowY: screenSize >= ScreenSize.MEDIUM ? 'auto' : '',
         zIndex: '10',
         flex: '1'
       }

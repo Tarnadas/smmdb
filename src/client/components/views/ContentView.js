@@ -29,7 +29,7 @@ class ContentView extends React.PureComponent {
         backgroundColor: '#24997e',
         height: screenSize >= ScreenSize.MEDIUM ? '0%' : 'auto',
         textAlign: 'center',
-        flex: '1'
+        flex: screenSize >= ScreenSize.MEDIUM ? '1 0 auto' : '1 0 0%'
       }
     }
     return (

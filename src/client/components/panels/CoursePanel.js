@@ -242,7 +242,7 @@ class CoursePanel extends React.PureComponent {
     const styles = {
       panel: {
         height: this.state.showDetails ? 'auto' : '169px',
-        width: 'calc(100% - 20px)',
+        width: 'auto',
         maxWidth: '906px',
         backgroundColor: process.env.ELECTRON ? (
           downloaded ? (
@@ -270,25 +270,26 @@ class CoursePanel extends React.PureComponent {
       top: {
         height: '169px',
         cursor: this.state.showDetails ? 'auto' : 'pointer',
-        display: 'inline-flex',
+        display: 'flex',
         flexWrap: 'wrap',
         alignContent: 'flex-start',
         verticalAlign: 'top'
       },
       rank: {
         width: '100px',
+        minWidth: '100px',
         height: 'auto',
         backgroundColor: '#d7db48',
         borderRadius: '10px 0 0 10px',
         display: screenSize === ScreenSize.SUPER_SMALL ? 'none' : 'block'
       },
       details: {
-        width: screenSize === ScreenSize.SUPER_SMALL ? '100%' : 'calc(100% - 100px)',
-        maxWidth: '806px',
-        display: 'inline-flex',
-        flexWrap: 'wrap',
-        alignContent: 'flex-start',
-        verticalAlign: 'top'
+        width: screenSize === ScreenSize.SUPER_SMALL ? '100%' : 'calc(100% - 100px)'
+        // maxWidth: '806px',
+        // display: 'inline-flex',
+        // flexWrap: 'wrap',
+        // alignContent: 'flex-start',
+        // verticalAlign: 'top'
       },
       theme: {
         width: '91px',
@@ -620,6 +621,7 @@ class CoursePanel extends React.PureComponent {
                   <CourseVideoButton videoId={course.videoid} screenSize={screenSize} />
                 )}
                 <img style={styles.qrCode} ref={qr => {
+                  if (!qr) return
                   QRCode.toDataURL(resolve(domain, `/api/downloadcourse?id=${this.props.course.id}&type=3ds`), (err, url) => {
                     if (err) console.error(err)
                     console.log(url)

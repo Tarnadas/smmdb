@@ -72,7 +72,9 @@ module.exports = [
               ['env', {
                 targets: {
                   browsers: [
-                    'last 2 versions'
+                    '> 1%',
+                    'last 2 versions',
+                    'not ie < 11'
                   ]
                 },
                 modules: false,

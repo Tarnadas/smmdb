@@ -18,7 +18,8 @@ class MainView extends React.PureComponent {
         flexDirection: 'column'
       },
       content: {
-        flex: '1 0 0%',
+        flex: '1 0 auto',
+        // flex: '1 0 0%',
         height: 'auto',
         display: 'flex',
         alignItems: 'center',

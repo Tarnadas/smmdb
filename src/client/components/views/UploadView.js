@@ -120,13 +120,13 @@ class UploadView extends React.PureComponent {
     const uploadedCourses = this.props.uploadedCourses.toJS()
     const styles = {
       main: {
-        display: screenSize >= ScreenSize.MEDIUM ? 'flex' : 'flex',
-        flexDirection: screenSize >= ScreenSize.MEDIUM ? 'column' : 'column',
-        alignItems: screenSize >= ScreenSize.MEDIUM ? 'center' : 'center'
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
       },
       upload: {
-        maxWidth: '926px',
-        overflowY: screenSize >= ScreenSize.MEDIUM ? 'scroll' : '',
+        maxWidth: screenSize < ScreenSize.MEDIUM ? '100%' : '926px',
+        overflowY: screenSize >= ScreenSize.MEDIUM ? 'auto' : '',
         zIndex: '10',
         flex: '1',
         color: '#fff'
