@@ -155,7 +155,7 @@ export default class API {
     } else if (apiData.type === 'json') {
       res.json(await Course.getObject(course._id))
     } else if (apiData.type === '3ds') {
-      res.setHeader('Content-Type', 'image/jpeg') // TODO test if QR download works
+      res.setHeader('Content-Type', 'application/3ds')
       const course3ds = await Course.get3DS(course._id)
       if (req.headers.range) {
         const range = parseRange(course3ds.length, req.headers.range, { combine: true })

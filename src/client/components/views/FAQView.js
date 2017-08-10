@@ -62,6 +62,7 @@ class FAQView extends React.PureComponent {
           </div>
           <div style={styles.answer}>
             You need Homebrew on your 3DS. You also need the Homebrew app <a href='https://github.com/MarcuzD/OCDM'>OCDM</a>.
+            We also recommend using <a href='https://github.com/Pirater12/Multidownload/releases'>Multidownload++</a> for simple QR Code downloads.<br /><br />
             To import courses you can simply use your 3DS to scan the QR Code provided for every course. OCDM can then import courses from your SD Card.<br />
             Exporting is also done with OCDM.
             Exported courses can be easily uploaded on the website, but you would need to transfer your exported course to an external device, because the website does not support the in-built 3DS web browser.
