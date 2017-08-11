@@ -7,7 +7,7 @@ import NavigationButton from '../buttons/NavigationButton'
 import SubNavigationButton from '../buttons/SubNavigationButton'
 import LoginButton from '../buttons/LoginButton'
 import {
-  applyFilter, setFilter
+  applyFilter, setFilter, setOrder
 } from '../../actions'
 import {
   ScreenSize
@@ -20,6 +20,7 @@ class NavigationArea extends React.PureComponent {
   }
   onCourses () {
     this.props.dispatch(setFilter())
+    this.props.dispatch(setOrder())
     this.props.dispatch(applyFilter())
     this.props.onClick()
   }

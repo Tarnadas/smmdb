@@ -360,7 +360,6 @@ export default class API {
     }
     const course = await Course.getCourse(apiData.id)
     if (!course) {
-      console.log('c')
       res.status(400).send(`Course with ID ${apiData.id} not found`)
       return
     }
