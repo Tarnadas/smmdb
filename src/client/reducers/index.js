@@ -18,6 +18,7 @@ import courseData from './courseData'
 import uploads from './uploads'
 import reuploads from './reuploads'
 import filter from './filter'
+import order from './order'
 import userData from './userData'
 import mediaQuery from './mediaQuery'
 
@@ -49,6 +50,10 @@ export default function initReducer (preloadedState, history, electronSave, elec
       nextFilter: {},
       currentFilter: {}
     },
+    order: {
+      order: 'lastmodified',
+      dir: 0
+    },
     userData: {
       accountData: {}
     },
@@ -64,6 +69,7 @@ export default function initReducer (preloadedState, history, electronSave, elec
     uploads,
     reuploads,
     filter,
+    order,
     userData,
     mediaQuery
   }

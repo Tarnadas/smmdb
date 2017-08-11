@@ -33,14 +33,14 @@ class CoursesView extends React.PureComponent {
   }
   componentWillMount () {
     (async () => {
-      await this.fetchCourses()
+      await this.fetchCourses(this.props.accountData)
     })()
   }
   componentWillReceiveProps (nextProps, nextContext) {
-    // if (nextProps.filter === this.props.filter) return
-    // this.scrollBar.scrollToTop() // TODO
+    if (nextProps.filter === this.props.filter && nextProps.order === this.props.order) return
+    if (this.scroll) this.scroll.scrollTop = 0
   }
-  async fetchCourses () {
+  async fetchCourses (accountData) {
     try {
       const apiKey = this.props.accountData.get('apikey')
       const courses = (await got(resolve(domain, `/api/getcourses?limit=10`), Object.assign({
@@ -51,7 +51,7 @@ class CoursesView extends React.PureComponent {
           'Authorization': `APIKEY ${apiKey}`
         }
       } : null))).body
-      this.props.dispatch(setCourses(courses, false))
+      if (accountData === this.props.accountData) this.props.dispatch(setCourses(courses, false))
     } catch (err) {
       if (err.response) {
         console.error(err.response.body)
@@ -86,7 +86,7 @@ class CoursesView extends React.PureComponent {
           accountData.get('id') && course.owner === accountData.get('id') ? (
             <CoursePanel key={course.id} canEdit course={course} downloadedCourse={downloadedCourse} progress={progress} saveId={saveId} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />
           ) : (
-            <CoursePanel key={course.id} course={course} downloadedCourse={downloadedCourse} progress={progress} saveId={saveId} />
+            <CoursePanel key={course.id} course={course} downloadedCourse={downloadedCourse} progress={progress} saveId={saveId} apiKey={accountData.get('apikey')} id={i} />
           )
         )
       }
@@ -125,7 +125,7 @@ class CoursesView extends React.PureComponent {
             <SideBarArea />
           )
         }
-        <div style={styles.content} id='scroll' onScroll={this.handleScroll}>
+        <div style={styles.content} id='scroll' onScroll={this.handleScroll} ref={scroll => { this.scroll = scroll }}>
           {
             this.renderCourses(courses)
           }
@@ -138,9 +138,10 @@ class CoursesView extends React.PureComponent {
 export default withRouter(connect(state => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize']),
   courses: state.getIn(['courseData', 'main']),
-  filter: state.getIn(['filter', 'currentFilter']),
   accountData: state.getIn(['userData', 'accountData']),
   downloads: state.getIn(['electron', 'appSaveData', 'downloads']),
   currentDownloads: state.getIn(['electron', 'currentDownloads']),
+  filter: state.getIn(['filter', 'currentFilter']),
+  order: state.get('order'),
   smmdb: state.getIn(['electron', 'appSaveData', 'cemuSaveData', state.getIn(['electron', 'currentSave']), 'smmdb'])
 }))(CoursesView))

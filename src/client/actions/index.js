@@ -161,6 +161,19 @@ export function applyFilter () {
   }
 }
 
+export function setOrder (order) {
+  return {
+    type: 'SET_ORDER',
+    order
+  }
+}
+
+export function swapOrder () {
+  return {
+    type: 'SWAP_ORDER'
+  }
+}
+
 export function setVideoId (videoId) {
   return {
     type: 'SET_VIDEO_ID',

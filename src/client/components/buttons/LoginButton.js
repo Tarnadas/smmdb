@@ -9,7 +9,7 @@ import { resolve } from 'url'
 
 import ButtonSub from '../subs/ButtonSub'
 import {
-  setAccountData
+  setAccountData, setCourse
 } from '../../actions'
 import {
   domain
@@ -21,6 +21,7 @@ class LoginButton extends React.PureComponent {
     this.state = {
       hover: false
     }
+    this.updateCourseStars = this.updateCourseStars.bind(this)
     this.mouseEnter = this.mouseEnter.bind(this)
     this.mouseLeave = this.mouseLeave.bind(this)
     this.onGoogleLoginSuccess = this.onGoogleLoginSuccess.bind(this)
@@ -36,16 +37,47 @@ class LoginButton extends React.PureComponent {
           useElectronNet: false
         })).body
         this.props.dispatch(setAccountData(res))
+        this.updateCourseStars(this.props, res)
       } catch (err) {
-        console.error(err.response.body)
+        if (err.response) {
+          console.error(err.response.body)
+        } else {
+          console.error(err)
+        }
       }
     })()
   }
   componentWillReceiveProps (nextProps, nextContext) {
-    if (this.props.accountData === nextProps.accountData) return
-    this.setState({
-      hover: false
+    if (this.props.accountData !== nextProps.accountData) {
+      this.setState({
+        hover: false
+      })
+    }
+  }
+  updateCourseStars (props, account) {
+    this.main = {}
+    let i = 0
+    props.courseData.get('main').forEach(course => {
+      this.main[course.get('id')] = i++
     })
+    this.self = {}
+    i = 0
+    props.courseData.get('self').forEach(course => {
+      this.self[course.get('id')] = i++
+    })
+    this.uploaded = {}
+    i = 0
+    props.courseData.get('uploaded').forEach(course => {
+      this.uploaded[course.get('id')] = i++
+    })
+    for (let i in account.stars) {
+      if (account.stars[i] in this.main) {
+        const courseId = this.main[account.stars[i]]
+        const course = this.props.courseData.getIn(['main', courseId]).toJS()
+        course.starred = 1
+        this.props.dispatch(setCourse(courseId, course))
+      }
+    }
   }
   mouseEnter () {
     this.setState({
@@ -65,6 +97,7 @@ class LoginButton extends React.PureComponent {
         json: true
       })).body
       this.props.dispatch(setAccountData(res))
+      this.updateCourseStars(this.props, res)
     } catch (err) {
       if (err.response) {
         console.error(err.response.body)
@@ -159,5 +192,6 @@ class LoginButton extends React.PureComponent {
   }
 }
 export default connect(state => ({
-  accountData: state.getIn(['userData', 'accountData'])
+  accountData: state.getIn(['userData', 'accountData']),
+  courseData: state.get('courseData')
 }))(LoginButton)

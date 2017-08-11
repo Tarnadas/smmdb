@@ -126,7 +126,7 @@ export default class API {
     }
     const res = await Database.filterCourses(filter, { [orderBy]: dir }, start, limit).toArray()
     for (let i in res) {
-      res[i].toJSON = Course.toJSON.bind(res[i])
+      await Course.prepare(res[i], accountId)
     }
     return res
   }
@@ -344,6 +344,32 @@ export default class API {
     }
     await Course.delete(course._id)
     res.send('OK')
+  }
+
+  static async starCourse (req, res, apiData) {
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
+      return
+    }
+    const account = await Account.getAccountByAPIKey(apiKey)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiKey} not found`)
+      return
+    }
+    const course = await Course.getCourse(apiData.id)
+    if (!course) {
+      console.log('c')
+      res.status(400).send(`Course with ID ${apiData.id} not found`)
+      return
+    }
+    try {
+      await Course.star(course, account._id)
+    } catch (err) {
+      console.error(err)
+    }
+    res.json(course)
   }
 
   static async uploadImage (req, res, isWide) {

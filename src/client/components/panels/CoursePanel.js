@@ -58,6 +58,7 @@ class CoursePanel extends React.PureComponent {
     this.onReuploadComplete = this.onReuploadComplete.bind(this)
     this.onUploadFullComplete = this.onUploadFullComplete.bind(this)
     this.onUploadPrevComplete = this.onUploadPrevComplete.bind(this)
+    this.onStar = this.onStar.bind(this)
   }
   componentWillReceiveProps (nextProps, nextContext) {
     if (nextProps.course.title !== this.state.title) {
@@ -86,7 +87,8 @@ class CoursePanel extends React.PureComponent {
       })
     }
   }
-  onShowDetails () {
+  onShowDetails (e) {
+    e.stopPropagation()
     if (!this.state.showDetails) {
       this.setState({
         showDetails: true,
@@ -206,7 +208,6 @@ class CoursePanel extends React.PureComponent {
     }
   }
   onUploadFullComplete (course) {
-    // this.full.src = `data:image/png;base64, ${base64}`
     if (this.props.uploaded) {
       this.props.dispatch(setCourseUploaded(this.props.id, course))
     } else {
@@ -218,7 +219,6 @@ class CoursePanel extends React.PureComponent {
     }
   }
   onUploadPrevComplete (course) {
-    // this.prev.src = `data:image/png;base64, ${base64}``
     if (this.props.uploaded) {
       this.props.dispatch(setCourseUploaded(this.props.id, course))
     } else {
@@ -226,6 +226,28 @@ class CoursePanel extends React.PureComponent {
         this.props.dispatch(setCourseSelf(this.props.id, course))
       } else {
         this.props.dispatch(setCourse(this.props.id, course))
+      }
+    }
+  }
+  async onStar (e) {
+    e.stopPropagation()
+    try {
+      const course = (await got(resolve(domain, `/api/starcourse?id=${this.props.course.id}`), {
+        headers: {
+          'Authorization': `APIKEY ${this.props.apiKey}`
+        },
+        method: 'POST',
+        json: true,
+        useElectronNet: false
+      })).body
+      if (course != null) {
+        this.props.dispatch(setCourse(this.props.id, course))
+      }
+    } catch (err) {
+      if (!err.response) {
+        console.error(err.response.body)
+      } else {
+        console.error(err)
       }
     }
   }
@@ -285,11 +307,6 @@ class CoursePanel extends React.PureComponent {
       },
       details: {
         width: screenSize === ScreenSize.SUPER_SMALL ? '100%' : 'calc(100% - 100px)'
-        // maxWidth: '806px',
-        // display: 'inline-flex',
-        // flexWrap: 'wrap',
-        // alignContent: 'flex-start',
-        // verticalAlign: 'top'
       },
       theme: {
         width: '91px',
@@ -357,13 +374,14 @@ class CoursePanel extends React.PureComponent {
         position: 'absolute'
       },
       statsStars: {
-        width: '36px',
-        height: '36px',
-        margin: '0 8px'
+        width: screenSize === ScreenSize.SUPER_SMALL ? '28px' : '36px',
+        height: screenSize === ScreenSize.SUPER_SMALL ? '28px' : '36px',
+        margin: '0 8px',
+        cursor: 'pointer'
       },
       statsDownloads: {
-        width: '24px',
-        height: '24px',
+        width: screenSize === ScreenSize.SUPER_SMALL ? '20px' : '24px',
+        height: screenSize === ScreenSize.SUPER_SMALL ? '20px' : '24px',
         margin: '0 8px'
       },
       statsText: {
@@ -481,8 +499,8 @@ class CoursePanel extends React.PureComponent {
             </div>
             <div style={styles.footer}>
               <div style={styles.stats}>
-                <img style={styles.statsStars} src='/img/unstarred.png' />
-                { course.starred } /
+                <img onClick={this.onStar} style={styles.statsStars} src={course.starred ? '/img/starred.png' : '/img/unstarred.png'} />
+                { course.stars } /
                 <img style={styles.statsDownloads} src='/img/downloads.png' />
                 { course.downloads }
                 <img style={styles.statsDownloads} src={
@@ -624,7 +642,6 @@ class CoursePanel extends React.PureComponent {
                   if (!qr) return
                   QRCode.toDataURL(resolve(domain, `/api/downloadcourse?id=${this.props.course.id}&type=3ds`), (err, url) => {
                     if (err) console.error(err)
-                    console.log(url)
                     qr.src = url
                   })
                 }} />

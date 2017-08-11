@@ -35,8 +35,10 @@ export default class Account {
     if (Object.keys(filter).length === 0) return null
     let res = await Database.filterAccounts(filter).toArray()
     if (res.length === 0) return null
-    res[0].toJSON = Account.toJSON.bind(res[0])
-    return res[0]
+    const account = res[0]
+    await Account.prepare(account)
+    account.toJSON = Account.toJSON.bind(account)
+    return account
   }
 
   static getAccountByAccountId (accountId) {
@@ -57,6 +59,15 @@ export default class Account {
 
   static getAccountAmount () {
     return Database.getAccountsCount()
+  }
+
+  static async prepare (account) {
+    const stars = await Database.getAccountStars(account._id)
+    account.stars = []
+    for (let i in stars) {
+      account.stars.push(stars[i].courseId)
+    }
+    return account
   }
 
   static async update (account, { username, downloadFormat }) {
@@ -85,7 +96,8 @@ export default class Account {
       username: this.username,
       id: this._id,
       downloadformat: this.downloadformat != null ? this.downloadformat : 0,
-      apikey: this.apikey
+      apikey: this.apikey,
+      stars: this.stars
     }
   }
 }

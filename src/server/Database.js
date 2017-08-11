@@ -21,9 +21,11 @@ export default class Database {
       } catch (err) {}
       this.courses = this.db.collection('coursesTest')
       this.accounts = this.db.collection('accountsTest')
+      this.stars = this.db.collection('starsTest')
     } else {
       this.courses = this.db.collection('courses')
       this.accounts = this.db.collection('accounts')
+      this.stars = this.db.collection('stars')
     }
   }
 
@@ -41,6 +43,27 @@ export default class Database {
 
   static deleteCourse (id) {
     return this.courses.removeOne({ '_id': ObjectID(id) })
+  }
+
+  static async starCourse (courseId, accountId) {
+    await this.stars.insertOne({ courseId, accountId })
+    const stars = (await this.stars.find({ courseId: ObjectID(courseId) }).toArray()).length
+    return this.courses.updateOne({ '_id': ObjectID(courseId) }, { $set: { stars } })
+  }
+
+  static async unstarCourse (courseId, accountId) {
+    await this.stars.removeOne({ courseId: ObjectID(courseId), accountId: ObjectID(accountId) })
+    const stars = (await this.stars.find({ courseId: ObjectID(courseId) }).toArray()).length
+    return this.courses.updateOne({ '_id': ObjectID(courseId) }, { $set: { stars } })
+  }
+
+  static getAccountStars (accountId) {
+    return this.stars.find({ accountId: ObjectID(accountId) }).toArray()
+  }
+
+  static async isCourseStarred (courseId, accountId) {
+    const length = (await this.stars.find({ courseId: ObjectID(courseId), accountId: ObjectID(accountId) }).toArray()).length
+    return length === 1
   }
 
   static async getCoursesCount () {

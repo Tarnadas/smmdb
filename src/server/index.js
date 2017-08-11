@@ -157,7 +157,7 @@ async function main () {
       res.status(400).send('No idToken submitted. Have you enabled cookies?')
       return
     }
-    let account = await Account.getAccountBySession(req.session.idtoken)
+    const account = await Account.getAccountBySession(req.session.idtoken)
     if (!account) {
       res.status(400).send('Account not found')
       return
@@ -220,6 +220,8 @@ async function main () {
       API.reuploadCourse(req, res, apiData)
     } else if (apiCall === 'updatecourse') {
       API.updateCourse(req, res, apiData)
+    } else if (apiCall === 'starcourse') {
+      API.starCourse(req, res, apiData)
     } else if (apiCall === 'setaccountdata') {
       API.setAccountData(req, res)
     } else if (apiCall === 'uploadimagefull') {

@@ -18,30 +18,23 @@ import Account from './Account'
 import Database from './Database'
 
 export default class Course {
-  static async getCourse (courseId) {
+  static async getCourse (courseId, accountId) {
     const res = await Database.filterCourses({ _id: ObjectID(courseId) }).toArray()
     if (!res || res.length !== 1) return null
-    res[0].toJSON = Course.toJSON.bind(res[0])
-    return res[0]
+    return Course.prepare(res[0], accountId)
   }
 
-  static toJSON (accountId) {
+  static async prepare (course, accountId) {
+    if (accountId) course.starred = await Database.isCourseStarred(course._id, accountId)
+    course.toJSON = Course.toJSON.bind(course)
+    return course
+  }
+
+  static toJSON () {
     let result = Object.assign({}, this)
     result.id = this._id
-    /* result.completed = course[completed].length // TODO
-    result.starred = course[starred].length
-    result.downloads = course[downloads].length
-    if (loggedIn && course.completedByUser(accountId)) {
-      result.completedself = 1
-    } else {
-      result.completedself = 0
-    }
-    if (loggedIn && course.starredByUser(accountId)) {
-      result.starredself = 1
-    } else {
-      result.starredself = 0
-    } */
     result.uploader = Account.getAccount(result.owner).username
+    if (result.stars == null) result.stars = 0
     delete result._id
     delete result.serialized
     delete result.courseData
@@ -289,6 +282,22 @@ export default class Course {
     fs.unlinkSync(join(__dirname, `../static/courseimg/${courseId}_full.jpg`))
     fs.unlinkSync(join(__dirname, `../static/coursedata/${courseId}`))
     fs.unlinkSync(join(__dirname, `../static/coursedata/${courseId}.gz`))
+  }
+
+  static async star (course, accountId) {
+    if (await Database.isCourseStarred(course._id, accountId)) {
+      await Database.unstarCourse(course._id, accountId)
+      course.stars--
+      course.starred = 0
+    } else {
+      await Database.starCourse(course._id, accountId)
+      if (course.stars != null) {
+        course.stars++
+      } else {
+        course.stars = 1
+      }
+      course.starred = 1
+    }
   }
 
   static getCourseAmount () {

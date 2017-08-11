@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  Link, withRouter
+  Link
 } from 'react-router-dom'
 
 export default class FilterButton extends React.PureComponent {

@@ -19,7 +19,6 @@ class MainView extends React.PureComponent {
       },
       content: {
         flex: '1 0 auto',
-        // flex: '1 0 0%',
         height: 'auto',
         display: 'flex',
         alignItems: 'center',

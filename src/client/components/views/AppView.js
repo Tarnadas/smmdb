@@ -13,7 +13,6 @@ import { resolve } from 'url'
 
 import ContentView from './ContentView'
 import TopBarArea from '../areas/TopBarArea'
-import FilterArea from '../areas/FilterArea'
 
 import {
   ScreenSize
@@ -70,8 +69,12 @@ class AppView extends React.PureComponent {
     }
   }
   componentWillReceiveProps (nextProps, nextContext) {
-    if (nextProps.filter === this.props.filter) return
-    this.queryString = stringify(nextProps.filter.toJS());
+    if (nextProps.filter === this.props.filter && nextProps.order === this.props.order) return
+    const order = nextProps.order.toJS()
+    this.queryString = stringify(Object.assign({}, nextProps.filter.toJS(), {
+      order: order.order,
+      dir: order.dir ? 'asc' : 'desc'
+    }));
     // this.scrollBar.scrollToTop(); // TODO
     (async () => {
       await this.fetchCourses()
@@ -99,6 +102,8 @@ class AppView extends React.PureComponent {
     } catch (err) {
       if (!err.response) {
         console.error(err.response.body)
+      } else {
+        console.error(err)
       }
     }
   }
@@ -232,5 +237,6 @@ export default connect(state => ({
   coursesSelf: state.getIn(['courseData', 'self']),
   showFilter: state.get('showFilter'),
   filter: state.getIn(['filter', 'currentFilter']),
+  order: state.get('order'),
   apiKey: state.getIn(['userData', 'accountData', 'apikey'])
 }))(AppView)

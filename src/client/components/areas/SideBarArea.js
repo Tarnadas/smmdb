@@ -1,7 +1,7 @@
 import React from 'react'
 
+import OrderButton from '../buttons/OrderButton'
 import FilterButton from '../buttons/FilterButton'
-// import RefreshButton from '../buttons/RefreshButton'
 
 export default class SideBarArea extends React.PureComponent {
   render () {
@@ -26,6 +26,7 @@ export default class SideBarArea extends React.PureComponent {
     return (
       <div style={styles.sideBar}>
         <div style={styles.element}>
+          <OrderButton />
           <FilterButton />
         </div>
       </div>
