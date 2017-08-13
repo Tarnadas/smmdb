@@ -16,13 +16,20 @@ import {
 class CourseDownloadButton extends React.PureComponent {
   constructor (props) {
     super(props)
+    this.isAdding = false
     this.onAddCourse = this.onAddCourse.bind(this)
     this.onDownloadCourse = this.onDownloadCourse.bind(this)
     this.onUpdateCourse = this.onUpdateCourse.bind(this)
   }
+  componentWillReceiveProps (nextProps, nextContext) {
+    if (this.props.saveId !== nextProps.saveId) {
+      this.isAdding = false
+    }
+  }
   onAddCourse () {
-    if (this.props.saveId) return
+    if (this.props.saveId != null || this.isAdding) return
     this.props.dispatch(addCourse(this.props.courseId))
+    this.isAdding = true
   }
   onDownloadCourse () {
     if (this.props.progress) return
@@ -51,7 +58,7 @@ class CourseDownloadButton extends React.PureComponent {
             modified ? (
               '#df4e20'
             ) : (
-              saveId ? (
+              saveId != null ? (
                 '#757473'
               ) : (
                 '#11c2b0'

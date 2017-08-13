@@ -57,14 +57,12 @@ class SaveView extends React.Component {
     const styles = {
       div: {
         width: '100%',
-        height: '100vh',
-        minHeight: '100vh',
-        overflow: 'hidden'
+        height: '100%'
       },
       ul: {
         margin: 'auto',
         width: 'calc(100% - 180px)',
-        height: 'calc(100% - 80px)',
+        height: 'calc(100% - 40px)',
         backgroundColor: '#07070f',
         color: '#fff',
         overflowY: 'scroll',

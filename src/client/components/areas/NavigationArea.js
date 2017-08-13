@@ -58,7 +58,10 @@ class NavigationArea extends React.PureComponent {
         }
         <NavigationButton onClick={this.props.onClick} link='/upload' text='Upload' iconSrc='/img/upload.png' iconColor='dark' />
         <NavigationButton onClick={this.props.onClick} link='/profile' text='Profile' iconSrc='/img/profile.png' iconColor='dark' />
-        <NavigationButton onClick={this.props.onClick} link='/faq' text='FAQ' iconSrc='/img/help.png' iconColor='dark' />
+        {
+          !process.env.ELECTRON &&
+          <NavigationButton onClick={this.props.onClick} link='/faq' text='FAQ' iconSrc='/img/help.png' iconColor='dark' />
+        }
         {
           !process.env.ELECTRON &&
           <NavigationButton onClick={this.props.onClick} link='https://github.com/Tarnadas/smmdb' blank text='API' iconSrc='/img/api.png' iconColor='dark' />

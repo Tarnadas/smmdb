@@ -241,7 +241,15 @@ class CoursePanel extends React.PureComponent {
         useElectronNet: false
       })).body
       if (course != null) {
-        this.props.dispatch(setCourse(this.props.id, course))
+        if (this.props.uploaded) {
+          this.props.dispatch(setCourseUploaded(this.props.id, course))
+        } else {
+          if (this.props.isSelf) {
+            this.props.dispatch(setCourseSelf(this.props.id, course))
+          } else {
+            this.props.dispatch(setCourse(this.props.id, course))
+          }
+        }
       }
     } catch (err) {
       if (!err.response) {
@@ -271,7 +279,7 @@ class CoursePanel extends React.PureComponent {
             modified ? (
               '#DD8F33'
             ) : (
-              saveId ? (
+              saveId != null ? (
                 '#6ddd83'
               ) : (
                 '#9fdd96'
@@ -638,13 +646,16 @@ class CoursePanel extends React.PureComponent {
                   course.videoid && (
                   <CourseVideoButton videoId={course.videoid} screenSize={screenSize} />
                 )}
-                <img style={styles.qrCode} ref={qr => {
-                  if (!qr) return
-                  QRCode.toDataURL(resolve(domain, `/api/downloadcourse?id=${this.props.course.id}&type=3ds`), (err, url) => {
-                    if (err) console.error(err)
-                    qr.src = url
-                  })
-                }} />
+                {
+                  !process.env.ELECTRON &&
+                  <img style={styles.qrCode} ref={qr => {
+                    if (!qr) return
+                    QRCode.toDataURL(resolve(domain, `/api/downloadcourse?id=${this.props.course.id}&type=3ds`), (err, url) => {
+                      if (err) console.error(err)
+                      qr.src = url
+                    })
+                  }} />
+                }
               </div>
             </div>
           )}
