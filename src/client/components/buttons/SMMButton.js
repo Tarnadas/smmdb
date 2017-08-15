@@ -135,16 +135,16 @@ export default class SMMButton extends React.PureComponent {
         {
           this.props.link ? (
             this.props.blank ? (
-              <a href={this.props.link} target='__blank'>
-                <ButtonSub iconStyle={iconStyle} iconSrc={this.props.iconSrc} text={text} hover={this.state.hover} />
+              <a href={this.props.link} target='_blank'>
+                <ButtonSub iconStyle={iconStyle} iconSrc={this.props.iconSrc} text={text} hover={this.state.hover} noText={this.props.noText} />
               </a>
             ) : (
               <Link to={this.props.link}>
-                <ButtonSub iconStyle={iconStyle} iconSrc={this.props.iconSrc} text={text} hover={this.state.hover} />
+                <ButtonSub iconStyle={iconStyle} iconSrc={this.props.iconSrc} text={text} hover={this.state.hover} noText={this.props.noText} />
               </Link>
             )
           ) : (
-            <ButtonSub iconStyle={iconStyle} iconSrc={this.props.iconSrc} text={text} hover={this.state.hover} />
+            <ButtonSub iconStyle={iconStyle} iconSrc={this.props.iconSrc} text={text} hover={this.state.hover} noText={this.props.noText} />
           )
         }
         {

@@ -67,7 +67,7 @@ export default class NavigationButton extends React.PureComponent {
       <div style={styles.button} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave} onClick={this.props.onClick}>
         {
           this.props.blank ? (
-            <a href={this.props.link} target='__blank'>
+            <a href={this.props.link} target='_blank'>
               { content }
             </a>
           ) : (

@@ -4,7 +4,7 @@ export default class ButtonSub extends React.PureComponent {
   render () {
     const styles = {
       img: {
-        width: '100%',
+        width: this.props.noText ? 'auto' : '100%',
         height: '100%'
       },
       text: {
