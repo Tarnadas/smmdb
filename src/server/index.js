@@ -134,15 +134,19 @@ async function main () {
         // create account if it does not exist
         let googleId = tokenInfo.sub
 
-        let account = await Account.getAccountByGoogleId(googleId)
+        let account = await Account.getAccountByGoogleId(googleId, false)
         if (!account) {
           // create new account
-          account = await Account.createAccount({
-            googleid: googleId,
-            username: tokenInfo.email.split('@')[0],
-            email: tokenInfo.email,
-            idtoken: idToken
-          })
+          try {
+            account = await Account.createAccount({
+              googleid: googleId,
+              username: tokenInfo.email.split('@')[0],
+              email: tokenInfo.email,
+              idtoken: idToken
+            })
+          } catch (err) {
+            console.error(err)
+          }
         } else {
           await Account.login(account._id, idToken)
         }
@@ -157,7 +161,7 @@ async function main () {
       res.status(400).send('No idToken submitted. Have you enabled cookies?')
       return
     }
-    const account = await Account.getAccountBySession(req.session.idtoken)
+    const account = await Account.getAccountBySession(req.session.idtoken, false)
     if (!account) {
       res.status(400).send('Account not found')
       return

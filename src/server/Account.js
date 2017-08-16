@@ -8,10 +8,12 @@ import {
 } from './scripts/util'
 import Database from './Database'
 
-const MAX_LENGTH_USERNAME = 20
+export const MAX_LENGTH_USERNAME = 20
+export const MIN_LENGTH_USERNAME = 3
 
 export default class Account {
   static async createAccount ({ googleid, username, email, idtoken }) {
+    if (username.length < MIN_LENGTH_USERNAME) throw new Error('Username received by Google account was too short')
     if (username.length > MAX_LENGTH_USERNAME) username = username.substr(0, MAX_LENGTH_USERNAME)
     const accountNames = (await Database.filterAccounts().toArray()).map(ac => ac.username)
     while (accountNames.includes(username)) {
@@ -26,7 +28,7 @@ export default class Account {
     })).ops[0]
   }
 
-  static async getAccount ({ accountId, googleid, apikey, idtoken }) {
+  static async getAccount ({ accountId, googleid, apikey, idtoken }, hideSensitive = true) {
     const filter = {}
     if (accountId) filter._id = accountId
     if (googleid) filter.googleid = googleid
@@ -37,24 +39,24 @@ export default class Account {
     if (res.length === 0) return null
     const account = res[0]
     await Account.prepare(account)
-    account.toJSON = Account.toJSON.bind(account)
+    account.toJSON = Account.toJSON.bind(account, hideSensitive)
     return account
   }
 
-  static getAccountByAccountId (accountId) {
-    return Account.getAccount({ accountId: ObjectID(accountId) })
+  static getAccountByAccountId (accountId, hideSensitive) {
+    return Account.getAccount({ accountId: ObjectID(accountId) }, hideSensitive)
   }
 
-  static getAccountByGoogleId (googleId) {
-    return Account.getAccount({ googleid: googleId })
+  static getAccountByGoogleId (googleId, hideSensitive) {
+    return Account.getAccount({ googleid: googleId }, hideSensitive)
   }
 
-  static getAccountByAPIKey (apiKey) {
-    return Account.getAccount({ apikey: apiKey })
+  static getAccountByAPIKey (apiKey, hideSensitive) {
+    return Account.getAccount({ apikey: apiKey }, hideSensitive)
   }
 
-  static getAccountBySession (idToken) {
-    return Account.getAccount({ idtoken: idToken })
+  static getAccountBySession (idToken, hideSensitive) {
+    return Account.getAccount({ idtoken: idToken }, hideSensitive)
   }
 
   static getAccountAmount () {
@@ -91,13 +93,14 @@ export default class Account {
     return Database.updateAccount(accountId, { idtoken: undefined })
   }
 
-  static toJSON () {
-    return {
+  static toJSON (hideSensitive = true) {
+    return JSON.stringify(Object.assign({
       username: this.username,
       id: this._id,
       downloadformat: this.downloadformat != null ? this.downloadformat : 0,
-      apikey: this.apikey,
       stars: this.stars
-    }
+    }, hideSensitive ? {} : {
+      apikey: this.apikey
+    }))
   }
 }
