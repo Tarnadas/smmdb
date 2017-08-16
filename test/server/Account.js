@@ -6,6 +6,18 @@ import Account from '../../src/server/Account'
 import Database from '../../src/server/Database'
 
 describe('Account', () => {
+  let account
+  before(async () => {
+    const username = randomString(10)
+    const data = {
+      googleid: '12345678901',
+      username,
+      email: `${username}@gmail.com`,
+      idtoken: randomString(50)
+    }
+    account = await Account.createAccount(data)
+  })
+
   describe('.createAccount({ googleid, username, email, idtoken })', () => {
     it('should create an account', async () => {
       const data = {
@@ -14,13 +26,13 @@ describe('Account', () => {
         email: 'hanspeter@gmail.com',
         idtoken: randomString(50)
       }
-      const account = await Account.createAccount(data)
-      assert.exists(account)
-      assert.exists(account._id)
-      assert.exists(account.googleid)
-      assert.exists(account.username)
-      assert.exists(account.idtoken)
-      assert.exists(account.apikey)
+      const res = await Account.createAccount(data)
+      assert.exists(res)
+      assert.exists(res._id)
+      assert.exists(res.googleid)
+      assert.exists(res.username)
+      assert.exists(res.idtoken)
+      assert.exists(res.apikey)
     })
     it('should truncate too long usernames', async () => {
       const data = {
@@ -29,8 +41,8 @@ describe('Account', () => {
         email: 'toolong@gmail.com',
         idtoken: randomString(50)
       }
-      const account = await Account.createAccount(data)
-      assert(account.username.length <= 20, 'username is too long')
+      const res = await Account.createAccount(data)
+      assert(res.username.length <= 20, 'username is too long')
     })
     it('should randomize usernames, if they already exist in database', async () => {
       const data = {
@@ -63,17 +75,6 @@ describe('Account', () => {
   })
 
   describe('.getAccount({ accountId, googleid, apikey, idtoken })', () => {
-    let account
-    before(async () => {
-      const username = randomString(10)
-      const data = {
-        googleid: '12345678901',
-        username,
-        email: `${username}@gmail.com`,
-        idtoken: randomString(50)
-      }
-      account = await Account.createAccount(data)
-    })
     it('should return account, if it exists', async () => {
       const res = await Account.getAccount({
         accountId: account._id,
@@ -105,6 +106,107 @@ describe('Account', () => {
       assert.notExists(res.apikey)
       res = JSON.parse((await Account.getAccount({ accountId: account._id }, false)).toJSON())
       assert.exists(res.apikey)
+    })
+  })
+
+  describe('.getAccountByAccountId (accountId, hideSensitive)', () => {
+    it('should return account', async () => {
+      const res = await Account.getAccountByAccountId(account._id)
+      assert.exists(res)
+    })
+    it('should show/hide sensitive data on stringification, if asked for', async () => {
+      let res = JSON.parse((await Account.getAccountByAccountId(account._id)).toJSON())
+      assert.notExists(res.idtoken)
+      assert.notExists(res.apikey)
+      res = JSON.parse((await Account.getAccountByAccountId(account._id, false)).toJSON())
+      assert.exists(res.apikey)
+    })
+  })
+
+  describe('.getAccountByGoogleId (googleId, hideSensitive)', () => {
+    it('should return account', async () => {
+      const res = await Account.getAccountByGoogleId(account.googleid)
+      assert.exists(res)
+    })
+    it('should show/hide sensitive data on stringification, if asked for', async () => {
+      let res = JSON.parse((await Account.getAccountByGoogleId(account.googleid)).toJSON())
+      assert.notExists(res.idtoken)
+      assert.notExists(res.apikey)
+      res = JSON.parse((await Account.getAccountByGoogleId(account.googleid, false)).toJSON())
+      assert.exists(res.apikey)
+    })
+  })
+
+  describe('.getAccountByAPIKey (apiKey, hideSensitive)', () => {
+    it('should return account', async () => {
+      const res = await Account.getAccountByAPIKey(account.apikey)
+      assert.exists(res)
+    })
+    it('should show/hide sensitive data on stringification, if asked for', async () => {
+      let res = JSON.parse((await Account.getAccountByAPIKey(account.apikey)).toJSON())
+      assert.notExists(res.idtoken)
+      assert.notExists(res.apikey)
+      res = JSON.parse((await Account.getAccountByAPIKey(account.apikey, false)).toJSON())
+      assert.exists(res.apikey)
+    })
+  })
+
+  describe('.getAccountBySession (idToken, hideSensitive)', () => {
+    it('should return account', async () => {
+      const res = await Account.getAccountBySession(account.idtoken)
+      assert.exists(res)
+    })
+    it('should show/hide sensitive data on stringification, if asked for', async () => {
+      let res = JSON.parse((await Account.getAccountBySession(account.idtoken)).toJSON())
+      assert.notExists(res.idtoken)
+      assert.notExists(res.apikey)
+      res = JSON.parse((await Account.getAccountBySession(account.idtoken, false)).toJSON())
+      assert.exists(res.apikey)
+    })
+  })
+
+  describe('.getAccountAmount ()', () => {
+    it('should return amount of accounts stored in database', async () => {
+      const amount = await Account.getAccountAmount()
+      assert.exists(amount)
+      assert.isNumber(amount)
+      assert.isAtLeast(amount, 0)
+    })
+  })
+
+  describe('.prepare (account)', () => {
+    it('should add list of course IDs starred by given account', () => {
+      // TODO
+    })
+  })
+
+  describe('.update (account, { username, downloadFormat })', () => {
+    it('should be able to change username for account', () => {
+      // TODO
+    })
+    it('should be able to change downloadformat for account', () => {
+      // TODO
+    })
+  })
+
+  describe('.login (accountId, idToken)', () => {
+    it('should add idToken to database for given account', () => {
+      // TODO
+    })
+  })
+
+  describe('.logout (accountId, idToken)', () => {
+    it('should remove idToken from database for given account', () => {
+      // TODO
+    })
+  })
+
+  describe('.toJSON (hideSensitive = true)', () => {
+    it('should stringify bound account object', () => {
+      // TODO
+    })
+    it('should show/hide sensitive data, if asked for', async () => {
+      // TODO
     })
   })
 })
