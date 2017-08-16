@@ -76,7 +76,8 @@ class FAQView extends React.PureComponent {
             It is contained in your Cemu folder under \mlc01\emulatorSave\#saveID#.
             You get your saveID by starting Super Mario Maker with Cemu. It is then displayed on the bordered window, but typically it is 44fc5929.<br />
             Downloading with Cemu SMMDB is self explaining.
-            To upload a course you would have to navigate to your Super Mario Maker save folder and compress the respective course folder (named course###) in any compressible format.
+            To upload a course you would have to navigate to your Super Mario Maker save folder and compress the respective course folder (named course###) in any compressible format.<br /><br />
+            <a href='https://youtu.be/wF2f2ScIZUY' target='_blank'>If you prefer a video, one of our users made a tutorial.</a>
           </div>
           <div style={styles.question}>
             I have a question which has not been answered in the FAQ
