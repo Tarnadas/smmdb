@@ -56,6 +56,7 @@ class SocialView extends React.PureComponent {
             Links
           </div>
           <div style={styles.content}>
+            You can visit us on the following platforms<br /><br />
             <SMMButton link='https://www.reddit.com/r/CemuMarioMaker' blank text='Reddit' iconSrc='/img/reddit.svg' iconColor='bright' />
             <SMMButton link='https://discord.gg/SPZsgSe' blank text='Discord' iconSrc='/img/discord.svg' iconColor='bright' />
           </div>
@@ -63,6 +64,7 @@ class SocialView extends React.PureComponent {
             Support me
           </div>
           <div style={styles.content}>
+            Any support is greatly appreciated<br /><br />
             <SMMButton link='https://paypal.me/MarioReder' blank text='Paypal' iconSrc='/img/paypal.svg' padding='4px' />
             <SMMButton link='https://flattr.com/profile/Tarnadas' blank noText iconSrc='/img/flattr.svg' padding='4px' iconColor='bright' />
             <SMMButton link='https://ko-fi.com/A0843EPC' blank text='Ko-Fi' iconSrc='/img/kofi.svg' iconColor='dark' padding='4px' />
