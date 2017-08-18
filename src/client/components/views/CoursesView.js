@@ -18,6 +18,8 @@ import {
 import {
   domain
 } from '../../../static'
+
+import AmazonPanel from '../panels/AmazonPanel'
 import StatsPanel from '../panels/StatsPanel'
 import CoursePanel from '../panels/CoursePanel'
 import SideBarArea from '../areas/SideBarArea'
@@ -73,6 +75,11 @@ class CoursesView extends React.PureComponent {
     }
     return Array.from((function * () {
       for (let i in courses) {
+        if ((i - 3) % 10 === 0) {
+          yield (
+            <AmazonPanel key={i} />
+          )
+        }
         const course = courses[i]
         let downloadedCourse
         let progress

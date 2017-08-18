@@ -187,3 +187,10 @@ export function mediaQuery (screenSize) {
     screenSize
   }
 }
+
+export function setAmazonProducts (products) {
+  return {
+    type: 'SET_AMAZON_PRODUCTS',
+    products
+  }
+}

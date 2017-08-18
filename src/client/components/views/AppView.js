@@ -7,6 +7,7 @@ import {
 } from 'react-router-dom'
 import { forceCheck } from 'react-lazyload'
 import got from 'got'
+import locale from 'browser-locale'
 
 import { stringify } from 'querystring'
 import { resolve } from 'url'
@@ -18,7 +19,7 @@ import {
   ScreenSize
 } from '../../reducers/mediaQuery'
 import {
-  setVideoId, mediaQuery, setCourses
+  setVideoId, mediaQuery, setCourses, setAmazonProducts
 } from '../../actions'
 import {
   domain
@@ -44,6 +45,39 @@ class AppView extends React.PureComponent {
   }
   componentWillMount () {
     if (this.props.isServer) return
+    (async () => {
+      const l = locale().toLowerCase()
+      let country
+      if (l.includes('us')) {
+        country = 'US'
+      } else if (l.includes('ca')) {
+        country = 'CA'
+      } else if (l.includes('de')) {
+        country = 'DE'
+      } else if (l.includes('gb')) {
+        country = 'UK'
+      } else if (l.includes('fr')) {
+        country = 'FR'
+      } else if (l.includes('es-es')) {
+        country = 'ES'
+      } else if (l.includes('it')) {
+        country = 'IT'
+      }
+      if (!country) return
+      try {
+        const res = (await got(resolve(domain, `/api/getamazonproducts?country=${country}`), {
+          json: true,
+          useElectronNet: false
+        })).body
+        this.props.dispatch(setAmazonProducts(res))
+      } catch (err) {
+        if (err.response) {
+          console.error(err.response.body)
+        } else {
+          console.error(err)
+        }
+      }
+    })()
     const listener = (size, query) => {
       if (query.matches) {
         this.props.dispatch(mediaQuery(size))

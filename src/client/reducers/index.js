@@ -21,6 +21,7 @@ import filter from './filter'
 import order from './order'
 import userData from './userData'
 import mediaQuery from './mediaQuery'
+import amazon from './amazon'
 
 import electron from '../../electron/reducers/electron'
 
@@ -59,7 +60,8 @@ export default function initReducer (preloadedState, history, electronSave, elec
     },
     mediaQuery: {
       screenSize: 2
-    }
+    },
+    amazon: []
   })
   let reducers = {
     router,
@@ -71,7 +73,8 @@ export default function initReducer (preloadedState, history, electronSave, elec
     filter,
     order,
     userData,
-    mediaQuery
+    mediaQuery,
+    amazon
   }
   if (process.env.ELECTRON) {
     const appSaveData = electronSave.appSaveData || APP_SAVE_DATA

@@ -22,10 +22,12 @@ export default class Database {
       this.courses = this.db.collection('coursesTest')
       this.accounts = this.db.collection('accountsTest')
       this.stars = this.db.collection('starsTest')
+      this.amazon = this.db.collection('amazonTest')
     } else {
       this.courses = this.db.collection('courses')
       this.accounts = this.db.collection('accounts')
       this.stars = this.db.collection('stars')
+      this.amazon = this.db.collection('amazon')
     }
   }
 
@@ -42,7 +44,7 @@ export default class Database {
   }
 
   static deleteCourse (id) {
-    return this.courses.removeOne({ '_id': ObjectID(id) })
+    return this.courses.deleteOne({ '_id': ObjectID(id) })
   }
 
   static async starCourse (courseId, accountId) {
@@ -52,7 +54,7 @@ export default class Database {
   }
 
   static async unstarCourse (courseId, accountId) {
-    await this.stars.removeOne({ courseId: ObjectID(courseId), accountId: ObjectID(accountId) })
+    await this.stars.deleteOne({ courseId: ObjectID(courseId), accountId: ObjectID(accountId) })
     const stars = (await this.stars.find({ courseId: ObjectID(courseId) }).toArray()).length
     return this.courses.updateOne({ '_id': ObjectID(courseId) }, { $set: { stars } })
   }
@@ -84,5 +86,9 @@ export default class Database {
 
   static async getAccountsCount () {
     return (await this.accounts.stats()).count
+  }
+
+  static getAmazonProducts (country) {
+    return this.amazon.find({ country }).toArray()
   }
 }

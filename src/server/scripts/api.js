@@ -449,4 +449,17 @@ export default class API {
     await Account.update(account, update)
     res.json(account)
   }
+
+  static async getAmazonProducts (req, res, apiData) {
+    const country = apiData.country
+    if (!country) {
+      res.status(400).send('country required')
+      return
+    }
+    const products = await Database.getAmazonProducts(country)
+    products.forEach(x => {
+      delete x._id
+    })
+    res.json(products)
+  }
 }

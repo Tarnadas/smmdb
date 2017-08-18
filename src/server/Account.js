@@ -94,13 +94,13 @@ export default class Account {
   }
 
   static toJSON (hideSensitive = true) {
-    return JSON.stringify(Object.assign({
+    return Object.assign({
       username: this.username,
       id: this._id,
       downloadformat: this.downloadformat != null ? this.downloadformat : 0,
       stars: this.stars
     }, hideSensitive ? {} : {
       apikey: this.apikey
-    }))
+    })
   }
 }

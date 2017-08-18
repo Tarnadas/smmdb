@@ -3,6 +3,7 @@ import {
   connect
 } from 'react-redux'
 
+import AmazonPanel from '../panels/AmazonPanel'
 import {
   ScreenSize
 } from '../../reducers/mediaQuery'
@@ -38,6 +39,7 @@ class MainView extends React.PureComponent {
           To use all features on this website it is recommended to sign in with Google.<br /><br />
           All content on this website is user-created. We do not share any copyrighted stuff.
         </div>
+        <AmazonPanel />
       </div>
     )
   }
