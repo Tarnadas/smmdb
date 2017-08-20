@@ -8,13 +8,16 @@ import {
 } from '../../reducers/mediaQuery'
 
 const AWS_TAG = 'smmdb09-20'
+const MAX_LENGTH_TITLE = 150
 const MAX_LENGTH_DESCRIPTION = 400
+const MAX_LENGTH_DESCRIPTION_SMALL = 200
 const MAX_DESCRIPTION_VALUES = 6
 
 class AmazonPanel extends React.PureComponent {
   constructor (props) {
     super(props)
     this.getImage = this.getImage.bind(this)
+    this.onClick = this.onClick.bind(this)
   }
   componentWillMount () {
     const products = this.props.amazon.toJS()
@@ -28,15 +31,33 @@ class AmazonPanel extends React.PureComponent {
     const domain = country === 'US' || country === 'CA' ? 'na' : 'eu'
     return `//ws-${domain}.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=${country}&ASIN=${asin}&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL${width}_&tag=${AWS_TAG}`
   }
+  onClick () {
+    try {
+      ga('send', 'event', {
+        eventCategory: 'Outbound Link',
+        eventAction: 'click',
+        eventLabel: 'Amazon Associates',
+        transport: 'beacon'
+      })
+    } catch (err) {}
+  }
   render () {
     if (!this.product) return null
     const screenSize = this.props.screenSize
+    let title = this.product.title || ''
+    if (title.length > MAX_LENGTH_TITLE) {
+      title = title.substr(0, MAX_LENGTH_TITLE)
+      let index = Math.max(title.lastIndexOf(','), title.lastIndexOf('-'), title.lastIndexOf('|'))
+      if (index === -1) index = title.lastIndexOf(' ')
+      title = title.substr(0, index)
+    }
     let description = ''
     const features = this.product.features
     if (features) {
       for (let i in features) {
         if (i >= MAX_DESCRIPTION_VALUES) break
-        if (description.length + features[i].length > MAX_LENGTH_DESCRIPTION) break
+        if (description.length + features[i].length >
+          (screenSize === ScreenSize.SMALL ? MAX_LENGTH_DESCRIPTION_SMALL : MAX_LENGTH_DESCRIPTION)) break
         description += `${features[i]}\n`
       }
     }
@@ -77,36 +98,38 @@ class AmazonPanel extends React.PureComponent {
         padding: '0 10px'
       },
       logo: {
-        position: 'absolute',
         width: '60px',
         height: 'auto',
-        right: '10px',
-        bottom: '4px',
-        zIndex: '1'
+        zIndex: '1',
+        alignSelf: 'flex-end'
       },
       text: {
         width: '0',
         minWidth: '200px',
+        height: 'auto',
         flex: '1 0 0%',
         padding: '5px 10px',
-        color: '#000'
+        color: '#000',
+        justifyContent: 'space-evenly',
+        display: 'flex',
+        flexDirection: 'column'
       },
       price: {
         color: '#bf0000',
-        fontSize: '18px'
+        fontSize: screenSize === ScreenSize.SUPER_SMALL ? '16px' : '18px'
       },
       priceOffer: {
         textDecoration: 'line-through',
         color: '#444',
-        fontSize: '13px'
+        fontSize: screenSize === ScreenSize.SUPER_SMALL ? '11px' : '13px'
       },
       title: {
         display: 'block',
-        fontSize: '17px'
+        fontSize: screenSize === ScreenSize.SUPER_SMALL ? '15px' : '17px'
       },
       description: {
         display: 'block',
-        fontSize: '12px',
+        fontSize: screenSize === ScreenSize.SUPER_SMALL ? '10px' : '12px',
         color: '#222',
         whiteSpace: 'pre-line',
         padding: '5px'
@@ -114,9 +137,8 @@ class AmazonPanel extends React.PureComponent {
     }
     return (
       <div style={styles.panel}>
-        <a target='_blank' href={this.product.detailPageURL} style={styles.a}>
+        <a target='_blank' href={this.product.detailPageURL} style={styles.a} onClick={this.onClick}>
           <div style={styles.main}>
-            <img style={styles.logo} src='/img/amazon.svg' />
             <img style={styles.img} src={this.getImage(this.product.asin, this.product.country, 300)} />
             <div style={styles.text}>
               <div style={styles.title}>
@@ -126,7 +148,7 @@ class AmazonPanel extends React.PureComponent {
                   ) : (
                     <span style={styles.price}>{ price || offerPrice }</span>
                   )
-                } { this.product.title ? this.product.title : '' }
+                } { title }
               </div>
               {
                 screenSize > ScreenSize.SUPER_SMALL &&
@@ -134,6 +156,7 @@ class AmazonPanel extends React.PureComponent {
                   { description }
                 </div>
               }
+              <img style={styles.logo} src='/img/amazon.svg' />
             </div>
           </div>
         </a>

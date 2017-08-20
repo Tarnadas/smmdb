@@ -75,7 +75,7 @@ class CoursesView extends React.PureComponent {
     }
     return Array.from((function * () {
       for (let i in courses) {
-        if ((i - 3) % 10 === 0) {
+        if ((i - 3) % 9 === 0) {
           yield (
             <AmazonPanel key={i} />
           )
