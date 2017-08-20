@@ -16,6 +16,8 @@
 ## Client
 
 * test coverage
+* import thumbnail button
+* star downloaded courses from save file view
 * display download counters
 * ordering for small screen sizes
 * display maker and uploader separately
