@@ -8,6 +8,7 @@
 * test coverage
 * download counters
 * course comments
+* blogging system
 * user messaging
 * moderation/admin system
 * course package lists
@@ -16,8 +17,10 @@
 ## Client
 
 * test coverage
+* better looking filters
 * display download counters
 * ordering for small screen sizes
+* blog with editor
 * display maker and uploader separately
 * display course comments
 * user profiles
@@ -25,6 +28,8 @@
 ## Electron
 
 * test coverage
+* import thumbnail button
+* star downloaded courses from save file view
 * unlink account button
 * bulk download/add button
 * multiselect delete button
