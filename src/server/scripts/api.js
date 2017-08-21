@@ -419,7 +419,7 @@ export default class API {
       res.status(401).send('API key required')
       return
     }
-    const account = await Account.getAccountByAPIKey(apiKey)
+    const account = await Account.getAccountByAPIKey(apiKey, false)
     if (account == null) {
       res.status(400).send(`Account with API key ${apiKey} not found`)
       return
@@ -434,7 +434,7 @@ export default class API {
       res.status(401).send('API key required')
       return
     }
-    const account = await Account.getAccountByAPIKey(apiKey)
+    const account = await Account.getAccountByAPIKey(apiKey, false)
     if (account == null) {
       res.status(400).send(`Account with API key ${apiKey} not found`)
       return
