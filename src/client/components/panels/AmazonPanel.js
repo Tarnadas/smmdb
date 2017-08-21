@@ -22,6 +22,14 @@ class AmazonPanel extends React.PureComponent {
   componentWillMount () {
     const products = this.props.amazon.toJS()
     this.product = products[Math.floor(Math.random() * products.length)]
+    try {
+      ga('ec:addImpression', {
+        id: this.product.asin,
+        price: this.product.price ? String(this.product.price / 100) : String(this.product.offerPrice / 100),
+        currency: this.product.currency,
+        category: this.product.category
+      })
+    } catch (err) {}
   }
   componentWillReceiveProps (nextProps, nextContext) {
     const products = nextProps.amazon.toJS()
@@ -33,11 +41,11 @@ class AmazonPanel extends React.PureComponent {
   }
   onClick () {
     try {
-      ga('send', 'event', {
-        eventCategory: 'Outbound Link',
-        eventAction: 'click',
-        eventLabel: 'Amazon Associates',
-        transport: 'beacon'
+      ga('ec:setAction', 'click', {
+        id: this.product.asin,
+        price: this.product.price ? String(this.product.price / 100) : String(this.product.offerPrice / 100),
+        currency: this.product.currency,
+        category: this.product.category
       })
     } catch (err) {}
   }
@@ -61,19 +69,11 @@ class AmazonPanel extends React.PureComponent {
         description += `${features[i]}\n`
       }
     }
-    let price = this.product.price
-    if (price && price.includes('EUR ')) {
-      price = price.replace('EUR ', '') + '€'
-    }
-    let offerPrice = this.product.offerPrice
-    if (offerPrice && offerPrice.includes('EUR ')) {
-      offerPrice = offerPrice.replace('EUR ', '') + '€'
-    }
+    const price = this.product.price
+    const offerPrice = this.product.offerPrice
     let isOffer = false
     if (price && offerPrice) {
-      const priceVal = parseFloat(price.replace(/[^0-9.]/g, ''))
-      const offerPriceVal = parseFloat(offerPrice.replace(/[^0-9.]/g, ''))
-      isOffer = offerPriceVal < priceVal
+      isOffer = offerPrice < price
     }
     const styles = {
       panel: {
@@ -144,9 +144,9 @@ class AmazonPanel extends React.PureComponent {
               <div style={styles.title}>
                 {
                   isOffer ? (
-                    <div><span style={styles.price}>{ offerPrice }</span><span style={styles.priceOffer}>{ price }</span></div>
+                    <div><span style={styles.price}>{ this.product.formattedOfferPrice }</span><span style={styles.priceOffer}>{ this.product.formattedPrice }</span></div>
                   ) : (
-                    <span style={styles.price}>{ price || offerPrice }</span>
+                    <span style={styles.price}>{ this.product.formattedPrice || this.product.formattedOfferPrice }</span>
                   )
                 } { title }
               </div>

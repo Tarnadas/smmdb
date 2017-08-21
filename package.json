@@ -1,6 +1,6 @@
 {
   "name": "smmdb",
-  "version": "2.6.1",
+  "version": "2.6.2",
   "clientVersion": "2.1.0",
   "description": "Super Mario Maker course database for Cemu",
   "main": "build/server",
