@@ -1,10 +1,13 @@
-import React from 'react';
+import React from 'react'
 import {
   connect
-} from 'react-redux';
+} from 'react-redux'
 import {
   Route
 } from 'react-router-dom'
+import {
+  push
+} from 'react-router-redux'
 
 import ChangeViewButton from '../buttons/ChangeViewButton'
 import SaveView from './SaveView'
@@ -28,6 +31,7 @@ class MainView extends React.PureComponent {
           this.setState({
             currentView: SMMDB_VIEW
           })
+          this.props.dispatch(push('/courses'))
           break
         case SMMDB_VIEW:
           this.setState({
@@ -40,12 +44,10 @@ class MainView extends React.PureComponent {
     const styles = {
       global: {
         display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-start'
+        flexWrap: 'wrap'
       },
       content: {
-        flex: '1 1 0%',
-        height: '0'
+        flex: '1 1 0%'
       }
     }
     switch (this.state.currentView) {

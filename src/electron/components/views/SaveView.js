@@ -56,8 +56,8 @@ class SaveView extends React.Component {
     const courses = this.props.cemuSave.courses
     const styles = {
       div: {
-        width: '100%',
-        height: '100%'
+        display: 'flex',
+        justifyContent: 'center'
       },
       ul: {
         margin: 'auto',
@@ -73,11 +73,11 @@ class SaveView extends React.Component {
     return (
       <div style={styles.div}>
         <SaveFileDetailsPanel course={this.state.course} smmdbId={this.state.smmdbId} courseId={this.state.courseId} onClick={this.hideSaveDetails} />
-        <ul style={styles.ul}>
+        <div style={styles.ul}>
           {
             this.renderCourses(courses)
           }
-        </ul>
+        </div>
       </div>
     )
   }

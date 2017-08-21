@@ -7,6 +7,11 @@ import {
   ScreenSize
 } from '../../reducers/mediaQuery'
 
+let shell
+if (process.env.ELECTRON) {
+  shell = require('electron').shell
+}
+
 const AWS_TAG = 'smmdb09-20'
 const MAX_LENGTH_TITLE = 150
 const MAX_LENGTH_DESCRIPTION = 400
@@ -37,7 +42,7 @@ class AmazonPanel extends React.PureComponent {
   }
   getImage (asin, country, width) {
     const domain = country === 'US' || country === 'CA' ? 'na' : 'eu'
-    return `//ws-${domain}.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=${country}&ASIN=${asin}&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL${width}_&tag=${AWS_TAG}`
+    return `https://ws-${domain}.amazon-adsystem.com/widgets/q?_encoding=UTF8&MarketPlace=${country}&ASIN=${asin}&ServiceVersion=20070822&ID=AsinImage&WS=1&Format=_SL${width}_&tag=${AWS_TAG}`
   }
   onClick () {
     try {
@@ -48,6 +53,9 @@ class AmazonPanel extends React.PureComponent {
         category: this.product.category
       })
     } catch (err) {}
+    if (process.env.ELECTRON) {
+      shell.openExternal(this.product.detailPageURL)
+    }
   }
   render () {
     if (!this.product) return null
@@ -88,7 +96,8 @@ class AmazonPanel extends React.PureComponent {
         alignItems: 'center',
         background: '#fff',
         borderRadius: '10px',
-        boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.75)'
+        boxShadow: '0px 0px 5px 0px rgba(0,0,0,0.75)',
+        cursor: 'pointer'
       },
       img: {
         width: 'auto',
@@ -135,31 +144,36 @@ class AmazonPanel extends React.PureComponent {
         padding: '5px'
       }
     }
+    const r = (el) => (
+      process.env.ELECTRON ? el : <a target='_blank' href={this.product.detailPageURL} style={styles.a}>{el}</a>
+    )
     return (
-      <div style={styles.panel}>
-        <a target='_blank' href={this.product.detailPageURL} style={styles.a} onClick={this.onClick}>
-          <div style={styles.main}>
-            <img style={styles.img} src={this.getImage(this.product.asin, this.product.country, 300)} />
-            <div style={styles.text}>
-              <div style={styles.title}>
-                {
-                  isOffer ? (
-                    <div><span style={styles.price}>{ this.product.formattedOfferPrice }</span><span style={styles.priceOffer}>{ this.product.formattedPrice }</span></div>
-                  ) : (
-                    <span style={styles.price}>{ this.product.formattedPrice || this.product.formattedOfferPrice }</span>
-                  )
-                } { title }
-              </div>
-              {
-                screenSize > ScreenSize.SUPER_SMALL &&
-                <div style={styles.description}>
-                  { description }
+      <div style={styles.panel} onClick={this.onClick}>
+        {
+          r(
+            <div style={styles.main}>
+              <img style={styles.img} src={this.getImage(this.product.asin, this.product.country, 300)} />
+              <div style={styles.text}>
+                <div style={styles.title}>
+                  {
+                    isOffer ? (
+                      <div><span style={styles.price}>{ this.product.formattedOfferPrice }</span><span style={styles.priceOffer}>{ this.product.formattedPrice }</span></div>
+                    ) : (
+                      <span style={styles.price}>{ this.product.formattedPrice || this.product.formattedOfferPrice }</span>
+                    )
+                  } { title }
                 </div>
-              }
-              <img style={styles.logo} src='/img/amazon.svg' />
+                {
+                  screenSize > ScreenSize.SUPER_SMALL &&
+                  <div style={styles.description}>
+                    { description }
+                  </div>
+                }
+                <img style={styles.logo} src='/img/amazon.svg' />
+              </div>
             </div>
-          </div>
-        </a>
+          )
+        }
       </div>
     )
   }

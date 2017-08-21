@@ -77,7 +77,7 @@ export default class SaveFilePanel extends React.PureComponent {
       }
     }
     return course ? (
-      <li style={styles.li} onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave} onClick={this.onClick}>
+      <div style={styles.li} onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave} onClick={this.onClick}>
         <div style={styles.divCrop}>
           <img style={styles.img} src={`${path}/thumbnail1.jpg`} />
         </div>
@@ -86,14 +86,14 @@ export default class SaveFilePanel extends React.PureComponent {
             { course.title }
           </div>
         </div>
-      </li>
+      </div>
     ) : (
-      <li style={styles.li}>
+      <div style={styles.li}>
         <div style={styles.divCrop}>
           <img style={styles.img} src='/img/noise.gif' />
         </div>
         <div style={styles.divTitle} />
-      </li>
+      </div>
     )
   }
 }

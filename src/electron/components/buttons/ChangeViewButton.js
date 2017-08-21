@@ -3,11 +3,29 @@ import React from 'react'
 const SAVE_FOLDER_VIEW = 0
 const SMMDB_VIEW = 1
 
-export default class ChangeViewButton extends React.Component {
+export default class ChangeViewButton extends React.PureComponent {
+  constructor (props) {
+    super(props)
+    this.state = {
+      hover: false
+    }
+    this.onMouseOver = this.onMouseOver.bind(this)
+    this.onMouseLeave = this.onMouseLeave.bind(this)
+  }
+  onMouseOver () {
+    this.setState({
+      hover: true
+    })
+  }
+  onMouseLeave () {
+    this.setState({
+      hover: false
+    })
+  }
   render () {
+    const hover = this.state.hover
     const styles = {
       outer: {
-        float: 'left',
         margin: '14px',
         zIndex: '10',
         height: '32px',
@@ -17,7 +35,10 @@ export default class ChangeViewButton extends React.Component {
         boxSizing: 'border-box',
         textAlign: 'center',
         color: '#fff',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        boxShadow: hover ? '3px 6px 3px -2px rgba(0,0,0,1)' : '3px 3px 3px -2px rgba(0,0,0,1)',
+        transition: 'transform 0.5s, box-shadow 0.5s',
+        transform: hover ? 'translateY(-3px)' : ''
       },
       inner: {
         margin: '4px',
@@ -49,7 +70,7 @@ export default class ChangeViewButton extends React.Component {
       }
     }
     return (
-      <div style={styles.outer} onClick={this.props.onClick}>
+      <div style={styles.outer} onClick={this.props.onClick} onMouseOver={this.onMouseOver} onMouseLeave={this.onMouseLeave}>
         <div style={styles.inner}>
           {
             this.props.view === SAVE_FOLDER_VIEW ? 'MY COURSES' : 'SMMDB COURSES'
