@@ -24,17 +24,13 @@ export default class Course {
     return Course.prepare(res[0], accountId)
   }
 
-  static async prepare (course, accountId, idList) {
+  static async prepare (course, accountId, filter) {
     if (accountId) course.starred = await Database.isCourseStarred(course._id, accountId)
-    if (idList) {
-      course.toJSON = () => String(course._id)
-    } else {
-      course.toJSON = Course.toJSON.bind(course)
-    }
+    course.toJSON = Course.toJSON.bind(course, filter)
     return course
   }
 
-  static toJSON () {
+  static toJSON (filter) {
     let result = Object.assign({}, this)
     result.id = this._id
     result.uploader = Account.getAccount(result.owner).username
@@ -42,6 +38,13 @@ export default class Course {
     delete result._id
     delete result.serialized
     delete result.courseData
+    if (filter) {
+      for (let i in result) {
+        if (!filter.includes(i)) {
+          delete result[i]
+        }
+      }
+    }
     return result
   }
 
