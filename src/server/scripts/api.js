@@ -126,7 +126,7 @@ export default class API {
     }
     const res = await Database.filterCourses(filter, { [orderBy]: dir }, start, limit).toArray()
     for (let i in res) {
-      await Course.prepare(res[i], accountId)
+      await Course.prepare(res[i], accountId, filterData.idlist)
     }
     return res
   }

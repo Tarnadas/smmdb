@@ -24,9 +24,13 @@ export default class Course {
     return Course.prepare(res[0], accountId)
   }
 
-  static async prepare (course, accountId) {
+  static async prepare (course, accountId, idList) {
     if (accountId) course.starred = await Database.isCourseStarred(course._id, accountId)
-    course.toJSON = Course.toJSON.bind(course)
+    if (idList) {
+      course.toJSON = () => String(course._id)
+    } else {
+      course.toJSON = Course.toJSON.bind(course)
+    }
     return course
   }
 
