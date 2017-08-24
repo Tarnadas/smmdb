@@ -39,8 +39,14 @@ export default class Database {
     return this.courses.updateOne({ '_id': ObjectID(id) }, { $set: course })
   }
 
-  static filterCourses (filter, sort = { lastmodified: -1 }, skip = 0, limit = 100) {
-    return this.courses.find(filter).sort(sort).skip(skip).limit(limit)
+  static filterCourses (filter, sort = { lastmodified: -1 }, skip = 0, limit = 100, random) {
+    // return this.courses.find(filter).sort(sort).skip(skip).limit(limit)
+    const query = [{ $match: filter }]
+    if (random) query.push({ $sample: { size: limit } })
+    query.push({ $sort: sort },
+      { $skip: skip },
+      { $limit: limit })
+    return this.courses.aggregate(query)
   }
 
   static deleteCourse (id) {

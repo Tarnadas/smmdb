@@ -101,3 +101,46 @@ export function finishDeleteCourse (smmdbId, courseId, success) {
     success
   }
 }
+
+export function deleteSelected (selected) {
+  return {
+    type: 'SAVE_DELETE_SELECTED',
+    selected
+  }
+}
+
+export function finishDeleteSelected (courseIds, smmdbIds, success) {
+  return {
+    type: 'FINISH_DELETE_SELECTED',
+    courseIds,
+    smmdbIds,
+    success
+  }
+}
+
+export function setSelected (selected) {
+  return {
+    type: 'SET_SELECTED',
+    selected
+  }
+}
+
+export function fillSave () {
+  return {
+    type: 'FILL_SAVE'
+  }
+}
+
+export function fillSaveRandom () {
+  return {
+    type: 'FILL_SAVE_RANDOM'
+  }
+}
+
+export function fillProgress (progress, limit) {
+  return {
+    type: 'FILL_PROGRESS',
+    progress,
+    limit
+  }
+}

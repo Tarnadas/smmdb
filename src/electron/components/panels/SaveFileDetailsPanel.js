@@ -28,11 +28,7 @@ class SaveFileDetailsPanel extends React.PureComponent {
         position: 'absolute',
         zIndex: '100',
         top: '0',
-        left: '0',
-        alignItems: 'center',
-        overflowY: 'scroll',
-        width: '100%',
-        height: '100%'
+        width: 'auto',
       },
       div: {
         width: 'auto',

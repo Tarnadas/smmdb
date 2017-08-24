@@ -8,9 +8,6 @@ import {
 import {
   loadSave as loadCemuSave
 } from 'cemu-smm'
-import {
-  zip
-} from 'cross-unzip'
 
 import SMMButton from '../../../client/components/buttons/SMMButton'
 import {
@@ -65,14 +62,6 @@ class LoadSaveView extends React.PureComponent {
           await cemuSave.exportThumbnail()
           await cemuSave.unlockAmiibos()
           this.props.dispatch(addSave(cemuPath, cemuSave))
-          /* zip(cemuPath, `${cemuPath}_backup_${(new Date()).toISOString().slice(0, 10)}.zip`, async err => {
-            if (err) throw err
-            await cemuSave.reorder()
-            await cemuSave.loadCourses()
-            await cemuSave.exportThumbnail()
-            await cemuSave.unlockAmiibos()
-            this.props.dispatch(addSave(cemuPath, cemuSave))
-          }) */
         } catch (err) {
           console.log(err)
         }

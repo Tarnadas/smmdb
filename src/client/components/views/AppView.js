@@ -44,7 +44,7 @@ class AppView extends React.PureComponent {
     this.shouldUpdate = this.shouldUpdate.bind(this)
   }
   componentWillMount () {
-    if (this.props.isServer) return
+    if (this.props.isServer) return;
     (async () => {
       const l = locale().toLowerCase()
       let country
@@ -78,6 +78,7 @@ class AppView extends React.PureComponent {
         }
       }
     })()
+    if (process.env.ELECTRON) return
     const listener = (size, query) => {
       if (query.matches) {
         this.props.dispatch(mediaQuery(size))

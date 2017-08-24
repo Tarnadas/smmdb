@@ -28,11 +28,11 @@ class AmazonPanel extends React.PureComponent {
     const products = this.props.amazon.toJS()
     this.product = products[Math.floor(Math.random() * products.length)]
     try {
-      ga('ec:addImpression', {
-        id: this.product.asin,
-        price: this.product.price ? String(this.product.price / 100) : String(this.product.offerPrice / 100),
-        currency: this.product.currency,
-        category: this.product.category
+      ga('send', 'event', {
+        eventCategory: 'ad',
+        eventAction: 'impression',
+        eventLabel: 'Amazon Associates',
+        dimension1: this.product.category
       })
     } catch (err) {}
   }
@@ -46,11 +46,11 @@ class AmazonPanel extends React.PureComponent {
   }
   onClick () {
     try {
-      ga('ec:setAction', 'click', {
-        id: this.product.asin,
-        price: this.product.price ? String(this.product.price / 100) : String(this.product.offerPrice / 100),
-        currency: this.product.currency,
-        category: this.product.category
+      ga('send', 'event', {
+        eventCategory: 'ad',
+        eventAction: 'click',
+        eventLabel: 'Amazon Associates',
+        dimension2: this.product.category
       })
     } catch (err) {}
     if (process.env.ELECTRON) {

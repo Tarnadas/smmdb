@@ -66,6 +66,25 @@ export default function electron (state, action) {
         state = state.deleteIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'save', String(action.courseId)])
         saveState(state)
         return state
+      case 'FINISH_DELETE_SELECTED':
+        if (state.has('saveFull')) {
+          state = state.set('saveFull', false)
+        }
+        state = state.set('forceUpdate', {})
+        for (let i in action.smmdbIds) {
+          state = state.deleteIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'smmdb', String(action.smmdbIds[i])])
+        }
+        for (let i in action.courseIds) {
+          state = state.deleteIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'save', String(action.courseIds[i])])
+        }
+        saveState(state)
+        return state
+      case 'SET_SELECTED':
+        state = state.set('selected', action.selected)
+        return state
+      case 'FILL_PROGRESS':
+        state = state.set('fillProgress', List([action.progress, action.limit]))
+        return state
     }
   } catch (err) {
     console.log(err)

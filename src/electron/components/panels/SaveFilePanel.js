@@ -21,22 +21,21 @@ export default class SaveFilePanel extends React.PureComponent {
     })
   }
   onClick () {
-    this.props.onClick(this.props.course, this.props.smmdbId, this.props.courseId)
+    if (this.props.onClick) this.props.onClick(this.props.course, this.props.smmdbId, this.props.courseId)
   }
   render () {
-    // console.log('render')
     const course = this.props.course
     const path = course ? course.getPath() : null
+    const isSelected = this.props.isSelected
     const styles = {
       li: {
-        display: 'inline-block',
-        margin: '20px 0 0 20px',
+        margin: '20px 10px',
         width: '180px',
         height: '160px',
-        backgroundColor: '#a0a0af',
         color: '#fff',
         overflow: 'hidden',
-        cursor: 'pointer'
+        cursor: 'pointer',
+        background: isSelected ? '#cc0008' : '#a0a0af'
       },
       divCrop: {
         margin: '10px 0 0 10px',

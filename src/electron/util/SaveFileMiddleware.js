@@ -1,5 +1,5 @@
 import {
-  startDownloadCourse, progressDownloadCourse, finishDownloadCourse, finishAddCourse, finishDeleteCourse
+  startDownloadCourse, progressDownloadCourse, finishDownloadCourse, finishAddCourse, finishDeleteCourse, finishDeleteSelected, fillProgress
 } from '../actions'
 
 export default function saveFileMiddleware (saveFileEditor) {
@@ -18,6 +18,12 @@ export default function saveFileMiddleware (saveFileEditor) {
     }
     const onDeleteFinish = (smmdbId, courseId, success) => {
       dispatch(finishDeleteCourse(smmdbId, courseId, success))
+    }
+    const onDeleteSelectedFinish = (selected, smmdbIds, success) => {
+      dispatch(finishDeleteSelected(selected, smmdbIds, success))
+    }
+    const onFillProgress = (progress, limit) => {
+      dispatch(fillProgress(progress, limit))
     }
     switch (action.type) {
       case 'SAVE_DOWNLOAD_COURSE':
@@ -38,6 +44,17 @@ export default function saveFileMiddleware (saveFileEditor) {
             onAddFinish, getState().getIn(['electron', 'cemuSave']), action.smmdbId
           ]
         )
+        break
+      case 'SAVE_DELETE_SELECTED':
+        saveFileEditor.deleteSelected(onDeleteSelectedFinish, getState().getIn(['electron', 'cemuSave']), action.selected, getState().getIn(['electron', 'appSaveData', 'cemuSaveData', getState().getIn(['electron', 'currentSave']), 'save']))
+        break
+      case 'FILL_SAVE':
+        saveFileEditor.fillSave({onStart, onProgress, onFinish}, {onAddFinish}, getState().getIn(['electron', 'cemuSave']),
+          onFillProgress, getState().getIn(['filter', 'currentFilter']), getState().get('order'), getState().getIn(['electron', 'appSaveData', 'downloads']), getState().getIn(['electron', 'appSaveData', 'cemuSaveData', getState().getIn(['electron', 'currentSave']), 'smmdb']))
+        break
+      case 'FILL_SAVE_RANDOM':
+        saveFileEditor.fillSave({onStart, onProgress, onFinish}, {onAddFinish}, getState().getIn(['electron', 'cemuSave']),
+          onFillProgress, getState().getIn(['filter', 'currentFilter']), getState().get('order'), getState().getIn(['electron', 'appSaveData', 'downloads']), getState().getIn(['electron', 'appSaveData', 'cemuSaveData', getState().getIn(['electron', 'currentSave']), 'smmdb']), true)
         break
     }
     return next(action)

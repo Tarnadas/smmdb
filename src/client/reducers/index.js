@@ -87,7 +87,9 @@ export default function initReducer (preloadedState, history, electronSave, elec
         cemuSave: null,
         currentSave: null,
         currentDownloads: {},
-        saveFileEditor
+        saveFileEditor,
+        selected: [],
+        fillProgress: []
       }
     }))
     Object.assign(reducers, {

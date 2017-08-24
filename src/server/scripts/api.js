@@ -12,7 +12,7 @@ import Account from '../Account'
 import Course from '../Course'
 import { Bot } from '..'
 
-const MAX_FILTER_LIMIT = 100
+const MAX_FILTER_LIMIT = 120
 
 const NINTENDO_ID = /^[0-9A-Z|\\-]+$/
 const VIDEO_ID = /^[a-z0-9A-Z| |.|\\_|\\-]+$/
@@ -51,7 +51,7 @@ export default class API {
       dir = filterData.dir === 'asc' ? 1 : -1
     }
 
-    const limit = filterData.limit ? +filterData.limit : MAX_FILTER_LIMIT
+    const limit = filterData.limit ? Math.min(+filterData.limit > 0 ? filterData.limit : MAX_FILTER_LIMIT, MAX_FILTER_LIMIT) : MAX_FILTER_LIMIT
     const start = filterData.start ? +filterData.start : 0
 
     const filter = {}
@@ -124,7 +124,7 @@ export default class API {
       if (!filter.width) filter.width = {}
       filter.width.$lte = parseInt(filterData.widthto)
     }
-    const res = await Database.filterCourses(filter, { [orderBy]: dir }, start, limit).toArray()
+    const res = await Database.filterCourses(filter, { [orderBy]: dir }, start, limit, filterData.random === '1').toArray()
     for (let i in res) {
       await Course.prepare(res[i], accountId, filterData.filter && filterData.filter.split(','))
     }
