@@ -55,6 +55,15 @@ export default class API {
     const start = filterData.start ? +filterData.start : 0
 
     const filter = {}
+    if (filterData.ids) {
+      if (!filter._id) filter._id = { $in: [] }
+      try {
+        const ids = filterData.ids.split(',')
+        for (let i in ids) {
+          filter._id.$in.push(ObjectID(ids[i]))
+        }
+      } catch (err) {}
+    }
     if (filterData.lastmodifiedfrom) {
       if (!filter.lastmodified) filter.lastmodified = {}
       filter.lastmodified.$gte = parseInt(filterData.lastmodifiedfrom)
@@ -123,6 +132,14 @@ export default class API {
     if (filterData.widthto) {
       if (!filter.width) filter.width = {}
       filter.width.$lte = parseInt(filterData.widthto)
+    }
+    if (filterData.widthsubfrom) {
+      if (!filter.widthSub) filter.widthSub = {}
+      filter.widthSub.$gte = parseInt(filterData.widthsubfrom)
+    }
+    if (filterData.widthsubto) {
+      if (!filter.widthSub) filter.widthSub = {}
+      filter.widthSub.$lte = parseInt(filterData.widthsubto)
     }
     const res = await Database.filterCourses(filter, { [orderBy]: dir }, start, limit, filterData.random === '1').toArray()
     for (let i in res) {

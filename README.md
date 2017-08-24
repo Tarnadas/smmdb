@@ -36,10 +36,13 @@ All API calls are subject to change.
 
 | Query | Value | Description |
 | --- | --- | --- |
-| order | *`lastmodified`*` \| uploaded \| title \| stars \| downloads \| completed` | Order of courses |
+| order | *`lastmodified`*` \| uploaded \| title \| stars` | Order of courses |
 | dir | `asc \| `*`desc`* | Order direction of courses |
 | limit | `{number} \| `*`100`* | Limit maximum amount of sent courses (max: 100) |
-| start | `{number} \| `*`0`* | Start index |
+| start | `{number} \| `*`0`* | Start index for pagination |
+| random | *`0`*` \| 1` | Receive random courses wrt filters |
+| filter | `{Array<string>}` delimited with comma | Limit response values attributes, e.g. `filter=id,stars` |
+| ids | `{Array<string>}` delimited with comma | Return only courses with specific id |
 | lastmodifiedfrom | `{number}` | Unix timestamp lower limit for lastmodified value |
 | lastmodifiedto | `{number}` | Unix timestamp upper limit for lastmodified value |
 | uploadedfrom | `{number}` | Unix timestamp lower limit for uploaded value |
@@ -52,7 +55,14 @@ All API calls are subject to change.
 | gamestyle | `{number}` | Game style of course (0: SMB, 1: SMB3, 2: SMW, 3: NSMBU) |
 | coursetheme | `{number}` | Course theme (0: Ground, 1: Underground, 2: Castle, 3: Airship, 4: Underwater, 5: Ghost House) |
 | coursethemesub | `{number}` | Subcourse theme (0: Ground, 1: Underground, 2: Castle, 3: Airship, 4: Underwater, 5: Ghost House) |
+| timefrom | `{number}` | Course completion time lower limit in seconds |
+| timeto | `{number}` | Course completion time upper limit in seconds |
 | autoscroll | `{number} \| `*`0`* | Auto scroll speed (0: disabled, 1: slow, 2: medium, 3: fast) |
+| autoscrollsub | `{number} \| `*`0`* | Auto scroll speed of sub course |
+| widthfrom | `{number}` | Course width lower limit in block |
+| widthto | `{number}` | Course width upper limit in block |
+| widthsubfrom | `{number}` | Subcourse width lower limit in block |
+| widthsubto | `{number}` | Subcourse width upper limit in block |
 | prettify | *`0`*` \| 1` | Pretty print json response |
 
 **Example**: `http://smmdb.ddns.net/api/getcourses?limit=50&start=121&prettify=1`
