@@ -38,6 +38,7 @@ class LoadSaveView extends React.PureComponent {
     this.showApiKey = this.showApiKey.bind(this)
     this.hideApiKey = this.hideApiKey.bind(this)
     this.addApiKey = this.addApiKey.bind(this)
+    this.deleteApiKey = this.deleteApiKey.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.getSaveName = this.getSaveName.bind(this)
   }

@@ -33,6 +33,12 @@ export function loadSave (cemuSave, saveId) {
   }
 }
 
+export function unloadSave () {
+  return {
+    type: 'UNLOAD_SAVE'
+  }
+}
+
 export function setSaveData (save) {
   return {
     type: 'SET_SAVE_DATA',

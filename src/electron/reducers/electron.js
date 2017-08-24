@@ -28,6 +28,10 @@ export default function electron (state, action) {
         state = state.set('cemuSave', action.cemuSave)
         state = state.set('currentSave', action.saveId)
         return state
+      case 'UNLOAD_SAVE':
+        state = state.delete('cemuSave')
+        state = state.delete('currentSave')
+        return state
       case 'ADD_API_KEY':
         state = state.setIn(['appSaveData', 'apiKey'], action.apiKey)
         saveState(state)
