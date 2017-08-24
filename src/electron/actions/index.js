@@ -4,6 +4,11 @@ export function addApiKey (apiKey) {
     apiKey
   }
 }
+export function deleteApiKey () {
+  return {
+    type: 'DELETE_API_KEY'
+  }
+}
 
 export function addSave (cemuSavePath, cemuSave) {
   return {
@@ -25,6 +30,21 @@ export function loadSave (cemuSave, saveId) {
     type: 'LOAD_SAVE',
     cemuSave,
     saveId
+  }
+}
+
+export function setSaveData (save) {
+  return {
+    type: 'SET_SAVE_DATA',
+    save
+  }
+}
+
+export function setSaveCourse (courseId, course) {
+  return {
+    type: 'SET_SAVE_COURSE',
+    courseId,
+    course
   }
 }
 

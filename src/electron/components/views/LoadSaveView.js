@@ -14,7 +14,7 @@ import {
   LENGTH_API_KEY
 } from '../areas/EnterAPIKeyArea'
 import {
-  addApiKey, addSave, loadSave, deleteSave
+  addApiKey, deleteApiKey, addSave, loadSave, deleteSave
 } from '../../actions'
 import {
   setAccountData
@@ -57,7 +57,7 @@ class LoadSaveView extends React.PureComponent {
           this.setState({
             loading: true
           })
-          await cemuSave.reorder()
+          cemuSave.reorderSync()
           await cemuSave.loadCourses()
           await cemuSave.exportThumbnail()
           await cemuSave.unlockAmiibos()
@@ -75,7 +75,7 @@ class LoadSaveView extends React.PureComponent {
       })
       try {
         const cemuSave = await loadCemuSave(savePath)
-        await cemuSave.reorder()
+        cemuSave.reorderSync()
         await cemuSave.loadCourses()
         await cemuSave.exportThumbnail()
         this.props.dispatch(loadSave(cemuSave, saveId))
@@ -106,6 +106,9 @@ class LoadSaveView extends React.PureComponent {
     this.setState({
       showApiKey: false
     })
+  }
+  deleteApiKey () {
+    this.props.dispatch(deleteApiKey())
   }
   handleChange (e) {
     let value = e.target.value
@@ -220,11 +223,9 @@ class LoadSaveView extends React.PureComponent {
           <div>
             <div style={styles.center}>
               {
-                !apiKey && (
                 <div style={styles.showApiKey}>
-                  <SMMButton text='Add API Key' iconSrc='/img/api.png' fontSize='13px' padding='3px' onClick={this.showApiKey} />
+                  <SMMButton text={`${apiKey ? 'Change' : 'Add'} API Key`} iconSrc='/img/api.png' fontSize='13px' padding='3px' onClick={this.showApiKey} />
                 </div>
-              )
               }
               {
                 cemuSaves.size > 0 && (
@@ -241,12 +242,11 @@ class LoadSaveView extends React.PureComponent {
           </div>
         }
         {
-          this.state.loading && (
+          this.state.loading &&
           <img style={styles.center} src={'/img/load.gif'} />
-        )
         }
         {
-          this.state.showApiKey && (
+          this.state.showApiKey &&
           <div style={styles.apiKey}>
             <div style={styles.cancel} onClick={this.hideApiKey}>
               <img style={styles.cancelImg} src='/img/cancel.svg' />
@@ -258,9 +258,12 @@ class LoadSaveView extends React.PureComponent {
               (With an API Key, you will be able to upload courses, star courses, flag courses as completed)
             </div>
             <input style={styles.apiKeyInput} type='text' value={!this.state.apiKey ? '' : this.state.apiKey} onChange={this.handleChange} />
+            {
+              apiKey &&
+              <SMMButton text='Unlink account' iconSrc='/img/delete.png' fontSize='13px' padding='3px' onClick={this.deleteApiKey} />
+            }
             <SMMButton text='Add API Key' iconSrc='/img/api.png' fontSize='13px' padding='3px' onClick={this.addApiKey} />
           </div>
-        )
         }
       </div>
     )

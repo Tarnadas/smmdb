@@ -3,14 +3,20 @@ import {
   connect
 } from 'react-redux'
 import {
-  List
+  List, Map
 } from 'immutable'
+import got from 'got'
+
+import { resolve } from 'url'
 
 import SaveFilePanel from '../panels/SaveFilePanel'
 import SaveFileDetailsPanel from '../panels/SaveFileDetailsPanel'
 import {
-  setSelected
+  setSelected, setSaveData
 } from '../../actions'
+import {
+  domain
+} from '../../../static'
 
 class SaveView extends React.Component {
   constructor (props) {
@@ -31,12 +37,31 @@ class SaveView extends React.Component {
     this.onClickShift = this.onClickShift.bind(this)
     this.showSaveDetails = this.showSaveDetails.bind(this)
     this.hideSaveDetails = this.hideSaveDetails.bind(this)
+    this.setSaveCourse = this.setSaveCourse.bind(this)
     this.renderCourses = this.renderCourses.bind(this)
   }
   componentWillMount () {
     this.props.dispatch(setSelected(List()))
     document.addEventListener('keydown', this.onKeyDown)
-    document.addEventListener('keyup', this.onKeyUp)
+    document.addEventListener('keyup', this.onKeyUp);
+    (async () => {
+      const ids = this.props.save.map(x => x.get('smmdbId')).reduce((str, val) => (str + ',' + val))
+      const courses = (await got(resolve(domain, `/api/getcourses?ids=${ids}&filter=id,stars,starred`), Object.assign({
+        json: true,
+        useElectronNet: false
+      }, this.props.apiKey ? {
+        headers: {
+          'Authorization': `APIKEY ${this.props.apiKey}`
+        }
+      } : null))).body
+      const c = {}
+      for (let i in courses) {
+        c[courses[i].id] = courses[i]
+        delete c[courses[i].id].id
+      }
+      const saveCourses = this.props.save.map(x => x.merge(Map(c[x.get('smmdbId')])))
+      this.props.dispatch(setSaveData(saveCourses))
+    })()
   }
   componentWillUnmount () {
     document.removeEventListener('keydown', this.onKeyDown)
@@ -97,11 +122,11 @@ class SaveView extends React.Component {
     }
     this.props.dispatch(setSelected(this.props.selected.set(i, true).map((x, i) => i >= min && i <= max && this.props.cemuSave.courses[`course${String(i).padStart(3, '000')}`])))
   }
-  showSaveDetails (course, smmdbId, courseId) {
+  showSaveDetails (course, save, courseId) {
     this.props.dispatch(setSelected(List()))
     this.setState({
       course,
-      smmdbId,
+      save,
       courseId,
       lastIndex: -1
     })
@@ -109,6 +134,11 @@ class SaveView extends React.Component {
   hideSaveDetails () {
     this.setState({
       course: null
+    })
+  }
+  setSaveCourse (save) {
+    this.setState({
+      save
     })
   }
   renderCourses (courses) {
@@ -123,7 +153,7 @@ class SaveView extends React.Component {
         const courseName = `course${String(i).padStart(3, '000')}`
         const course = courses.hasOwnProperty(courseName) ? courses[courseName] : null
         yield (
-          <SaveFilePanel key={i} isSelected={selected.get(i)} onClick={ctrl ? self.onClickCtrl.bind(null, i) : shift ? self.onClickShift.bind(null, i) : showSaveDetails} course={course} smmdbId={save.getIn([String(i), 'smmdbId'])} courseId={i} />
+          <SaveFilePanel key={i} isSelected={selected.get(i)} onClick={ctrl ? self.onClickCtrl.bind(null, i) : shift ? self.onClickShift.bind(null, i) : showSaveDetails} course={course} save={save.get(String(i))} courseId={i} />
         )
       }
     })())
@@ -150,7 +180,7 @@ class SaveView extends React.Component {
     }
     return (
       <div style={styles.div}>
-        <SaveFileDetailsPanel course={this.state.course} smmdbId={this.state.smmdbId} courseId={this.state.courseId} onClick={this.hideSaveDetails} />
+        <SaveFileDetailsPanel course={this.state.course} save={this.state.save} courseId={this.state.courseId} apiKey={this.props.apiKey} onClick={this.hideSaveDetails} onSaveChange={this.setSaveCourse} />
         <div style={styles.ul} id='scroll'>
           {
             this.renderCourses(courses)
@@ -164,6 +194,7 @@ export default connect(state => ({
   update: state.getIn(['electron', 'forceUpdate']),
   cemuSave: state.getIn(['electron', 'cemuSave']),
   save: state.getIn(['electron', 'appSaveData', 'cemuSaveData', state.getIn(['electron', 'currentSave']), 'save']),
+  apiKey: state.getIn(['electron', 'appSaveData', 'apiKey']),
   saveFileEditor: state.getIn(['electron', 'saveFileEditor']),
   selected: state.getIn(['electron', 'selected'])
 }))(SaveView)

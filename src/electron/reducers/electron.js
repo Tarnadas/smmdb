@@ -32,6 +32,17 @@ export default function electron (state, action) {
         state = state.setIn(['appSaveData', 'apiKey'], action.apiKey)
         saveState(state)
         return state
+      case 'DELETE_API_KEY':
+        state = state.deleteIn(['appSaveData', 'apiKey'])
+        return state
+      case 'SET_SAVE_DATA':
+        state = state.setIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'save'], action.save)
+        saveState(state)
+        return state
+      case 'SET_SAVE_COURSE':
+        state = state.setIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'save', String(action.courseId)], action.course)
+        saveState(state)
+        return state
       case 'START_DOWNLOAD_COURSE':
         state = state.setIn(['currentDownloads', action.courseId], List([0, action.dataLength]))
         return state

@@ -2,22 +2,57 @@ import React from 'react'
 import {
   connect
 } from 'react-redux'
+import {
+  Map
+} from 'immutable'
+import got from 'got'
+
+import { resolve } from 'url'
 
 import SMMButton from '../../../client/components/buttons/SMMButton'
 import {
-  deleteCourse
+  deleteCourse, setSaveCourse
 } from '../../actions'
+import {
+  domain
+} from '../../../static'
 
 class SaveFileDetailsPanel extends React.PureComponent {
   constructor (props) {
     super(props)
     this.onDeleteCourse = this.onDeleteCourse.bind(this)
+    this.onStarCourse = this.onStarCourse.bind(this)
   }
   onDeleteCourse () {
-    this.props.dispatch(deleteCourse(this.props.smmdbId, this.props.courseId))
+    this.props.dispatch(deleteCourse(this.props.save.get('smmdbId'), this.props.courseId))
+  }
+  async onStarCourse () {
+    try {
+      const course = (await got(resolve(domain, `/api/starcourse?id=${this.props.save.get('smmdbId')}`), {
+        headers: {
+          'Authorization': `APIKEY ${this.props.apiKey}`
+        },
+        method: 'POST',
+        json: true,
+        useElectronNet: false
+      })).body
+      if (course != null) {
+        const save = Map(this.props.save.merge({ stars: course.stars, starred: !!course.starred }))
+        this.props.dispatch(setSaveCourse(this.props.courseId, save))
+        this.props.onSaveChange(save)
+      }
+    } catch (err) {
+      if (err.response) {
+        console.error(err.response.body)
+      } else {
+        console.error(err)
+      }
+    }
   }
   render () {
     const course = this.props.course
+    const save = this.props.save && this.props.save.toJS()
+    if (!course) return null
     const path = course ? course.getPath() : null
     const styles = {
       divHide: {
@@ -90,6 +125,13 @@ class SaveFileDetailsPanel extends React.PureComponent {
         margin: '20px',
         width: 'calc(100% - 400px)'
       },
+      stars: {
+        width: 'auto',
+        height: 'auto',
+        color: '#fff',
+        fontSize: '18px',
+        margin: '0 10px 10px 10px'
+      },
       footer: {
         margin: '20px',
         width: '720px',
@@ -103,33 +145,37 @@ class SaveFileDetailsPanel extends React.PureComponent {
       }
     }
     return (
-      course ? (
-        <div style={styles.overflow}>
-          <div style={styles.div}>
-            <div style={styles.header}>
-              <div style={styles.title}>
-                {`${course.title} by ${course.maker}`}
-              </div>
-              <div style={styles.cancel} onClick={this.props.onClick}>
-                <img style={styles.cancelImg} src='/img/cancel.svg' />
-              </div>
+      <div style={styles.overflow}>
+        <div style={styles.div}>
+          <div style={styles.header}>
+            <div style={styles.title}>
+              {`${course.title} by ${course.maker}`}
             </div>
-            <div style={styles.line} />
-            <div style={styles.body}>
-              <img style={styles.bodyImg} src={`${path}/thumbnail1.jpg`} />
-              <div style={styles.navigation}>
-                <SMMButton type='deleteCourse' text='Delete' iconSrc='/img/delete.png' padding='3px' onClick={this.onDeleteCourse} />
-              </div>
-            </div>
-            <div style={styles.line} />
-            <div style={styles.footer}>
-              <img style={styles.footerImg} src={`${path}/thumbnail0.jpg`} />
+            <div style={styles.cancel} onClick={this.props.onClick}>
+              <img style={styles.cancelImg} src='/img/cancel.svg' />
             </div>
           </div>
+          <div style={styles.line} />
+          <div style={styles.body}>
+            <img style={styles.bodyImg} src={`${path}/thumbnail1.jpg`} />
+            <div style={styles.navigation}>
+              {
+                save &&
+                <div style={styles.stars}>{ save.stars } stars on SMMDB</div>
+              }
+              {
+                save && this.props.apiKey &&
+                <SMMButton text={`${save.starred ? 'Unstar' : 'Star'} course on SMMDB`} iconSrc='/img/starred.png' padding='3px' onClick={this.onStarCourse} />
+              }
+              <SMMButton text='Delete course' iconSrc='/img/delete.png' padding='3px' onClick={this.onDeleteCourse} />
+            </div>
+          </div>
+          <div style={styles.line} />
+          <div style={styles.footer}>
+            <img style={styles.footerImg} src={`${path}/thumbnail0.jpg`} />
+          </div>
         </div>
-      ) : (
-        <div style={styles.divHide} />
-      )
+      </div>
     )
   }
 }

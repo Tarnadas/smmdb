@@ -41,7 +41,11 @@ export const initAccount = async apiKey => {
     })).body
     return account
   } catch (err) {
-    console.error(err.response.body)
+    if (err.response) {
+      console.error(err.response.body)
+    } else {
+      console.error(err)
+    }
   }
   return null
 }
