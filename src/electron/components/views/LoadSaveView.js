@@ -48,6 +48,11 @@ class LoadSaveView extends React.PureComponent {
         apiKey: nextProps.apiKey
       })
     }
+    if (nextProps.cemuSaveData !== this.props.cemuSaveData) {
+      this.setState({
+        loading: false
+      })
+    }
   }
   onAddSave () {
     dialog.showOpenDialog({properties: ['openDirectory']}, async cemuPaths => {
@@ -147,12 +152,20 @@ class LoadSaveView extends React.PureComponent {
         textAlign: 'center',
         flexDirection: 'column'
       },
+      loading: {
+        position: 'fixed',
+        top: '0',
+        right: '0',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      },
+      img: {
+        width: 'auto',
+        height: 'auto'
+      },
       text: {
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translateY(+150%) translateX(-50%)',
-        width: '100%',
+        height: 'auto',
         color: '#323245',
         textAlign: 'center'
       },
@@ -229,22 +242,24 @@ class LoadSaveView extends React.PureComponent {
                 </div>
               }
               {
-                cemuSaves.size > 0 && (
+                cemuSaves.size > 0 &&
                 this.listCemuSaves(cemuSaves)
-              )}
+              }
               <SMMButton text={cemuSaves.size === 0 ? 'Please select your Cemu SMM folder' : 'Load another Cemu SMM folder'} iconSrc='/img/profile.png' fontSize='13px' padding='3px' onClick={this.onAddSave} />
+              {
+                cemuSaves.size === 0 &&
+                <div style={styles.text}>
+                  Your SMM save folder is located at<br />'path\to\cemu\mlc01\emulatorSave\#saveID#'
+                </div>
+              }
             </div>
-            {
-              cemuSaves.size === 0 && (
-              <div style={styles.text}>
-                Your SMM save folder is located at<br />'path\to\cemu\mlc01\emulatorSave\#saveID#'
-              </div>
-            )}
           </div>
         }
         {
           this.state.loading &&
-          <img style={styles.center} src={'/img/load.gif'} />
+            <div style={styles.loading}>
+              <img style={styles.img} src={'/img/load.gif'} />
+            </div>
         }
         {
           this.state.showApiKey &&
