@@ -9,8 +9,19 @@ export default class NavigationButton extends React.PureComponent {
     this.state = {
       hover: false
     }
+    this.onClick = this.onClick.bind(this)
     this.onMouseEnter = this.onMouseEnter.bind(this)
     this.onMouseLeave = this.onMouseLeave.bind(this)
+  }
+  onClick () {
+    try {
+      if (this.props.link && this.props.link.charAt(0) === '/') {
+        ga('send', 'pageview', {
+          page: this.props.link
+        })
+      }
+    } catch (err) {}
+    this.props.onClick()
   }
   onMouseEnter () {
     this.setState({
@@ -64,7 +75,7 @@ export default class NavigationButton extends React.PureComponent {
       </div>
     )
     return (
-      <div style={styles.button} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave} onClick={this.props.onClick}>
+      <div style={styles.button} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave} onClick={this.onClick}>
         {
           this.props.blank ? (
             <a href={this.props.link} target='_blank'>
