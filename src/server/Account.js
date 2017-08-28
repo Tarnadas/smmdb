@@ -101,6 +101,8 @@ export default class Account {
       stars: this.stars
     }, hideSensitive ? {} : {
       apikey: this.apikey
-    })
+    }, this.permissions ? {
+      permissions: this.permissions
+    } : {})
   }
 }

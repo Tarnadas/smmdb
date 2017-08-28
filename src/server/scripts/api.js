@@ -262,7 +262,7 @@ export default class API {
       res.status(400).send(`Course with ID ${courseId} not found`)
       return
     }
-    if (!course.owner.equals(account._id)) {
+    if (!course.owner.equals(account._id) && account.permissions !== 1) {
       res.status(403).send(`Course with ID ${courseId} is not owned by account with API key ${apiKey}`)
       return
     }
@@ -305,7 +305,7 @@ export default class API {
       res.status(400).send(`Course with ID ${apiData.id} not found`)
       return
     }
-    if (!course.owner.equals(account._id)) {
+    if (!course.owner.equals(account._id) && account.permissions !== 1) {
       res.status(403).send(`Course with ID ${apiData.id} is not owned by account with API key ${apiData.apikey}`)
       return
     }
@@ -355,7 +355,7 @@ export default class API {
       res.status(400).send(`Course with ID ${apiData.id} not found`)
       return
     }
-    if (!course.owner.equals(account._id)) {
+    if (!course.owner.equals(account._id) && account.permissions !== 1) {
       res.status(403).send(`Course with ID ${apiData.id} is not owned by account with API key ${apiKey}`)
       return
     }
@@ -410,7 +410,7 @@ export default class API {
       res.status(400).send(`Course with ID ${courseId} not found`)
       return
     }
-    if (!course.owner.equals(account._id)) {
+    if (!course.owner.equals(account._id) && account.permissions !== 1) {
       res.status(403).send(`Course with ID ${courseId} is not owned by account with API key ${apiKey}`)
       return
     }

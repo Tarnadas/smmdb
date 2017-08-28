@@ -90,7 +90,7 @@ class CoursesView extends React.PureComponent {
           saveId = smmdb.getIn([String(course.id), 'saveId'])
         }
         yield (
-          accountData.get('id') && course.owner === accountData.get('id') ? (
+          (accountData.get('id') && course.owner === accountData.get('id')) || accountData.get('permissions') === 1 ? (
             <CoursePanel key={course.id} canEdit course={course} downloadedCourse={downloadedCourse} progress={progress} saveId={saveId} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />
           ) : (
             <CoursePanel key={course.id} course={course} downloadedCourse={downloadedCourse} progress={progress} saveId={saveId} apiKey={accountData.get('apikey')} id={i} />

@@ -74,6 +74,7 @@
     "electron": "^1.7.6",
     "electron-debug": "^1.4.0",
     "electron-packager": "^8.7.2",
+    "eslint-plugin-import": "^2.7.0",
     "file-loader": "^0.11.2",
     "html-loader": "^0.4.5",
     "html-webpack-plugin": "^2.30.1",
