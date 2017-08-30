@@ -14,7 +14,7 @@ import { resolve } from 'url'
 
 import { domain } from '../../../static'
 import {
-  setCoursesUploaded, setUpload, deleteUpload
+  setCoursesUploaded, setCoursesUploaded64, setUpload, setUpload64, deleteUpload, deleteUpload64
 } from '../../actions'
 
 const SERVER_TIMEOUT = 30000
@@ -37,16 +37,25 @@ class UploadArea extends React.PureComponent {
     this.currentUpload++
     try {
       let abort
-      const req = got.stream.post(resolve(domain, '/api/uploadcourse'), {
+      let name = ''
+      try {
+        name = course.name.split('.').slice(0, -1).join()
+        name.replace('_', ' ')
+      } catch (err) {}
+      const req = got.stream.post(resolve(domain, `/api/uploadcourse${this.props.is64 ? '64' : ''}`), {
         headers: {
           'Content-Type': 'application/octet-stream',
-          'Authorization': `APIKEY ${this.props.apiKey}`
+          'Authorization': `APIKEY ${this.props.apiKey}`,
+          'Filename': name
         },
         useElectronNet: false
       })
+      const upload = this.props.is64 ? setUpload64 : setUpload
+      const del = this.props.is64 ? deleteUpload64 : deleteUpload
+      const setCourses = this.props.is64 ? setCoursesUploaded64 : setCoursesUploaded
       req.on('request', r => {
         abort = r.abort
-        this.props.dispatch(setUpload(id, {
+        this.props.dispatch(upload(id, {
           id,
           title: course.name,
           percentage: 0,
@@ -56,14 +65,18 @@ class UploadArea extends React.PureComponent {
       req.on('response', () => {
         if (timeout) {
           clearTimeout(timeout)
-          this.props.dispatch(deleteUpload(id))
+          this.props.dispatch(del(id))
         }
       })
       req.on('error', err => {
-        console.log(err)
+        if (err.response) {
+          console.error(err.response.body)
+        } else {
+          console.error(err)
+        }
         if (timeout) {
           clearTimeout(timeout)
-          this.props.dispatch(deleteUpload(id))
+          this.props.dispatch(del(id))
         }
       })
       const prog = progress({
@@ -71,7 +84,7 @@ class UploadArea extends React.PureComponent {
         time: 1000
       })
       prog.on('progress', progress => {
-        this.props.dispatch(setUpload(id, {
+        this.props.dispatch(upload(id, {
           id,
           title: course.name,
           percentage: progress.percentage,
@@ -81,7 +94,7 @@ class UploadArea extends React.PureComponent {
           timeout = setTimeout(() => {
             if (abort) {
               abort()
-              this.props.dispatch(deleteUpload(id))
+              this.props.dispatch(del(id))
             }
           }, SERVER_TIMEOUT)
         }
@@ -89,24 +102,25 @@ class UploadArea extends React.PureComponent {
       req.pipe(concat(buf => {
         try {
           const courses = JSON.parse(new TextDecoder('utf-8').decode(buf))
-          this.props.dispatch(setCoursesUploaded(courses, true))
+          this.props.dispatch(setCourses(this.props.is64 ? [courses] : courses, true))
         } catch (err) {
           if (timeout) {
             clearTimeout(timeout)
-            this.props.dispatch(deleteUpload(id))
+            this.props.dispatch(del(id))
           }
         }
       }))
       const s = stream(course)
       s.pipe(prog).pipe(req)
     } catch (err) {
-      console.log(err)
-      if (err.response.body) {
-        console.log(err.response.body)
+      if (err.response) {
+        console.error(err.response.body)
+      } else {
+        console.error(err)
       }
       if (timeout) {
         clearTimeout(timeout)
-        this.props.dispatch(deleteUpload(id))
+        this.props.dispatch(del(id))
       }
     }
   }
@@ -136,6 +150,7 @@ class UploadArea extends React.PureComponent {
       drag: {
         height: 'auto',
         width: 'auto',
+        maxWidth: '950px',
         padding: '40px 20px',
         margin: '10px 0',
         background: '#fff',

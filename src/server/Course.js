@@ -126,8 +126,7 @@ export default class Course {
       fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}_full.jpg`), courseData.thumbnail)
       fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}`), await courseData.serialize())
       fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}.gz`), await courseData.serializeGzipped())
-      course.toJSON = Course.toJSON.bind(course)
-      return course
+      return Course.prepare(course)
     }
     try {
       if (mime === 'application/x-rar-compressed' || mime === 'application/zip' || mime === 'application/x-7z-compressed' || mime === 'application/x-tar') {

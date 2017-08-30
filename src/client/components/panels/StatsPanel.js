@@ -42,7 +42,7 @@ class StatsPanel extends React.PureComponent {
     return (
       !!stats && (
         <div style={styles.panel}>
-          There are {stats.courses} uploaded courses and {stats.accounts} registered accounts
+          There are {this.props.is64 ? stats.courses64 : stats.courses} uploaded courses and {stats.accounts} registered accounts
         </div>
       )
     )

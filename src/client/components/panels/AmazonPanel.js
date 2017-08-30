@@ -126,12 +126,14 @@ class AmazonPanel extends React.PureComponent {
       },
       price: {
         color: '#bf0000',
-        fontSize: screenSize === ScreenSize.SUPER_SMALL ? '16px' : '18px'
+        fontSize: screenSize === ScreenSize.SUPER_SMALL ? '16px' : '18px',
+        marginRight: '6px'
       },
       priceOffer: {
         textDecoration: 'line-through',
         color: '#444',
-        fontSize: screenSize === ScreenSize.SUPER_SMALL ? '11px' : '13px'
+        fontSize: screenSize === ScreenSize.SUPER_SMALL ? '11px' : '13px',
+        marginRight: '6px'
       },
       title: {
         display: 'block',
@@ -145,7 +147,7 @@ class AmazonPanel extends React.PureComponent {
         padding: '5px'
       }
     }
-    const r = (el) => (
+    const r = el => (
       process.env.ELECTRON ? el : <a target='_blank' href={this.product.detailPageURL} style={styles.a}>{el}</a>
     )
     return (
@@ -157,12 +159,18 @@ class AmazonPanel extends React.PureComponent {
               <div style={styles.text}>
                 <div style={styles.title}>
                   {
-                    isOffer ? (
-                      <div><span style={styles.price}>{ this.product.formattedOfferPrice }</span><span style={styles.priceOffer}>{ this.product.formattedPrice }</span></div>
-                    ) : (
-                      <span style={styles.price}>{ this.product.formattedPrice || this.product.formattedOfferPrice }</span>
-                    )
-                  } { title }
+                    isOffer &&
+                    <span style={styles.price}>{ this.product.formattedOfferPrice }</span>
+                  }
+                  {
+                    isOffer &&
+                    <span style={styles.priceOffer}>{ this.product.formattedPrice }</span>
+                  }
+                  {
+                    !isOffer &&
+                    <span style={styles.price}>{ this.product.formattedPrice || this.product.formattedOfferPrice }</span>
+                  }
+                  { title }
                 </div>
                 {
                   screenSize > ScreenSize.SUPER_SMALL &&

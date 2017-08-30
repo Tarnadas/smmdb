@@ -129,7 +129,7 @@ class CourseDownloadButton extends React.PureComponent {
           </div>
         </div>
       ) : (
-        <a style={styles.href} href={`/api/downloadcourse?id=${this.props.courseId}&type=${
+        <a style={styles.href} href={`/api/downloadcourse${this.props.is64 ? '64' : ''}?id=${this.props.courseId}&type=${
           downloadFormat === DOWNLOAD_FORMAT.WII_U ? 'zip'
             : (
               downloadFormat === DOWNLOAD_FORMAT.N3DS ? '3ds' : 'protobuf'

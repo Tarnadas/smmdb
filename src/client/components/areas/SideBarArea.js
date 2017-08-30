@@ -27,7 +27,10 @@ export default class SideBarArea extends React.PureComponent {
       <div style={styles.sideBar}>
         <div style={styles.element}>
           <OrderButton />
-          <FilterButton />
+          {
+            !this.props.is64 &&
+            <FilterButton />
+          }
         </div>
       </div>
     )

@@ -35,15 +35,16 @@ const VIDEO_ID = /^[a-z0-9A-Z| |.|\\_|\\-]+$/
 class CoursePanel extends React.PureComponent {
   constructor (props) {
     super(props)
+    const course = props.course.toJS()
     this.state = {
       showDetails: false,
       changed: false,
       saved: false,
-      title: props.course.title,
-      maker: props.course.maker,
-      nnId: props.course.nintendoid ? props.course.nintendoid : '',
-      videoId: props.course.videoid ? props.course.videoid : '',
-      difficulty: props.course.difficulty,
+      title: course.title,
+      maker: course.maker,
+      nnId: course.nintendoid ? course.nintendoid : '',
+      videoId: course.videoid ? course.videoid : '',
+      difficulty: course.difficulty,
       shouldDelete: false
     }
     this.onShowDetails = this.onShowDetails.bind(this)
@@ -61,29 +62,29 @@ class CoursePanel extends React.PureComponent {
     this.onStar = this.onStar.bind(this)
   }
   componentWillReceiveProps (nextProps, nextContext) {
-    if (nextProps.course.title !== this.state.title) {
+    if (nextProps.course.get('title') !== this.state.title) {
       this.setState({
-        title: nextProps.course.title
+        title: nextProps.course.get('title')
       })
     }
-    if (nextProps.course.maker !== this.state.maker) {
+    if (nextProps.course.get('maker') !== this.state.maker) {
       this.setState({
-        maker: nextProps.course.maker
+        maker: nextProps.course.get('maker')
       })
     }
-    if (nextProps.course.nintendoid !== this.state.nnId) {
+    if (nextProps.course.get('nintendoid') !== this.state.nnId) {
       this.setState({
-        nnId: nextProps.course.nintendoid ? nextProps.course.nintendoid : ''
+        nnId: nextProps.course.get('nintendoid') ? nextProps.course.get('nintendoid') : ''
       })
     }
-    if (nextProps.course.videoid !== this.state.videoId) {
+    if (nextProps.course.get('videoid') !== this.state.videoId) {
       this.setState({
-        videoId: nextProps.course.videoid ? nextProps.course.videoid : ''
+        videoId: nextProps.course.get('videoid') ? nextProps.course.get('videoid') : ''
       })
     }
-    if (nextProps.course.difficulty !== this.state.difficulty) {
+    if (nextProps.course.get('difficulty') !== this.state.difficulty) {
       this.setState({
-        difficulty: nextProps.course.difficulty
+        difficulty: nextProps.course.get('difficulty')
       })
     }
   }
@@ -102,29 +103,30 @@ class CoursePanel extends React.PureComponent {
     })
   }
   onCourseSubmit () {
-    if (this.state.title === this.props.course.title &&
-      this.state.maker === this.props.course.maker &&
-      this.state.nnId === this.props.course.nintendoid &&
-      this.state.videoId === this.props.course.videoid &&
-      this.state.difficulty === this.props.course.difficulty) return;
+    const course = this.props.course.toJS()
+    if (this.state.title === course.title &&
+      this.state.maker === course.maker &&
+      this.state.nnId === course.nintendoid &&
+      this.state.videoId === course.videoid &&
+      this.state.difficulty === course.difficulty) return;
     (async () => {
       try {
-        const course = {
+        const update = {
           title: this.state.title,
           maker: this.state.maker,
           nintendoid: this.state.nnId,
           videoid: this.state.videoId,
           difficulty: this.state.difficulty
         }
-        if (!VIDEO_ID.test(course.videoid)) {
-          delete course.videoid
+        if (!VIDEO_ID.test(update.videoid) && update.videoid !== '') {
+          delete update.videoid
         }
-        const res = (await got(resolve(domain, `/api/updatecourse?id=${this.props.course.id}`), {
+        const res = (await got(resolve(domain, `/api/updatecourse?id=${course.id}`), {
           headers: {
             'Authorization': `APIKEY ${this.props.apiKey}`
           },
           method: 'POST',
-          body: course,
+          body: update,
           json: true,
           useElectronNet: false
         })).body
@@ -142,10 +144,14 @@ class CoursePanel extends React.PureComponent {
           saved: true
         })
       } catch (err) {
-        if (err.response.body.includes('not found')) {
-          this.props.onCourseDelete(this.props.id)
+        if (err.response) {
+          if (err.response.body.includes('not found')) {
+            this.props.onCourseDelete(this.props.id)
+          } else {
+            console.error(err.response.body)
+          }
         } else {
-          console.error(err.response.body)
+          console.error(err)
         }
       }
     })()
@@ -154,7 +160,7 @@ class CoursePanel extends React.PureComponent {
     if (this.state.shouldDelete) {
       (async () => {
         try {
-          await got(resolve(domain, `/api/deletecourse?id=${this.props.course.id}`), {
+          await got(resolve(domain, `/api/deletecourse?id=${this.props.course.get('id')}`), {
             headers: {
               'Authorization': `APIKEY ${this.props.apiKey}`
             },
@@ -232,7 +238,7 @@ class CoursePanel extends React.PureComponent {
   async onStar (e) {
     e.stopPropagation()
     try {
-      const course = (await got(resolve(domain, `/api/starcourse?id=${this.props.course.id}`), {
+      const course = (await got(resolve(domain, `/api/starcourse?id=${this.props.course.get('id')}`), {
         headers: {
           'Authorization': `APIKEY ${this.props.apiKey}`
         },
@@ -252,7 +258,7 @@ class CoursePanel extends React.PureComponent {
         }
       }
     } catch (err) {
-      if (!err.response) {
+      if (err.response) {
         console.error(err.response.body)
       } else {
         console.error(err)
@@ -260,9 +266,9 @@ class CoursePanel extends React.PureComponent {
     }
   }
   render () {
-    const course = this.props.course
-    const style = parseInt(course.gameStyle)
     const screenSize = this.props.screenSize
+    const course = this.props.course.toJS()
+    const style = parseInt(course.gameStyle)
     const colorScheme = this.state.changed ? COLOR_SCHEME.RED : (this.state.saved ? COLOR_SCHEME.GREEN : COLOR_SCHEME.YELLOW)
     const modified = this.props.downloadedCourse && this.props.downloadedCourse.get('modified') !== this.props.course.lastmodified
     const p = this.props.progress && this.props.progress.toJS()
@@ -643,9 +649,9 @@ class CoursePanel extends React.PureComponent {
               <div style={styles.buttonPanel}>
                 <CourseDownloadButton courseId={course.id} lastModified={course.lastmodified} modified={modified} progress={progress} saveId={saveId} screenSize={screenSize} />
                 {
-                  course.videoid && (
+                  course.videoid &&
                   <CourseVideoButton videoId={course.videoid} screenSize={screenSize} />
-                )}
+                }
                 {
                   !process.env.ELECTRON &&
                   <img style={styles.qrCode} ref={qr => {

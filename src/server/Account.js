@@ -65,9 +65,14 @@ export default class Account {
 
   static async prepare (account) {
     const stars = await Database.getAccountStars(account._id)
+    const stars64 = await Database.getAccountStars64(account._id)
     account.stars = []
+    account.stars64 = []
     for (let i in stars) {
       account.stars.push(stars[i].courseId)
+    }
+    for (let i in stars64) {
+      account.stars64.push(stars64[i].courseId)
     }
     return account
   }
@@ -98,7 +103,8 @@ export default class Account {
       username: this.username,
       id: this._id,
       downloadformat: this.downloadformat != null ? this.downloadformat : 0,
-      stars: this.stars
+      stars: this.stars,
+      stars64: this.stars64
     }, hideSensitive ? {} : {
       apikey: this.apikey
     }, this.permissions ? {

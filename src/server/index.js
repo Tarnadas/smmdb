@@ -60,6 +60,11 @@ const downloadMetrics = {
     name: 'Downloads Proto/day',
     samples: 86400,
     timeframe: 86400
+  }),
+  downloads64PerDay: pmx.probe().meter({
+    name: 'Downloads 64/day',
+    samples: 86400,
+    timeframe: 86400
   })
 }
 
@@ -119,6 +124,26 @@ async function main () {
       }, 86400 * 1000)
     }
     next()
+  })
+
+  app.use('/course64img/:id*?', async (req, res) => {
+    const id = req.params.id
+    if (id == null) {
+      res.status(404).send('No course ID specified')
+      return
+    }
+    try {
+      const img = await Database.getImage64(id)
+      if (img == null) {
+        res.status(404).send(`Course with ID ${id} has no image`)
+        return
+      }
+      res.set('Content-Type', 'image/jpeg')
+      res.set('Cache-Control', `public, max-age=${cacheMaxAgeImg}`)
+      res.send(img)
+    } catch (err) {
+      res.status(500).send(`Internal Server Error:\n${err}`)
+    }
   })
 
   app.route('/tokensignin').post((req, res) => {
@@ -197,10 +222,16 @@ async function main () {
         API.getStats(res)
       } else if (apiCall === 'getcourses') {
         API.getCourses(app, req, res, apiData)
+      } else if (apiCall === 'getcourses64') {
+        API.getCourses64(app, req, res, apiData)
       } else if (apiCall === 'downloadcourse') {
         API.downloadCourse(req, res, apiData, downloadMetrics)
+      } else if (apiCall === 'downloadcourse64') {
+        API.downloadCourse64(req, res, apiData, downloadMetrics)
       } else if (apiCall === 'deletecourse') {
         API.deleteCourse(req, res, apiData)
+      } else if (apiCall === 'deletecourse64') {
+        API.deleteCourse64(req, res, apiData)
       } else if (apiCall === 'getaccountdata') {
         await API.getAccountData(req, res)
       } else if (apiCall === 'getamazonproducts') {
@@ -222,18 +253,28 @@ async function main () {
 
     if (apiCall === 'uploadcourse') {
       API.uploadCourse(req, res)
+    } else if (apiCall === 'uploadcourse64') {
+      API.uploadCourse64(req, res)
     } else if (apiCall === 'reuploadcourse') {
       API.reuploadCourse(req, res, apiData)
+    } else if (apiCall === 'reuploadcourse64') {
+      API.reuploadCourse64(req, res, apiData)
     } else if (apiCall === 'updatecourse') {
       API.updateCourse(req, res, apiData)
+    } else if (apiCall === 'updatecourse64') {
+      API.updateCourse64(req, res, apiData)
     } else if (apiCall === 'starcourse') {
       API.starCourse(req, res, apiData)
+    } else if (apiCall === 'starcourse64') {
+      API.starCourse64(req, res, apiData)
     } else if (apiCall === 'setaccountdata') {
       API.setAccountData(req, res)
     } else if (apiCall === 'uploadimagefull') {
       API.uploadImage(req, res, true)
     } else if (apiCall === 'uploadimageprev') {
       API.uploadImage(req, res, false)
+    } else if (apiCall === 'uploadimage64') {
+      API.uploadImage64(req, res)
     } else {
       res.status(400).send('Wrong syntax')
     }
@@ -245,10 +286,7 @@ async function main () {
       accounts: await Account.getAccountAmount()
     }
     const d = device(req.get('user-agent'))
-    let [html, preloadedState] = renderer(true, renderToString, null, req, await API.filterCourses(null, {limit: 10}), stats, d.is('phone'), d.is('tablet'))
-    // if (amazonProducts) {
-    //   preloadedState = preloadedState.merge({ amazon: amazonProducts })
-    // }
+    let [html, preloadedState] = renderer(true, renderToString, null, req, await API.filterCourses(null, {limit: 10}), await API.filterCourses64(null, {limit: 10}), stats, d.is('phone'), d.is('tablet'))
     const index = cheerio.load($index.html())
     index('#root').html(html)
     index('body').prepend(`<script>window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')}</script>`)

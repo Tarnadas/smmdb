@@ -14,7 +14,7 @@ import { resolve } from 'url'
 
 import { domain } from '../../../static'
 import {
-  setReupload, deleteReupload
+  setReupload, setReupload64, deleteReupload, deleteReupload64
 } from '../../actions'
 
 const SERVER_TIMEOUT = 30000
@@ -37,7 +37,7 @@ class UploadArea extends React.PureComponent {
     this.currentUpload++
     try {
       let abort
-      const req = got.stream.post(resolve(domain, '/api/reuploadcourse'), {
+      const req = got.stream.post(resolve(domain, `/api/reuploadcourse${this.props.is64 ? '64' : ''}`), {
         headers: {
           'Content-Type': 'application/octet-stream',
           'Authorization': `APIKEY ${this.props.apiKey}`,
@@ -45,9 +45,11 @@ class UploadArea extends React.PureComponent {
         },
         useElectronNet: false
       })
+      const reupload = this.props.is64 ? setReupload64 : setReupload
+      const deleteReup = this.props.is64 ? deleteReupload64 : deleteReupload
       req.on('request', r => {
         abort = r.abort
-        this.props.dispatch(setReupload(id, {
+        this.props.dispatch(reupload(id, {
           id,
           title: course.name,
           percentage: 0,
@@ -57,14 +59,14 @@ class UploadArea extends React.PureComponent {
       req.on('response', () => {
         if (timeout) {
           clearTimeout(timeout)
-          this.props.dispatch(deleteReupload(id))
+          this.props.dispatch(deleteReup(id))
         }
       })
       req.on('error', err => {
         console.log(err)
         if (timeout) {
           clearTimeout(timeout)
-          this.props.dispatch(deleteReupload(id))
+          this.props.dispatch(deleteReup(id))
         }
       })
       const prog = progress({
@@ -72,7 +74,7 @@ class UploadArea extends React.PureComponent {
         time: 1000
       })
       prog.on('progress', progress => {
-        this.props.dispatch(setReupload(id, {
+        this.props.dispatch(reupload(id, {
           id,
           title: course.name,
           percentage: progress.percentage,
@@ -82,7 +84,7 @@ class UploadArea extends React.PureComponent {
           timeout = setTimeout(() => {
             if (abort) {
               abort()
-              this.props.dispatch(deleteReupload(id))
+              this.props.dispatch(deleteReup(id))
             }
           }, SERVER_TIMEOUT)
         }
@@ -94,7 +96,7 @@ class UploadArea extends React.PureComponent {
         } catch (err) {
           if (timeout) {
             clearTimeout(timeout)
-            this.props.dispatch(deleteReupload(id))
+            this.props.dispatch(deleteReup(id))
           }
         }
       }))
@@ -107,7 +109,7 @@ class UploadArea extends React.PureComponent {
       }
       if (timeout) {
         clearTimeout(timeout)
-        this.props.dispatch(deleteReupload(id))
+        this.props.dispatch(deleteReup(id))
       }
     }
   }

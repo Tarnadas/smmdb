@@ -29,7 +29,7 @@ export default class Bot {
     const isMany = courses.length > 1
     const ownerName = account.username
     const messages = []
-    messages[0] = isMany ? `New courses have been uploaded by ${ownerName}:` : `A new course has been uploaded by ${ownerName}`
+    messages[0] = isMany ? `New <:smm:352479783474692097> courses have been uploaded by ${ownerName}:` : `A new <:smm:352479783474692097> course has been uploaded by ${ownerName}`
     let messageIndex = 0
     for (let i in courses) {
       const course = courses[i]
@@ -61,18 +61,18 @@ export default class Bot {
       )}`
       let append = `
       ${course.gameStyle === 0 ? (
-    '    <:smb:334989248593920000>'
-  ) : (
-    course.gameStyle === 1 ? (
-      '    <:smb3:334989248749109248>'
-    ) : (
-      course.gameStyle === 2 ? (
-        '    <:smw:334989248539262978>'
+        '    <:smb:334989248593920000>'
       ) : (
-        '    <:nsmbu:334989248975470592>'
-      )
-    )
-  )} ${course.title} by ${course.maker}${autoScroll ? ` ${autoScroll}` : ''}`
+        course.gameStyle === 1 ? (
+          '    <:smb3:334989248749109248>'
+        ) : (
+          course.gameStyle === 2 ? (
+            '    <:smw:334989248539262978>'
+          ) : (
+            '    <:nsmbu:334989248975470592>'
+          )
+        )
+      )} ${course.title} by ${course.maker}${autoScroll ? ` ${autoScroll}` : ''}`
       if (messages[messageIndex].length + append.length > 2000) {
         messages.push('')
         messageIndex++
@@ -82,6 +82,10 @@ export default class Bot {
     for (let i in messages) {
       this.channel.send(messages[i])
     }
+  }
+
+  uploadCourse64 (course, account) {
+    this.channel.send(`A new <:sm64m:352480143706685442> course has been uploaded by ${account.username}\n          ${course.title}`)
   }
 
   updateCourse (course, account) {

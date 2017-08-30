@@ -20,13 +20,17 @@ export default class Database {
         await this.db.collection('accountsTest').drop()
       } catch (err) {}
       this.courses = this.db.collection('coursesTest')
+      this.courses64 = this.db.collection('courses64Test')
       this.accounts = this.db.collection('accountsTest')
       this.stars = this.db.collection('starsTest')
+      this.stars64 = this.db.collection('stars64Test')
       this.amazon = this.db.collection('amazonTest')
     } else {
       this.courses = this.db.collection('courses')
+      this.courses64 = this.db.collection('courses64')
       this.accounts = this.db.collection('accounts')
       this.stars = this.db.collection('stars')
+      this.stars64 = this.db.collection('stars64')
       this.amazon = this.db.collection('amazon')
     }
   }
@@ -35,22 +39,50 @@ export default class Database {
     return this.courses.insertOne(course)
   }
 
+  static addCourse64 (course) {
+    return this.courses64.insertOne(course)
+  }
+
   static updateCourse (id, course) {
     return this.courses.updateOne({ '_id': ObjectID(id) }, { $set: course })
   }
 
+  static updateCourse64 (id, course) {
+    return this.courses64.updateOne({ '_id': ObjectID(id) }, { $set: course })
+  }
+
   static filterCourses (filter, sort = { lastmodified: -1 }, skip = 0, limit = 100, random) {
-    // return this.courses.find(filter).sort(sort).skip(skip).limit(limit)
     const query = [{ $match: filter }]
     if (random) query.push({ $sample: { size: limit } })
-    query.push({ $sort: sort },
+    query.push({ $sort: Object.assign(sort, sort.stars == null ? { stars: 1 } : {}, sort.title == null ? { title: -1 } : {}) },
       { $skip: skip },
       { $limit: limit })
     return this.courses.aggregate(query)
   }
 
+  static filterCourses64 (filter, sort = { lastmodified: -1 }, skip = 0, limit = 100, random) {
+    const query = [{ $match: filter }]
+    if (random) query.push({ $sample: { size: limit } })
+    query.push({ $sort: Object.assign(sort, sort.stars == null ? { stars: 1 } : {}, sort.title == null ? { title: -1 } : {}) },
+      { $skip: skip },
+      { $limit: limit })
+    return this.courses64.aggregate(query)
+  }
+
+  static async getImage64 (id) {
+    try {
+      return (await this.courses64.find({ '_id': ObjectID(id) }).toArray())[0].image.buffer
+    } catch (err) {
+      return null
+    }
+  }
+
   static deleteCourse (id) {
     return this.courses.deleteOne({ '_id': ObjectID(id) })
+  }
+
+  static deleteCourse64 (id) {
+    return this.courses64.deleteOne({ '_id': ObjectID(id) })
   }
 
   static async starCourse (courseId, accountId) {
@@ -59,14 +91,30 @@ export default class Database {
     return this.courses.updateOne({ '_id': ObjectID(courseId) }, { $set: { stars } })
   }
 
+  static async starCourse64 (courseId, accountId) {
+    await this.stars64.insertOne({ courseId, accountId })
+    const stars = (await this.stars64.find({ courseId: ObjectID(courseId) }).toArray()).length
+    return this.courses64.updateOne({ '_id': ObjectID(courseId) }, { $set: { stars } })
+  }
+
   static async unstarCourse (courseId, accountId) {
     await this.stars.deleteOne({ courseId: ObjectID(courseId), accountId: ObjectID(accountId) })
     const stars = (await this.stars.find({ courseId: ObjectID(courseId) }).toArray()).length
     return this.courses.updateOne({ '_id': ObjectID(courseId) }, { $set: { stars } })
   }
 
+  static async unstarCourse64 (courseId, accountId) {
+    await this.stars64.deleteOne({ courseId: ObjectID(courseId), accountId: ObjectID(accountId) })
+    const stars = (await this.stars64.find({ courseId: ObjectID(courseId) }).toArray()).length
+    return this.courses64.updateOne({ '_id': ObjectID(courseId) }, { $set: { stars } })
+  }
+
   static getAccountStars (accountId) {
     return this.stars.find({ accountId: ObjectID(accountId) }).toArray()
+  }
+
+  static getAccountStars64 (accountId) {
+    return this.stars64.find({ accountId: ObjectID(accountId) }).toArray()
   }
 
   static async isCourseStarred (courseId, accountId) {
@@ -74,8 +122,17 @@ export default class Database {
     return length === 1
   }
 
+  static async isCourse64Starred (courseId, accountId) {
+    const length = (await this.stars64.find({ courseId: ObjectID(courseId), accountId: ObjectID(accountId) }).toArray()).length
+    return length === 1
+  }
+
   static async getCoursesCount () {
     return (await this.courses.stats()).count
+  }
+
+  static async getCourses64Count () {
+    return (await this.courses64.stats()).count
   }
 
   static addAccount (account) {

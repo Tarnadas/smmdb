@@ -16,7 +16,9 @@ import chat from './chat'
 import stats from './stats'
 import courseData from './courseData'
 import uploads from './uploads'
+import uploads64 from './uploads64'
 import reuploads from './reuploads'
+import reuploads64 from './reuploads64'
 import filter from './filter'
 import order from './order'
 import userData from './userData'
@@ -42,18 +44,23 @@ export default function initReducer (preloadedState, history, electronSave, elec
     stats: {},
     courseData: {
       main: [],
+      main64: [],
       self: [],
-      uploaded: []
+      self64: [],
+      uploaded: [],
+      uploaded64: []
     },
     uploads: {},
+    uploads64: {},
     reuploads: {},
+    reuploads64: {},
     filter: {
       nextFilter: {},
       currentFilter: {}
     },
     order: {
       order: 'lastmodified',
-      dir: 0
+      dir: false
     },
     userData: {
       accountData: {}
@@ -69,7 +76,9 @@ export default function initReducer (preloadedState, history, electronSave, elec
     stats,
     courseData,
     uploads,
+    uploads64,
     reuploads,
+    reuploads64,
     filter,
     order,
     userData,

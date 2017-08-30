@@ -10,6 +10,7 @@ import * as path from 'path'
 import Database from '../Database'
 import Account from '../Account'
 import Course from '../Course'
+import Course64 from '../Course64'
 import { Bot } from '..'
 
 const MAX_FILTER_LIMIT = 120
@@ -24,6 +25,7 @@ export default class API {
   static async getStats (res) {
     const result = {
       courses: await Course.getCourseAmount(),
+      courses64: await Course64.getCourseAmount(),
       accounts: await Account.getAccountAmount()
     }
     res.json(result)
@@ -37,6 +39,19 @@ export default class API {
       app.set('json spaces', 2)
     }
     res.json(await this.filterCourses(account ? account._id : null, apiData))
+    if (apiData.prettify) {
+      app.set('json spaces', 0)
+    }
+  }
+
+  static async getCourses64 (app, req, res, apiData) {
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    const account = await Account.getAccountByAPIKey(apiKey)
+    if (apiData.prettify) {
+      app.set('json spaces', 2)
+    }
+    res.json(await this.filterCourses64(account ? account._id : null, apiData))
     if (apiData.prettify) {
       app.set('json spaces', 0)
     }
@@ -148,6 +163,73 @@ export default class API {
     return res
   }
 
+  static async filterCourses64 (accountId, filterData = {}) {
+    let orderBy = 'lastmodified'
+    let dir = -1
+
+    if (filterData.order && filterData.dir) {
+      orderBy = filterData.order
+      dir = filterData.dir === 'asc' ? 1 : -1
+    }
+
+    const limit = filterData.limit ? Math.min(+filterData.limit > 0 ? filterData.limit : MAX_FILTER_LIMIT, MAX_FILTER_LIMIT) : MAX_FILTER_LIMIT
+    const start = filterData.start ? +filterData.start : 0
+
+    const filter = {}
+    if (filterData.ids) {
+      if (!filter._id) filter._id = { $in: [] }
+      try {
+        const ids = filterData.ids.split(',')
+        for (let i in ids) {
+          filter._id.$in.push(ObjectID(ids[i]))
+        }
+      } catch (err) {}
+    }
+    if (filterData.lastmodifiedfrom) {
+      if (!filter.lastmodified) filter.lastmodified = {}
+      filter.lastmodified.$gte = parseInt(filterData.lastmodifiedfrom)
+    }
+    if (filterData.lastmodifiedto) {
+      if (!filter.lastmodified) filter.lastmodified = {}
+      filter.lastmodified.$lte = parseInt(filterData.lastmodifiedto)
+    }
+    if (filterData.uploadedfrom) {
+      if (!filter.uploaded) filter.uploaded = {}
+      filter.uploaded.$gte = parseInt(filterData.uploadedfrom)
+    }
+    if (filterData.uploadedto) {
+      if (!filter.uploaded) filter.uploaded = {}
+      filter.uploaded.$lte = parseInt(filterData.uploadedto)
+    }
+    if (filterData.difficultyfrom) {
+      if (!filter.difficulty) filter.difficulty = {}
+      filter.difficulty.$gte = parseInt(filterData.difficultyfrom)
+    }
+    if (filterData.difficultyto) {
+      if (!filter.difficulty) filter.difficulty = {}
+      filter.difficulty.$lte = parseInt(filterData.difficultyto)
+    }
+    if (filterData.title) {
+      filter.title = new RegExp(`.*${filterData.title}.*`, 'i')
+    }
+    if (filterData.uploader) {
+      const acc = await Database.filterAccounts({ username: new RegExp(`^${filterData.uploader}$`, 'i') }).toArray()
+      if (acc.length !== 1 || !acc[0]._id) return []
+      filter.owner = ObjectID(acc[0]._id)
+    }
+    if (filterData.owner) {
+      filter.owner = ObjectID(filterData.owner)
+    }
+    if (filterData.coursetheme) {
+      filter.courseTheme = parseInt(filterData.coursetheme)
+    }
+    const res = await Database.filterCourses64(filter, { [orderBy]: dir }, start, limit, filterData.random === '1').toArray()
+    for (let i in res) {
+      await Course64.prepare(res[i], accountId, filterData.filter && filterData.filter.split(','))
+    }
+    return res
+  }
+
   static async downloadCourse (req, res, apiData, downloadMetrics) {
     const course = await Course.getCourse(apiData.id)
     if (!course) {
@@ -210,6 +292,20 @@ export default class API {
     }
   }
 
+  static async downloadCourse64 (req, res, apiData, downloadMetrics) {
+    const course = await Course64.getCourse(apiData.id)
+    if (!course) {
+      res.status(400).send(`Course with ID ${apiData.id} not found`)
+      return
+    }
+    res.set('Content-Type', 'application/sm64m')
+    res.set('Content-disposition', `attachment;filename=${encodeURI(course.title)}.zip`)
+    res.set('Content-Length', course.data.buffer.length)
+    res.send(course.data.buffer)
+    downloadMetrics.downloadsPerDay.mark()
+    downloadMetrics.downloads64PerDay.mark()
+  }
+
   static async uploadCourse (req, res) {
     const auth = req.get('Authorization')
     const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
@@ -240,6 +336,37 @@ export default class API {
     }
   }
 
+  static async uploadCourse64 (req, res) {
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
+      return
+    }
+    const account = await Account.getAccountByAPIKey(apiKey)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiKey} not found`)
+      return
+    }
+    const type = fileType(req.body)
+    const mime = type && type.mime
+    if (mime !== 'application/zip') {
+      res.status(400).send(`Wrong mime type: ${mime}`)
+      return
+    }
+    const course = await Course64.fromBuffer(req.headers.filename, req.body, account)
+    if (!course) {
+      res.status(500).send('Could not read course')
+    } else {
+      try {
+        Bot.uploadCourse64(course, account)
+      } catch (err) {
+        console.log(err)
+      }
+      res.json(course)
+    }
+  }
+
   static async reuploadCourse (req, res) {
     const auth = req.get('Authorization')
     const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
@@ -257,7 +384,7 @@ export default class API {
       res.status(400).send('No course ID found. Please set a "course-id" HTTP header')
       return
     }
-    const course = await Course.getCourse(courseId)
+    const course = await Course.getCourse(courseId, account._id)
     if (!course) {
       res.status(400).send(`Course with ID ${courseId} not found`)
       return
@@ -284,6 +411,40 @@ export default class API {
     res.json(course)
   }
 
+  static async reuploadCourse64 (req, res) {
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
+      return
+    }
+    const account = await Account.getAccountByAPIKey(apiKey)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiKey} not found`)
+      return
+    }
+    const courseId = req.get('course-id')
+    if (courseId == null) {
+      res.status(400).send('No course ID found. Please set a "course-id" HTTP header')
+      return
+    }
+    const course = await Course64.getCourse(courseId, account._id)
+    if (!course) {
+      res.status(400).send(`Course with ID ${courseId} not found`)
+      return
+    }
+    if (!course.owner.equals(account._id) && account.permissions !== 1) {
+      res.status(403).send(`Course with ID ${courseId} is not owned by account with API key ${apiKey}`)
+      return
+    }
+    const result = await Course64.reupload(course, req.body, account._id)
+    if (result == null) {
+      res.status(500).send('Could not read course')
+      return
+    }
+    res.json(course)
+  }
+
   static async updateCourse (req, res, apiData) {
     const auth = req.get('Authorization')
     const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
@@ -300,7 +461,7 @@ export default class API {
       res.status(400).send(`Account with API key ${apiKey} not found`)
       return
     }
-    const course = await Course.getCourse(apiData.id)
+    const course = await Course.getCourse(apiData.id, account._id)
     if (!course) {
       res.status(400).send(`Course with ID ${apiData.id} not found`)
       return
@@ -323,7 +484,7 @@ export default class API {
         }
       }
     }
-    if (req.body.videoid != null && VIDEO_ID.test(req.body.videoid)) {
+    if (req.body.videoid != null && (VIDEO_ID.test(req.body.videoid) || req.body.videoid === '')) {
       courseData.videoid = req.body.videoid
     }
     if (req.body.difficulty != null) {
@@ -335,6 +496,48 @@ export default class API {
       } catch (err) {}
     }
     await Course.update(course, courseData)
+    res.json(course)
+  }
+
+  static async updateCourse64 (req, res, apiData) {
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
+      return
+    }
+    if (!apiData.id) {
+      res.status(400).send('No course ID submitted')
+      return
+    }
+    const account = await Account.getAccountByAPIKey(apiKey)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiKey} not found`)
+      return
+    }
+    const course = await Course64.getCourse(apiData.id, account._id)
+    if (!course) {
+      res.status(400).send(`Course with ID ${apiData.id} not found`)
+      return
+    }
+    if (!course.owner.equals(account._id) && account.permissions !== 1) {
+      res.status(403).send(`Course with ID ${apiData.id} is not owned by account with API key ${apiData.apikey}`)
+      return
+    }
+    const courseData = {}
+    if (req.body.title) courseData.title = req.body.title
+    if (req.body.videoid != null && (VIDEO_ID.test(req.body.videoid) || req.body.videoid === '')) {
+      courseData.videoid = req.body.videoid
+    }
+    if (req.body.difficulty != null) {
+      try {
+        const difficulty = JSON.parse(req.body.difficulty)
+        if (difficulty >= 0 && difficulty <= 3) {
+          courseData.difficulty = difficulty
+        }
+      } catch (err) {}
+    }
+    await Course64.update(course, courseData)
     res.json(course)
   }
 
@@ -363,6 +566,31 @@ export default class API {
     res.send('OK')
   }
 
+  static async deleteCourse64 (req, res, apiData) {
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
+      return
+    }
+    const account = await Account.getAccountByAPIKey(apiKey)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiKey} not found`)
+      return
+    }
+    const course = await Course64.getCourse(apiData.id)
+    if (!course) {
+      res.status(400).send(`Course with ID ${apiData.id} not found`)
+      return
+    }
+    if (!course.owner.equals(account._id) && account.permissions !== 1) {
+      res.status(403).send(`Course with ID ${apiData.id} is not owned by account with API key ${apiKey}`)
+      return
+    }
+    await Course64.delete(course._id)
+    res.send('OK')
+  }
+
   static async starCourse (req, res, apiData) {
     const auth = req.get('Authorization')
     const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
@@ -388,6 +616,31 @@ export default class API {
     res.json(course)
   }
 
+  static async starCourse64 (req, res, apiData) {
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
+      return
+    }
+    const account = await Account.getAccountByAPIKey(apiKey)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiKey} not found`)
+      return
+    }
+    const course = await Course64.getCourse(apiData.id)
+    if (!course) {
+      res.status(400).send(`Course with ID ${apiData.id} not found`)
+      return
+    }
+    try {
+      await Course64.star(course, account._id)
+    } catch (err) {
+      console.error(err)
+    }
+    res.json(course)
+  }
+
   static async uploadImage (req, res, isWide) {
     const auth = req.get('Authorization')
     const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
@@ -405,7 +658,7 @@ export default class API {
       res.status(400).send('No course ID found. Please set a "course-id" HTTP header')
       return
     }
-    const course = await Course.getCourse(courseId)
+    const course = await Course.getCourse(courseId, account._id)
     if (!course) {
       res.status(400).send(`Course with ID ${courseId} not found`)
       return
@@ -420,6 +673,46 @@ export default class API {
       const thumbnail = await Course.setThumbnail(course, req.body, isWide, !isWide)
       if (thumbnail) {
         await Course.update(course._id, {})
+        res.json(course)
+      } else {
+        res.status(500).send('Could not change course thumbnail')
+      }
+    } else {
+      res.status(400).send(`Wrong mime type: ${mime}`)
+    }
+  }
+
+  static async uploadImage64 (req, res) {
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
+      return
+    }
+    const account = await Account.getAccountByAPIKey(apiKey)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiKey} not found`)
+      return
+    }
+    const courseId = req.get('course-id')
+    if (courseId == null) {
+      res.status(400).send('No course ID found. Please set a "course-id" HTTP header')
+      return
+    }
+    const course = await Course64.getCourse(courseId, account._id)
+    if (!course) {
+      res.status(400).send(`Course with ID ${courseId} not found`)
+      return
+    }
+    if (!course.owner.equals(account._id) && account.permissions !== 1) {
+      res.status(403).send(`Course with ID ${courseId} is not owned by account with API key ${apiKey}`)
+      return
+    }
+    const type = fileType(req.body)
+    const mime = type && type.mime
+    if (mime && /^image\/.+$/.test(mime)) {
+      const thumbnail = await Course64.setThumbnail(course, req.body)
+      if (thumbnail) {
         res.json(course)
       } else {
         res.status(500).send('Could not change course thumbnail')

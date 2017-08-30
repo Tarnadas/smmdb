@@ -11,6 +11,10 @@ export default function filter (state, action) {
     case 'APPLY_FILTER':
       state = state.set('currentFilter', state.get('nextFilter'))
       return state
+    case 'RESET_FILTER':
+      state = state.set('nextFilter', Map())
+      state = state.set('currentFilter', Map())
+      return state
   }
   return state
 }

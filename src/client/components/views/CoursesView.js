@@ -8,12 +8,13 @@ import {
 import got from 'got'
 
 import { resolve } from 'url'
+import { stringify } from 'querystring'
 
 import {
   ScreenSize
 } from '../../reducers/mediaQuery'
 import {
-  setCourses, deleteCourse
+  setCourses, deleteCourse, resetFilter, resetOrder
 } from '../../actions'
 import {
   domain
@@ -25,35 +26,48 @@ import CoursePanel from '../panels/CoursePanel'
 import SideBarArea from '../areas/SideBarArea'
 import FilterArea from '../areas/FilterArea'
 
+const LIMIT = 10
+
 class CoursesView extends React.PureComponent {
   constructor (props) {
     super(props)
+    this.queryString = stringify(props.filter.toJS())
     this.fetchCourses = this.fetchCourses.bind(this)
     this.renderCourses = this.renderCourses.bind(this)
     this.onCourseDelete = this.onCourseDelete.bind(this)
     this.handleScroll = this.handleScroll.bind(this)
   }
   componentWillMount () {
-    (async () => {
-      await this.fetchCourses(this.props.accountData)
-    })()
+    this.props.dispatch(resetFilter())
+    this.props.dispatch(resetOrder())
+    if (!this.props.isServer) this.props.setFetchCourses(this.fetchCourses)
+    this.fetchCourses()
   }
   componentWillReceiveProps (nextProps, nextContext) {
     if (nextProps.filter === this.props.filter && nextProps.order === this.props.order) return
     if (this.scroll) this.scroll.scrollTop = 0
+    const order = nextProps.order.toJS()
+    this.queryString = stringify(Object.assign({}, nextProps.filter.toJS(), {
+      order: order.order,
+      dir: order.dir ? 'asc' : 'desc'
+    }))
+    // this.scrollBar.scrollToTop(); // TODO
+    this.fetchCourses()
   }
-  async fetchCourses (accountData) {
+  async fetchCourses (shouldConcat = false, limit = LIMIT) {
     try {
-      const apiKey = this.props.accountData.get('apikey')
-      const courses = (await got(resolve(domain, `/api/getcourses?limit=10`), Object.assign({
+      const apiKey = this.props.apiKey
+      const courses = (await got(resolve(domain, `/api/getcourses?limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}${this.queryString ? `&${this.queryString}` : ''}`), Object.assign({
         json: true,
         useElectronNet: false
-      }, apiKey ? {
+      }, this.props.apiKey ? {
         headers: {
-          'Authorization': `APIKEY ${apiKey}`
+          'Authorization': `APIKEY ${this.props.apiKey}`
         }
       } : null))).body
-      if (accountData === this.props.accountData) this.props.dispatch(setCourses(courses, false))
+      if (courses != null && apiKey === this.props.apiKey) {
+        this.props.dispatch(setCourses(courses, shouldConcat))
+      }
     } catch (err) {
       if (err.response) {
         console.error(err.response.body)
@@ -62,8 +76,9 @@ class CoursesView extends React.PureComponent {
       }
     }
   }
-  renderCourses (courses) {
+  renderCourses () {
     const accountData = this.props.accountData
+    const courses = this.props.courses
     const onCourseDelete = this.onCourseDelete
     let downloads
     let currentDownloads
@@ -74,28 +89,29 @@ class CoursesView extends React.PureComponent {
       smmdb = this.props.smmdb
     }
     return Array.from((function * () {
-      for (let i in courses) {
+      let i = 0
+      for (let course of courses) {
         if ((i - 3) % 9 === 0) {
           yield (
             <AmazonPanel key={i} />
           )
         }
-        const course = courses[i]
         let downloadedCourse
         let progress
         let saveId
         if (process.env.ELECTRON) {
-          downloadedCourse = downloads.get(String(course.id))
-          progress = currentDownloads.get(String(course.id))
-          saveId = smmdb.getIn([String(course.id), 'saveId'])
+          downloadedCourse = downloads.get(String(course.get('id')))
+          progress = currentDownloads.get(String(course.get('id')))
+          saveId = smmdb.getIn([String(course.get('id')), 'saveId'])
         }
         yield (
           (accountData.get('id') && course.owner === accountData.get('id')) || accountData.get('permissions') === 1 ? (
-            <CoursePanel key={course.id} canEdit course={course} downloadedCourse={downloadedCourse} progress={progress} saveId={saveId} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />
+            <CoursePanel key={course.get('id')} canEdit course={course} downloadedCourse={downloadedCourse} progress={progress} saveId={saveId} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />
           ) : (
-            <CoursePanel key={course.id} course={course} downloadedCourse={downloadedCourse} progress={progress} saveId={saveId} apiKey={accountData.get('apikey')} id={i} />
+            <CoursePanel key={course.get('id')} course={course} downloadedCourse={downloadedCourse} progress={progress} saveId={saveId} apiKey={accountData.get('apikey')} id={i} />
           )
         )
+        i++
       }
     })())
   }
@@ -107,7 +123,6 @@ class CoursesView extends React.PureComponent {
   }
   render () {
     const screenSize = this.props.screenSize
-    const courses = this.props.courses.toJS()
     const styles = {
       main: {
         display: 'flex',
@@ -134,7 +149,7 @@ class CoursesView extends React.PureComponent {
         }
         <div style={styles.content} id='scroll' onScroll={this.handleScroll} ref={scroll => { this.scroll = scroll }}>
           {
-            this.renderCourses(courses)
+            this.renderCourses()
           }
         </div>
         <Route path='/courses/filter' component={FilterArea} />
@@ -150,5 +165,6 @@ export default withRouter(connect(state => ({
   currentDownloads: state.getIn(['electron', 'currentDownloads']),
   filter: state.getIn(['filter', 'currentFilter']),
   order: state.get('order'),
-  smmdb: state.getIn(['electron', 'appSaveData', 'cemuSaveData', state.getIn(['electron', 'currentSave']), 'smmdb'])
+  smmdb: state.getIn(['electron', 'appSaveData', 'cemuSaveData', state.getIn(['electron', 'currentSave']), 'smmdb']),
+  apiKey: state.getIn(['userData', 'accountData', 'apikey'])
 }))(CoursesView))

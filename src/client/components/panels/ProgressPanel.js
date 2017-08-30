@@ -2,6 +2,7 @@ import React from 'react'
 
 export default class ProgressPanel extends React.PureComponent {
   render () {
+    const course = this.props.course.toJS()
     const styles = {
       panel: {
         height: '169px',
@@ -19,14 +20,14 @@ export default class ProgressPanel extends React.PureComponent {
       },
       progress: {
         margin: '20px',
-        background: `linear-gradient(90deg, #33cc33 ${this.props.course.percentage}%, #000 ${this.props.course.percentage}%)`,
+        background: `linear-gradient(90deg, #33cc33 ${course.percentage}%, #000 ${course.percentage}%)`,
         height: '50px'
       }
     }
     return (
       <div style={styles.panel}>
         <div style={{ width: 'auto', height: 'auto' }}>
-          {this.props.course.title} - ETA: {this.props.course.eta}s
+          { course.title } - ETA: { course.eta }s
         </div>
         <div style={styles.progress} />
       </div>

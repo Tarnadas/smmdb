@@ -7,6 +7,9 @@ export default function order (state, action) {
     case 'SWAP_ORDER':
       state = state.set('dir', !state.get('dir'))
       return state
+    case 'RESET_ORDER':
+      state = state.set('order', 'lastmodified')
+      state = state.set('dir', false)
   }
   return state
 }

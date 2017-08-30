@@ -9,7 +9,7 @@ import { resolve } from 'url'
 
 import ButtonSub from '../subs/ButtonSub'
 import {
-  setAccountData, setCourse
+  setAccountData, setCourse, setCourse64
 } from '../../actions'
 import {
   domain
@@ -55,27 +55,26 @@ class LoginButton extends React.PureComponent {
     }
   }
   updateCourseStars (props, account) {
-    this.main = {}
+    const main = {}
     let i = 0
     props.courseData.get('main').forEach(course => {
-      this.main[course.get('id')] = i++
+      main[course.get('id')] = i++
     })
-    this.self = {}
+    const main64 = {}
     i = 0
-    props.courseData.get('self').forEach(course => {
-      this.self[course.get('id')] = i++
-    })
-    this.uploaded = {}
-    i = 0
-    props.courseData.get('uploaded').forEach(course => {
-      this.uploaded[course.get('id')] = i++
+    props.courseData.get('main64').forEach(course => {
+      main64[course.get('id')] = i++
     })
     for (let i in account.stars) {
-      if (account.stars[i] in this.main) {
-        const courseId = this.main[account.stars[i]]
-        const course = this.props.courseData.getIn(['main', courseId]).toJS()
-        course.starred = 1
-        this.props.dispatch(setCourse(courseId, course))
+      if (account.stars[i] in main) {
+        const courseId = main[account.stars[i]]
+        this.props.dispatch(setCourse(courseId, this.props.courseData.getIn(['main', courseId]).set('starred', true)))
+      }
+    }
+    for (let i in account.stars64) {
+      if (account.stars64[i] in main64) {
+        const courseId = main64[account.stars64[i]]
+        this.props.dispatch(setCourse64(courseId, this.props.courseData.getIn(['main64', courseId]).set('starred', true)))
       }
     }
   }
@@ -112,10 +111,29 @@ class LoginButton extends React.PureComponent {
       await got(resolve(domain, '/signout'), {
         method: 'POST'
       })
+      const account = this.props.accountData.toJS()
+      let i = 0
+      for (let course of this.props.courseData.get('main')) {
+        const courseId = course.get('id')
+        if (account.stars.includes(courseId)) {
+          this.props.dispatch(setCourse(i, this.props.courseData.getIn(['main', i]).set('starred', false)))
+        }
+        i++
+      }
+      i = 0
+      for (let course of this.props.courseData.get('main64')) {
+        const courseId = course.get('id')
+        if (account.stars64.includes(courseId)) {
+          this.props.dispatch(setCourse64(i, this.props.courseData.getIn(['main64', i]).set('starred', false)))
+        }
+        i++
+      }
       this.props.dispatch(setAccountData())
     } catch (err) {
       if (err.response) {
         console.error(err.response.body)
+      } else {
+        console.error(err)
       }
     }
   }

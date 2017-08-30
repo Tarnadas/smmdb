@@ -8,7 +8,9 @@ import {
 
 import MainView from './MainView'
 import CoursesView from './CoursesView'
+import Courses64View from './Courses64View'
 import UploadView from './UploadView'
+import Upload64View from './Upload64View'
 import ProfileView from './ProfileView'
 import FAQView from './FAQView'
 import SocialView from './SocialView'
@@ -37,10 +39,16 @@ class ContentView extends React.PureComponent {
       <div style={styles.content}>
         <Route exact path='/' component={MainView} />
         <Route path='/courses' render={() => (
-          <CoursesView shouldUpdate={this.props.shouldUpdate} />
+          <CoursesView shouldUpdate={this.props.shouldUpdate} setFetchCourses={this.props.setFetchCourses} isServer={this.props.isServer} />
+        )} />
+        <Route path='/courses64' render={() => (
+          <Courses64View shouldUpdate={this.props.shouldUpdate} setFetchCourses={this.props.setFetchCourses} isServer={this.props.isServer} />
         )} />
         <Route path='/upload' render={() => (
-          <UploadView shouldUpdate={this.props.shouldUpdate} setFetchCourses={this.props.setFetchCourses} />
+          <UploadView shouldUpdate={this.props.shouldUpdate} setFetchCourses={this.props.setFetchCourses} isServer={this.props.isServer} />
+        )} />
+        <Route path='/upload64' render={() => (
+          <Upload64View shouldUpdate={this.props.shouldUpdate} setFetchCourses={this.props.setFetchCourses} isServer={this.props.isServer} />
         )} />
         <Route path='/profile' component={ProfileView} />
         <Route path='/faq' component={FAQView} />

@@ -9,7 +9,6 @@ import { forceCheck } from 'react-lazyload'
 import got from 'got'
 import locale from 'browser-locale'
 
-import { stringify } from 'querystring'
 import { resolve } from 'url'
 
 import ContentView from './ContentView'
@@ -19,14 +18,13 @@ import {
   ScreenSize
 } from '../../reducers/mediaQuery'
 import {
-  setVideoId, mediaQuery, setCourses, setAmazonProducts
+  setVideoId, mediaQuery, setAmazonProducts
 } from '../../actions'
 import {
   domain
 } from '../../../static'
 
 const UPDATE_OFFSET = 500
-const LIMIT = 10
 const STEP_LIMIT = 10
 
 class AppView extends React.PureComponent {
@@ -36,8 +34,6 @@ class AppView extends React.PureComponent {
       fetchCourses: null
     }
     this.doUpdate = false
-    this.queryString = stringify(props.filter.toJS())
-    this.fetchCourses = this.fetchCourses.bind(this)
     this.setFetchCourses = this.setFetchCourses.bind(this)
     this.onVideoHide = this.onVideoHide.bind(this)
     this.handleScroll = this.handleScroll.bind(this)
@@ -103,43 +99,10 @@ class AppView extends React.PureComponent {
       this.props.dispatch(mediaQuery(ScreenSize.SUPER_SMALL))
     }
   }
-  componentWillReceiveProps (nextProps, nextContext) {
-    if (nextProps.filter === this.props.filter && nextProps.order === this.props.order) return
-    const order = nextProps.order.toJS()
-    this.queryString = stringify(Object.assign({}, nextProps.filter.toJS(), {
-      order: order.order,
-      dir: order.dir ? 'asc' : 'desc'
-    }));
-    // this.scrollBar.scrollToTop(); // TODO
-    (async () => {
-      await this.fetchCourses()
-    })()
-  }
   componentWillUpdate (nextProps, nextState, nextContext) {
     this.screenSize = 0
     if (this.props.courses !== nextProps.courses || this.props.coursesSelf !== nextProps.coursesSelf) {
       this.doUpdate = false
-    }
-  }
-  async fetchCourses (shouldConcat = false, limit = LIMIT, start = 0) {
-    try {
-      const courses = (await got(resolve(domain, `/api/getcourses?limit=${limit}&start=${start}${this.queryString ? `&${this.queryString}` : ''}`), Object.assign({
-        json: true,
-        useElectronNet: false
-      }, this.props.apiKey ? {
-        headers: {
-          'Authorization': `APIKEY ${this.props.apiKey}`
-        }
-      } : null))).body
-      if (courses != null) {
-        this.props.dispatch(setCourses(courses, shouldConcat))
-      }
-    } catch (err) {
-      if (!err.response) {
-        console.error(err.response.body)
-      } else {
-        console.error(err)
-      }
     }
   }
   setFetchCourses (fetchCourses) {
@@ -154,16 +117,13 @@ class AppView extends React.PureComponent {
     if (this.props.screenSize >= ScreenSize.MEDIUM) return
     this.shouldUpdate(e.target)
   }
-  shouldUpdate (values, fetchCourses) {
+  shouldUpdate (values) {
     forceCheck()
     if (this.doUpdate) return
     const shouldUpdate = values.scrollHeight - values.scrollTop - values.clientHeight < UPDATE_OFFSET
     if (shouldUpdate) {
-      this.doUpdate = true;
-      (async () => {
-        if (this.state.fetchCourses) fetchCourses = this.state.fetchCourses
-        await fetchCourses ? fetchCourses(true, STEP_LIMIT, this.props.coursesSelf.size) : this.fetchCourses(true, STEP_LIMIT, this.props.courses.size)
-      })()
+      this.doUpdate = true
+      if (this.state.fetchCourses) this.state.fetchCourses(true, STEP_LIMIT)
     }
   }
   render () {
@@ -270,8 +230,5 @@ export default connect(state => ({
   videoId: state.getIn(['userData', 'videoId']) || '',
   courses: state.getIn(['courseData', 'main']),
   coursesSelf: state.getIn(['courseData', 'self']),
-  showFilter: state.get('showFilter'),
-  filter: state.getIn(['filter', 'currentFilter']),
-  order: state.get('order'),
-  apiKey: state.getIn(['userData', 'accountData', 'apikey'])
+  showFilter: state.get('showFilter')
 }))(AppView)

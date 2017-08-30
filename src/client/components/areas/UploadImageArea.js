@@ -9,13 +9,12 @@ import got from 'got'
 import stream from 'filereader-stream'
 import concat from 'concat-stream'
 import progress from 'progress-stream'
-// import { encode } from 'base64-arraybuffer'
 
 import { resolve } from 'url'
 
 import { domain } from '../../../static'
 import {
-  setUploadImageFull, setUploadImagePreview, deleteUploadImageFull, deleteUploadImagePreview
+  setUploadImageFull, setUploadImagePreview, setUploadImage64, deleteUploadImageFull, deleteUploadImagePreview, deleteUploadImage64
 } from '../../actions'
 
 const SERVER_TIMEOUT = 30000
@@ -36,8 +35,8 @@ class UploadArea extends React.PureComponent {
     let timeout
     const id = this.currentUpload
     this.currentUpload++
-    const setUpload = this.props.type === 'full' ? setUploadImageFull : setUploadImagePreview
-    const deleteUpload = this.props.type === 'full' ? deleteUploadImageFull : deleteUploadImagePreview
+    const setUpload = this.props.type === 'full' ? setUploadImageFull : this.props.type === '64' ? setUploadImage64 : setUploadImagePreview
+    const deleteUpload = this.props.type === 'full' ? deleteUploadImageFull : this.props.type === '64' ? deleteUploadImage64 : deleteUploadImagePreview
     try {
       let abort
       const req = got.stream.post(resolve(domain, `/api/uploadimage${this.props.type}`), {
@@ -97,7 +96,6 @@ class UploadArea extends React.PureComponent {
       req.pipe(concat(buf => {
         try {
           const course = JSON.parse(new TextDecoder('utf-8').decode(buf))
-          // this.props.onUploadComplete(encode(buf.buffer))
           this.props.onUploadComplete(course)
         } catch (err) {
           console.log(err)
@@ -145,7 +143,7 @@ class UploadArea extends React.PureComponent {
     const styles = {
       drag: {
         height: 'auto',
-        width: 'calc(50% - 40px)',
+        width: this.props.type === '64' ? 'calc(100% - 40px)' : 'calc(50% - 40px)',
         margin: '0 20px 10px',
         padding: '15px 20px',
         background: '#fff',
@@ -176,7 +174,11 @@ class UploadArea extends React.PureComponent {
           this.props.type === 'full' ? (
             'Upload full course image (max 6MB)'
           ) : (
-            'Upload preview course image (max 6MB)'
+            this.props.type === '64' ? (
+              'Upload course image (max 6MB)'
+              ) : (
+              'Upload preview course image (max 6MB)'
+            )
           )
         }
       </div>

@@ -7,23 +7,10 @@ import NavigationButton from '../buttons/NavigationButton'
 import SubNavigationButton from '../buttons/SubNavigationButton'
 import LoginButton from '../buttons/LoginButton'
 import {
-  applyFilter, setFilter, setOrder
-} from '../../actions'
-import {
   ScreenSize
 } from '../../reducers/mediaQuery'
 
 class NavigationArea extends React.PureComponent {
-  constructor (props) {
-    super(props)
-    this.onCourses = this.onCourses.bind(this)
-  }
-  onCourses () {
-    this.props.dispatch(setFilter())
-    this.props.dispatch(setOrder())
-    this.props.dispatch(applyFilter())
-    this.props.onClick()
-  }
   render () {
     const screenSize = this.props.screenSize
     const display = this.props.display
@@ -51,12 +38,20 @@ class NavigationArea extends React.PureComponent {
         onMouseLeave={this.props.onMouseLeave}
       >
         <NavigationButton onClick={this.props.onClick} link='/' text='Home' iconSrc='/img/home.svg' iconColor='dark' />
-        <NavigationButton onClick={this.onCourses} link='/courses' text='Courses' iconSrc='/img/courses.png' iconColor='dark' />
+        <NavigationButton onClick={this.props.onClick} link='/courses' text='Courses' iconSrc='/img/courses.png' iconColor='dark' />
         {
           screenSize < ScreenSize.MEDIUM &&
           <SubNavigationButton onClick={this.props.onClick} link='/courses/filter' text='Filter' iconSrc='/img/filter.svg' iconColor='dark' />
         }
+        {
+          !process.env.ELECTRON &&
+          <NavigationButton onClick={this.props.onClick} link='/courses64' text='Courses64' iconSrc='/img/mario64.png' iconColor='dark' />
+        }
         <NavigationButton onClick={this.props.onClick} link='/upload' text='Upload' iconSrc='/img/upload.png' iconColor='dark' />
+        {
+          !process.env.ELECTRON &&
+          <NavigationButton onClick={this.props.onClick} link='/upload64' text='Upload64' iconSrc='/img/upload64.png' iconColor='dark' />
+        }
         <NavigationButton onClick={this.props.onClick} link='/profile' text='Profile' iconSrc='/img/profile.png' iconColor='dark' />
         {
           !process.env.ELECTRON &&
