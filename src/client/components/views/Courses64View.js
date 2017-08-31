@@ -26,7 +26,7 @@ import StatsPanel from '../panels/StatsPanel'
 import SideBarArea from '../areas/SideBarArea'
 import FilterArea from '../areas/FilterArea'
 
-const LIMIT = 10
+const LIMIT = 16
 
 class Courses64View extends React.PureComponent {
   constructor (props) {

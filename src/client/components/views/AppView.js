@@ -101,7 +101,7 @@ class AppView extends React.PureComponent {
   }
   componentWillUpdate (nextProps, nextState, nextContext) {
     this.screenSize = 0
-    if (this.props.courses !== nextProps.courses || this.props.coursesSelf !== nextProps.coursesSelf) {
+    if (this.props.courses !== nextProps.courses || this.props.courses64 !== nextProps.courses64 || this.props.coursesSelf !== nextProps.coursesSelf || this.props.courses64Self !== nextProps.courses64Self) {
       this.doUpdate = false
     }
   }
@@ -230,5 +230,7 @@ export default connect(state => ({
   videoId: state.getIn(['userData', 'videoId']) || '',
   courses: state.getIn(['courseData', 'main']),
   coursesSelf: state.getIn(['courseData', 'self']),
+  courses64: state.getIn(['courseData', 'main64']),
+  courses64Self: state.getIn(['courseData', 'self64']),
   showFilter: state.get('showFilter')
 }))(AppView)

@@ -61,8 +61,10 @@ export default class API {
     let orderBy = 'lastmodified'
     let dir = -1
 
-    if (filterData.order && filterData.dir) {
+    if (filterData.order) {
       orderBy = filterData.order
+    }
+    if (filterData.dir) {
       dir = filterData.dir === 'asc' ? 1 : -1
     }
 
@@ -167,8 +169,10 @@ export default class API {
     let orderBy = 'lastmodified'
     let dir = -1
 
-    if (filterData.order && filterData.dir) {
+    if (filterData.order) {
       orderBy = filterData.order
+    }
+    if (filterData.dir) {
       dir = filterData.dir === 'asc' ? 1 : -1
     }
 
