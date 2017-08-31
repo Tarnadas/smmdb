@@ -541,6 +541,22 @@ export default class API {
         }
       } catch (err) {}
     }
+    if (req.body.stars != null) {
+      try {
+        const stars = parseInt(req.body.stars)
+        if (stars >= 0 && stars <= 99) {
+          courseData.stars = stars
+        }
+      } catch (err) {}
+    }
+    if (req.body.theme != null) {
+      try {
+        const theme = JSON.parse(req.body.theme)
+        if (theme >= 0 && theme <= 11) {
+          courseData.theme = theme
+        }
+      } catch (err) {}
+    }
     await Course64.update(course, courseData)
     res.json(course)
   }

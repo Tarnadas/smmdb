@@ -19,7 +19,7 @@ import {
   ScreenSize
 } from '../../reducers/mediaQuery'
 import {
-  DIFFICULTY
+  DIFFICULTY, N64_THEME
 } from '../../reducers/courseData'
 import {
   domain
@@ -40,6 +40,8 @@ class Course64Panel extends React.PureComponent {
       title: course.title,
       videoId: course.videoid ? course.videoid : '',
       difficulty: course.difficulty,
+      stars: 0,
+      theme: '',
       shouldDelete: false
     }
     this.onShowDetails = this.onShowDetails.bind(this)
@@ -49,6 +51,8 @@ class Course64Panel extends React.PureComponent {
     this.onTitleChange = this.onStringChange.bind(this, 'title', MAX_LENGTH_TITLE)
     this.onVideoIdChange = this.onStringChange.bind(this, 'videoId', MAX_LENGTH_VIDEOID)
     this.onDifficultyChange = this.onSelectChange.bind(this, 'difficulty')
+    this.onStarsChange = this.onIntegerChange.bind(this, 'stars', 0, 99)
+    this.onThemeChange = this.onSelectChange.bind(this, 'theme')
     this.onReuploadComplete = this.onReuploadComplete.bind(this)
     this.onUploadImageComplete = this.onUploadImageComplete.bind(this)
     this.onStar = this.onStar.bind(this)
@@ -70,6 +74,16 @@ class Course64Panel extends React.PureComponent {
         difficulty: course.difficulty
       })
     }
+    if (course.courseStars !== this.state.stars) {
+      this.setState({
+        stars: course.courseStars
+      })
+    }
+    if (course.theme !== this.state.theme) {
+      this.setState({
+        theme: course.theme ? course.theme : ''
+      })
+    }
   }
   onShowDetails (e) {
     e.stopPropagation()
@@ -88,13 +102,17 @@ class Course64Panel extends React.PureComponent {
     const course = this.props.course.toJS()
     if (this.state.title === course.title &&
       this.state.videoId === course.videoid &&
-      this.state.difficulty === course.difficulty) return;
+      this.state.difficulty === course.difficulty &&
+      this.state.stars === course.stars &&
+      this.state.theme === course.theme) return;
     (async () => {
       try {
         const update = {
           title: this.state.title,
           videoid: this.state.videoId,
-          difficulty: this.state.difficulty
+          difficulty: this.state.difficulty,
+          stars: this.state.stars,
+          theme: this.state.theme
         }
         if (!VIDEO_ID.test(update.videoid) && update.videoid !== '') {
           delete update.videoid
@@ -169,6 +187,17 @@ class Course64Panel extends React.PureComponent {
       saved: false
     }
     res[value] = val
+    this.setState(res)
+  }
+  onIntegerChange (value, min, max, e) {
+    const val = parseInt(e.target.value)
+    if (Number.isNaN(val)) return
+    if (val < min || val > max) return
+    const res = {
+      changed: true,
+      saved: false
+    }
+    res[value] = String(val)
     this.setState(res)
   }
   onSelectChange (value, e) {
@@ -270,6 +299,9 @@ class Course64Panel extends React.PureComponent {
         lineHeight: '32px',
         whiteSpace: 'nowrap'
       },
+      theme: {
+        width: 'auto'
+      },
       title: {
         height: '44px',
         width: '0',
@@ -318,7 +350,12 @@ class Course64Panel extends React.PureComponent {
       difficulty: {
         padding: '4px',
         width: 'auto',
-        marginLeft: '8px'
+        margin: '0 8px'
+      },
+      courseStars: {
+        width: '32px',
+        marginLeft: '6px',
+        padding: '4px'
       },
       uploader: {
         textAlign: 'right',
@@ -351,6 +388,56 @@ class Course64Panel extends React.PureComponent {
       <div style={styles.panel}>
         <div style={styles.display} onClick={this.onShowDetails}>
           <div style={styles.header}>
+            {
+              course.theme != null && course.theme !== 0 &&
+              <img style={styles.theme} src={
+                course.theme === N64_THEME.CAVE ? (
+                  '/img/cave.png'
+                ) : (
+                  course.theme === N64_THEME.FACTORY ? (
+                    '/img/factory.png'
+                  ) : (
+                    course.theme === N64_THEME.DESERT ? (
+                      '/img/desert.png'
+                    ) : (
+                      course.theme === N64_THEME.SNOW ? (
+                        '/img/snow.png'
+                      ) : (
+                        course.theme === N64_THEME.VOID ? (
+                          '/img/void.png'
+                        ) : (
+                          course.theme === N64_THEME.LAVA ? (
+                            '/img/lava.png'
+                          ) : (
+                            course.theme === N64_THEME.BEACH ? (
+                              '/img/beach.png'
+                            ) : (
+                              course.theme === N64_THEME.GRASS ? (
+                                '/img/grass.png'
+                              ) : (
+                                course.theme === N64_THEME.LAVAROOM ? (
+                                  '/img/lavaroom.png'
+                                ) : (
+                                  course.theme === N64_THEME.SKY ? (
+                                    '/img/sky.png'
+                                  ) : (
+                                    course.theme === N64_THEME.FORTRESS ? (
+                                      '/img/fortress.png'
+                                    ) : (
+                                      ''
+                                    )
+                                  )
+                                )
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                )
+              } />
+            }
             <div style={styles.title}>
               { course.title }
             </div>
@@ -391,6 +478,8 @@ class Course64Panel extends React.PureComponent {
                 )
               )
             } />
+            { course.courseStars ? <img style={styles.courseStars} src='/img/coursestar.png' /> : null }
+            { course.courseStars ? course.courseStars : null }
             <div style={styles.uploader}>
               { course.uploader }
             </div>
@@ -423,6 +512,31 @@ class Course64Panel extends React.PureComponent {
                   <option value={DIFFICULTY.NORMAL}>Normal</option>
                   <option value={DIFFICULTY.EXPERT}>Expert</option>
                   <option value={DIFFICULTY.SUPER_EXPERT}>Super Expert</option>
+                </select>
+              </div>
+              <div style={styles.option}>
+                <div style={styles.value}>
+                  Star amount:
+                </div>
+                <input style={styles.input} value={this.state.stars} onChange={this.onStarsChange} />
+              </div>
+              <div style={styles.option}>
+                <div style={styles.value}>
+                  Theme:
+                </div>
+                <select style={styles.input} value={this.state.theme} onChange={this.onThemeChange}>
+                  <option value={N64_THEME.NONE}>-</option>
+                  <option value={N64_THEME.CAVE}>Cave</option>
+                  <option value={N64_THEME.FACTORY}>Factory</option>
+                  <option value={N64_THEME.DESERT}>Desert</option>
+                  <option value={N64_THEME.SNOW}>Snow</option>
+                  <option value={N64_THEME.VOID}>Void</option>
+                  <option value={N64_THEME.LAVA}>Lava</option>
+                  <option value={N64_THEME.BEACH}>Beach</option>
+                  <option value={N64_THEME.GRASS}>Grass</option>
+                  <option value={N64_THEME.LAVAROOM}>Lava room</option>
+                  <option value={N64_THEME.SKY}>Sky</option>
+                  <option value={N64_THEME.FORTRESS}>Fortress</option>
                 </select>
               </div>
               <div style={styles.option} />

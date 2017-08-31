@@ -8,6 +8,20 @@ export const DIFFICULTY = {
   EXPERT: 2,
   SUPER_EXPERT: 3
 }
+export const N64_THEME = {
+  NONE: 0,
+  CAVE: 1,
+  FACTORY: 2,
+  DESERT: 3,
+  SNOW: 4,
+  VOID: 5,
+  LAVA: 6,
+  BEACH: 7,
+  GRASS: 8,
+  LAVAROOM: 9,
+  SKY: 10,
+  FORTRESS: 11
+}
 
 export default function courseData (state, action) {
   if (!action) return state
