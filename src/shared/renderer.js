@@ -46,7 +46,6 @@ export default function renderer (isServer = false, cb, preloadedState, req, cou
       )
     }
   </Provider>
-  const html = cb(jsx, !isServer && document.getElementById('root')
-  )
+  const html = cb(jsx, !isServer && document.getElementById('root'))
   return [html, store.getState()]
 }

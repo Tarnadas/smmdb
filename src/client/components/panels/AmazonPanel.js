@@ -87,15 +87,12 @@ class AmazonPanel extends React.PureComponent {
     const styles = {
       panel: {
         height: 'auto',
-        maxHeight: '320px',
-        minWidth: '350px',
-        maxWidth: '500px',
-        flex: '1 0 0%',
-        backgroundColor: 'rgb(212, 221, 165)',
+        maxHeight: is64 ? '320px' : '',
+        minWidth: is64 ? '350px' : '',
+        maxWidth: is64 ? '500px' : 'calc(100% - 20px)',
+        flex: is64 ? '1 0 0%' : '',
         borderRadius: '10px',
-        margin: '10px',
-        color: 'rgb(0, 0, 0)',
-        overflow: 'hidden'
+        margin: is64 ? '10px' : '0 10px'
       },
       a: {
         textDecoration: 'none'

@@ -3,7 +3,7 @@ import {
   connect
 } from 'react-redux'
 import {
-  Route
+  Route, Link
 } from 'react-router-dom'
 import { forceCheck } from 'react-lazyload'
 import got from 'got'
@@ -153,15 +153,17 @@ class AppView extends React.PureComponent {
         whiteSpace: 'nowrap'
       },
       footer: {
-        paddingTop: '13px',
+        padding: screenSize >= ScreenSize.MEDIUM ? '' : '4px 0',
         fontSize: '11px',
         textAlign: 'center',
         background: 'rgba(44, 44, 44, 0.3)',
         fontFamily: 'Consolas, "courier new", serif',
         fontWeight: 'bold',
         color: '#000',
-        flex: '0 0',
-        height: 'auto'
+        // flex: '0 0',
+        height: screenSize >= ScreenSize.MEDIUM ? '39px' : '',
+        display: screenSize >= ScreenSize.MEDIUM ? 'flex' : '',
+        alignItems: screenSize >= ScreenSize.MEDIUM ? 'center' : ''
       },
       overflow: {
         display: 'flex',
@@ -179,6 +181,22 @@ class AppView extends React.PureComponent {
         width: '720px',
         height: '480px',
         margin: '0 auto'
+      },
+      disclaimer: {
+        width: 'auto',
+        height: 'auto',
+        flex: '1 0 0%'
+      },
+      footerLinks: {
+        width: 'auto',
+        height: 'auto',
+        padding: '0 20px'
+      },
+      footerLink: {
+        padding: '0 6px',
+        borderRight: '1px solid black',
+        borderLeft: '1px solid black',
+        color: '#1d31ff'
       }
     }
     const isLoggedIn = !!this.props.userName
@@ -202,24 +220,28 @@ class AppView extends React.PureComponent {
               }
             </div>
           </div>
-          <Route path='/' render={() => (
-            <ContentView global={global} shouldUpdate={this.shouldUpdate} setFetchCourses={this.setFetchCourses} isServer={this.props.isServer} />
-          )} />
+          <Route path='/' render={() => <ContentView global={global} shouldUpdate={this.shouldUpdate} setFetchCourses={this.setFetchCourses} isServer={this.props.isServer} />} />
           <div style={styles.footer}>
+            <div style={styles.disclaimer}>
               Super Mario Maker Database (in short SMMDB) is not affiliated or associated with any other company.<br />
               All logos, trademarks, and trade names used herein are the property of their respective owners.
+            </div>
+            <div style={styles.footerLinks}>
+              <Link to='/privacy' style={styles.footerLink}>Privacy Policy</Link>
+              <Link to='/legal' style={styles.footerLink}>Legal Notice</Link>
+            </div>
           </div>
         </div>
         {
-          !!this.props.videoId && (
+          !!this.props.videoId &&
           <div style={styles.overflow} onClick={this.onVideoHide}>
             <iframe style={styles.video} src={`http://www.youtube.com/embed/${this.props.videoId}?disablekb=1&iv_load_policy=3&rel=0&showinfo=0`} frameBorder='0' allowFullScreen />
           </div>
-        )}
+        }
         {
-          this.props.showFilter && (
+          this.props.showFilter &&
           <div />
-        )}
+        }
       </div>
     )
   }

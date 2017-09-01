@@ -7,12 +7,12 @@ export default class SideBarArea extends React.PureComponent {
   render () {
     const styles = {
       sideBar: {
+        display: 'flex',
         width: '100px',
         height: 'auto',
         margin: '0 30px',
         color: '#6dd3bd',
         boxShadow: '0px 0px 4px 12px rgba(0,0,0,0.1)',
-        display: 'flex',
         flexDirection: 'column',
         borderRadius: '8px'
       },

@@ -16,7 +16,9 @@ class CourseVideoButton extends React.PureComponent {
     this.onClick = this.onClick.bind(this)
   }
   onClick () {
-    this.props.dispatch(setVideoId(this.props.videoId))
+    if (this.props.screenSize > ScreenSize.SMALL) {
+      this.props.dispatch(setVideoId(this.props.videoId))
+    }
   }
   render () {
     const screenSize = this.props.screenSize
@@ -53,15 +55,25 @@ class CourseVideoButton extends React.PureComponent {
         fontSize: screenSize >= ScreenSize.MEDIUM ? '24px' : '16px'
       }
     }
-    return (
+    const Wrapper = screenSize > ScreenSize.SMALL
+    ? props => (
       <div style={styles.button} onClick={this.onClick}>
+        { props.children }
+      </div>
+    ) : props => (
+      <a style={styles.button} href={`https://youtu.be/${this.props.videoId}`} target='_blank'>
+        { props.children }
+      </a>
+    )
+    return (
+      <Wrapper>
         <div style={styles.icon}>
           <img style={styles.iconImg} src='/img/play.png' />
         </div>
         <div style={styles.text}>
           Video
         </div>
-      </div>
+      </Wrapper>
     )
   }
 }

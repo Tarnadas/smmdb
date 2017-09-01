@@ -21,7 +21,6 @@ class MainView extends React.PureComponent {
       content: {
         flex: '1 0 auto',
         height: 'auto',
-        display: 'flex',
         alignItems: 'center',
         padding: screenSize === ScreenSize.SUPER_SMALL ? '20px 10px' : '20px',
         fontSize: '16px',

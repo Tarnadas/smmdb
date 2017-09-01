@@ -143,9 +143,7 @@ class CoursesView extends React.PureComponent {
         <StatsPanel />
         {
           screenSize >= ScreenSize.MEDIUM &&
-          (
-            <SideBarArea />
-          )
+          <SideBarArea />
         }
         <div style={styles.content} id='scroll' onScroll={this.handleScroll} ref={scroll => { this.scroll = scroll }}>
           {

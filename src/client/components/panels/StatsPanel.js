@@ -31,6 +31,7 @@ class StatsPanel extends React.PureComponent {
   }
   render () {
     const stats = this.props.stats.toJS()
+    if (!stats) return null
     const styles = {
       panel: {
         height: 'auto',
@@ -40,11 +41,9 @@ class StatsPanel extends React.PureComponent {
       }
     }
     return (
-      !!stats && (
-        <div style={styles.panel}>
-          There are {this.props.is64 ? stats.courses64 : stats.courses} uploaded courses and {stats.accounts} registered accounts
-        </div>
-      )
+      <div style={styles.panel}>
+        There are {this.props.is64 ? stats.courses64 : stats.courses} uploaded courses and {stats.accounts} registered accounts
+      </div>
     )
   }
 }

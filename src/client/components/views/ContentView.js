@@ -14,6 +14,8 @@ import Upload64View from './Upload64View'
 import ProfileView from './ProfileView'
 import FAQView from './FAQView'
 import SocialView from './SocialView'
+import PrivacyPolicyView from './PrivacyPolicyView'
+import LegalNoticeView from './LegalNoticeView'
 
 import {
   ScreenSize
@@ -53,6 +55,8 @@ class ContentView extends React.PureComponent {
         <Route path='/profile' component={ProfileView} />
         <Route path='/faq' component={FAQView} />
         <Route path='/social' component={SocialView} />
+        <Route path='/privacy' component={PrivacyPolicyView} />
+        <Route path='/legal' component={LegalNoticeView} />
       </div>
     )
   }

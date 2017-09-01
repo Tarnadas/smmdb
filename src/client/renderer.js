@@ -1,7 +1,7 @@
 import 'babel-polyfill'
 
 import {
-  render
+  hydrate
 } from 'react-dom'
 import {
   fromJS
@@ -22,4 +22,4 @@ for (let i in courseData) {
 } */
 delete window.__PRELOADED_STATE__
 
-renderer(false, render, preloadedState)
+renderer(false, hydrate, preloadedState)
