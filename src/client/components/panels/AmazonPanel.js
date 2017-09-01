@@ -60,6 +60,7 @@ class AmazonPanel extends React.PureComponent {
   render () {
     if (!this.product) return null
     const screenSize = this.props.screenSize
+    const is64 = this.props.is64
     let title = this.product.title || ''
     if (title.length > MAX_LENGTH_TITLE) {
       title = title.substr(0, MAX_LENGTH_TITLE)
@@ -85,7 +86,16 @@ class AmazonPanel extends React.PureComponent {
     }
     const styles = {
       panel: {
-        height: 'auto'
+        height: 'auto',
+        maxHeight: '320px',
+        minWidth: '350px',
+        maxWidth: '500px',
+        flex: '1 0 0%',
+        backgroundColor: 'rgb(212, 221, 165)',
+        borderRadius: '10px',
+        margin: '10px',
+        color: 'rgb(0, 0, 0)',
+        overflow: 'hidden'
       },
       a: {
         textDecoration: 'none'
@@ -103,7 +113,7 @@ class AmazonPanel extends React.PureComponent {
       img: {
         width: 'auto',
         height: 'auto',
-        maxWidth: '200px',
+        maxWidth: is64 ? '160px' : '200px',
         maxHeight: '120px',
         padding: '0 10px'
       },

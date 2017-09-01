@@ -83,12 +83,11 @@ class Courses64View extends React.PureComponent {
     return Array.from((function * () {
       let i = 0
       for (let course of courses) {
-        // TODO ads
-        /* if ((i - 3) % 9 === 0) {
+        if ((i - 3) % 9 === 0) {
           yield (
-            <AmazonPanel key={i} />
+            <AmazonPanel is64 key={i} />
           )
-        } */
+        }
         yield (
           (accountData.get('id') && course.get('owner') === accountData.get('id')) || accountData.get('permissions') === 1 ? (
             <Course64Panel key={course.get('id')} canEdit course={course} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />
