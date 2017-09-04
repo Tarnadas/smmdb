@@ -3,6 +3,7 @@ import fileType from 'file-type'
 import {
   ObjectID
 } from 'mongodb'
+import { encode } from 'ini'
 
 import * as fs from 'fs'
 import * as path from 'path'
@@ -38,7 +39,15 @@ export default class API {
     if (apiData.prettify) {
       app.set('json spaces', 2)
     }
-    res.json(await this.filterCourses(account ? account._id : null, apiData))
+    const courses = await this.filterCourses(account ? account._id : null, apiData)
+    if (apiData.format === 'ini') {
+      res.set('Content-type', 'text/plain')
+      res.send(`${encode({ General: { lvlcount: courses.length } })}\n${encode(JSON.parse(JSON.stringify(courses)), {
+        section: 'Level'
+      })}`)
+    } else {
+      res.json(courses)
+    }
     if (apiData.prettify) {
       app.set('json spaces', 0)
     }
