@@ -4,6 +4,10 @@ A cross console/emulator sharing platform for Super Mario Maker courses to rule 
 
 Visit the server at [http://smmdb.ddns.net](http://smmdb.ddns.net)
 
+## Protocol Buffer Files
+
+Protocol Buffer files can be found at [smm-protobuf](https://github.com/Tarnadas/smm-protobuf)
+
 ## API
 
 All API calls are subject to change.
@@ -22,7 +26,7 @@ All API calls are subject to change.
 
 ### Receive course list
 
-**Request**: `getcourses`
+**Request**: `getcourses` \|\| `getcourses64`
 
 **Method**: GET
 
@@ -36,9 +40,10 @@ All API calls are subject to change.
 
 | Query | Value | Description |
 | --- | --- | --- |
+| format | *`json`*` \| ini` | Order direction of courses |
 | order | *`lastmodified`*` \| uploaded \| title \| stars` | Order of courses |
 | dir | `asc \| `*`desc`* | Order direction of courses |
-| limit | `{number} \| `*`100`* | Limit maximum amount of sent courses (max: 100) |
+| limit | `{number} \| `*`120`* | Limit maximum amount of sent courses (max: 100) |
 | start | `{number} \| `*`0`* | Start index for pagination |
 | random | *`0`*` \| 1` | Receive random courses wrt filters |
 | filter | `{Array<string>}` delimited with comma | Limit response values attributes, e.g. `filter=id,stars` |
@@ -68,6 +73,54 @@ All API calls are subject to change.
 **Example**: `http://smmdb.ddns.net/api/getcourses?limit=50&start=121&prettify=1`
 
 Receive courses 121 to 170 in lastmodified descending order with indentation.
+
+**Response**: `Array<Course>` \|\| `Array<Course64>` where
+
+`Course`:
+
+| Attribute | Value | Description |
+| --- | --- | --- |
+| id | `{string}` | Unique course ID |
+| [header.type] | `{number}` | [Header type](https://github.com/Tarnadas/smm-protobuf/blob/master/proto/Header.proto#L4-L7) |
+| [header.data] | `{string}` | Base64 encoded `0xF0` original course data header |
+| owner | `{string}` | Unique owner ID |
+| title | `{string}` | Course title |
+| maker | `{string}` | Course maker name |
+| gameStyle | `{string}` | [Game style](https://github.com/Tarnadas/smm-protobuf/blob/master/proto/SMMCourse.proto#L7-L13) |
+| courseTheme | `{string}` | [Course theme](https://github.com/Tarnadas/smm-protobuf/blob/master/proto/SMMCourse.proto#L15-L22) |
+| courseThemeSub | `{string}` | Course theme sub world |
+| time | `{string}` | Completion time |
+| autoScroll | `{string}` | [Auto scroll](https://github.com/Tarnadas/smm-protobuf/blob/master/proto/SMMCourse.proto#L26-L31) |
+| autoScrollSub | `{string}` | Auto scroll sub world |
+| width | `{string}` | Course width in blocks |
+| widthSub | `{string}` | Subcourse width in blocks |
+| nintendoid | `{string}` | Unique Nintendo course ID |
+| videoid | `{string}` | YouTube video ID |
+| difficulty | `{string}` | Course difficulty (0: Easy, 1: Normal, 2: Expert, 3: Super Expert) |
+| lastmodified | `{number}` | Unix timestamp of last modification |
+| uploaded | `{number}` | Unit timestamp of upload date |
+| vPrev | `{number}` | Version number for 4:3 thumbnail (can be used for long term caching) |
+| vFull | `{number}` | Version number for full course thumbnail (can be used for long term caching) |
+| stars | `{string}` | Received stars |
+| [starred] | `{boolean}` | (Authorization required) whether user has starred this course |
+
+`Course64`:
+
+| Attribute | Value | Description |
+| --- | --- | --- |
+| id | `{string}` | Unique course ID |
+| owner | `{string}` | Unique owner ID |
+| title | `{string}` | Course title |
+| uploader | `{string}` | Course uploader name |
+| courseTheme | `{string}` | [Course theme](https://github.com/Tarnadas/smmdb/blob/master/src/client/reducers/courseData.js#L11-L24) |
+| courseStars | `{number}` | Amount of collectible stars |
+| difficulty | `{string}` | Course difficulty (0: Easy, 1: Normal, 2: Expert, 3: Super Expert) |
+| lastmodified | `{number}` | Unix timestamp of last modification |
+| uploaded | `{number}` | Unit timestamp of upload date |
+| videoid | `{string}` | YouTube video ID |
+| vImg | `{number}` | Version number for course thumbnail (can be used for long term caching) |
+| stars | `{string}` | Received stars |
+| [starred] | `{boolean}` | (Authorization required) whether user has starred this course |
 
 ### Download course
 
