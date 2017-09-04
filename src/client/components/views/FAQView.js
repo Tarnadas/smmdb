@@ -49,7 +49,7 @@ class FAQView extends React.PureComponent {
     }
     return (
       <div style={styles.faq}>
-        <div style={styles.content}>
+        <div style={styles.content} id='scroll'>
           <div style={styles.question}>
             How do I use the website with my Wii U?
           </div>
@@ -78,6 +78,21 @@ class FAQView extends React.PureComponent {
             Downloading with Cemu SMMDB is self explaining.
             To upload a course you would have to navigate to your Super Mario Maker save folder and compress the respective course folder (named course###) in any compressible format.<br /><br />
             <a href='https://youtu.be/wF2f2ScIZUY' target='_blank'>If you prefer a video, one of our users made a tutorial.</a>
+          </div>
+          <div style={styles.question}>
+            What is Super Mario 64 Maker (SM64M)?
+          </div>
+          <div style={styles.answer}>
+            SM64M is a popular Super Mario 64 ROM hack by <a href='https://www.youtube.com/user/KazeBG0'>Kaze</a>.
+            You can basically create your own level in Super Mario 64 with 3D building blocks and enemies.
+          </div>
+          <div style={styles.question}>
+            How do I use the website with SM64M?
+          </div>
+          <div style={styles.answer}>
+            For a basic tutorial on how to use SM64M in general, watch <a href='https://youtu.be/XNZk4ggJkcc'>this video</a>.<br />
+            You use save states in your emulator to save your current course. You can then just upload the zip file containing the save state.<br />
+            Downloaded courses can be loaded with the emulator's load state function.
           </div>
           <div style={styles.question}>
             I have a question which has not been answered in the FAQ

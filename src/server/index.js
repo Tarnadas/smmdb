@@ -252,7 +252,7 @@ async function main () {
     }
 
     if (apiCall === 'uploadcourse') {
-      API.uploadCourse(req, res)
+      API.uploadCourse(req, res, apiData)
     } else if (apiCall === 'uploadcourse64') {
       API.uploadCourse64(req, res)
     } else if (apiCall === 'reuploadcourse') {

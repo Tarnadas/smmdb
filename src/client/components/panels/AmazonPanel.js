@@ -14,8 +14,10 @@ if (process.env.ELECTRON) {
 
 const AWS_TAG = 'smmdb09-20'
 const MAX_LENGTH_TITLE = 150
+const MAX_LENGTH_TITLE_64 = 80
 const MAX_LENGTH_DESCRIPTION = 400
 const MAX_LENGTH_DESCRIPTION_SMALL = 200
+const MAX_LENGTH_DESCRIPTION_64 = 200
 const MAX_DESCRIPTION_VALUES = 6
 
 class AmazonPanel extends React.PureComponent {
@@ -62,19 +64,20 @@ class AmazonPanel extends React.PureComponent {
     const screenSize = this.props.screenSize
     const is64 = this.props.is64
     let title = this.product.title || ''
-    if (title.length > MAX_LENGTH_TITLE) {
-      title = title.substr(0, MAX_LENGTH_TITLE)
+    const maxLength = is64 ? MAX_LENGTH_TITLE_64 : MAX_LENGTH_TITLE
+    if (title.length > maxLength) {
+      title = title.substr(0, maxLength)
       let index = Math.max(title.lastIndexOf(','), title.lastIndexOf('-'), title.lastIndexOf('|'))
       if (index === -1) index = title.lastIndexOf(' ')
       title = title.substr(0, index)
     }
     let description = ''
     const features = this.product.features
+    const maxLengthDescription = is64 ? MAX_LENGTH_DESCRIPTION_64 : (screenSize === ScreenSize.SMALL ? MAX_LENGTH_DESCRIPTION_SMALL : MAX_LENGTH_DESCRIPTION)
     if (features) {
       for (let i in features) {
         if (i >= MAX_DESCRIPTION_VALUES) break
-        if (description.length + features[i].length >
-          (screenSize === ScreenSize.SMALL ? MAX_LENGTH_DESCRIPTION_SMALL : MAX_LENGTH_DESCRIPTION)) break
+        if (description.length + features[i].length > maxLengthDescription) break
         description += `${features[i]}\n`
       }
     }
@@ -87,7 +90,7 @@ class AmazonPanel extends React.PureComponent {
     const styles = {
       panel: {
         height: 'auto',
-        maxHeight: is64 ? '320px' : '',
+        // maxHeight: is64 ? '320px' : '',
         minWidth: is64 ? '350px' : '',
         maxWidth: is64 ? '500px' : 'calc(100% - 20px)',
         flex: is64 ? '1 0 0%' : '',

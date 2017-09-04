@@ -319,7 +319,7 @@ export default class API {
     downloadMetrics.downloads64PerDay.mark()
   }
 
-  static async uploadCourse (req, res) {
+  static async uploadCourse (req, res, apiData) {
     const auth = req.get('Authorization')
     const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
     if (!apiKey) {
@@ -345,7 +345,14 @@ export default class API {
       } catch (err) {
         console.log(err)
       }
-      res.json(courses)
+      if (apiData.format === 'ini') {
+        res.set('Content-type', 'text/plain')
+        res.send(`${encode({ General: { lvlcount: courses.length } })}\n${encode(JSON.parse(JSON.stringify(courses)), {
+          section: 'Level'
+        })}`)
+      } else {
+        res.json(courses)
+      }
     }
   }
 
@@ -380,7 +387,7 @@ export default class API {
     }
   }
 
-  static async reuploadCourse (req, res) {
+  static async reuploadCourse (req, res, apiData) {
     const auth = req.get('Authorization')
     const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
     if (!apiKey) {
@@ -420,6 +427,12 @@ export default class API {
       Bot.updateCourse(course, account)
     } catch (err) {
       console.log(err)
+    }
+    if (apiData.format === 'ini') {
+      res.set('Content-type', 'text/plain')
+      res.send(encode(JSON.parse(JSON.stringify(course))))
+    } else {
+      res.json(course)
     }
     res.json(course)
   }
@@ -509,7 +522,12 @@ export default class API {
       } catch (err) {}
     }
     await Course.update(course, courseData)
-    res.json(course)
+    if (apiData.format === 'ini') {
+      res.set('Content-type', 'text/plain')
+      res.send(encode(JSON.parse(JSON.stringify(course))))
+    } else {
+      res.json(course)
+    }
   }
 
   static async updateCourse64 (req, res, apiData) {
