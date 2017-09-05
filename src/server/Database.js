@@ -2,6 +2,9 @@ import {
   MongoClient, ObjectID
 } from 'mongodb'
 
+import fs from 'fs'
+import path from 'path'
+
 import { log } from './scripts/util'
 
 const mongoUrl = 'mongodb://localhost:27017'
@@ -32,6 +35,22 @@ export default class Database {
       this.stars = this.db.collection('stars')
       this.stars64 = this.db.collection('stars64')
       this.amazon = this.db.collection('amazon')
+    }
+    const courseDataPath = path.join(__dirname, '../static/coursedata')
+    const courseDataFiles = fs.readdirSync(courseDataPath)
+    const courseImgPath = path.join(__dirname, '../static/courseimg')
+    const courseImgFiles = fs.readdirSync(courseImgPath)
+    const entries = await this.courses.find().toArray()
+    for (let entry of entries) {
+      const courseId = String(entry._id)
+      if (!courseDataFiles.includes(courseId) || !courseDataFiles.includes(courseId + '.gz')) continue
+      const update = {
+        courseData: fs.readFileSync(path.join(courseDataPath, courseId)),
+        courseDataGz: fs.readFileSync(path.join(courseDataPath, courseId + '.gz'))
+      }
+      if (courseImgFiles.includes(`${courseId}.jpg`)) update.thumbnailPreview = fs.readFileSync(path.join(courseImgPath, `${courseId}.jpg`))
+      if (courseImgFiles.includes(`${courseId}_full.jpg`)) update.thumbnail = fs.readFileSync(path.join(courseImgPath, `${courseId}_full.jpg`))
+      await Database.updateCourse(courseId, update)
     }
   }
 
@@ -67,6 +86,15 @@ export default class Database {
       { $skip: skip },
       { $limit: limit })
     return this.courses64.aggregate(query)
+  }
+
+  static async getImage (id, full) {
+    try {
+      const course = (await this.courses.find({ '_id': ObjectID(id) }).toArray())[0]
+      return full ? course.thumbnail.buffer : course.thumbnailPreview.buffer
+    } catch (err) {
+      return null
+    }
   }
 
   static async getImage64 (id) {

@@ -502,7 +502,7 @@ class CoursePanel extends React.PureComponent {
             <div style={styles.preview}>
               <div style={styles.previewImgWrapper}>
                 <LazyLoad height={81} offset={100} once>
-                  <img style={styles.previewImg} src={`${domain}/courseimg/${course.id}_full.jpg${course.vFull ? `?v=${course.vFull}` : ''}`} ref={v => { this.full = v }} />
+                  <img style={styles.previewImg} src={`${domain}/courseimg/${course.id}_full${course.vFull ? `?v=${course.vFull}` : ''}`} ref={v => { this.full = v }} />
                 </LazyLoad>
               </div>
             </div>
@@ -644,7 +644,7 @@ class CoursePanel extends React.PureComponent {
                 </div>
               )}
               <div style={styles.imageLarge}>
-                <img style={styles.imgLarge} src={`${domain}/courseimg/${course.id}.jpg${course.vPrev ? `?v=${course.vPrev}` : ''}`} ref={v => { this.prev = v }} />
+                <img style={styles.imgLarge} src={`${domain}/courseimg/${course.id}${course.vPrev ? `?v=${course.vPrev}` : ''}`} ref={v => { this.prev = v }} />
               </div>
               <div style={styles.buttonPanel}>
                 <CourseDownloadButton courseId={course.id} lastModified={course.lastmodified} modified={modified} progress={progress} saveId={saveId} screenSize={screenSize} />

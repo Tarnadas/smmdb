@@ -38,6 +38,10 @@ export default class Course {
     delete result._id
     delete result.serialized
     delete result.courseData
+    delete result.thumbnail
+    delete result.thumbnailPreview
+    delete result.courseData
+    delete result.courseDataGz
     if (filter) {
       for (let i in result) {
         if (!filter.includes(i)) {
@@ -54,7 +58,7 @@ export default class Course {
     })
     const zipDir = join(tmpDir.name, 'course000')
     fs.mkdirSync(zipDir)
-    const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`)))
+    const course = await deserialize(courseDB.courseData.buffer)
     await course.writeToSave(0, zipDir)
     const outPath = join(tmpDir.name, `${courseDB.title.replace(/[^a-z|A-Z|0-9| |\-|!]/g, '')}.zip`)
     try {
@@ -74,16 +78,12 @@ export default class Course {
     }
   }
 
-  static getObject (courseId) {
-    return deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${courseId}`)))
+  static getObject (course) {
+    return deserialize(course.courseData.buffer)
   }
 
-  static getSerialized (courseId) {
-    return fs.readFileSync(join(__dirname, `../static/coursedata/${courseId}.gz`))
-  }
-
-  static async get3DS (courseId) {
-    return (await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${courseId}`)))).to3DS()
+  static async get3DS (course) {
+    return (await deserialize(course.courseData.buffer)).to3DS()
   }
 
   static async fromBuffer (buffer, account) {
@@ -119,13 +119,15 @@ export default class Course {
       delete course.tilesSub
       delete course.sounds
       delete course.soundsSub
-      delete course.thumbnail
-      delete course.thumbnailPreview
+      // delete course.thumbnail
+      // delete course.thumbnailPreview
+      course.courseData = await courseData.serialize()
+      course.courseDataGz = await courseData.serializeGzipped()
       await Database.addCourse(course)
-      fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}.jpg`), courseData.thumbnailPreview)
-      fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}_full.jpg`), courseData.thumbnail)
-      fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}`), await courseData.serialize())
-      fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}.gz`), await courseData.serializeGzipped())
+      // fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}.jpg`), courseData.thumbnailPreview)
+      // fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}_full.jpg`), courseData.thumbnail)
+      // fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}`), await courseData.serialize())
+      // fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}.gz`), await courseData.serializeGzipped())
       return Course.prepare(course)
     }
     try {
@@ -179,16 +181,18 @@ export default class Course {
       return true
     }
     const doUpdate = async (course, courseData) => {
+      const update = {}
       if (!(await courseData.isThumbnailBroken())) {
-        fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}.jpg`), courseData.thumbnailPreview)
-        fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}_full.jpg`), courseData.thumbnail)
-        const update = {
-          vFull: course.vFull ? course.vFull + 1 : 1,
-          vPrev: course.vPrev ? course.vPrev + 1 : 1
-        }
+        // fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}.jpg`), courseData.thumbnailPreview)
+        // fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}_full.jpg`), courseData.thumbnail)
+        update.thumbnail = courseData.thumbnail
+        course.thumbnail = update.thumbnail
+        update.thumbnailPreview = courseData.thumbnailPreview
+        course.thumbnailPreview = update.thumbnailPreview
+        update.vFull = course.vFull ? course.vFull + 1 : 1
+        update.vPrev = course.vPrev ? course.vPrev + 1 : 1
         course.vFull = update.vFull
         course.vPrev = update.vPrev
-        await Database.updateCourse(course._id, update)
       }
       await courseData.setTitle(course.title)
       await courseData.setMaker(course.maker)
@@ -201,8 +205,13 @@ export default class Course {
       course.width = courseData.width
       course.widthSub = courseData.widthSub
       course.lastmodified = courseData.modified
-      fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}`), await courseData.serialize())
-      fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}.gz`), await courseData.serializeGzipped())
+      course.courseData = await course.serialize()
+      update.courseData = course.courseData
+      course.courseDataGz = await course.serializeGzipped()
+      update.courseDataGz = course.courseDataGz
+      // fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}`), await courseData.serialize())
+      // fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}.gz`), await courseData.serializeGzipped())
+      await Database.updateCourse(course._id, update)
     }
     try {
       if (mime === 'application/x-rar-compressed' || mime === 'application/zip' || mime === 'application/x-7z-compressed' || mime === 'application/x-tar') {
@@ -229,7 +238,8 @@ export default class Course {
 
   static async update (courseDB, { title, maker, nintendoid, videoid, difficulty }) {
     const update = {}
-    const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`)))
+    // const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`)))
+    const course = await deserialize(courseDB.courseData.buffer)
     if (title) {
       update.title = title
       courseDB.title = title
@@ -255,39 +265,52 @@ export default class Course {
     update.lastmodified = Math.trunc((new Date()).getTime() / 1000)
     courseDB.lastmodified = update.lastmodified
     await course.setModified(update.lastmodified)
-    fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`), await course.serialize())
-    fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}.gz`), await course.serializeGzipped())
+    courseDB.courseData = await course.serialize()
+    update.courseData = courseDB.courseData
+    courseDB.courseDataGz = await course.serializeGzipped()
+    update.courseDataGz = courseDB.courseDataGz
+    // fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`), await course.serialize())
+    // fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}.gz`), await course.serializeGzipped())
     await Database.updateCourse(courseDB._id, update)
   }
 
   static async setThumbnail (courseDB, buffer, isWide, doClip) {
-    const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`)))
+    // const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`)))
+    const course = await deserialize(courseDB.courseData.buffer)
     const thumbnail = await course.setThumbnail(buffer, isWide, doClip)
-    fs.writeFileSync(join(__dirname, `../static/courseimg/${courseDB._id}${isWide ? '_full' : ''}.jpg`), thumbnail)
-    fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`), await course.serialize())
-    fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}.gz`), await course.serializeGzipped())
+    // fs.writeFileSync(join(__dirname, `../static/courseimg/${courseDB._id}${isWide ? '_full' : ''}.jpg`), thumbnail)
+    // fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`), await course.serialize())
+    // fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}.gz`), await course.serializeGzipped())
     let update
     if (isWide) {
       courseDB.vFull = courseDB.vFull ? courseDB.vFull + 1 : 1
       update = {
-        vFull: courseDB.vFull
+        vFull: courseDB.vFull,
+        thumbnail
       }
     } else {
       courseDB.vPrev = courseDB.vPrev ? courseDB.vPrev + 1 : 1
       update = {
-        vPrev: courseDB.vPrev
+        vPrev: courseDB.vPrev,
+        thumbnailPreview: thumbnail
       }
     }
+    courseDB.courseData = await course.serialize()
+    update.courseData = courseDB.courseData
+    courseDB.courseDataGz = await course.serializeGzipped()
+    update.courseDataGz = courseDB.courseDataGz
     await Database.updateCourse(courseDB._id, update)
     return thumbnail
   }
 
   static async delete (courseId) {
     await Database.deleteCourse(courseId)
-    fs.unlinkSync(join(__dirname, `../static/courseimg/${courseId}.jpg`))
-    fs.unlinkSync(join(__dirname, `../static/courseimg/${courseId}_full.jpg`))
-    fs.unlinkSync(join(__dirname, `../static/coursedata/${courseId}`))
-    fs.unlinkSync(join(__dirname, `../static/coursedata/${courseId}.gz`))
+    /* try {
+      fs.unlinkSync(join(__dirname, `../static/courseimg/${courseId}.jpg`))
+      fs.unlinkSync(join(__dirname, `../static/courseimg/${courseId}_full.jpg`))
+      fs.unlinkSync(join(__dirname, `../static/coursedata/${courseId}`))
+      fs.unlinkSync(join(__dirname, `../static/coursedata/${courseId}.gz`))
+    } catch (err) {} */
   }
 
   static async star (course, accountId) {

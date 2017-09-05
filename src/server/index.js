@@ -105,7 +105,7 @@ async function main () {
   }))
   app.use(favicon(path.join(__dirname, '../../favicon.ico')))
   app.use('/img', express.static(path.join(__dirname, '../static/images'), { maxAge: cacheMaxAgeImg }))
-  app.use('/courseimg', express.static(path.join(__dirname, '../static/courseimg'), { maxAge: cacheMaxAgeImg }))
+  // app.use('/courseimg', express.static(path.join(__dirname, '../static/courseimg'), { maxAge: cacheMaxAgeImg }))
   app.use('/styles', express.static(path.join(__dirname, '../static/styles'), { maxAge: cacheMaxAgeCSS }))
   app.use('/scripts', express.static(path.join(__dirname, '../client/scripts'), { maxAge: cacheMaxAgeJS }))
   app.use(cookieSession({
@@ -124,6 +124,26 @@ async function main () {
       }, 86400 * 1000)
     }
     next()
+  })
+
+  app.use('/courseimg/:id*?', async (req, res) => {
+    const [id, full] = req.params.id.split('_')
+    if (id == null) {
+      res.status(404).send('No course ID specified')
+      return
+    }
+    try {
+      const img = await Database.getImage(id, !!full)
+      if (img == null) {
+        res.status(404).send(`Course with ID ${id} has no image`)
+        return
+      }
+      res.set('Content-Type', 'image/jpeg')
+      res.set('Cache-Control', `public, max-age=${cacheMaxAgeImg}`)
+      res.send(img)
+    } catch (err) {
+      res.status(500).send(`Internal Server Error:\n${err}`)
+    }
   })
 
   app.use('/course64img/:id*?', async (req, res) => {

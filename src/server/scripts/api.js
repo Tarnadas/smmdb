@@ -265,10 +265,10 @@ export default class API {
         res.status(500).send('Could not compress file')
       }
     } else if (apiData.type === 'json') {
-      res.json(await Course.getObject(course._id))
+      res.json(await Course.getObject(course))
     } else if (apiData.type === '3ds') {
       res.setHeader('Content-Type', 'application/3ds')
-      const course3ds = await Course.get3DS(course._id)
+      const course3ds = await Course.get3DS(course)
       if (req.headers.range) {
         const range = parseRange(course3ds.length, req.headers.range, { combine: true })
         if (range === -1) {
@@ -299,7 +299,7 @@ export default class API {
     } else {
       res.set('Content-Encoding', 'gzip')
       res.set('Content-Type', 'application/wiiu')
-      res.send(await Course.getSerialized(course._id))
+      res.send(course.courseDataGz.buffer)
       downloadMetrics.downloadsPerDay.mark()
       downloadMetrics.downloadsProtoPerDay.mark()
     }
@@ -341,7 +341,7 @@ export default class API {
       }
       fs.writeFileSync(path.join(uploadPath, String(courses[0]._id)), req.body)
       try {
-        Bot.uploadCourse(courses, account)
+        // Bot.uploadCourse(courses, account)
       } catch (err) {
         console.log(err)
       }
