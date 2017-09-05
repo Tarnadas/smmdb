@@ -7,11 +7,11 @@
 
 * test coverage
 * download counters
+* completion flag
 * course comments
 * blogging system
 * user messaging
 * moderation/admin system
-* course package lists
 * let Discord bot notify on new Reddit post
 
 ## Client
