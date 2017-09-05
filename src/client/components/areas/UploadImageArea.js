@@ -24,7 +24,8 @@ class UploadArea extends React.PureComponent {
     super(props)
     this.state = {
       value: '',
-      uploads: List()
+      uploads: List(),
+      err: ''
     }
     this.currentUpload = 0
     this.sendCourse = this.sendCourse.bind(this)
@@ -55,6 +56,9 @@ class UploadArea extends React.PureComponent {
           percentage: 0,
           eta: 0
         }))
+        this.setState({
+          err: ''
+        })
       })
       req.on('response', () => {
         if (timeout) {
@@ -84,6 +88,9 @@ class UploadArea extends React.PureComponent {
           percentage: progress.percentage,
           eta: progress.eta
         }))
+        this.setState({
+          err: ''
+        })
         if (progress.percentage === 100) {
           timeout = setTimeout(() => {
             if (abort) {
@@ -94,11 +101,15 @@ class UploadArea extends React.PureComponent {
         }
       })
       req.pipe(concat(buf => {
+        let res = ''
         try {
-          const course = JSON.parse(new TextDecoder('utf-8').decode(buf))
+          res = new TextDecoder('utf-8').decode(buf)
+          const course = JSON.parse(res)
           this.props.onUploadComplete(course)
         } catch (err) {
-          console.log(err)
+          this.setState({
+            err: res
+          })
           if (timeout) {
             clearTimeout(timeout)
             this.props.dispatch(deleteUpload(id))
@@ -140,6 +151,7 @@ class UploadArea extends React.PureComponent {
     })
   }
   render () {
+    const err = this.state.err
     const styles = {
       drag: {
         height: 'auto',
@@ -154,7 +166,8 @@ class UploadArea extends React.PureComponent {
         textAlign: 'center',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        flexDirection: 'column'
       },
       input: {
         position: 'absolute',
@@ -165,6 +178,12 @@ class UploadArea extends React.PureComponent {
         zIndex: '20',
         opacity: '0',
         cursor: 'pointer'
+      },
+      err: {
+        color: '#a20007',
+        marginTop: '20px',
+        textAlign: 'left',
+        fontSize: '17px'
       }
     }
     return (
@@ -180,6 +199,16 @@ class UploadArea extends React.PureComponent {
               'Upload preview course image (max 6MB)'
             )
           )
+        }
+        {
+          err &&
+          <div style={styles.err}>
+            {
+              err.split('\n').map((item, key) => {
+                return <span key={key}>{item}<br /></span>
+              })
+            }
+          </div>
         }
       </div>
     )

@@ -334,6 +334,8 @@ export default class API {
     const courses = await Course.fromBuffer(req.body, account)
     if (!courses || courses.length === 0) {
       res.status(500).send('Could not read course')
+    } else if (courses.code) {
+      res.status(courses.code).send(courses.err)
     } else {
       const uploadPath = path.join(__dirname, '../../uploads')
       if (!fs.existsSync(uploadPath)) {
@@ -341,7 +343,7 @@ export default class API {
       }
       fs.writeFileSync(path.join(uploadPath, String(courses[0]._id)), req.body)
       try {
-        // Bot.uploadCourse(courses, account)
+        Bot.uploadCourse(courses, account)
       } catch (err) {
         console.log(err)
       }
@@ -417,6 +419,9 @@ export default class API {
     if (result == null) {
       res.status(500).send('Could not read course')
       return
+    } else if (result.code) {
+      res.status(result.code).send(result.err)
+      return
     }
     const uploadPath = path.join(__dirname, '../../uploads')
     if (!fs.existsSync(uploadPath)) {
@@ -434,7 +439,6 @@ export default class API {
     } else {
       res.json(course)
     }
-    res.json(course)
   }
 
   static async reuploadCourse64 (req, res) {
@@ -719,8 +723,9 @@ export default class API {
     if (mime && /^image\/.+$/.test(mime)) {
       const thumbnail = await Course.setThumbnail(course, req.body, isWide, !isWide)
       if (thumbnail) {
-        await Course.update(course._id, {})
         res.json(course)
+      } else if (thumbnail.code) {
+        res.status(thumbnail.code).send(thumbnail.err)
       } else {
         res.status(500).send('Could not change course thumbnail')
       }

@@ -127,7 +127,7 @@ async function main () {
   })
 
   app.use('/courseimg/:id*?', async (req, res) => {
-    const [id, full] = req.params.id.split('_')
+    const [id, full] = req.params.id.split('.')[0].split('_')
     if (id == null) {
       res.status(404).send('No course ID specified')
       return

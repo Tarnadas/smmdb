@@ -134,9 +134,11 @@ export default class Course {
       if (mime === 'application/x-rar-compressed' || mime === 'application/zip' || mime === 'application/x-7z-compressed' || mime === 'application/x-tar') {
         try {
           const courseData = await decompress(tmpFile)
-          if (courseData == null) {
-            fs.unlinkSync(tmpFile)
-            return null
+          if (courseData == null || courseData.length === 0) {
+            return {
+              code: 400,
+              err: `A compressed file was uploaded, but no course was found. Compressed files are assumed to contain Wii U courses.\n\nPlease try adding your courses to sub folders called course000, course001 etc inside your compressed file.`
+            }
           }
           const courses = []
           for (let i = 0; i < courseData.length; i++) {
@@ -145,23 +147,30 @@ export default class Course {
           }
           return courses
         } catch (err) {
-          return null
-        } finally {
-          fs.unlinkSync(tmpFile)
+          return {
+            code: 500,
+            err: `An internal server error occurred:\n\n${err}\n\nPlease report this error to the webmaster.`
+          }
         }
       } else if (is3DS()) {
         const courseData = await loadCourse(tmpFile, 0, false)
         await courseData.loadThumbnail()
         const course = await createCourse(courseData)
-        fs.unlinkSync(tmpFile)
         return [course]
       } else {
-        return null
+        return {
+          code: 400,
+          err: `Wrong mime type: ${mime}\n\nSupported mime types are:\napplication/zip, application/x-7z-compressed, application/x-tar, application/x-rar-compressed for Wii U and\nheader of 0x04, 0x30, 0x04, 0x00, 0x7D, 0x00, 0x00, 0x00, 0xDD, 0xBA, 0xFE, 0xCA for 3DS`
+        }
       }
     } catch (err) {
-      console.log(err)
+      console.error(err)
+      return {
+        code: 500,
+        err: `An internal server error occurred:\n\n${err}\n\nPlease report this error to the webmaster.`
+      }
+    } finally {
       fs.unlinkSync(tmpFile)
-      return null
     }
   }
 
@@ -172,7 +181,7 @@ export default class Course {
     const mime = type && type.mime
     const buf = new Uint8Array(buffer)
     const is3DS = () => {
-      const header = [0x04, 0x30, 0x04, 0x00, 0x7D, 0x00, 0x00, 0x00, 0xDD, 0xBA, 0xFE, 0xCA, 0x3B, 0xA0, 0xB2, 0xB8, 0x6E, 0x55, 0x29, 0x8B, 0x00, 0xC0, 0x10, 0x00]
+      const header = [0x04, 0x30, 0x04, 0x00, 0x7D, 0x00, 0x00, 0x00, 0xDD, 0xBA, 0xFE, 0xCA]
       for (let i = 0; i < header.length; i++) {
         if (header[i] !== buf[i + 4]) {
           return false
@@ -205,9 +214,9 @@ export default class Course {
       course.width = courseData.width
       course.widthSub = courseData.widthSub
       course.lastmodified = courseData.modified
-      course.courseData = await course.serialize()
+      course.courseData = await courseData.serialize()
       update.courseData = course.courseData
-      course.courseDataGz = await course.serializeGzipped()
+      course.courseDataGz = await courseData.serializeGzipped()
       update.courseDataGz = course.courseDataGz
       // fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}`), await courseData.serialize())
       // fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}.gz`), await courseData.serializeGzipped())
@@ -215,24 +224,41 @@ export default class Course {
     }
     try {
       if (mime === 'application/x-rar-compressed' || mime === 'application/zip' || mime === 'application/x-7z-compressed' || mime === 'application/x-tar') {
-        const courseData = await decompress(tmpFile)
-        if (!courseData || courseData.length !== 1) return null
-        await doUpdate(course, courseData[0])
-        fs.unlinkSync(tmpFile)
-        return course
+        try {
+          const courseData = await decompress(tmpFile)
+          if (!courseData || courseData.length !== 1) {
+            return {
+              code: 400,
+              err: `A compressed file was uploaded, but no course was found or too many courses were found. Compressed files are assumed to contain Wii U courses.\n\nPlease try adding your courses to sub folders called course000, course001 etc inside your compressed file.`
+            }
+          }
+          await doUpdate(course, courseData[0])
+          return course
+        } catch (err) {
+          return {
+            code: 500,
+            err: `An internal server error occurred:\n\n${err}\n\nPlease report this error to the webmaster.`
+          }
+        }
       } else if (is3DS()) {
         const courseData = await loadCourse(tmpFile, 0, false)
         await courseData.loadThumbnail()
         await doUpdate(course, courseData)
-        fs.unlinkSync(tmpFile)
         return course
       } else {
-        return null
+        return {
+          code: 400,
+          err: `Wrong mime type: ${mime}\n\nSupported mime types are:\napplication/zip, application/x-7z-compressed, application/x-tar, application/x-rar-compressed for Wii U and\nheader of 0x04, 0x30, 0x04, 0x00, 0x7D, 0x00, 0x00, 0x00, 0xDD, 0xBA, 0xFE, 0xCA for 3DS`
+        }
       }
     } catch (err) {
-      console.log(err)
+      console.error(err)
+      return {
+        code: 500,
+        err: `An internal server error occurred:\n\n${err}\n\nPlease report this error to the webmaster.`
+      }
+    } finally {
       fs.unlinkSync(tmpFile)
-      return null
     }
   }
 
@@ -275,32 +301,42 @@ export default class Course {
   }
 
   static async setThumbnail (courseDB, buffer, isWide, doClip) {
-    // const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`)))
-    const course = await deserialize(courseDB.courseData.buffer)
-    const thumbnail = await course.setThumbnail(buffer, isWide, doClip)
-    // fs.writeFileSync(join(__dirname, `../static/courseimg/${courseDB._id}${isWide ? '_full' : ''}.jpg`), thumbnail)
-    // fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`), await course.serialize())
-    // fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}.gz`), await course.serializeGzipped())
-    let update
-    if (isWide) {
-      courseDB.vFull = courseDB.vFull ? courseDB.vFull + 1 : 1
-      update = {
-        vFull: courseDB.vFull,
-        thumbnail
+    try {
+      // const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`)))
+      const course = await deserialize(courseDB.courseData.buffer)
+      const thumbnail = await course.setThumbnail(buffer, isWide, doClip)
+      // fs.writeFileSync(join(__dirname, `../static/courseimg/${courseDB._id}${isWide ? '_full' : ''}.jpg`), thumbnail)
+      // fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`), await course.serialize())
+      // fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}.gz`), await course.serializeGzipped())
+      let update
+      if (isWide) {
+        courseDB.vFull = courseDB.vFull ? courseDB.vFull + 1 : 1
+        update = {
+          vFull: courseDB.vFull,
+          thumbnail
+        }
+      } else {
+        courseDB.vPrev = courseDB.vPrev ? courseDB.vPrev + 1 : 1
+        update = {
+          vPrev: courseDB.vPrev,
+          thumbnailPreview: thumbnail
+        }
       }
-    } else {
-      courseDB.vPrev = courseDB.vPrev ? courseDB.vPrev + 1 : 1
-      update = {
-        vPrev: courseDB.vPrev,
-        thumbnailPreview: thumbnail
+      update.lastmodified = Math.trunc((new Date()).getTime() / 1000)
+      courseDB.lastmodified = update.lastmodified
+      await course.setModified(update.lastmodified)
+      courseDB.courseData = await course.serialize()
+      update.courseData = courseDB.courseData
+      courseDB.courseDataGz = await course.serializeGzipped()
+      update.courseDataGz = courseDB.courseDataGz
+      await Database.updateCourse(courseDB._id, update)
+      return thumbnail
+    } catch (err) {
+      return {
+        code: 500,
+        err: `An internal server error occurred:\n\n${err}\n\nPlease report this error to the webmaster.`
       }
     }
-    courseDB.courseData = await course.serialize()
-    update.courseData = courseDB.courseData
-    courseDB.courseDataGz = await course.serializeGzipped()
-    update.courseDataGz = courseDB.courseDataGz
-    await Database.updateCourse(courseDB._id, update)
-    return thumbnail
   }
 
   static async delete (courseId) {
