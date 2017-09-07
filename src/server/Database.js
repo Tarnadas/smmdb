@@ -2,8 +2,8 @@ import {
   MongoClient, ObjectID
 } from 'mongodb'
 
-import fs from 'fs'
-import path from 'path'
+// import fs from 'fs'
+// import path from 'path'
 
 import { log } from './scripts/util'
 
@@ -36,22 +36,30 @@ export default class Database {
       this.stars64 = this.db.collection('stars64')
       this.amazon = this.db.collection('amazon')
     }
-    const courseDataPath = path.join(__dirname, '../static/coursedata')
+    /* const courseDataPath = path.join(__dirname, '../static/coursedata')
     const courseDataFiles = fs.readdirSync(courseDataPath)
     const courseImgPath = path.join(__dirname, '../static/courseimg')
     const courseImgFiles = fs.readdirSync(courseImgPath)
     const entries = await this.courses.find().toArray()
     for (let entry of entries) {
       const courseId = String(entry._id)
-      if (!courseDataFiles.includes(courseId) || !courseDataFiles.includes(courseId + '.gz')) continue
-      const update = {
-        courseData: fs.readFileSync(path.join(courseDataPath, courseId)),
-        courseDataGz: fs.readFileSync(path.join(courseDataPath, courseId + '.gz'))
+      try {
+        if (!courseDataFiles.includes(courseId) || !courseDataFiles.includes(courseId + '.gz')) continue
+        const update = {
+          courseData: fs.readFileSync(path.join(courseDataPath, courseId)),
+          courseDataGz: fs.readFileSync(path.join(courseDataPath, courseId + '.gz'))
+        }
+        if (courseImgFiles.includes(`${courseId}.jpg`)) update.thumbnailPreview = fs.readFileSync(path.join(courseImgPath, `${courseId}.jpg`))
+        if (courseImgFiles.includes(`${courseId}_full.jpg`)) update.thumbnail = fs.readFileSync(path.join(courseImgPath, `${courseId}_full.jpg`))
+        await Database.updateCourse(courseId, update)
+        if (fs.existsSync(path.join(courseDataPath, courseId))) fs.unlinkSync(path.join(courseDataPath, courseId))
+        if (fs.existsSync(path.join(courseDataPath, `${courseId}.gz`))) fs.unlinkSync(path.join(courseDataPath, `${courseId}.gz`))
+        if (fs.existsSync(path.join(courseImgPath, `${courseId}.jpg`))) fs.unlinkSync(path.join(courseImgPath, `${courseId}.jpg`))
+        if (fs.existsSync(path.join(courseImgPath, `${courseId}_full.jpg`))) fs.unlinkSync(path.join(courseImgPath, `${courseId}_full.jpg`))
+      } catch (err) {
+        console.error(err)
       }
-      if (courseImgFiles.includes(`${courseId}.jpg`)) update.thumbnailPreview = fs.readFileSync(path.join(courseImgPath, `${courseId}.jpg`))
-      if (courseImgFiles.includes(`${courseId}_full.jpg`)) update.thumbnail = fs.readFileSync(path.join(courseImgPath, `${courseId}_full.jpg`))
-      await Database.updateCourse(courseId, update)
-    }
+    } */
   }
 
   static addCourse (course) {

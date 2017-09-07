@@ -458,6 +458,12 @@ export default class API {
       res.status(400).send('No course ID found. Please set a "course-id" HTTP header')
       return
     }
+    const type = fileType(req.body)
+    const mime = type && type.mime
+    if (mime !== 'application/zip') {
+      res.status(400).send(`Wrong mime type: ${mime}\n\napplication/zip is the only accepted mime type`)
+      return
+    }
     const course = await Course64.getCourse(courseId, account._id)
     if (!course) {
       res.status(400).send(`Course with ID ${courseId} not found`)
@@ -470,6 +476,9 @@ export default class API {
     const result = await Course64.reupload(course, req.body, account._id)
     if (result == null) {
       res.status(500).send('Could not read course')
+      return
+    } else if (result.code) {
+      res.status(result.code).send(result.err)
       return
     }
     res.json(course)
@@ -766,6 +775,8 @@ export default class API {
       const thumbnail = await Course64.setThumbnail(course, req.body)
       if (thumbnail) {
         res.json(course)
+      } else if (thumbnail.code) {
+        res.status(thumbnail.code).send(thumbnail.err)
       } else {
         res.status(500).send('Could not change course thumbnail')
       }

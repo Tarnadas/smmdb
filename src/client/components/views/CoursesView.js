@@ -79,6 +79,9 @@ class CoursesView extends React.PureComponent {
   renderCourses () {
     const accountData = this.props.accountData
     const courses = this.props.courses
+    const reuploads = this.props.reuploads
+    const imageFull = this.props.imageFull
+    const imagePrev = this.props.imagePrev
     const onCourseDelete = this.onCourseDelete
     let downloads
     let currentDownloads
@@ -96,6 +99,7 @@ class CoursesView extends React.PureComponent {
             <AmazonPanel key={i} />
           )
         }
+        const courseId = course.get('id')
         let downloadedCourse
         let progress
         let saveId
@@ -106,9 +110,9 @@ class CoursesView extends React.PureComponent {
         }
         yield (
           (accountData.get('id') && course.owner === accountData.get('id')) || accountData.get('permissions') === 1 ? (
-            <CoursePanel key={course.get('id')} canEdit course={course} downloadedCourse={downloadedCourse} progress={progress} saveId={saveId} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />
+            <CoursePanel key={courseId} canEdit course={course} downloadedCourse={downloadedCourse} progress={progress} reupload={reuploads.get(courseId)} imageFull={imageFull.get(courseId)} imagePrev={imagePrev.get(courseId)} saveId={saveId} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />
           ) : (
-            <CoursePanel key={course.get('id')} course={course} downloadedCourse={downloadedCourse} progress={progress} saveId={saveId} apiKey={accountData.get('apikey')} id={i} />
+            <CoursePanel key={courseId} course={course} downloadedCourse={downloadedCourse} progress={progress} reupload={reuploads.get(courseId)} imageFull={imageFull.get(courseId)} imagePrev={imagePrev.get(courseId)} saveId={saveId} apiKey={accountData.get('apikey')} id={i} />
           )
         )
         i++
@@ -164,5 +168,8 @@ export default withRouter(connect(state => ({
   filter: state.getIn(['filter', 'currentFilter']),
   order: state.get('order'),
   smmdb: state.getIn(['electron', 'appSaveData', 'cemuSaveData', state.getIn(['electron', 'currentSave']), 'smmdb']),
-  apiKey: state.getIn(['userData', 'accountData', 'apikey'])
+  apiKey: state.getIn(['userData', 'accountData', 'apikey']),
+  imageFull: state.getIn(['image', 'full']),
+  imagePrev: state.getIn(['image', 'prev']),
+  reuploads: state.get('reuploads')
 }))(CoursesView))

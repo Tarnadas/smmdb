@@ -27,15 +27,13 @@ class UploadArea extends React.PureComponent {
       uploads: List(),
       err: ''
     }
-    this.currentUpload = 0
-    this.sendCourse = this.sendCourse.bind(this)
+    this.sendImage = this.sendImage.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.handleClick = this.handleClick.bind(this)
   }
-  sendCourse (course) {
+  sendImage (course) {
     let timeout
-    const id = this.currentUpload
-    this.currentUpload++
+    const id = this.props.courseId
     const setUpload = this.props.type === 'full' ? setUploadImageFull : this.props.type === '64' ? setUploadImage64 : setUploadImagePreview
     const deleteUpload = this.props.type === 'full' ? deleteUploadImageFull : this.props.type === '64' ? deleteUploadImage64 : deleteUploadImagePreview
     try {
@@ -140,7 +138,7 @@ class UploadArea extends React.PureComponent {
       if (file.size > 6 * 1024 * 1024) continue
       const reader = new FileReader()
       reader.onload = () => {
-        this.sendCourse(file)
+        this.sendImage(file)
       }
       reader.readAsText(file)
     }
@@ -152,13 +150,14 @@ class UploadArea extends React.PureComponent {
   }
   render () {
     const err = this.state.err
+    const upload = this.props.upload && this.props.upload.toJS()
     const styles = {
       drag: {
         height: 'auto',
         width: this.props.type === '64' ? 'calc(100% - 40px)' : 'calc(50% - 40px)',
         margin: '0 20px 10px',
         padding: '15px 20px',
-        background: '#fff',
+        background: upload && upload.percentage ? `linear-gradient(90deg, #33cc33 ${upload.percentage}%, #fff ${upload.percentage}%)` : '#fff',
         color: '#000',
         fontSize: '20px',
         border: ' 4px dashed #000000',

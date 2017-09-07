@@ -34,8 +34,7 @@ class UploadArea extends React.PureComponent {
   }
   sendCourse (course) {
     let timeout
-    const id = this.currentUpload
-    this.currentUpload++
+    const id = this.props.courseId
     const reupload = this.props.is64 ? setReupload64 : setReupload
     const deleteReup = this.props.is64 ? deleteReupload64 : deleteReupload
     try {
@@ -149,13 +148,14 @@ class UploadArea extends React.PureComponent {
   }
   render () {
     const err = this.state.err
+    const upload = this.props.upload && this.props.upload.toJS()
     const styles = {
       drag: {
         height: 'auto',
         width: 'calc(100% - 40px)',
         margin: '0 20px 10px',
         padding: '15px 20px',
-        background: '#fff',
+        background: upload && upload.percentage ? `linear-gradient(90deg, #33cc33 ${upload.percentage}%, #fff ${upload.percentage}%)` : '#fff',
         color: '#000',
         fontSize: '20px',
         border: ' 4px dashed #000000',

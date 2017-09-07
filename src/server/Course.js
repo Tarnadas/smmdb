@@ -119,15 +119,9 @@ export default class Course {
       delete course.tilesSub
       delete course.sounds
       delete course.soundsSub
-      // delete course.thumbnail
-      // delete course.thumbnailPreview
       course.courseData = await courseData.serialize()
       course.courseDataGz = await courseData.serializeGzipped()
       await Database.addCourse(course)
-      // fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}.jpg`), courseData.thumbnailPreview)
-      // fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}_full.jpg`), courseData.thumbnail)
-      // fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}`), await courseData.serialize())
-      // fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}.gz`), await courseData.serializeGzipped())
       return Course.prepare(course)
     }
     try {
@@ -192,8 +186,6 @@ export default class Course {
     const doUpdate = async (course, courseData) => {
       const update = {}
       if (!(await courseData.isThumbnailBroken())) {
-        // fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}.jpg`), courseData.thumbnailPreview)
-        // fs.writeFileSync(join(__dirname, `../static/courseimg/${course._id}_full.jpg`), courseData.thumbnail)
         update.thumbnail = courseData.thumbnail
         course.thumbnail = update.thumbnail
         update.thumbnailPreview = courseData.thumbnailPreview
@@ -218,8 +210,6 @@ export default class Course {
       update.courseData = course.courseData
       course.courseDataGz = await courseData.serializeGzipped()
       update.courseDataGz = course.courseDataGz
-      // fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}`), await courseData.serialize())
-      // fs.writeFileSync(join(__dirname, `../static/coursedata/${course._id}.gz`), await courseData.serializeGzipped())
       await Database.updateCourse(course._id, update)
     }
     try {
@@ -264,7 +254,6 @@ export default class Course {
 
   static async update (courseDB, { title, maker, nintendoid, videoid, difficulty }) {
     const update = {}
-    // const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`)))
     const course = await deserialize(courseDB.courseData.buffer)
     if (title) {
       update.title = title
@@ -295,19 +284,13 @@ export default class Course {
     update.courseData = courseDB.courseData
     courseDB.courseDataGz = await course.serializeGzipped()
     update.courseDataGz = courseDB.courseDataGz
-    // fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`), await course.serialize())
-    // fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}.gz`), await course.serializeGzipped())
     await Database.updateCourse(courseDB._id, update)
   }
 
   static async setThumbnail (courseDB, buffer, isWide, doClip) {
     try {
-      // const course = await deserialize(fs.readFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`)))
       const course = await deserialize(courseDB.courseData.buffer)
       const thumbnail = await course.setThumbnail(buffer, isWide, doClip)
-      // fs.writeFileSync(join(__dirname, `../static/courseimg/${courseDB._id}${isWide ? '_full' : ''}.jpg`), thumbnail)
-      // fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}`), await course.serialize())
-      // fs.writeFileSync(join(__dirname, `../static/coursedata/${courseDB._id}.gz`), await course.serializeGzipped())
       let update
       if (isWide) {
         courseDB.vFull = courseDB.vFull ? courseDB.vFull + 1 : 1
@@ -341,12 +324,6 @@ export default class Course {
 
   static async delete (courseId) {
     await Database.deleteCourse(courseId)
-    /* try {
-      fs.unlinkSync(join(__dirname, `../static/courseimg/${courseId}.jpg`))
-      fs.unlinkSync(join(__dirname, `../static/courseimg/${courseId}_full.jpg`))
-      fs.unlinkSync(join(__dirname, `../static/coursedata/${courseId}`))
-      fs.unlinkSync(join(__dirname, `../static/coursedata/${courseId}.gz`))
-    } catch (err) {} */
   }
 
   static async star (course, accountId) {

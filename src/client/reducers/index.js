@@ -19,6 +19,7 @@ import uploads from './uploads'
 import uploads64 from './uploads64'
 import reuploads from './reuploads'
 import reuploads64 from './reuploads64'
+import image from './image'
 import filter from './filter'
 import order from './order'
 import userData from './userData'
@@ -54,6 +55,11 @@ export default function initReducer (preloadedState, history, electronSave, elec
     uploads64: {},
     reuploads: {},
     reuploads64: {},
+    image: {
+      full: {},
+      prev: {},
+      n64: {}
+    },
     filter: {
       nextFilter: {},
       currentFilter: {}
@@ -79,6 +85,7 @@ export default function initReducer (preloadedState, history, electronSave, elec
     uploads64,
     reuploads,
     reuploads64,
+    image,
     filter,
     order,
     userData,

@@ -38,31 +38,45 @@ export default class Course64 {
   }
 
   static fromBuffer (name, buffer, account) {
-    const time = Math.floor(new Date().getTime() / 1000)
-    const course = {
-      title: name,
-      owner: account._id,
-      difficulty: 1,
-      videoid: '',
-      lastmodified: time,
-      uploaded: time,
-      courseTheme: 0,
-      data: buffer
+    try {
+      const time = Math.floor(new Date().getTime() / 1000)
+      const course = {
+        title: name,
+        owner: account._id,
+        difficulty: 1,
+        videoid: '',
+        lastmodified: time,
+        uploaded: time,
+        courseTheme: 0,
+        data: buffer
+      }
+      Database.addCourse64(course)
+      return Course64.prepare(course, account._id)
+    } catch (err) {
+      return {
+        code: 500,
+        err: `An internal server error occurred:\n\n${err}\n\nPlease report this error to the webmaster.`
+      }
     }
-    Database.addCourse64(course)
-    return Course64.prepare(course, account._id)
   }
 
   static reupload (course, buffer, accountId) {
-    const time = Math.floor(new Date().getTime() / 1000)
-    const update = {
-      data: buffer,
-      lastmodified: time
+    try {
+      const time = Math.floor(new Date().getTime() / 1000)
+      const update = {
+        data: buffer,
+        lastmodified: time
+      }
+      course.data = buffer
+      course.lastmodified = time
+      Database.updateCourse64(course._id, update)
+      return Course64.prepare(course, accountId)
+    } catch (err) {
+      return {
+        code: 500,
+        err: `An internal server error occurred:\n\n${err}\n\nPlease report this error to the webmaster.`
+      }
     }
-    course.data = buffer
-    course.lastmodified = time
-    Database.updateCourse64(course._id, update)
-    return Course64.prepare(course, accountId)
   }
 
   static async update (courseDB, { title, videoid, difficulty, stars, theme }) {
@@ -115,7 +129,10 @@ export default class Course64 {
       return course.image
     } catch (err) {
       console.error(err)
-      return null
+      return {
+        code: 500,
+        err: `An internal server error occurred:\n\n${err}\n\nPlease report this error to the webmaster.`
+      }
     }
   }
 

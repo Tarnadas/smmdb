@@ -69,6 +69,9 @@ class UploadView extends React.PureComponent {
   }
   renderCourses (uploaded) {
     const courses = uploaded ? this.props.uploads.toList().merge(this.props.uploadedCourses) : this.props.courses
+    const reuploads = this.props.reuploads
+    const imageFull = this.props.imageFull
+    const imagePrev = this.props.imagePrev
     const accountData = this.props.accountData
     const onCourseDelete = uploaded ? this.onCourseDeleteRecent : this.onCourseDelete
     let downloads
@@ -97,7 +100,7 @@ class UploadView extends React.PureComponent {
             saveId = smmdb.getIn([String(courseId), 'saveId'])
           }
           yield (
-            <CoursePanel key={courseId} canEdit isSelf uploaded={uploaded} course={course} downloadedCourse={downloadedCourse} progress={progress} saveId={saveId} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />
+            <CoursePanel key={courseId} canEdit isSelf uploaded={uploaded} course={course} downloadedCourse={downloadedCourse} progress={progress} reupload={reuploads.get(courseId)} imageFull={imageFull.get(courseId)} imagePrev={imagePrev.get(courseId)} saveId={saveId} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />
           )
         }
         i++
@@ -116,7 +119,6 @@ class UploadView extends React.PureComponent {
   render () {
     const screenSize = this.props.screenSize
     const accountData = this.props.accountData.toJS()
-    const courses = this.props.courses.toJS()
     const uploads = this.props.uploads.toList().toJS()
     const uploadedCourses = this.props.uploadedCourses.toJS()
     const styles = {
@@ -199,5 +201,8 @@ export default connect(state => ({
   uploadedCourses: state.getIn(['courseData', 'uploaded']),
   downloads: state.getIn(['electron', 'appSaveData', 'downloads']),
   currentDownloads: state.getIn(['electron', 'currentDownloads']),
-  smmdb: state.getIn(['electron', 'appSaveData', 'cemuSaveData', state.getIn(['electron', 'currentSave']), 'smmdb'])
+  smmdb: state.getIn(['electron', 'appSaveData', 'cemuSaveData', state.getIn(['electron', 'currentSave']), 'smmdb']),
+  imageFull: state.getIn(['image', 'full']),
+  imagePrev: state.getIn(['image', 'prev']),
+  reuploads: state.get('reuploads')
 }))(UploadView)

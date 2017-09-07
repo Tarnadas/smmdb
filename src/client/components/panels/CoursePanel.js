@@ -600,9 +600,9 @@ class CoursePanel extends React.PureComponent {
               {
                 this.props.canEdit && (
                 <div style={styles.edit}>
-                  <ReuploadArea courseId={course.id} onUploadComplete={this.onReuploadComplete} />
-                  <UploadImageArea type='full' courseId={course.id} onUploadComplete={this.onUploadFullComplete} />
-                  <UploadImageArea type='prev' courseId={course.id} onUploadComplete={this.onUploadPrevComplete} />
+                  <ReuploadArea courseId={course.id} upload={this.props.reupload} onUploadComplete={this.onReuploadComplete} />
+                  <UploadImageArea type='full' courseId={course.id} upload={this.props.imageFull} onUploadComplete={this.onUploadFullComplete} />
+                  <UploadImageArea type='prev' courseId={course.id} upload={this.props.imagePrev} onUploadComplete={this.onUploadPrevComplete} />
                   <div style={styles.option}>
                     <div style={styles.value}>
                       Title:
