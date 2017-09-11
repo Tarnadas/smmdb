@@ -163,6 +163,7 @@ class FilterArea extends React.PureComponent {
         lineHeight: '32px'
       },
       input: {
+        width: '100%',
         height: '32px',
         fontSize: '18px'
       },

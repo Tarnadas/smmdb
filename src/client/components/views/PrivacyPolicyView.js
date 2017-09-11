@@ -7,6 +7,7 @@ export default class PrivacyPolicyView extends React.PureComponent {
   render () {
     const styles = {
       view: {
+        height: '100%',
         fontSize: '14px',
         textAlign: 'left',
         padding: '20px',

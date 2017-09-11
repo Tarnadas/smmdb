@@ -785,6 +785,42 @@ export default class API {
     }
   }
 
+  static async uploadImageBlog (req, res) {
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
+      return
+    }
+    const account = await Account.getAccountByAPIKey(apiKey)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiKey} not found`)
+      return
+    }
+    const blogId = req.get('course-id')
+    if (blogId == null) {
+      res.status(400).send('No blog ID found. Please set a "course-id" HTTP header')
+      return
+    }
+    const blogPost = await Database.getBlogPost(account._id, blogId)
+    if (!blogPost) {
+      res.status(400).send(`Blog with ID ${blogId} not found`)
+      return
+    }
+    const type = fileType(req.body)
+    const mime = type && type.mime
+    if (mime && /^image\/.+$/.test(mime)) {
+      const imageId = await Database.addBlogPostImage(blogPost._id, req.body)
+      if (imageId) {
+        res.send(imageId)
+      } else {
+        res.status(500).send('Could not change course thumbnail')
+      }
+    } else {
+      res.status(400).send(`Wrong mime type: ${mime}`)
+    }
+  }
+
   static async getAccountData (req, res) {
     const auth = req.get('Authorization')
     const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
@@ -821,6 +857,29 @@ export default class API {
     }
     await Account.update(account, update)
     res.json(account)
+  }
+
+  static async blogPost (req, res) {
+    if (!req.body) {
+      res.status(400).send(`Empty request`)
+      return
+    }
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
+      return
+    }
+    const account = await Account.getAccountByAPIKey(apiKey, false)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiKey} not found`)
+      return
+    }
+    if (req.body.method === 'get') {
+      res.json(await Database.getBlogPost(account._id))
+    } else if (req.body.method === 'update' && req.body.md !== '') {
+      res.json({ _id: await Database.setBlogPost(account._id, req.body._id, req.body.md) })
+    }
   }
 
   static async getAmazonProducts (req, res, apiData) {

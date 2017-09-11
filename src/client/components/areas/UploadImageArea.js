@@ -14,7 +14,7 @@ import { resolve } from 'url'
 
 import { domain } from '../../../static'
 import {
-  setUploadImageFull, setUploadImagePreview, setUploadImage64, deleteUploadImageFull, deleteUploadImagePreview, deleteUploadImage64
+  setUploadImageFull, setUploadImagePreview, setUploadImage64, setUploadBlog, deleteUploadImageFull, deleteUploadImagePreview, deleteUploadImage64, deleteUploadBlog
 } from '../../actions'
 
 const SERVER_TIMEOUT = 30000
@@ -34,15 +34,21 @@ class UploadArea extends React.PureComponent {
   sendImage (course) {
     let timeout
     const id = this.props.courseId
-    const setUpload = this.props.type === 'full' ? setUploadImageFull : this.props.type === '64' ? setUploadImage64 : setUploadImagePreview
-    const deleteUpload = this.props.type === 'full' ? deleteUploadImageFull : this.props.type === '64' ? deleteUploadImage64 : deleteUploadImagePreview
+    const setUpload = this.props.type === 'full'
+      ? setUploadImageFull : this.props.type === '64'
+        ? setUploadImage64 : this.props.type === 'blog'
+          ? setUploadBlog : setUploadImagePreview
+    const deleteUpload = this.props.type === 'full'
+      ? deleteUploadImageFull : this.props.type === '64'
+        ? deleteUploadImage64 : this.props.type === 'blog'
+          ? deleteUploadBlog : deleteUploadImagePreview
     try {
       let abort
       const req = got.stream.post(resolve(domain, `/api/uploadimage${this.props.type}`), {
         headers: {
           'Content-Type': 'application/octet-stream',
           'Authorization': `APIKEY ${this.props.apiKey}`,
-          'course-id': String(this.props.courseId)
+          'course-id': String(id)
         },
         useElectronNet: false
       })
@@ -102,8 +108,12 @@ class UploadArea extends React.PureComponent {
         let res = ''
         try {
           res = new TextDecoder('utf-8').decode(buf)
-          const course = JSON.parse(res)
-          this.props.onUploadComplete(course)
+          if (this.props.type !== 'blog') {
+            const course = JSON.parse(res)
+            this.props.onUploadComplete(course)
+          } else {
+            console.log(res)
+          }
         } catch (err) {
           this.setState({
             err: res
@@ -149,12 +159,12 @@ class UploadArea extends React.PureComponent {
     })
   }
   render () {
+    console.log(this.props.courseId)
     const err = this.state.err
     const upload = this.props.upload && this.props.upload.toJS()
     const styles = {
       drag: {
-        height: 'auto',
-        width: this.props.type === '64' ? 'calc(100% - 40px)' : 'calc(50% - 40px)',
+        width: this.props.type === '64' ? 'calc(100% - 40px)' : this.props.type === 'blog' ? '100%' : 'calc(50% - 40px)',
         margin: '0 20px 10px',
         padding: '15px 20px',
         background: upload && upload.percentage ? `linear-gradient(90deg, #33cc33 ${upload.percentage}%, #fff ${upload.percentage}%)` : '#fff',

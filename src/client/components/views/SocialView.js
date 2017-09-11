@@ -14,6 +14,7 @@ class SocialView extends React.PureComponent {
     const screenSize = this.props.screenSize
     const styles = {
       social: {
+        height: '100%',
         padding: '3% 5%',
         color: '#000',
         display: 'flex',
@@ -22,7 +23,6 @@ class SocialView extends React.PureComponent {
       },
       main: {
         flex: '1 0 0%',
-        height: 'auto',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -33,7 +33,7 @@ class SocialView extends React.PureComponent {
         overflow: screenSize < ScreenSize.MEDIUM ? 'hidden' : 'auto'
       },
       header: {
-        height: 'auto',
+        width: '100%',
         margin: '6px 0',
         fontSize: '18px',
         padding: '6px 12px',
@@ -43,7 +43,7 @@ class SocialView extends React.PureComponent {
         boxShadow: '0 0 0 4px black'
       },
       content: {
-        height: 'auto',
+        width: '100%',
         margin: '10px 0 26px 0',
         fontSize: '14px',
         lineHeight: '20px'

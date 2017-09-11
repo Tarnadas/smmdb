@@ -25,7 +25,10 @@ module.exports = [
       electron: true
     }],
     plugins: [
-      new webpack.EnvironmentPlugin('NODE_ENV'),
+      new webpack.EnvironmentPlugin({
+        NODE_ENV: 'development',
+        IS_SERVER: false
+      }),
       // new webpack.optimize.ModuleConcatenationPlugin(),
       new HtmlWebpackPlugin({
         filename: '../index.html',
@@ -79,7 +82,10 @@ module.exports = [
       __filename: false
     },
     plugins: [
-      new webpack.EnvironmentPlugin('NODE_ENV'),
+      new webpack.EnvironmentPlugin({
+        NODE_ENV: 'development',
+        IS_SERVER: true
+      }),
       new webpack.IgnorePlugin(/^.*electron\/components.*$/)
     ],
     externals: [require('webpack-node-externals')()],

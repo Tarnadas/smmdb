@@ -131,9 +131,10 @@ class ProfileView extends React.PureComponent {
     const colorScheme = this.state.changed ? COLOR_SCHEME.RED : (this.state.saved ? COLOR_SCHEME.GREEN : COLOR_SCHEME.YELLOW)
     const styles = {
       main: {
-        display: screenSize >= ScreenSize.MEDIUM ? 'flex' : 'flex',
-        flexDirection: screenSize >= ScreenSize.MEDIUM ? 'column' : 'column',
-        alignItems: screenSize >= ScreenSize.MEDIUM ? 'center' : 'center'
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center'
       },
       profile: {
         width: screenSize >= ScreenSize.MEDIUM ? 'calc(100% - 260px)' : '100%',
@@ -151,18 +152,21 @@ class ProfileView extends React.PureComponent {
         alignItems: screenSize >= ScreenSize.MEDIUM ? (accountData.id ? 'left' : 'center') : ''
       },
       option: {
-        height: 'auto',
+        width: '100%',
         padding: '10px'
       },
       value: {
+        width: '100%',
         height: '32px',
         lineHeight: '32px'
       },
       input: {
+        width: '100%',
         height: '32px',
         fontSize: '18px'
       },
       select: {
+        width: '100%',
         height: '32px',
         fontSize: '18px'
       }

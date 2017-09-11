@@ -100,6 +100,7 @@ class UploadView extends React.PureComponent {
     const uploadedCourses = this.props.uploadedCourses.toJS()
     const styles = {
       main: {
+        height: '100%',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center'

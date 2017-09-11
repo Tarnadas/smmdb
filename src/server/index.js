@@ -295,6 +295,10 @@ async function main () {
       API.uploadImage(req, res, false)
     } else if (apiCall === 'uploadimage64') {
       API.uploadImage64(req, res)
+    } else if (apiCall === 'uploadimageblog') {
+      API.uploadImageBlog(req, res)
+    } else if (apiCall === 'blogpost') {
+      API.blogPost(req, res)
     } else {
       res.status(400).send('Wrong syntax')
     }

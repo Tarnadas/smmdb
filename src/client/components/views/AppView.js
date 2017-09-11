@@ -129,6 +129,10 @@ class AppView extends React.PureComponent {
   render () {
     const screenSize = this.props.screenSize
     const styles = {
+      react: {
+        width: '100%',
+        height: '100%'
+      },
       global: {
         width: '100%',
         maxWidth: '100%',
@@ -202,7 +206,7 @@ class AppView extends React.PureComponent {
     const isLoggedIn = !!this.props.userName
     const global = this.global
     return (
-      <div>
+      <div style={styles.react}>
         <TopBarArea isLoggedIn={isLoggedIn} />
         <div style={styles.global} onScroll={this.handleScroll} ref={glob => { this.global = glob }}>
           <div style={styles.logo}>

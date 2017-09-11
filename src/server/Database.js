@@ -1,6 +1,7 @@
 import {
   MongoClient, ObjectID
 } from 'mongodb'
+import jimp from 'jimp'
 
 // import fs from 'fs'
 // import path from 'path'
@@ -34,6 +35,8 @@ export default class Database {
       this.accounts = this.db.collection('accounts')
       this.stars = this.db.collection('stars')
       this.stars64 = this.db.collection('stars64')
+      this.blog = this.db.collection('blog')
+      this.blogImages = this.db.collection('blogImages')
       this.amazon = this.db.collection('amazon')
     }
     /* const courseDataPath = path.join(__dirname, '../static/coursedata')
@@ -186,6 +189,46 @@ export default class Database {
   static async getAccountsCount () {
     return (await this.accounts.stats()).count
   }
+
+  static async getBlogPost (accountId, blogId) {
+    const query = Object.assign({ accountId: ObjectID(accountId) },
+      blogId ? { _id: ObjectID(blogId) } : { isCurrent: true })
+    const blogPost = await this.blog.find(query).toArray()
+    if (blogPost.length !== 1) return null
+    return blogPost[0]
+  }
+
+  static async setBlogPost (accountId, blogPostId, md) {
+    let blogPost
+    if (!blogPostId) {
+      blogPost = await this.blog.find({ accountId: ObjectID(accountId), isCurrent: true }).toArray()
+    } else {
+      blogPost = await this.blog.find({ accountId: ObjectID(accountId), _id: ObjectID(blogPostId) }).toArray()
+    }
+    if (!blogPost || blogPost.length !== 1) {
+      return (await this.blog.insertOne({ accountId: ObjectID(accountId), md, isCurrent: true })).insertedId
+    } else {
+      await this.blog.updateOne({ _id: blogPost[0]._id }, { $set: { md } })
+      return blogPost[0]._id
+    }
+  }
+
+  static async addBlogPostImage (blogId, buffer) {
+    const jimpImage = await jimp.read(buffer)
+    jimpImage.cover(1024, 768)
+    const image = await new Promise((resolve, reject) => {
+      jimpImage.quality(95)
+      jimpImage.getBuffer(jimp.MIME_JPEG, (err, buffer) => {
+        if (err) reject(err)
+        resolve(buffer)
+      })
+    })
+    return (await this.blogImages.insertOne({ blogId: ObjectID(blogId), image })).insertedId
+  }
+
+  // static async getBlogPostImages (id) {
+  //   return this.blogImages.find({ blogId: ObjectID(blogId) }).toArray()
+  // }
 
   static getAmazonProducts (country) {
     return this.amazon.find({ country }).toArray()

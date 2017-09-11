@@ -161,8 +161,6 @@ class UploadArea extends React.PureComponent {
     const err = this.state.err
     const styles = {
       drag: {
-        height: 'auto',
-        width: 'auto',
         maxWidth: '950px',
         padding: '40px 20px',
         margin: '10px 0',

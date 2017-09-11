@@ -325,21 +325,21 @@ class Course64Panel extends React.PureComponent {
         padding: '6px'
       },
       preview: {
-        // height: '225px',
+        width: '100%',
         overflow: 'hidden'
       },
       previewImgWrapper: {
         backgroundColor: '#cfcfab',
-        textAlign: 'left',
         display: 'flex'
       },
       previewImg: {
+        width: '100%',
         lineHeight: '100px',
         textAlign: 'center'
       },
       stars: {
+        height: '100%',
         margin: '0 4px',
-        width: 'auto',
         cursor: 'pointer'
       },
       downloads: {
@@ -358,6 +358,7 @@ class Course64Panel extends React.PureComponent {
         padding: '4px'
       },
       uploader: {
+        width: '100%',
         textAlign: 'right',
         padding: '0 10px',
         fontSize: '14px'
@@ -381,6 +382,7 @@ class Course64Panel extends React.PureComponent {
       },
       input: {
         height: '32px',
+        width: '100%',
         fontSize: '18px'
       }
     }
@@ -442,7 +444,7 @@ class Course64Panel extends React.PureComponent {
               { course.title }
             </div>
             <div style={styles.close} onClick={this.onHideDetails}>
-              <img src='/img/cancel.svg' />
+              <img style={{width: '100%'}} src='/img/cancel.svg' />
             </div>
           </div>
           <div style={styles.main}>

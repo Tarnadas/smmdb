@@ -255,6 +255,21 @@ export function deleteUploadImage64 (id) {
   }
 }
 
+export function setUploadBlog (id, upload) {
+  return {
+    type: 'SET_UPLOAD_BLOG',
+    id,
+    upload
+  }
+}
+
+export function deleteUploadBlog (id) {
+  return {
+    type: 'DELETE_UPLOAD_BLOG',
+    id
+  }
+}
+
 export function showFilter (showFilter) {
   return {
     type: 'SHOW_FILTER',

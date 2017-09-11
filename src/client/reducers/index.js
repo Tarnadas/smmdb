@@ -20,6 +20,7 @@ import uploads64 from './uploads64'
 import reuploads from './reuploads'
 import reuploads64 from './reuploads64'
 import image from './image'
+import blog from './blog'
 import filter from './filter'
 import order from './order'
 import userData from './userData'
@@ -60,6 +61,7 @@ export default function initReducer (preloadedState, history, electronSave, elec
       prev: {},
       n64: {}
     },
+    blog: {},
     filter: {
       nextFilter: {},
       currentFilter: {}
@@ -86,6 +88,7 @@ export default function initReducer (preloadedState, history, electronSave, elec
     reuploads,
     reuploads64,
     image,
+    blog,
     filter,
     order,
     userData,

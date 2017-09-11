@@ -376,6 +376,7 @@ class CoursePanel extends React.PureComponent {
       },
       footer: {
         height: '44px',
+        width: '100%',
         lineHeight: '44px',
         fontSize: '18px',
         margin: '0 12px'
@@ -447,6 +448,7 @@ class CoursePanel extends React.PureComponent {
         width: 'auto'
       },
       input: {
+        width: '100%',
         height: '32px',
         fontSize: '18px'
       },
@@ -465,10 +467,6 @@ class CoursePanel extends React.PureComponent {
         display: 'flex',
         alignItems: 'flex-start',
         flexWrap: 'wrap'
-      },
-      qrCode: {
-        width: 'auto',
-        height: 'auto'
       }
     }
     return (
@@ -497,7 +495,7 @@ class CoursePanel extends React.PureComponent {
               { course.title }
             </div>
             <div style={styles.close} onClick={this.onHideDetails}>
-              <img src='/img/cancel.svg' />
+              <img style={{width: '100%'}} src='/img/cancel.svg' />
             </div>
             <div style={styles.preview}>
               <div style={styles.previewImgWrapper}>
@@ -508,7 +506,7 @@ class CoursePanel extends React.PureComponent {
             </div>
             <div style={styles.mii}>
               <div style={styles.miiImgWrapper}>
-                <img src='/img/mii_default.png' />
+                <img style={{width: '100%'}} src='/img/mii_default.png' />
               </div>
             </div>
             <div style={styles.footer}>
@@ -654,7 +652,7 @@ class CoursePanel extends React.PureComponent {
                 }
                 {
                   !process.env.ELECTRON &&
-                  <img style={styles.qrCode} ref={qr => {
+                  <img ref={qr => {
                     if (!qr) return
                     QRCode.toDataURL(resolve(domain, `/api/downloadcourse?id=${this.props.course.id}&type=3ds`), (err, url) => {
                       if (err) console.error(err)

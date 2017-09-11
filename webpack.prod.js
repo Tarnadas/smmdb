@@ -35,7 +35,10 @@ module.exports = [
     }],
     plugins: [
       new WebpackMd5Hash(),
-      new webpack.EnvironmentPlugin('NODE_ENV'),
+      new webpack.EnvironmentPlugin({
+        NODE_ENV: 'production',
+        IS_SERVER: false
+      }),
       new webpack.optimize.CommonsChunkPlugin({
         name: 'vendor',
         filename: 'vendor.[hash].js'
@@ -104,7 +107,10 @@ module.exports = [
       __filename: false
     },
     plugins: [
-      new webpack.EnvironmentPlugin('NODE_ENV'),
+      new webpack.EnvironmentPlugin({
+        NODE_ENV: 'production',
+        IS_SERVER: true
+      }),
       new BabiliPlugin(),
       new webpack.IgnorePlugin(/^.*electron\/components.*$/)
     ],

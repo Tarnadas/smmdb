@@ -109,6 +109,7 @@ class Courses64View extends React.PureComponent {
     const screenSize = this.props.screenSize
     const styles = {
       main: {
+        height: '100%',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

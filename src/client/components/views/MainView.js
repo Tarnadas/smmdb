@@ -13,6 +13,7 @@ class MainView extends React.PureComponent {
     const screenSize = this.props.screenSize
     const styles = {
       main: {
+        height: '100%',
         padding: screenSize === ScreenSize.SUPER_SMALL ? '6% 5%' : '6% 10%',
         color: '#000',
         display: 'flex',

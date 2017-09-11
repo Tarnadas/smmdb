@@ -12,6 +12,8 @@ class FAQView extends React.PureComponent {
     const screenSize = this.props.screenSize
     const styles = {
       faq: {
+        width: '100%',
+        height: '100%',
         padding: '3% 5%',
         color: '#000',
         display: 'flex',
@@ -31,7 +33,7 @@ class FAQView extends React.PureComponent {
         overflow: screenSize < ScreenSize.MEDIUM ? 'hidden' : 'auto'
       },
       question: {
-        height: 'auto',
+        width: '100%',
         margin: '6px 0',
         fontSize: '18px',
         padding: '6px 12px',
@@ -41,7 +43,7 @@ class FAQView extends React.PureComponent {
         boxShadow: '0 0 0 4px black'
       },
       answer: {
-        height: 'auto',
+        width: '100%',
         margin: '10px 0 26px 0',
         fontSize: '14px',
         lineHeight: '20px'

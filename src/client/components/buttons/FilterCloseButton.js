@@ -31,7 +31,7 @@ class FilterCloseButton extends React.PureComponent {
     }
     return (
       <div style={styles.close} onClick={this.onFilterHide}>
-        <img src='/img/cancel.svg' />
+        <img style={{width: '100%'}} src='/img/cancel.svg' />
       </div>
     )
   }

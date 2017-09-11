@@ -24,8 +24,9 @@ module.exports = [
     },
     plugins: [
       new webpack.EnvironmentPlugin({
-        NODE_ENV: process.env.NODE_ENV,
-        ELECTRON: process.env.ELECTRON,
+        NODE_ENV: 'development',
+        IS_SERVER: false,
+        ELECTRON: true,
         CLIENT_VERSION: process.env.npm_package_clientVersion
       }),
       new HtmlWebpackPlugin({
@@ -76,7 +77,9 @@ module.exports = [
       __filename: false
     },
     plugins: [
-      new webpack.EnvironmentPlugin('NODE_ENV')
+      new webpack.EnvironmentPlugin({
+        NODE_ENV: 'development'
+      })
     ]
   }
 ]
