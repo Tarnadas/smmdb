@@ -38,6 +38,7 @@ class ContentView extends React.PureComponent {
         flex: screenSize >= ScreenSize.MEDIUM ? '1 0 auto' : '1 0 0%'
       }
     }
+    // <Route path='/blog' component={BlogView} />
     return (
       <div style={styles.content}>
         <Route exact path='/' component={MainView} />
@@ -56,7 +57,6 @@ class ContentView extends React.PureComponent {
         <Route path='/profile' component={ProfileView} />
         <Route path='/faq' component={FAQView} />
         <Route path='/social' component={SocialView} />
-        <Route path='/blog' component={BlogView} />
         <Route path='/privacy' component={PrivacyPolicyView} />
         <Route path='/legal' component={LegalNoticeView} />
       </div>

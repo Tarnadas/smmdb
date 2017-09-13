@@ -10,11 +10,13 @@ import {
   renderToString
 } from 'react-dom/server'
 import pmx from 'pmx'
+import { path as binPath } from 'webp-bin'
 
 import * as http from 'http'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as qs from 'querystring'
+import { execFile } from 'child_process'
 
 import renderer from '../shared/renderer'
 
@@ -105,7 +107,6 @@ async function main () {
   }))
   app.use(favicon(path.join(__dirname, '../../favicon.ico')))
   app.use('/img', express.static(path.join(__dirname, '../static/images'), { maxAge: cacheMaxAgeImg }))
-  // app.use('/courseimg', express.static(path.join(__dirname, '../static/courseimg'), { maxAge: cacheMaxAgeImg }))
   app.use('/styles', express.static(path.join(__dirname, '../static/styles'), { maxAge: cacheMaxAgeCSS }))
   app.use('/scripts', express.static(path.join(__dirname, '../client/scripts'), { maxAge: cacheMaxAgeJS }))
   app.use(cookieSession({
@@ -140,6 +141,15 @@ async function main () {
       }
       res.set('Content-Type', 'image/jpeg')
       res.set('Cache-Control', `public, max-age=${cacheMaxAgeImg}`)
+      /* const imgPath = path.join(__dirname, id)
+      const webpPath = path.join(__dirname, `${id}.webp`)
+      fs.writeFileSync(imgPath, img)
+      execFile(binPath, `${imgPath} -q 80 -o ${webpPath}`.split(/\s+/), (err, stdout, stderr) => {
+        if (err) console.error(err)
+        console.log(stdout)
+        console.error(stderr)
+        res.sendFile(webpPath)
+      }) */
       res.send(img)
     } catch (err) {
       res.status(500).send(`Internal Server Error:\n${err}`)

@@ -249,8 +249,13 @@ export default class API {
       res.status(400).send(`Course with ID ${apiData.id} not found`)
       return
     }
+    const [courseData, courseDataGz] = await Database.getCourseData(course._id)
+    if (!courseData) {
+      res.status(500).send(`Course data was not found`)
+      return
+    }
     if (apiData.type === 'zip') {
-      const file = await Course.getCompressed(course)
+      const file = await Course.getCompressed(course.title, courseData)
       if (typeof (file) === 'string') {
         res.setHeader('Content-Type', 'application/zip')
         try {
@@ -265,10 +270,10 @@ export default class API {
         res.status(500).send('Could not compress file')
       }
     } else if (apiData.type === 'json') {
-      res.json(await Course.getObject(course))
+      res.json(await Course.getObject(courseData))
     } else if (apiData.type === '3ds') {
       res.setHeader('Content-Type', 'application/3ds')
-      const course3ds = await Course.get3DS(course)
+      const course3ds = await Course.get3DS(courseData)
       if (req.headers.range) {
         const range = parseRange(course3ds.length, req.headers.range, { combine: true })
         if (range === -1) {
@@ -299,7 +304,7 @@ export default class API {
     } else {
       res.set('Content-Encoding', 'gzip')
       res.set('Content-Type', 'application/wiiu')
-      res.send(course.courseDataGz.buffer)
+      res.send(courseDataGz)
       downloadMetrics.downloadsPerDay.mark()
       downloadMetrics.downloadsProtoPerDay.mark()
     }
@@ -509,32 +514,33 @@ export default class API {
       res.status(403).send(`Course with ID ${apiData.id} is not owned by account with API key ${apiData.apikey}`)
       return
     }
-    const courseData = {}
-    if (req.body.title) courseData.title = req.body.title
-    if (req.body.maker) courseData.maker = req.body.maker
+    const [courseData] = await Database.getCourseData(course._id)
+    const update = {}
+    if (req.body.title) update.title = req.body.title
+    if (req.body.maker) update.maker = req.body.maker
     if (req.body.nintendoid != null) {
       const nId = req.body.nintendoid
       if (nId === '') {
-        courseData.nintendoid = ''
+        update.nintendoid = ''
       } else {
         const a = nId.split('-')
         if (NINTENDO_ID.test(nId) && a.length === 4 && a[0].length === 4 && a[1].length === 4 && a[2].length === 4 && a[3].length === 4) {
-          courseData.nintendoid = nId
+          update.nintendoid = nId
         }
       }
     }
     if (req.body.videoid != null && (VIDEO_ID.test(req.body.videoid) || req.body.videoid === '')) {
-      courseData.videoid = req.body.videoid
+      update.videoid = req.body.videoid
     }
     if (req.body.difficulty != null) {
       try {
         const difficulty = JSON.parse(req.body.difficulty)
         if (difficulty >= 0 && difficulty <= 3) {
-          courseData.difficulty = difficulty
+          update.difficulty = difficulty
         }
       } catch (err) {}
     }
-    await Course.update(course, courseData)
+    await Course.update(course, courseData, update)
     if (apiData.format === 'ini') {
       res.set('Content-type', 'text/plain')
       res.send(encode(JSON.parse(JSON.stringify(course))))
@@ -727,10 +733,15 @@ export default class API {
       res.status(403).send(`Course with ID ${courseId} is not owned by account with API key ${apiKey}`)
       return
     }
+    if (!course) {
+      res.status(400).send(`Course with ID ${courseId} not found`)
+      return
+    }
     const type = fileType(req.body)
     const mime = type && type.mime
     if (mime && /^image\/.+$/.test(mime)) {
-      const thumbnail = await Course.setThumbnail(course, req.body, isWide, !isWide)
+      const [courseData] = await Database.getCourseData(course._id)
+      const thumbnail = await Course.setThumbnail(course, courseData, req.body, isWide, !isWide)
       if (thumbnail) {
         res.json(course)
       } else if (thumbnail.code) {

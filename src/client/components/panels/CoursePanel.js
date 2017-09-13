@@ -278,7 +278,6 @@ class CoursePanel extends React.PureComponent {
     const styles = {
       panel: {
         height: this.state.showDetails ? 'auto' : '169px',
-        width: 'auto',
         maxWidth: '906px',
         backgroundColor: process.env.ELECTRON ? (
           downloaded ? (
@@ -314,7 +313,6 @@ class CoursePanel extends React.PureComponent {
       rank: {
         width: '100px',
         minWidth: '100px',
-        height: 'auto',
         backgroundColor: '#d7db48',
         borderRadius: '10px 0 0 10px',
         display: screenSize === ScreenSize.SUPER_SMALL ? 'none' : 'block'
@@ -328,7 +326,6 @@ class CoursePanel extends React.PureComponent {
       },
       title: {
         height: '44px',
-        width: 'auto',
         maxWidth: 'calc(100% - 155px)',
         margin: '0 10px',
         textAlign: 'left',
@@ -360,7 +357,7 @@ class CoursePanel extends React.PureComponent {
         textAlign: 'left'
       },
       previewImg: {
-        width: 'auto'
+        height: '100%'
       },
       mii: {
         height: '81px',
@@ -383,7 +380,6 @@ class CoursePanel extends React.PureComponent {
       },
       stats: {
         float: 'left',
-        width: 'auto',
         display: 'flex',
         alignItems: 'center',
         position: 'absolute'
@@ -400,11 +396,9 @@ class CoursePanel extends React.PureComponent {
         margin: '0 8px'
       },
       statsText: {
-        fontSize: '12px',
-        width: 'auto'
+        fontSize: '12px'
       },
       statsAutoScroll: {
-        width: 'auto',
         height: '24px',
         margin: '0 8px'
       },
@@ -426,35 +420,24 @@ class CoursePanel extends React.PureComponent {
       },
       bottom: {
         display: 'flex',
-        height: 'auto',
         justifyContent: 'space-around',
         flexWrap: 'wrap'
       },
       edit: {
-        height: 'auto',
         padding: '10px',
         display: 'flex',
         flexWrap: 'wrap'
       },
       option: {
-        height: 'auto',
         width: '50%',
         padding: '10px',
         textAlign: 'left',
         fontSize: '16px'
       },
-      value: {
-        height: 'auto',
-        width: 'auto'
-      },
       input: {
         width: '100%',
         height: '32px',
         fontSize: '18px'
-      },
-      imageLarge: {
-        width: 'auto',
-        height: 'auto'
       },
       imgLarge: {
         maxWidth: '320px',
@@ -462,7 +445,6 @@ class CoursePanel extends React.PureComponent {
       },
       buttonPanel: {
         width: screenSize >= ScreenSize.MEDIUM ? 'calc(100% - 360px)' : 'auto',
-        height: 'auto',
         margin: screenSize < ScreenSize.MEDIUM ? '20px' : '0 20px',
         display: 'flex',
         alignItems: 'flex-start',

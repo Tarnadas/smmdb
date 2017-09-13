@@ -159,7 +159,6 @@ class UploadArea extends React.PureComponent {
     })
   }
   render () {
-    console.log(this.props.courseId)
     const err = this.state.err
     const upload = this.props.upload && this.props.upload.toJS()
     const styles = {

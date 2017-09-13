@@ -65,7 +65,7 @@ export default class NavigationButton extends React.PureComponent {
       }
     }
     const content = (
-      <div>
+      <div style={{ width: '100%' }}>
         <div style={styles.icon}>
           <img style={styles.img} src={this.props.iconSrc} />
         </div>

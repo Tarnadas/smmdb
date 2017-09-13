@@ -3,8 +3,8 @@ import {
 } from 'mongodb'
 import jimp from 'jimp'
 
-// import fs from 'fs'
-// import path from 'path'
+import fs from 'fs'
+import path from 'path'
 
 import { log } from './scripts/util'
 
@@ -31,6 +31,7 @@ export default class Database {
       this.amazon = this.db.collection('amazonTest')
     } else {
       this.courses = this.db.collection('courses')
+      this.courseData = this.db.collection('courseData')
       this.courses64 = this.db.collection('courses64')
       this.accounts = this.db.collection('accounts')
       this.stars = this.db.collection('stars')
@@ -39,6 +40,7 @@ export default class Database {
       this.blogImages = this.db.collection('blogImages')
       this.amazon = this.db.collection('amazon')
     }
+    // await this.courses.createIndex({ lastModified: 1, stars: 1, title: 1 })
     /* const courseDataPath = path.join(__dirname, '../static/coursedata')
     const courseDataFiles = fs.readdirSync(courseDataPath)
     const courseImgPath = path.join(__dirname, '../static/courseimg')
@@ -49,12 +51,13 @@ export default class Database {
       try {
         if (!courseDataFiles.includes(courseId) || !courseDataFiles.includes(courseId + '.gz')) continue
         const update = {
+          _id: ObjectID(courseId),
           courseData: fs.readFileSync(path.join(courseDataPath, courseId)),
           courseDataGz: fs.readFileSync(path.join(courseDataPath, courseId + '.gz'))
         }
         if (courseImgFiles.includes(`${courseId}.jpg`)) update.thumbnailPreview = fs.readFileSync(path.join(courseImgPath, `${courseId}.jpg`))
         if (courseImgFiles.includes(`${courseId}_full.jpg`)) update.thumbnail = fs.readFileSync(path.join(courseImgPath, `${courseId}_full.jpg`))
-        await Database.updateCourse(courseId, update)
+        // await this.courseData.insertOne(update)
         if (fs.existsSync(path.join(courseDataPath, courseId))) fs.unlinkSync(path.join(courseDataPath, courseId))
         if (fs.existsSync(path.join(courseDataPath, `${courseId}.gz`))) fs.unlinkSync(path.join(courseDataPath, `${courseId}.gz`))
         if (fs.existsSync(path.join(courseImgPath, `${courseId}.jpg`))) fs.unlinkSync(path.join(courseImgPath, `${courseId}.jpg`))
@@ -65,8 +68,12 @@ export default class Database {
     } */
   }
 
-  static addCourse (course) {
-    return this.courses.insertOne(course)
+  static async addCourse (course) {
+    return (await this.courses.insertOne(course)).insertedId
+  }
+
+  static addCourseData (course) {
+    return this.courseData.insertOne(course)
   }
 
   static addCourse64 (course) {
@@ -77,6 +84,10 @@ export default class Database {
     return this.courses.updateOne({ '_id': ObjectID(id) }, { $set: course })
   }
 
+  static updateCourseData (id, course) {
+    return this.courseData.updateOne({ '_id': ObjectID(id) }, { $set: course })
+  }
+
   static updateCourse64 (id, course) {
     return this.courses64.updateOne({ '_id': ObjectID(id) }, { $set: course })
   }
@@ -85,8 +96,8 @@ export default class Database {
     const query = [{ $match: filter }]
     if (random) query.push({ $sample: { size: limit } })
     query.push({ $sort: Object.assign(sort, sort.stars == null ? { stars: 1 } : {}, sort.title == null ? { title: -1 } : {}) },
-      { $skip: skip },
-      { $limit: limit })
+      { $limit: skip + limit },
+      { $skip: skip })
     return this.courses.aggregate(query)
   }
 
@@ -94,14 +105,23 @@ export default class Database {
     const query = [{ $match: filter }]
     if (random) query.push({ $sample: { size: limit } })
     query.push({ $sort: Object.assign(sort, sort.stars == null ? { stars: 1 } : {}, sort.title == null ? { title: -1 } : {}) },
-      { $skip: skip },
-      { $limit: limit })
+      { $limit: skip + limit },
+      { $skip: skip })
     return this.courses64.aggregate(query)
+  }
+
+  static async getCourseData (id) {
+    try {
+      const course = (await this.courseData.find({ '_id': ObjectID(id) }).toArray())[0]
+      return [course.courseData.buffer, course.courseDataGz.buffer]
+    } catch (err) {
+      return null
+    }
   }
 
   static async getImage (id, full) {
     try {
-      const course = (await this.courses.find({ '_id': ObjectID(id) }).toArray())[0]
+      const course = (await this.courseData.find({ '_id': ObjectID(id) }).toArray())[0]
       return full ? course.thumbnail.buffer : course.thumbnailPreview.buffer
     } catch (err) {
       return null
@@ -118,6 +138,10 @@ export default class Database {
 
   static deleteCourse (id) {
     return this.courses.deleteOne({ '_id': ObjectID(id) })
+  }
+
+  static deleteCourseData (id) {
+    return this.courseData.deleteOne({ '_id': ObjectID(id) })
   }
 
   static deleteCourse64 (id) {

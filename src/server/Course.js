@@ -36,12 +36,6 @@ export default class Course {
     result.uploader = Account.getAccount(result.owner).username
     if (result.stars == null) result.stars = 0
     delete result._id
-    delete result.serialized
-    delete result.courseData
-    delete result.thumbnail
-    delete result.thumbnailPreview
-    delete result.courseData
-    delete result.courseDataGz
     if (filter) {
       for (let i in result) {
         if (!filter.includes(i)) {
@@ -52,15 +46,15 @@ export default class Course {
     return result
   }
 
-  static async getCompressed (courseDB) {
+  static async getCompressed (title, data) {
     const tmpDir = tmp.dirSync({
       unsafeCleanup: true
     })
     const zipDir = join(tmpDir.name, 'course000')
     fs.mkdirSync(zipDir)
-    const course = await deserialize(courseDB.courseData.buffer)
+    const course = await deserialize(data)
     await course.writeToSave(0, zipDir)
-    const outPath = join(tmpDir.name, `${courseDB.title.replace(/[^a-z|A-Z|0-9| |\-|!]/g, '')}.zip`)
+    const outPath = join(tmpDir.name, `${title.replace(/[^a-z|A-Z|0-9| |\-|!]/g, '')}.zip`)
     try {
       const res = await new Promise((resolve, reject) => {
         zip(zipDir, outPath, err => {
@@ -73,17 +67,18 @@ export default class Course {
       }, 20000)
       return res
     } catch (err) {
+      console.log(err)
       tmpDir.removeCallback()
       return null
     }
   }
 
-  static getObject (course) {
-    return deserialize(course.courseData.buffer)
+  static getObject (courseData) {
+    return deserialize(courseData)
   }
 
-  static async get3DS (course) {
-    return (await deserialize(course.courseData.buffer)).to3DS()
+  static async get3DS (courseData) {
+    return (await deserialize(courseData)).to3DS()
   }
 
   static async fromBuffer (buffer, account) {
@@ -103,6 +98,7 @@ export default class Course {
     }
     const createCourse = async (courseData) => {
       const course = Object.assign({}, courseData)
+      const courseD = {}
       course.owner = account._id
       course.nintendoid = null
       course.videoid = null
@@ -119,9 +115,14 @@ export default class Course {
       delete course.tilesSub
       delete course.sounds
       delete course.soundsSub
-      course.courseData = await courseData.serialize()
-      course.courseDataGz = await courseData.serializeGzipped()
-      await Database.addCourse(course)
+      courseD.courseData = await courseData.serialize()
+      courseD.courseDataGz = await courseData.serializeGzipped()
+      courseD.thumbnail = course.thumbnail
+      courseD.thumbnailPreview = course.thumbnailPreview
+      delete course.thumbnail
+      delete course.thumbnailPreview
+      courseD._id = ObjectID(await Database.addCourse(course))
+      await Database.addCourseData(courseD)
       return Course.prepare(course)
     }
     try {
@@ -185,10 +186,11 @@ export default class Course {
     }
     const doUpdate = async (course, courseData) => {
       const update = {}
+      const updateData = {}
       if (!(await courseData.isThumbnailBroken())) {
-        update.thumbnail = courseData.thumbnail
+        updateData.thumbnail = courseData.thumbnail
         course.thumbnail = update.thumbnail
-        update.thumbnailPreview = courseData.thumbnailPreview
+        updateData.thumbnailPreview = courseData.thumbnailPreview
         course.thumbnailPreview = update.thumbnailPreview
         update.vFull = course.vFull ? course.vFull + 1 : 1
         update.vPrev = course.vPrev ? course.vPrev + 1 : 1
@@ -207,10 +209,11 @@ export default class Course {
       course.widthSub = courseData.widthSub
       course.lastmodified = courseData.modified
       course.courseData = await courseData.serialize()
-      update.courseData = course.courseData
+      updateData.courseData = course.courseData
       course.courseDataGz = await courseData.serializeGzipped()
-      update.courseDataGz = course.courseDataGz
+      updateData.courseDataGz = course.courseDataGz
       await Database.updateCourse(course._id, update)
+      await Database.updateCourseData(course._id, updateData)
     }
     try {
       if (mime === 'application/x-rar-compressed' || mime === 'application/zip' || mime === 'application/x-7z-compressed' || mime === 'application/x-tar') {
@@ -252,9 +255,10 @@ export default class Course {
     }
   }
 
-  static async update (courseDB, { title, maker, nintendoid, videoid, difficulty }) {
+  static async update (courseDB, courseData, { title, maker, nintendoid, videoid, difficulty }) {
     const update = {}
-    const course = await deserialize(courseDB.courseData.buffer)
+    const updateData = {}
+    const course = await deserialize(courseData)
     if (title) {
       update.title = title
       courseDB.title = title
@@ -280,39 +284,34 @@ export default class Course {
     update.lastmodified = Math.trunc((new Date()).getTime() / 1000)
     courseDB.lastmodified = update.lastmodified
     await course.setModified(update.lastmodified)
-    courseDB.courseData = await course.serialize()
-    update.courseData = courseDB.courseData
-    courseDB.courseDataGz = await course.serializeGzipped()
-    update.courseDataGz = courseDB.courseDataGz
+    updateData.courseData = await course.serialize()
+    updateData.courseDataGz = await course.serializeGzipped()
     await Database.updateCourse(courseDB._id, update)
+    await Database.updateCourseData(courseDB._id, updateData)
   }
 
-  static async setThumbnail (courseDB, buffer, isWide, doClip) {
+  static async setThumbnail (courseDB, courseData, buffer, isWide, doClip) {
     try {
-      const course = await deserialize(courseDB.courseData.buffer)
+      const course = await deserialize(courseData)
       const thumbnail = await course.setThumbnail(buffer, isWide, doClip)
-      let update
+      let update = {}
+      let updateData = {}
       if (isWide) {
         courseDB.vFull = courseDB.vFull ? courseDB.vFull + 1 : 1
-        update = {
-          vFull: courseDB.vFull,
-          thumbnail
-        }
+        update.vFull = courseDB.vFull
+        updateData.thumbnail = thumbnail
       } else {
         courseDB.vPrev = courseDB.vPrev ? courseDB.vPrev + 1 : 1
-        update = {
-          vPrev: courseDB.vPrev,
-          thumbnailPreview: thumbnail
-        }
+        update.vPrev = courseDB.vPrev
+        updateData.thumbnailPreview = thumbnail
       }
       update.lastmodified = Math.trunc((new Date()).getTime() / 1000)
       courseDB.lastmodified = update.lastmodified
       await course.setModified(update.lastmodified)
-      courseDB.courseData = await course.serialize()
-      update.courseData = courseDB.courseData
-      courseDB.courseDataGz = await course.serializeGzipped()
-      update.courseDataGz = courseDB.courseDataGz
+      updateData.courseData = await course.serialize()
+      updateData.courseDataGz = await course.serializeGzipped()
       await Database.updateCourse(courseDB._id, update)
+      await Database.updateCourseData(courseDB._id, updateData)
       return thumbnail
     } catch (err) {
       return {
@@ -324,6 +323,7 @@ export default class Course {
 
   static async delete (courseId) {
     await Database.deleteCourse(courseId)
+    await Database.deleteCourseData(courseId)
   }
 
   static async star (course, accountId) {
