@@ -3,6 +3,7 @@ import {
   connect
 } from 'react-redux'
 
+import SMMButton from '../buttons/SMMButton'
 import AmazonPanel from '../panels/AmazonPanel'
 import {
   ScreenSize
@@ -21,13 +22,24 @@ class MainView extends React.PureComponent {
       },
       content: {
         flex: '1 0 auto',
-        height: 'auto',
-        alignItems: 'center',
         padding: screenSize === ScreenSize.SUPER_SMALL ? '20px 10px' : '20px',
         fontSize: '16px',
         backgroundColor: 'rgba(59,189,159,1)',
         boxShadow: '0px 0px 10px 10px rgba(59,189,159,1)',
         overflow: screenSize < ScreenSize.MEDIUM ? 'hidden' : 'auto'
+      },
+      affiliate: {
+        padding: screenSize === ScreenSize.SUPER_SMALL ? '20px 10px' : '20px',
+        backgroundColor: 'rgba(59,189,159,1)',
+        boxShadow: '0px 0px 10px 10px rgba(59,189,159,1)',
+        overflow: screenSize < ScreenSize.MEDIUM ? 'hidden' : 'auto',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start'
+      },
+      affiliates: {
+        fontSize: '18px',
+        padding: '20px 0'
       }
     }
     return (
@@ -38,6 +50,12 @@ class MainView extends React.PureComponent {
           It also features courses for Super Mario 64 Maker, a popular ROM hack by Kaze Emanuar.<br /><br />
           To use all features on this website it is recommended to sign in with Google.<br /><br />
           All content on this website is user-created. We do not share any copyrighted stuff.
+        </div>
+        <div style={styles.affiliate}>
+          <div style={styles.affiliates}>
+            Affiliates
+          </div>
+          <SMMButton link='http://sm64hacks.com/' blank text='Super Mario 64 Hacks' iconSrc='/img/sm64hacks.png' iconColor='bright' noText />
         </div>
         <AmazonPanel />
       </div>

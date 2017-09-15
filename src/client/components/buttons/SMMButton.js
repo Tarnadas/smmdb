@@ -87,7 +87,7 @@ export default class SMMButton extends React.PureComponent {
       },
       smmIcon: {
         margin: '4px',
-        width: '32px',
+        width: this.props.noText ? 'auto' : '32px',
         height: '32px',
         float: 'left',
         borderRadius: '4px',
@@ -95,7 +95,7 @@ export default class SMMButton extends React.PureComponent {
       },
       smmIconDark: {
         margin: '4px',
-        width: '32px',
+        width: this.props.noText ? 'auto' : '32px',
         height: '32px',
         float: 'left',
         borderRadius: '4px',

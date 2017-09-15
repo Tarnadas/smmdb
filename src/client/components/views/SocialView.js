@@ -4,7 +4,6 @@ import {
 } from 'react-redux'
 
 import SMMButton from '../buttons/SMMButton'
-
 import {
   ScreenSize
 } from '../../reducers/mediaQuery'
@@ -64,10 +63,17 @@ class SocialView extends React.PureComponent {
             Support me
           </div>
           <div style={styles.content}>
-            Any support is greatly appreciated<br /><br />
+            Any support is greatly appreciated and helps me keep the website going<br /><br />
             <SMMButton link='https://paypal.me/MarioReder' blank text='Paypal' iconSrc='/img/paypal.svg' padding='4px' />
             <SMMButton link='https://flattr.com/profile/Tarnadas' blank noText iconSrc='/img/flattr.svg' padding='4px' iconColor='bright' />
             <SMMButton link='https://ko-fi.com/A0843EPC' blank text='Ko-Fi' iconSrc='/img/kofi.svg' iconColor='dark' padding='4px' />
+          </div>
+          <div style={styles.header}>
+            Affiliates
+          </div>
+          <div style={styles.content}>
+            Here are all our affiliate links. If you want to become an affiliate, please contact the webmaster<br /><br />
+            <SMMButton link='http://sm64hacks.com/' blank text='Super Mario 64 Hacks' iconSrc='/img/sm64hacks.png' iconColor='bright' noText />
           </div>
         </div>
       </div>
