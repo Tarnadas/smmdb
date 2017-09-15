@@ -18,7 +18,8 @@ class SocialView extends React.PureComponent {
         color: '#000',
         display: 'flex',
         textAlign: 'left',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        overflow: screenSize < ScreenSize.MEDIUM ? 'hidden' : 'auto'
       },
       main: {
         flex: '1 0 0%',
@@ -28,8 +29,7 @@ class SocialView extends React.PureComponent {
         padding: screenSize === ScreenSize.SUPER_SMALL ? '20px 10px' : '20px',
         fontSize: '16px',
         backgroundColor: 'rgba(59,189,159,1)',
-        boxShadow: '0px 0px 10px 10px rgba(59,189,159,1)',
-        overflow: screenSize < ScreenSize.MEDIUM ? 'hidden' : 'auto'
+        boxShadow: '0px 0px 10px 10px rgba(59,189,159,1)'
       },
       header: {
         width: '100%',
@@ -49,7 +49,7 @@ class SocialView extends React.PureComponent {
       }
     }
     return (
-      <div style={styles.social}>
+      <div style={styles.social} id='scroll'>
         <div style={styles.main}>
           <div style={styles.header}>
             Links

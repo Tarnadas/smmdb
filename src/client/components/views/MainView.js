@@ -18,24 +18,24 @@ class MainView extends React.PureComponent {
         padding: screenSize === ScreenSize.SUPER_SMALL ? '6% 5%' : '6% 10%',
         color: '#000',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        overflow: screenSize < ScreenSize.MEDIUM ? 'hidden' : 'auto'
       },
       content: {
         flex: '1 0 auto',
         padding: screenSize === ScreenSize.SUPER_SMALL ? '20px 10px' : '20px',
         fontSize: '16px',
         backgroundColor: 'rgba(59,189,159,1)',
-        boxShadow: '0px 0px 10px 10px rgba(59,189,159,1)',
-        overflow: screenSize < ScreenSize.MEDIUM ? 'hidden' : 'auto'
+        boxShadow: '0px 0px 10px 10px rgba(59,189,159,1)'
       },
       affiliate: {
         padding: screenSize === ScreenSize.SUPER_SMALL ? '20px 10px' : '20px',
         backgroundColor: 'rgba(59,189,159,1)',
         boxShadow: '0px 0px 10px 10px rgba(59,189,159,1)',
-        overflow: screenSize < ScreenSize.MEDIUM ? 'hidden' : 'auto',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'flex-start'
+        alignItems: 'flex-start',
+        flex: '0 0 auto'
       },
       header: {
         fontSize: '18px',
@@ -49,7 +49,7 @@ class MainView extends React.PureComponent {
       }
     }
     return (
-      <div style={styles.main}>
+      <div style={styles.main} id='scroll'>
         <div style={styles.content}>
           <div style={styles.header}>
             Welcome to Super Mario Maker Database!

@@ -154,10 +154,10 @@ class UploadView extends React.PureComponent {
       }
     }
     const content =
-      <div style={{height: 'auto'}}>
+      <div style={{width: '100%'}}>
         {
           (uploadedCourses.length > 0 || uploads.length > 0) && (
-          <div style={{height: 'auto', color: '#000', fontSize: '15px'}}>
+          <div style={{color: '#000', fontSize: '15px'}}>
             Recently uploaded:
             {
               this.renderCourses(true)
@@ -177,7 +177,7 @@ class UploadView extends React.PureComponent {
             accountData.id ? (
               <div style={styles.flex}>
                 <UploadArea />
-                <div style={{height: 'auto'}}>
+                <div style={{width: '100%'}}>
                   { content }
                 </div>
               </div>

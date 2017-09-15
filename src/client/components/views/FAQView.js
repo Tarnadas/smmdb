@@ -18,7 +18,8 @@ class FAQView extends React.PureComponent {
         color: '#000',
         display: 'flex',
         textAlign: 'left',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        overflow: screenSize < ScreenSize.MEDIUM ? 'hidden' : 'auto'
       },
       content: {
         flex: '1 0 0%',
@@ -29,8 +30,7 @@ class FAQView extends React.PureComponent {
         padding: screenSize === ScreenSize.SUPER_SMALL ? '20px 10px' : '20px',
         fontSize: '16px',
         backgroundColor: 'rgba(59,189,159,1)',
-        boxShadow: '0px 0px 10px 10px rgba(59,189,159,1)',
-        overflow: screenSize < ScreenSize.MEDIUM ? 'hidden' : 'auto'
+        boxShadow: '0px 0px 10px 10px rgba(59,189,159,1)'
       },
       question: {
         width: '100%',
@@ -50,8 +50,8 @@ class FAQView extends React.PureComponent {
       }
     }
     return (
-      <div style={styles.faq}>
-        <div style={styles.content} id='scroll'>
+      <div style={styles.faq} id='scroll'>
+        <div style={styles.content}>
           <div style={styles.question}>
             How do I use the website with my Wii U?
           </div>
