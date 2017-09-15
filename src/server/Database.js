@@ -2,6 +2,8 @@ import {
   MongoClient, ObjectID
 } from 'mongodb'
 import jimp from 'jimp'
+import imageminWebp from 'imagemin-webp'
+import ProgressBar from 'progress'
 
 import fs from 'fs'
 import path from 'path'
@@ -40,32 +42,31 @@ export default class Database {
       this.blogImages = this.db.collection('blogImages')
       this.amazon = this.db.collection('amazon')
     }
-    // await this.courses.createIndex({ lastModified: 1, stars: 1, title: 1 })
-    /* const courseDataPath = path.join(__dirname, '../static/coursedata')
-    const courseDataFiles = fs.readdirSync(courseDataPath)
-    const courseImgPath = path.join(__dirname, '../static/courseimg')
-    const courseImgFiles = fs.readdirSync(courseImgPath)
-    const entries = await this.courses.find().toArray()
+    /* const imgPath = path.join(__dirname, 'img')
+    const optPath = path.join(__dirname, 'opt')
+    if (!fs.existsSync(imgPath)) fs.mkdirSync(imgPath)
+    if (!fs.existsSync(optPath)) fs.mkdirSync(optPath)
+    const entries = await this.courseData.find().toArray()
+    console.log()
+    const bar = new ProgressBar(':bar :percent :current/:total  :etas', {
+      total: entries.length
+    })
     for (let entry of entries) {
-      const courseId = String(entry._id)
-      try {
-        if (!courseDataFiles.includes(courseId) || !courseDataFiles.includes(courseId + '.gz')) continue
-        const update = {
-          _id: ObjectID(courseId),
-          courseData: fs.readFileSync(path.join(courseDataPath, courseId)),
-          courseDataGz: fs.readFileSync(path.join(courseDataPath, courseId + '.gz'))
-        }
-        if (courseImgFiles.includes(`${courseId}.jpg`)) update.thumbnailPreview = fs.readFileSync(path.join(courseImgPath, `${courseId}.jpg`))
-        if (courseImgFiles.includes(`${courseId}_full.jpg`)) update.thumbnail = fs.readFileSync(path.join(courseImgPath, `${courseId}_full.jpg`))
-        // await this.courseData.insertOne(update)
-        if (fs.existsSync(path.join(courseDataPath, courseId))) fs.unlinkSync(path.join(courseDataPath, courseId))
-        if (fs.existsSync(path.join(courseDataPath, `${courseId}.gz`))) fs.unlinkSync(path.join(courseDataPath, `${courseId}.gz`))
-        if (fs.existsSync(path.join(courseImgPath, `${courseId}.jpg`))) fs.unlinkSync(path.join(courseImgPath, `${courseId}.jpg`))
-        if (fs.existsSync(path.join(courseImgPath, `${courseId}_full.jpg`))) fs.unlinkSync(path.join(courseImgPath, `${courseId}_full.jpg`))
-      } catch (err) {
-        console.error(err)
-      }
-    } */
+      const webp = await imageminWebp({
+        quality: 80,
+        method: 6
+      })(entry.thumbnail.buffer)
+      const webpPreview = await imageminWebp({
+        quality: 80,
+        method: 6
+      })(entry.thumbnailPreview.buffer)
+      await this.courseData.updateOne({ _id: ObjectID(entry._id) }, { $set: {
+        thumbnailWebp: webp,
+        thumbnailPreviewWebp: webpPreview
+      } })
+      bar.tick()
+    }
+    console.log() */
   }
 
   static async addCourse (course) {
@@ -119,10 +120,10 @@ export default class Database {
     }
   }
 
-  static async getImage (id, full) {
+  static async getImage (id, full, webp = false) {
     try {
       const course = (await this.courseData.find({ '_id': ObjectID(id) }).toArray())[0]
-      return full ? course.thumbnail.buffer : course.thumbnailPreview.buffer
+      return full ? webp ? course.thumbnailWebp.buffer : course.thumbnail.buffer : webp ? course.thumbnailPreviewWebp.buffer : course.thumbnailPreview.buffer
     } catch (err) {
       return null
     }

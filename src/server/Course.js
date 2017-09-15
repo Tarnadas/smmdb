@@ -10,6 +10,7 @@ import {
 import tmp from 'tmp'
 import fileType from 'file-type'
 import randomString from 'crypto-random-string'
+import imageminWebp from 'imagemin-webp'
 
 import { resolve, join } from 'path'
 import * as fs from 'fs'
@@ -118,7 +119,15 @@ export default class Course {
       courseD.courseData = await courseData.serialize()
       courseD.courseDataGz = await courseData.serializeGzipped()
       courseD.thumbnail = course.thumbnail
+      courseD.thumbnailWebp = await imageminWebp({
+        quality: 80,
+        method: 6
+      })(course.thumbnail)
       courseD.thumbnailPreview = course.thumbnailPreview
+      courseD.thumbnailPreviewWebp = await imageminWebp({
+        quality: 80,
+        method: 6
+      })(course.thumbnailPreview)
       delete course.thumbnail
       delete course.thumbnailPreview
       courseD._id = ObjectID(await Database.addCourse(course))
@@ -190,8 +199,16 @@ export default class Course {
       if (!(await courseData.isThumbnailBroken())) {
         updateData.thumbnail = courseData.thumbnail
         course.thumbnail = update.thumbnail
+        updateData.thumbnailWebp = await imageminWebp({
+          quality: 80,
+          method: 6
+        })(courseData.thumbnail)
         updateData.thumbnailPreview = courseData.thumbnailPreview
         course.thumbnailPreview = update.thumbnailPreview
+        updateData.thumbnailPreviewWebp = await imageminWebp({
+          quality: 80,
+          method: 6
+        })(courseData.thumbnailPreview)
         update.vFull = course.vFull ? course.vFull + 1 : 1
         update.vPrev = course.vPrev ? course.vPrev + 1 : 1
         course.vFull = update.vFull
@@ -300,10 +317,18 @@ export default class Course {
         courseDB.vFull = courseDB.vFull ? courseDB.vFull + 1 : 1
         update.vFull = courseDB.vFull
         updateData.thumbnail = thumbnail
+        updateData.thumbnailWebp = await imageminWebp({
+          quality: 80,
+          method: 6
+        })(thumbnail)
       } else {
         courseDB.vPrev = courseDB.vPrev ? courseDB.vPrev + 1 : 1
         update.vPrev = courseDB.vPrev
         updateData.thumbnailPreview = thumbnail
+        updateData.thumbnailPreviewWebp = await imageminWebp({
+          quality: 80,
+          method: 6
+        })(thumbnail)
       }
       update.lastmodified = Math.trunc((new Date()).getTime() / 1000)
       courseDB.lastmodified = update.lastmodified

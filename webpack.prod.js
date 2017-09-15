@@ -11,10 +11,11 @@ const path = require('path')
 module.exports = [
   {
     entry: {
-      app: ['babel-polyfill', path.join(__dirname, 'src/client/renderer.js')],
+      app: path.join(__dirname, 'src/client/renderer.js'),
       vendor: [
         'react', 'react-dom', 'react-redux', 'react-router', 'react-router-dom', 'react-router-redux', 'react-google-login', 'react-lazyload',
-        'redux', 'redux-immutable', 'immutable', 'history', 'bluebird', 'got', 'concat-stream', 'filereader-stream', 'progress-stream', 'base64-arraybuffer'
+        'redux', 'redux-immutable', 'immutable', 'history', 'bluebird', 'got', 'concat-stream', 'filereader-stream', 'progress-stream', 'base64-arraybuffer',
+        'node-emoji', 'qrcode', 'marked'
       ]
     },
     output: {

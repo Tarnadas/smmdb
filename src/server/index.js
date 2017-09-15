@@ -10,13 +10,11 @@ import {
   renderToString
 } from 'react-dom/server'
 import pmx from 'pmx'
-import { path as binPath } from 'webp-bin'
 
 import * as http from 'http'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as qs from 'querystring'
-import { execFile } from 'child_process'
 
 import renderer from '../shared/renderer'
 
@@ -134,22 +132,14 @@ async function main () {
       return
     }
     try {
-      const img = await Database.getImage(id, !!full)
+      const acceptWebp = req.get('accept') && req.get('accept').includes('image/webp')
+      const img = await Database.getImage(id, !!full, acceptWebp)
       if (img == null) {
         res.status(404).send(`Course with ID ${id} has no image`)
         return
       }
-      res.set('Content-Type', 'image/jpeg')
+      res.set('Content-Type', acceptWebp ? 'image/webp' : 'image/jpeg')
       res.set('Cache-Control', `public, max-age=${cacheMaxAgeImg}`)
-      /* const imgPath = path.join(__dirname, id)
-      const webpPath = path.join(__dirname, `${id}.webp`)
-      fs.writeFileSync(imgPath, img)
-      execFile(binPath, `${imgPath} -q 80 -o ${webpPath}`.split(/\s+/), (err, stdout, stderr) => {
-        if (err) console.error(err)
-        console.log(stdout)
-        console.error(stderr)
-        res.sendFile(webpPath)
-      }) */
       res.send(img)
     } catch (err) {
       res.status(500).send(`Internal Server Error:\n${err}`)
@@ -240,7 +230,7 @@ async function main () {
 
   app.route('/api/:apicall*?').get(async (req, res) => {
     if (req.url.includes('/') && req.url.length > 5) {
-      let apiCall = req.params.apicall
+      const apiCall = req.params.apicall
       let apiData = {}
       if (req.url.includes('?')) {
         apiData = qs.parse(req.url.split('?', 2)[1])
