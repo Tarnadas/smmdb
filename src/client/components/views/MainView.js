@@ -37,22 +37,30 @@ class MainView extends React.PureComponent {
         flexDirection: 'column',
         alignItems: 'flex-start'
       },
-      affiliates: {
+      header: {
         fontSize: '18px',
-        padding: '20px 0'
+        padding: '6px 12px',
+        width: '100%',
+        margin: '20px 0',
+        backgroundColor: '#fff8af',
+        borderRadius: '6px',
+        border: '4px solid #f8ca00',
+        boxShadow: '0 0 0 4px black'
       }
     }
     return (
       <div style={styles.main}>
         <div style={styles.content}>
-          Welcome to Super Mario Maker Database!<br /><br /><br /><br />
+          <div style={styles.header}>
+            Welcome to Super Mario Maker Database!
+          </div>
           You can share your Super Mario Maker courses platform independently on this website. Supported platforms are Wii U, 3DS and Cemu. For Cemu there is even a save file editor. Just navigate to 'Client'.<br />
           It also features courses for Super Mario 64 Maker, a popular ROM hack by Kaze Emanuar.<br /><br />
           To use all features on this website it is recommended to sign in with Google.<br /><br />
           All content on this website is user-created. We do not share any copyrighted stuff.
         </div>
         <div style={styles.affiliate}>
-          <div style={styles.affiliates}>
+          <div style={styles.header}>
             Affiliates
           </div>
           <SMMButton link='http://sm64hacks.com/' blank text='Super Mario 64 Hacks' iconSrc='/img/sm64hacks.png' iconColor='bright' noText />
