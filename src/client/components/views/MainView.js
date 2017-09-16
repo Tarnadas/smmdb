@@ -33,7 +33,7 @@ class MainView extends React.PureComponent {
         backgroundColor: 'rgba(59,189,159,1)',
         boxShadow: '0px 0px 10px 10px rgba(59,189,159,1)',
         display: 'flex',
-        flexDirection: 'column',
+        flexWrap: 'wrap',
         alignItems: 'flex-start',
         flex: '0 0 auto'
       },
@@ -63,6 +63,7 @@ class MainView extends React.PureComponent {
           <div style={styles.header}>
             Affiliates
           </div>
+          <SMMButton link='https://sm64o.com/' blank text='Super Mario 64 Online' iconSrc='/img/sm64o.png' iconColor='bright' noText />
           <SMMButton link='http://sm64hacks.com/' blank text='Super Mario 64 Hacks' iconSrc='/img/sm64hacks.png' iconColor='bright' noText />
         </div>
         <AmazonPanel />
