@@ -37,7 +37,6 @@ class Net64View extends React.PureComponent {
         json: true,
         useElectronNet: false
       })).body
-      console.log(servers)
       this.setState({
         servers
       })
@@ -83,11 +82,13 @@ class Net64View extends React.PureComponent {
     return (
       <div id='scroll' style={styles.view}>
         <div style={styles.info}>
-          Net64 allows playing Super Mario 64 in an online multiplayer mode.
+          Net64 allows playing Super Mario 64 in an online multiplayer mode.<br />
+          To join any of the servers listed below, you need Net64+. The official client won't be able to connect! Just follow the links.
         </div>
         <div>
-          <SMMButton link='https://github.com/Tarnadas/sm64o' blank text='Get the Client' iconSrc='/img/net64.png' iconColor='bright' />
-          <SMMButton link='https://github.com/Tarnadas/sm64o-ded' blank text='Get the Server' iconSrc='/img/net64.png' iconColor='bright' />
+          <SMMButton link='https://github.com/Tarnadas/sm64o/releases/download/0.4/Net64.7z' blank text='Get the Client' iconSrc='/img/net64.png' iconColor='bright' />
+          <SMMButton link='https://github.com/Tarnadas/sm64o' blank text='Client Source' iconSrc='/img/github.svg' iconColor='bright' />
+          <SMMButton link='https://github.com/Tarnadas/sm64o-ded' blank text='Get the Server' iconSrc='/img/github.svg' iconColor='bright' />
           <SMMButton link='https://sm64o.com/' blank text='Net64 Forum' iconSrc='/img/sm64o.png' iconColor='bright' noText />
           <SMMButton link='https://discord.gg/k9QMFaB' blank text='Net64 Discord' iconSrc='/img/discord.svg' iconColor='bright' />
         </div>
