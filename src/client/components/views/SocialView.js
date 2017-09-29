@@ -73,7 +73,7 @@ class SocialView extends React.PureComponent {
           </div>
           <div style={styles.content}>
             Here are all our affiliate links. If you want to become an affiliate, please contact the webmaster<br /><br />
-            <SMMButton link='https://sm64o.com/' blank text='Super Mario 64 Online' iconSrc='/img/sm64o.png' iconColor='bright' noText />
+            <SMMButton link='https://sm64o.com/' blank text='Net64 Forum' iconSrc='/img/sm64o.png' iconColor='bright' noText />
             <SMMButton link='http://sm64hacks.com/' blank text='Super Mario 64 Hacks' iconSrc='/img/sm64hacks.png' iconColor='bright' noText />
           </div>
         </div>

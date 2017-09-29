@@ -870,6 +870,71 @@ export default class API {
     res.json(account)
   }
 
+  static async getNet64Servers (req, res) {
+    const servers = await Database.getNet64Servers()
+    if (servers) {
+      for (const server of servers) {
+        server.toJSON = () => {
+          return {
+            id: server._id,
+            ip: server.ip,
+            port: server.port,
+            name: server.name,
+            domain: server.domain,
+            description: server.description,
+            countryCode: server.countryCode,
+            ownername: server.ownername,
+            players: server.players
+          }
+        }
+      }
+      res.json(servers)
+    }
+  }
+
+  static async sendNet64Server (req, res) {
+    const auth = req.get('Authorization')
+    const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
+    if (!apiKey) {
+      res.status(401).send('API key required')
+      return
+    }
+    const account = await Account.getAccountByAPIKey(apiKey, false)
+    if (account == null) {
+      res.status(400).send(`Account with API key ${apiKey} not found`)
+      return
+    }
+    if (!req.body) {
+      res.status(400).send(`No POST body submitted`)
+      return
+    }
+    const server = {}
+    if (req.body.ip) server.ip = req.body.ip
+    if (req.body.port && typeof req.body.port === 'number') server.port = req.body.port
+    if (req.body.name) {
+      server.name = req.body.name.substr(0, 40)
+    }
+    if (req.body.domain) {
+      server.domain = req.body.domain.substr(0, 100)
+    }
+    if (req.body.description) {
+      server.description = req.body.description.substr(0, 200)
+    }
+    if (req.body.country) server.country = req.body.country.substr(0, 100)
+    if (req.body.countryCode) server.countryCode = req.body.countryCode.substr(0, 20)
+    if (req.body.lat && typeof req.body.lat === 'number') server.lat = req.body.lat
+    if (req.body.lon && typeof req.body.lon === 'number') server.lon = req.body.lon
+    if (req.body.players) {
+      server.players = req.body.players
+      server.playerCount = req.body.players.length
+    }
+    server.owner = account._id
+    server.ownername = account.username
+    server.updated = Math.trunc(Date.now() / 1000)
+    Account.updateNet64Server(account, server)
+    res.json({})
+  }
+
   static async blogPost (req, res) {
     if (!req.body) {
       res.status(400).send(`Empty request`)

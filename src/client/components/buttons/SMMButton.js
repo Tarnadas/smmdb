@@ -112,7 +112,7 @@ export default class SMMButton extends React.PureComponent {
         padding: this.props.padding ? this.props.padding : ''
       },
       cancel: {
-        margin: '0 37px 0 -37px',
+        right: '3px',
         top: '-3px',
         width: '34px',
         height: '34px',
@@ -121,7 +121,9 @@ export default class SMMButton extends React.PureComponent {
         zIndex: '100'
       },
       cancelImg: {
-        padding: '3px'
+        padding: '3px',
+        width: '100%',
+        height: '100%'
       }
     }
     const iconStyle = this.props.iconColor === 'bright' ? styles.smmIcon : (this.state.hover ? styles.smmIconHover : styles.smmIconDark)

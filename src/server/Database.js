@@ -38,6 +38,7 @@ export default class Database {
       this.accounts = this.db.collection('accounts')
       this.stars = this.db.collection('stars')
       this.stars64 = this.db.collection('stars64')
+      this.net64 = this.db.collection('net64')
       this.blog = this.db.collection('blog')
       this.blogImages = this.db.collection('blogImages')
       this.amazon = this.db.collection('amazon')
@@ -213,6 +214,39 @@ export default class Database {
 
   static async getAccountsCount () {
     return (await this.accounts.stats()).count
+  }
+
+  static async getNet64Server (accountId) {
+    try {
+      return (await this.net64.find({ owner: ObjectID(accountId) }).toArray())[0]
+    } catch (err) {
+      return null
+    }
+  }
+
+  static getNet64Servers () {
+    return this.net64.aggregate([
+      {
+        $match: {
+          updated: {
+            $gte: Math.trunc(Date.now() / 1000) - 15
+          }
+        }
+      },
+      {
+        $sort: {
+          playerCount: -1
+        }
+      }
+    ]).toArray()
+  }
+
+  static insertNet64Server (server) {
+    return this.net64.insertOne(server)
+  }
+
+  static updateNet64Server (id, server) {
+    return this.net64.updateOne({ '_id': ObjectID(id) }, { $set: server })
   }
 
   static async getBlogPost (accountId, blogId) {

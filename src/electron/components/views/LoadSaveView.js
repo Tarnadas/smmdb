@@ -145,12 +145,17 @@ class LoadSaveView extends React.PureComponent {
     const apiKey = this.props.apiKey
     const cemuSaves = this.props.cemuSaveData
     const styles = {
+      global: {
+        width: '100%',
+        height: '100%'
+      },
       center: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         textAlign: 'center',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        height: '100%'
       },
       loading: {
         position: 'fixed',
@@ -232,9 +237,9 @@ class LoadSaveView extends React.PureComponent {
       }
     }
     return (
-      <div>
+      <div style={styles.global}>
         {
-          <div>
+          <div style={styles.global}>
             <div style={styles.center}>
               {
                 <div style={styles.showApiKey}>

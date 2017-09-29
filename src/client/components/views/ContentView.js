@@ -21,6 +21,7 @@ import LegalNoticeView from './LegalNoticeView'
 import {
   ScreenSize
 } from '../../reducers/mediaQuery'
+import Net64View from './Net64View'
 
 class ContentView extends React.PureComponent {
   componentDidUpdate (prevProps, prevState, prevContext) {
@@ -53,6 +54,9 @@ class ContentView extends React.PureComponent {
         )} />
         <Route path='/upload64' render={() => (
           <Upload64View shouldUpdate={this.props.shouldUpdate} setFetchCourses={this.props.setFetchCourses} isServer={this.props.isServer} />
+        )} />
+        <Route path='/net64' render={() => (
+          <Net64View isServer={this.props.isServer} />
         )} />
         <Route path='/profile' component={ProfileView} />
         <Route path='/faq' component={FAQView} />

@@ -90,6 +90,15 @@ export default class Account {
     await Database.updateAccount(account._id, update)
   }
 
+  static async updateNet64Server (account, server) {
+    const s = await Database.getNet64Server(account._id)
+    if (s) {
+      Database.updateNet64Server(s._id, server)
+    } else {
+      Database.insertNet64Server(server)
+    }
+  }
+
   static login (accountId, idToken) {
     return Database.updateAccount(accountId, { idtoken: idToken })
   }

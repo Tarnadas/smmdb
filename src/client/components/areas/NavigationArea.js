@@ -52,6 +52,10 @@ class NavigationArea extends React.PureComponent {
           !process.env.ELECTRON &&
           <NavigationButton onClick={this.props.onClick} link='/upload64' text='Upload64' iconSrc='/img/upload64.png' iconColor='dark' />
         }
+        {
+          !process.env.ELECTRON &&
+          <NavigationButton onClick={this.props.onClick} link='/net64' text='Net64' iconSrc='/img/net64.png' iconColor='dark' />
+        }
         <NavigationButton onClick={this.props.onClick} link='/profile' text='Profile' iconSrc='/img/profile.png' iconColor='dark' />
         {
           !process.env.ELECTRON &&

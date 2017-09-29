@@ -254,6 +254,8 @@ async function main () {
         API.deleteCourse64(req, res, apiData)
       } else if (apiCall === 'getaccountdata') {
         await API.getAccountData(req, res)
+      } else if (apiCall === 'getnet64servers') {
+        await API.getNet64Servers(req, res)
       } else if (apiCall === 'getamazonproducts') {
         await API.getAmazonProducts(req, res, apiData)
       } else {
@@ -295,6 +297,8 @@ async function main () {
       API.uploadImage(req, res, false)
     } else if (apiCall === 'uploadimage64') {
       API.uploadImage64(req, res)
+    } else if (apiCall === 'net64server') {
+      API.sendNet64Server(req, res)
     } else if (apiCall === 'uploadimageblog') {
       API.uploadImageBlog(req, res)
     } else if (apiCall === 'blogpost') {
