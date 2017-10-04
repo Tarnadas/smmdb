@@ -86,7 +86,7 @@ class Net64View extends React.PureComponent {
           To join any of the servers listed below, you need Net64+. The official client won't be able to connect! Just follow the links.
         </div>
         <div>
-          <SMMButton link='https://github.com/Tarnadas/sm64o/releases/download/0.4/Net64.7z' blank text='Get the Client' iconSrc='/img/net64.png' iconColor='bright' />
+          <SMMButton link='https://github.com/Tarnadas/sm64o/releases/download/0.5/Net64plus_0.5.7z' blank text='Get the Client' iconSrc='/img/net64.png' iconColor='bright' />
           <SMMButton link='https://github.com/Tarnadas/sm64o' blank text='Client Source' iconSrc='/img/github.svg' iconColor='bright' />
           <SMMButton link='https://github.com/Tarnadas/sm64o-ded' blank text='Get the Server' iconSrc='/img/github.svg' iconColor='bright' />
           <SMMButton link='https://sm64o.com/' blank text='Net64 Forum' iconSrc='/img/sm64o.png' iconColor='bright' noText />
