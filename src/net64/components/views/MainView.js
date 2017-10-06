@@ -2,13 +2,16 @@ import React from 'react'
 import winProcess from 'winprocess'
 import tasklist from 'tasklist'
 
+import fs from 'fs'
+import path from 'path'
+
 import SMMButton from '../../../client/components/buttons/SMMButton'
 
 export default class MainView extends React.PureComponent {
   constructor (props) {
     super(props)
     this.state = {
-      emulators: null
+      emulators: []
     }
     this.scan = this.scan.bind(this)
     this.onSelectEmulator = this.onSelectEmulator.bind(this)
@@ -47,11 +50,16 @@ export default class MainView extends React.PureComponent {
       process,
       base
     }
+    const basePath = './build/net64/patches'
+    const patches = fs.readdirSync(basePath)
+    for (const patch of patches) {
+      process.writeMemory(base + parseInt(patch, 16), fs.readFileSync(path.join(basePath, patch)))
+    }
     const b = Buffer.allocUnsafe(1)
-    b.writeUInt8(5, 0)
-    console.log(process.writeMemory(base + 0x365FF3, b))
-    // process.writeMemory(0x367703, b)
-    console.log(process.readMemory(base + 0x367703, 1))
+    b.writeUInt8(1, 0)
+    process.writeMemory(base + 0x365FF3, b) // character ID
+    process.writeMemory(base + 0x365FFC, b) // isServer flag
+    process.writeMemory(base + 0x367703, b) // player ID
   }
   renderEmulators (emulators) {
     const li = {
@@ -93,7 +101,7 @@ export default class MainView extends React.PureComponent {
         overflow: 'auto'
       }
     }
-    return emulators == null ? (
+    return !emulators || emulators.length === 0 ? (
       <div style={styles.main}>
         Scanning for emulators...
       </div>
