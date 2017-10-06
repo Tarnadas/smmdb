@@ -143,7 +143,6 @@ class AppView extends React.PureComponent {
         flexDirection: 'column'
       },
       logo: {
-        height: 'auto',
         fontSize: '44px',
         textAlign: 'center',
         boxShadow: '0px 10px 20px 0px rgba(0,0,0,0.3)',
@@ -164,7 +163,6 @@ class AppView extends React.PureComponent {
         fontFamily: 'Consolas, "courier new", serif',
         fontWeight: 'bold',
         color: '#000',
-        // flex: '0 0',
         height: screenSize >= ScreenSize.MEDIUM ? '39px' : '',
         display: screenSize >= ScreenSize.MEDIUM ? 'flex' : '',
         alignItems: screenSize >= ScreenSize.MEDIUM ? 'center' : ''
@@ -187,13 +185,9 @@ class AppView extends React.PureComponent {
         margin: '0 auto'
       },
       disclaimer: {
-        width: 'auto',
-        height: 'auto',
         flex: '1 0 0%'
       },
       footerLinks: {
-        width: 'auto',
-        height: 'auto',
         padding: '0 20px'
       },
       footerLink: {

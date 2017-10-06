@@ -14,41 +14,16 @@ import {
 import {
   remote
 } from 'electron'
-import got from 'got'
 import createHistory from 'history/createMemoryHistory'
 
-import { resolve } from 'url'
-
 import initReducer from '../client/reducers'
+import { initAccount } from '../shared/Account'
 import ElectronView from './components/views/ElectronView'
 import saveFileMiddleware from './util/SaveFileMiddleware'
 import SaveFileEditor from './util/SaveFileEditor'
 import {
   setAccountData
 } from '../client/actions'
-import {
-  domain
-} from '../static'
-
-export const initAccount = async apiKey => {
-  try {
-    const account = (await got(resolve(domain, '/api/getaccountdata'), {
-      headers: {
-        'Authorization': `APIKEY ${apiKey}`
-      },
-      json: true,
-      useElectronNet: false
-    })).body
-    return account
-  } catch (err) {
-    if (err.response) {
-      console.error(err.response.body)
-    } else {
-      console.error(err)
-    }
-  }
-  return null
-}
 
 (async () => {
   const history = createHistory()

@@ -68,8 +68,8 @@ const BrowserWindow = electron.BrowserWindow;
     })
 
     mainWindow = new BrowserWindow({
-      width: 2000,
-      height: 1500,
+      width: 1100,
+      height: 800,
       icon: path.join(__dirname, 'build/static/images/icon.png'),
       title: 'Net64+ 1.0'
     })

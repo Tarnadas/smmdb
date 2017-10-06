@@ -55,7 +55,7 @@ export default class SMMButton extends React.PureComponent {
     const onDelete = this.props.onDelete
     const styles = {
       smmButton: {
-        margin: '0 10px 10px 10px',
+        margin: this.props.noMargin ? '' : '0 10px 10px 10px',
         lineHeight: '40px',
         minWidth: '120px',
         width: 'auto',

@@ -35,6 +35,9 @@ module.exports = [
       }),
       new webpack.IgnorePlugin(/vertx/)
     ],
+    externals: {
+      winprocess: 'require(require("path").resolve(__dirname, "./build/net64/winprocess/build/Release/winprocess"))'
+    },
     module: {
       loaders: [
         {
