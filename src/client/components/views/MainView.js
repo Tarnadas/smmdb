@@ -55,7 +55,7 @@ class MainView extends React.PureComponent {
             Welcome to Super Mario Maker Database!
           </div>
           You can share your Super Mario Maker courses platform independently on this website. Supported platforms are Wii U, 3DS and Cemu. For Cemu there is even a save file editor. Just navigate to 'Client'.<br />
-          It also features courses for Super Mario 64 Maker, a popular ROM hack by Kaze Emanuar.<br /><br />
+          It also features courses for Super Mario 64 Maker and a server list for Net64, popular ROM hacks by Kaze Emanuar.<br /><br />
           To use all features on this website it is recommended to sign in with Google.<br /><br />
           All content on this website is user-created. We do not share any copyrighted stuff.
         </div>
