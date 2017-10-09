@@ -233,7 +233,7 @@ class AppView extends React.PureComponent {
         {
           !!this.props.videoId &&
           <div style={styles.overflow} onClick={this.onVideoHide}>
-            <iframe style={styles.video} src={`http://www.youtube.com/embed/${this.props.videoId}?disablekb=1&iv_load_policy=3&rel=0&showinfo=0`} frameBorder='0' allowFullScreen />
+            <iframe style={styles.video} src={`//www.youtube.com/embed/${this.props.videoId}?disablekb=1&iv_load_policy=3&rel=0&showinfo=0`} frameBorder='0' allowFullScreen />
           </div>
         }
         {
