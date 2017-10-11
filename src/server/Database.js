@@ -224,8 +224,8 @@ export default class Database {
     }
   }
 
-  static getNet64Servers () {
-    return this.net64.aggregate([
+  static getNet64Servers (query) {
+    query = query || [
       {
         $match: {
           updated: {
@@ -238,7 +238,8 @@ export default class Database {
           playerCount: -1
         }
       }
-    ]).toArray()
+    ]
+    return this.net64.aggregate(query).toArray()
   }
 
   static insertNet64Server (server) {

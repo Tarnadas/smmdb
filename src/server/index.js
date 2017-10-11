@@ -255,7 +255,7 @@ async function main () {
       } else if (apiCall === 'getaccountdata') {
         await API.getAccountData(req, res)
       } else if (apiCall === 'getnet64servers') {
-        await API.getNet64Servers(req, res)
+        await API.getNet64Servers(req, res, apiData)
       } else if (apiCall === 'getamazonproducts') {
         await API.getAmazonProducts(req, res, apiData)
       } else {
