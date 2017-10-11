@@ -872,7 +872,7 @@ export default class API {
 
   static async getNet64Servers (req, res, apiData) {
     const id = apiData.id
-    const servers = await Database.getNet64Servers(id ? { _id: ObjectID(id) } : null)
+    const servers = await Database.getNet64Servers(id ? [{ $match: { _id: ObjectID(id) } }] : null)
     if (servers) {
       for (const server of servers) {
         server.toJSON = () => {
