@@ -125,7 +125,7 @@ export default class Net64ServerPanel extends React.PureComponent {
             <div style={styles.el}>
               { server.domain || server.ip }:{ server.port }
             </div>
-            <div style={styles.el} ref={x => { this.description = x }} />
+            <div className='markdown' style={styles.el} ref={x => { this.description = x }} />
           </div>
           <div style={styles.right}>
             {
