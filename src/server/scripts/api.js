@@ -910,21 +910,21 @@ export default class API {
       return
     }
     const server = {}
-    if (req.body.ip) server.ip = req.body.ip
-    if (req.body.port && typeof req.body.port === 'number') server.port = req.body.port
-    if (req.body.name) {
+    if (req.body.ip != null) server.ip = req.body.ip
+    if (req.body.port != null && typeof req.body.port === 'number') server.port = req.body.port
+    if (req.body.name != null) {
       server.name = req.body.name.substr(0, 40)
     }
-    if (req.body.domain) {
+    if (req.body.domain != null) {
       server.domain = req.body.domain.substr(0, 100)
     }
-    if (req.body.description) {
+    if (req.body.description != null) {
       server.description = req.body.description.substr(0, 200)
     }
-    if (req.body.country) server.country = req.body.country.substr(0, 100)
-    if (req.body.countryCode) server.countryCode = req.body.countryCode.substr(0, 20)
-    if (req.body.lat && typeof req.body.lat === 'number') server.lat = req.body.lat
-    if (req.body.lon && typeof req.body.lon === 'number') server.lon = req.body.lon
+    if (req.body.country != null) server.country = req.body.country.substr(0, 100)
+    if (req.body.countryCode != null) server.countryCode = req.body.countryCode.substr(0, 20)
+    if (req.body.lat != null && typeof req.body.lat === 'number') server.lat = req.body.lat
+    if (req.body.lon != null && typeof req.body.lon === 'number') server.lon = req.body.lon
     if (req.body.players) {
       server.players = req.body.players
       server.playerCount = req.body.players.length

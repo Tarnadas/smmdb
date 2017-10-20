@@ -42,6 +42,7 @@ export default class Net64ServerPanel extends React.PureComponent {
     }
     return Array.from((function * () {
       for (let i in players) {
+        if (!players.hasOwnProperty(i)) continue
         const player = players[i]
         yield (
           <div style={style} key={i}>
