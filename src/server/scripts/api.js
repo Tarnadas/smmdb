@@ -540,6 +540,7 @@ export default class API {
         }
       } catch (err) {}
     }
+    if (req.body.description != null) update.description = req.body.description.replace(/<.*>/g, '')
     await Course.update(course, courseData, update)
     if (apiData.format === 'ini') {
       res.set('Content-type', 'text/plain')

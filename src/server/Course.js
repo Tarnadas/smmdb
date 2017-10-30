@@ -272,7 +272,7 @@ export default class Course {
     }
   }
 
-  static async update (courseDB, courseData, { title, maker, nintendoid, videoid, difficulty }) {
+  static async update (courseDB, courseData, { title, maker, nintendoid, videoid, difficulty, description }) {
     const update = {}
     const updateData = {}
     const course = await deserialize(courseData)
@@ -297,6 +297,10 @@ export default class Course {
     if (difficulty != null) {
       update.difficulty = difficulty
       courseDB.difficulty = difficulty
+    }
+    if (description != null) {
+      update.description = description
+      courseDB.description = description
     }
     update.lastmodified = Math.trunc((new Date()).getTime() / 1000)
     courseDB.lastmodified = update.lastmodified

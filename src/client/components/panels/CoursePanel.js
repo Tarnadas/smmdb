@@ -1,10 +1,10 @@
 import React from 'react'
 import LazyLoad from 'react-lazyload'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 import got from 'got'
 import QRCode from 'qrcode'
+import marked from 'marked'
+import { emojify } from 'node-emoji'
 
 import { resolve } from 'url'
 
@@ -42,9 +42,10 @@ class CoursePanel extends React.PureComponent {
       saved: false,
       title: course.title,
       maker: course.maker,
-      nnId: course.nintendoid ? course.nintendoid : '',
-      videoId: course.videoid ? course.videoid : '',
+      nnId: course.nintendoid || '',
+      videoId: course.videoid || '',
       difficulty: course.difficulty,
+      description: course.description || '',
       shouldDelete: false
     }
     this.onShowDetails = this.onShowDetails.bind(this)
@@ -60,6 +61,7 @@ class CoursePanel extends React.PureComponent {
     this.onUploadFullComplete = this.onUploadFullComplete.bind(this)
     this.onUploadPrevComplete = this.onUploadPrevComplete.bind(this)
     this.onStar = this.onStar.bind(this)
+    this.onMarkdownChange = this.onMarkdownChange.bind(this)
   }
   componentWillReceiveProps (nextProps, nextContext) {
     if (nextProps.course.get('title') !== this.state.title) {
@@ -87,6 +89,16 @@ class CoursePanel extends React.PureComponent {
         difficulty: nextProps.course.get('difficulty')
       })
     }
+    if (nextProps.course.get('description') !== this.state.description) {
+      this.setState({
+        description: nextProps.course.get('description')
+      })
+    }
+  }
+  componentWillUpdate (nextProps, nextState, nextContext) {
+    if (nextState.description && nextState.description !== this.state.description) {
+      this.renderer.innerHTML = emojify(marked(nextState.description))
+    }
   }
   onShowDetails (e) {
     e.stopPropagation()
@@ -108,7 +120,8 @@ class CoursePanel extends React.PureComponent {
       this.state.maker === course.maker &&
       this.state.nnId === course.nintendoid &&
       this.state.videoId === course.videoid &&
-      this.state.difficulty === course.difficulty) return;
+      this.state.difficulty === course.difficulty &&
+      this.state.description === course.description) return;
     (async () => {
       try {
         const update = {
@@ -116,7 +129,8 @@ class CoursePanel extends React.PureComponent {
           maker: this.state.maker,
           nintendoid: this.state.nnId,
           videoid: this.state.videoId,
-          difficulty: this.state.difficulty
+          difficulty: this.state.difficulty,
+          description: this.state.description
         }
         if (!VIDEO_ID.test(update.videoid) && update.videoid !== '') {
           delete update.videoid
@@ -264,6 +278,13 @@ class CoursePanel extends React.PureComponent {
         console.error(err)
       }
     }
+  }
+  onMarkdownChange (e) {
+    this.setState({
+      description: e.target.value.replace(/<.*>/g, ''),
+      changed: true,
+      saved: false
+    })
   }
   render () {
     const screenSize = this.props.screenSize
@@ -427,6 +448,27 @@ class CoursePanel extends React.PureComponent {
         padding: '10px',
         display: 'flex',
         flexWrap: 'wrap'
+      },
+      editor: {
+        width: 'calc(100% - 20px)',
+        height: '150px',
+        margin: '10px',
+        backgroundColor: '#fffff5',
+        color: '#000',
+        fontFamily: 'Georgia,Cambria,"Times New Roman",Times,serif',
+        padding: '10px',
+        resize: 'none',
+        overflow: 'auto',
+        textAlign: 'left'
+      },
+      editorRendered: {
+        display: this.state.description ? 'block' : 'none',
+        width: 'calc(100% - 20px)',
+        margin: '10px',
+        color: '#000',
+        overflow: 'auto',
+        textAlign: 'left',
+        fontSize: '16px'
       },
       option: {
         width: '50%',
@@ -619,10 +661,16 @@ class CoursePanel extends React.PureComponent {
                     </select>
                   </div>
                   <div style={styles.option} />
+                  <div style={{width: '100%'}}>Editor supports <a target='_blank' href='https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet'>Markdown</a> and <a target='_blank' href='https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json'>emojis</a></div>
+                  <textarea style={styles.editor} value={this.state.description} onChange={this.onMarkdownChange} />
                   <SMMButton text='Save' iconSrc='/img/submit.png' fontSize='13px' padding='3px' colorScheme={colorScheme} onClick={this.onCourseSubmit} />
                   <SMMButton text={this.state.shouldDelete ? 'Click again' : 'Delete'} iconSrc='/img/delete.png' fontSize='13px' padding='3px' onClick={this.onCourseDelete} />
                 </div>
               )}
+              <div className='description' style={styles.editorRendered} ref={x => {
+                this.renderer = x
+                if (x && this.state.description) x.innerHTML = emojify(marked(this.state.description))
+              }} />
               <div style={styles.imageLarge}>
                 <img style={styles.imgLarge} src={`${domain}/courseimg/${course.id}${course.vPrev ? `?v=${course.vPrev}` : ''}`} ref={v => { this.prev = v }} />
               </div>

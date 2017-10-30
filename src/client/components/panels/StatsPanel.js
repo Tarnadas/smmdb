@@ -23,8 +23,10 @@ class StatsPanel extends React.PureComponent {
         })).body
         this.props.dispatch(setStats(stats))
       } catch (err) {
-        if (!err.response) {
+        if (err.response) {
           console.error(err.response.body)
+        } else {
+          console.error(err)
         }
       }
     })()
