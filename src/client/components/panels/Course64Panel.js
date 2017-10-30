@@ -1,9 +1,9 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 import LazyLoad from 'react-lazyload'
 import got from 'got'
+import marked from 'marked'
+import { emojify } from 'node-emoji'
 
 import { resolve } from 'url'
 
@@ -27,6 +27,7 @@ import {
 
 const MAX_LENGTH_TITLE = 32
 const MAX_LENGTH_VIDEOID = 12
+const MAX_LENGTH_DESCRIPTION = 300
 const VIDEO_ID = /^[a-z0-9A-Z| |.|\\_|\\-]+$/
 
 class Course64Panel extends React.PureComponent {
@@ -38,10 +39,11 @@ class Course64Panel extends React.PureComponent {
       changed: false,
       saved: false,
       title: course.title,
-      videoId: course.videoid ? course.videoid : '',
+      videoId: course.videoid || '',
       difficulty: course.difficulty,
       stars: 0,
       theme: '',
+      description: course.description || '',
       shouldDelete: false
     }
     this.onShowDetails = this.onShowDetails.bind(this)
@@ -56,6 +58,7 @@ class Course64Panel extends React.PureComponent {
     this.onReuploadComplete = this.onReuploadComplete.bind(this)
     this.onUploadImageComplete = this.onUploadImageComplete.bind(this)
     this.onStar = this.onStar.bind(this)
+    this.onMarkdownChange = this.onMarkdownChange.bind(this)
   }
   componentWillReceiveProps (nextProps, nextContext) {
     const course = nextProps.course.toJS()
@@ -66,7 +69,7 @@ class Course64Panel extends React.PureComponent {
     }
     if (course.videoid !== this.state.videoId) {
       this.setState({
-        videoId: course.videoid ? course.videoid : ''
+        videoId: course.videoid || ''
       })
     }
     if (course.difficulty !== this.state.difficulty) {
@@ -81,7 +84,12 @@ class Course64Panel extends React.PureComponent {
     }
     if (course.theme !== this.state.theme) {
       this.setState({
-        theme: course.theme ? course.theme : ''
+        theme: course.theme || ''
+      })
+    }
+    if (course.description !== this.state.description) {
+      this.setState({
+        description: course.description
       })
     }
   }
@@ -104,7 +112,8 @@ class Course64Panel extends React.PureComponent {
       this.state.videoId === course.videoid &&
       this.state.difficulty === course.difficulty &&
       this.state.stars === course.stars &&
-      this.state.theme === course.theme) return;
+      this.state.theme === course.theme &&
+      this.state.description === course.description) return;
     (async () => {
       try {
         const update = {
@@ -112,7 +121,8 @@ class Course64Panel extends React.PureComponent {
           videoid: this.state.videoId,
           difficulty: this.state.difficulty,
           stars: this.state.stars,
-          theme: this.state.theme
+          theme: this.state.theme,
+          description: this.state.description
         }
         if (!VIDEO_ID.test(update.videoid) && update.videoid !== '') {
           delete update.videoid
@@ -164,10 +174,14 @@ class Course64Panel extends React.PureComponent {
           })
           this.props.onCourseDelete(this.props.id)
         } catch (err) {
-          if (err.response.body.includes('not found')) {
-            this.props.onCourseDelete(this.props.id)
+          if (err.response) {
+            if (err.response.body.includes('not found')) {
+              this.props.onCourseDelete(this.props.id)
+            } else {
+              console.error(err.response.body)
+            }
           } else {
-            console.error(err.response.body)
+            console.error(err)
           }
         }
       })()
@@ -260,6 +274,13 @@ class Course64Panel extends React.PureComponent {
         console.error(err)
       }
     }
+  }
+  onMarkdownChange (e) {
+    this.setState({
+      description: e.target.value.replace(/<.*>/g, '').substr(0, MAX_LENGTH_DESCRIPTION),
+      changed: true,
+      saved: false
+    })
   }
   render () {
     const screenSize = this.props.screenSize
@@ -384,6 +405,27 @@ class Course64Panel extends React.PureComponent {
         height: '32px',
         width: '100%',
         fontSize: '18px'
+      },
+      editor: {
+        width: 'calc(100% - 20px)',
+        height: '150px',
+        margin: '10px',
+        backgroundColor: '#fffff5',
+        color: '#000',
+        fontFamily: 'Georgia,Cambria,"Times New Roman",Times,serif',
+        padding: '10px',
+        resize: 'none',
+        overflow: 'auto',
+        textAlign: 'left'
+      },
+      editorRendered: {
+        display: this.state.description ? 'block' : 'none',
+        width: 'calc(100% - 20px)',
+        margin: '10px',
+        color: '#000',
+        overflow: 'auto',
+        textAlign: 'left',
+        fontSize: '16px'
       }
     }
     return (
@@ -542,10 +584,16 @@ class Course64Panel extends React.PureComponent {
                 </select>
               </div>
               <div style={styles.option} />
+              <div style={{width: '100%'}}>Editor supports <a target='_blank' href='https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet'>Markdown</a> and <a target='_blank' href='https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json'>:emojis:</a></div>
+              <textarea style={styles.editor} value={this.state.description} onChange={this.onMarkdownChange} />
               <SMMButton text='Save' iconSrc='/img/submit.png' fontSize='13px' padding='3px' colorScheme={colorScheme} onClick={this.onCourseSubmit} />
               <SMMButton text={this.state.shouldDelete ? 'Click again' : 'Delete'} iconSrc='/img/delete.png' fontSize='13px' padding='3px' onClick={this.onCourseDelete} />
             </div>
           }
+          <div className='description' style={styles.editorRendered} ref={x => {
+            this.renderer = x
+            if (x && this.state.description) x.innerHTML = emojify(marked(this.state.description))
+          }} />
           <CourseDownloadButton is64 courseId={course.id} screenSize={screenSize} />
           {
             course.videoid &&

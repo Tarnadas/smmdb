@@ -79,7 +79,7 @@ export default class Course64 {
     }
   }
 
-  static async update (courseDB, { title, videoid, difficulty, stars, theme }) {
+  static async update (courseDB, { title, videoid, difficulty, stars, theme, description }) {
     const update = {}
     if (title) {
       update.title = title
@@ -100,6 +100,10 @@ export default class Course64 {
     if (theme != null) {
       update.theme = theme
       courseDB.theme = theme
+    }
+    if (description != null) {
+      update.description = description
+      courseDB.description = description
     }
     update.lastmodified = Math.trunc((new Date()).getTime() / 1000)
     courseDB.lastmodified = update.lastmodified

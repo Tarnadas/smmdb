@@ -540,7 +540,7 @@ export default class API {
         }
       } catch (err) {}
     }
-    if (req.body.description != null) update.description = req.body.description.replace(/<.*>/g, '')
+    if (req.body.description != null) update.description = req.body.description.replace(/<.*>/g, '').substr(0, 300)
     await Course.update(course, courseData, update)
     if (apiData.format === 'ini') {
       res.set('Content-type', 'text/plain')
@@ -604,6 +604,7 @@ export default class API {
         }
       } catch (err) {}
     }
+    if (req.body.description != null) courseData.description = req.body.description.replace(/<.*>/g, '').substr(0, 300)
     await Course64.update(course, courseData)
     res.json(course)
   }

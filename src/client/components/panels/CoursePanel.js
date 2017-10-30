@@ -30,6 +30,7 @@ const MAX_LENGTH_TITLE = 32
 const MAX_LENGTH_MAKER = 10
 const MAX_LENGTH_NNID = 19
 const MAX_LENGTH_VIDEOID = 12
+const MAX_LENGTH_DESCRIPTION = 300
 const VIDEO_ID = /^[a-z0-9A-Z| |.|\\_|\\-]+$/
 
 class CoursePanel extends React.PureComponent {
@@ -76,12 +77,12 @@ class CoursePanel extends React.PureComponent {
     }
     if (nextProps.course.get('nintendoid') !== this.state.nnId) {
       this.setState({
-        nnId: nextProps.course.get('nintendoid') ? nextProps.course.get('nintendoid') : ''
+        nnId: nextProps.course.get('nintendoid') || ''
       })
     }
     if (nextProps.course.get('videoid') !== this.state.videoId) {
       this.setState({
-        videoId: nextProps.course.get('videoid') ? nextProps.course.get('videoid') : ''
+        videoId: nextProps.course.get('videoid') || ''
       })
     }
     if (nextProps.course.get('difficulty') !== this.state.difficulty) {
@@ -281,7 +282,7 @@ class CoursePanel extends React.PureComponent {
   }
   onMarkdownChange (e) {
     this.setState({
-      description: e.target.value.replace(/<.*>/g, ''),
+      description: e.target.value.replace(/<.*>/g, '').substr(0, MAX_LENGTH_DESCRIPTION),
       changed: true,
       saved: false
     })
@@ -661,7 +662,7 @@ class CoursePanel extends React.PureComponent {
                     </select>
                   </div>
                   <div style={styles.option} />
-                  <div style={{width: '100%'}}>Editor supports <a target='_blank' href='https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet'>Markdown</a> and <a target='_blank' href='https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json'>emojis</a></div>
+                  <div style={{width: '100%'}}>Editor supports <a target='_blank' href='https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet'>Markdown</a> and <a target='_blank' href='https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json'>:emojis:</a></div>
                   <textarea style={styles.editor} value={this.state.description} onChange={this.onMarkdownChange} />
                   <SMMButton text='Save' iconSrc='/img/submit.png' fontSize='13px' padding='3px' colorScheme={colorScheme} onClick={this.onCourseSubmit} />
                   <SMMButton text={this.state.shouldDelete ? 'Click again' : 'Delete'} iconSrc='/img/delete.png' fontSize='13px' padding='3px' onClick={this.onCourseDelete} />
