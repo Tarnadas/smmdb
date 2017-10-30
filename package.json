@@ -103,7 +103,6 @@
   "scripts": {
     "start": "npm run build-dev&& node ./build/server",
     "start-electron": "webpack --env=electron-dev&& electron ./build/electron/main.js",
-    "start-net64": "webpack --env=net64-dev&& electron ./build/net64/main.js",
     "start-pm2": "npm run build-dev&& pm2 ./build/server",
     "restart-pm2": "npm run build-dev&& pm2 restart all",
     "build-dev": "webpack --env=dev",
