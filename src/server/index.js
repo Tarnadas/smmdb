@@ -236,6 +236,7 @@ async function main () {
         apiData = qs.parse(req.url.split('?', 2)[1])
       }
 
+      res.set('Access-Control-Allow-Origin', '*')
       if (!apiCall) {
         res.status(400).send('Wrong syntax')
       } else if (apiCall === 'getstats') {
