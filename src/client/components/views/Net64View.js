@@ -53,8 +53,11 @@ class Net64View extends React.PureComponent {
             <SMMButton link='https://sm64o.com/' blank text='Net64 Forum' iconSrc='/img/sm64o.png' iconColor='bright' noText />
           }
           {
-            IS_PARTNERED &&
-            <SMMButton link='https://discord.gg/k9QMFaB' blank text='Net64 Discord' iconSrc='/img/discord.svg' iconColor='bright' />
+            IS_PARTNERED ? (
+              <SMMButton link='https://discord.gg/k9QMFaB' blank text='Net64 Discord' iconSrc='/img/discord.svg' iconColor='bright' />
+            ) : (
+              <SMMButton link='https://discord.gg/SPZsgSe' blank text='SMMDB Discord' iconSrc='/img/discord.svg' iconColor='bright' />
+            )
           }
         </div>
         <Net64ServerArea />
