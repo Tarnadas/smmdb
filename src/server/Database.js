@@ -2,11 +2,11 @@ import {
   MongoClient, ObjectID
 } from 'mongodb'
 import jimp from 'jimp'
-import imageminWebp from 'imagemin-webp'
+/* import imageminWebp from 'imagemin-webp'
 import ProgressBar from 'progress'
 
 import fs from 'fs'
-import path from 'path'
+import path from 'path' */
 
 import { log } from './scripts/util'
 
@@ -124,7 +124,11 @@ export default class Database {
   static async getImage (id, full, webp = false) {
     try {
       const course = (await this.courseData.find({ '_id': ObjectID(id) }).toArray())[0]
-      return full ? webp ? course.thumbnailWebp.buffer : course.thumbnail.buffer : webp ? course.thumbnailPreviewWebp.buffer : course.thumbnailPreview.buffer
+      return full ? (
+        webp ? course.thumbnailWebp.buffer : course.thumbnail.buffer
+      ) : (
+        webp ? course.thumbnailPreviewWebp.buffer : course.thumbnailPreview.buffer
+      )
     } catch (err) {
       return null
     }

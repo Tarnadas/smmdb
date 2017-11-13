@@ -9,6 +9,8 @@ import {
   ScreenSize
 } from '../../reducers/mediaQuery'
 
+const IS_PARTNERED = false
+
 class Net64View extends React.PureComponent {
   render () {
     const screenSize = this.props.screenSize
@@ -46,8 +48,14 @@ class Net64View extends React.PureComponent {
           <SMMButton link='https://github.com/Tarnadas/net64plus/releases/download/1.0.1/Net64plus_win32-x64.7z' blank text='Get the Client' iconSrc='/img/net64.svg' iconColor='bright' />
           <SMMButton link='https://github.com/Tarnadas/net64plus' blank text='Client Source' iconSrc='/img/github.svg' iconColor='bright' />
           <SMMButton link='https://github.com/Tarnadas/net64plus-ded' blank text='Get the Server' iconSrc='/img/github.svg' iconColor='bright' />
-          <SMMButton link='https://sm64o.com/' blank text='Net64 Forum' iconSrc='/img/sm64o.png' iconColor='bright' noText />
-          <SMMButton link='https://discord.gg/k9QMFaB' blank text='Net64 Discord' iconSrc='/img/discord.svg' iconColor='bright' />
+          {
+            IS_PARTNERED &&
+            <SMMButton link='https://sm64o.com/' blank text='Net64 Forum' iconSrc='/img/sm64o.png' iconColor='bright' noText />
+          }
+          {
+            IS_PARTNERED &&
+            <SMMButton link='https://discord.gg/k9QMFaB' blank text='Net64 Discord' iconSrc='/img/discord.svg' iconColor='bright' />
+          }
         </div>
         <Net64ServerArea />
       </div>
