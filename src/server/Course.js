@@ -27,6 +27,7 @@ export default class Course {
 
   static async prepare (course, accountId, filter) {
     if (accountId) course.starred = await Database.isCourseStarred(course._id, accountId)
+    course.uploader = (await Account.getAccountByAccountId(course.owner)).username
     course.toJSON = Course.toJSON.bind(course, filter)
     return course
   }
@@ -34,7 +35,6 @@ export default class Course {
   static toJSON (filter) {
     let result = Object.assign({}, this)
     result.id = this._id
-    result.uploader = Account.getAccount(result.owner).username
     if (result.stars == null) result.stars = 0
     delete result._id
     if (filter) {

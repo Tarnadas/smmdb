@@ -517,7 +517,7 @@ class CoursePanel extends React.PureComponent {
               } />
             </div>
             <div style={styles.title}>
-              { course.title }
+              { course.title } by { course.maker }
             </div>
             <div style={styles.close} onClick={this.onHideDetails}>
               <img style={{width: '100%'}} src='/img/cancel.svg' />
@@ -529,11 +529,14 @@ class CoursePanel extends React.PureComponent {
                 </LazyLoad>
               </div>
             </div>
-            <div style={styles.mii}>
-              <div style={styles.miiImgWrapper}>
-                <img style={{width: '100%'}} src='/img/mii_default.png' />
+            {
+              false &&
+              <div style={styles.mii}>
+                <div style={styles.miiImgWrapper}>
+                  <img style={{width: '100%'}} src='/img/mii_default.png' />
+                </div>
               </div>
-            </div>
+            }
             <div style={styles.footer}>
               <div style={styles.stats}>
                 <img onClick={this.onStar} style={styles.statsStars} src={course.starred ? '/img/starred.png' : '/img/unstarred.png'} />
@@ -612,7 +615,7 @@ class CoursePanel extends React.PureComponent {
               </div>
               <div style={styles.maker}>
                 <div style={styles.makerName}>
-                  { course.maker }
+                  { course.uploader }
                 </div>
               </div>
             </div>

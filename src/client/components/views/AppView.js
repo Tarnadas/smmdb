@@ -93,9 +93,9 @@ class AppView extends React.PureComponent {
       this.props.dispatch(mediaQuery(ScreenSize.LARGE))
     } else if (queryMedium.matches) {
       this.props.dispatch(mediaQuery(ScreenSize.MEDIUM))
-    } else if (querySmall.matches) {
+    } else if (querySmall.matches && !process.env.ELECTRON) {
       this.props.dispatch(mediaQuery(ScreenSize.SMALL))
-    } else if (queryMobile.matches) {
+    } else if (queryMobile.matches && !process.env.ELECTRON) {
       this.props.dispatch(mediaQuery(ScreenSize.SUPER_SMALL))
     }
   }
