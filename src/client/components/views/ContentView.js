@@ -14,7 +14,7 @@ import Upload64View from './Upload64View'
 import ProfileView from './ProfileView'
 import FAQView from './FAQView'
 import SocialView from './SocialView'
-import BlogView from './BlogView'
+// import BlogView from './BlogView'
 import PrivacyPolicyView from './PrivacyPolicyView'
 import LegalNoticeView from './LegalNoticeView'
 
@@ -56,6 +56,9 @@ class ContentView extends React.PureComponent {
           <Upload64View shouldUpdate={this.props.shouldUpdate} setFetchCourses={this.props.setFetchCourses} isServer={this.props.isServer} />
         )} />
         <Route path='/net64' render={() => (
+          <Net64View isServer={this.props.isServer} />
+        )} />
+        <Route path='/sm64o' render={() => (
           <Net64View isServer={this.props.isServer} />
         )} />
         <Route path='/profile' component={ProfileView} />

@@ -9,7 +9,7 @@ import {
   ScreenSize
 } from '../../reducers/mediaQuery'
 
-const IS_PARTNERED = false
+const IS_PARTNERED = true
 
 class Net64View extends React.PureComponent {
   render () {
