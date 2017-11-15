@@ -24,7 +24,7 @@ class SaveFileDetailsPanel extends React.PureComponent {
     this.onStarCourse = this.onStarCourse.bind(this)
   }
   onDeleteCourse () {
-    this.props.dispatch(deleteCourse(this.props.save.get('smmdbId'), this.props.courseId))
+    this.props.dispatch(deleteCourse(this.props.save ? this.props.save.get('smmdbId') : null, this.props.courseId))
   }
   async onStarCourse () {
     try {
@@ -59,15 +59,13 @@ class SaveFileDetailsPanel extends React.PureComponent {
         display: 'none'
       },
       overflow: {
+        height: '100%',
         display: 'flex',
         position: 'absolute',
         zIndex: '100',
-        top: '0',
-        width: 'auto',
+        top: '0'
       },
       div: {
-        width: 'auto',
-        height: 'auto',
         backgroundColor: '#0d633d',
         border: '12px solid #42c074',
         margin: 'auto',
@@ -109,7 +107,6 @@ class SaveFileDetailsPanel extends React.PureComponent {
         margin: '4px'
       },
       body: {
-        height: 'auto'
       },
       bodyImg: {
         margin: '20px',
@@ -126,8 +123,6 @@ class SaveFileDetailsPanel extends React.PureComponent {
         width: 'calc(100% - 400px)'
       },
       stars: {
-        width: 'auto',
-        height: 'auto',
         color: '#fff',
         fontSize: '18px',
         margin: '0 10px 10px 10px'
@@ -140,7 +135,6 @@ class SaveFileDetailsPanel extends React.PureComponent {
         textAlign: 'center'
       },
       footerImg: {
-        width: 'auto',
         height: '81px'
       }
     }
@@ -160,12 +154,16 @@ class SaveFileDetailsPanel extends React.PureComponent {
             <img style={styles.bodyImg} src={`${path}/thumbnail1.jpg`} />
             <div style={styles.navigation}>
               {
-                save &&
+                save && save.smmdbId &&
                 <div style={styles.stars}>{ save.stars } stars on SMMDB</div>
               }
               {
-                save && this.props.apiKey &&
-                <SMMButton text={`${save.starred ? 'Unstar' : 'Star'} course on SMMDB`} iconSrc='/img/starred.png' padding='3px' onClick={this.onStarCourse} />
+                save && save.smmdbId && this.props.apiKey &&
+                <SMMButton
+                  text={`${save.starred ? 'Unstar' : 'Star'} course on SMMDB`}
+                  iconSrc='/img/starred.png'
+                  padding='3px'
+                  onClick={this.onStarCourse} />
               }
               <SMMButton text='Delete course' iconSrc='/img/delete.png' padding='3px' onClick={this.onDeleteCourse} />
             </div>

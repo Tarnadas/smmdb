@@ -26,10 +26,10 @@ export default class ChangeViewButton extends React.PureComponent {
     const hover = this.state.hover
     const styles = {
       outer: {
+        display: 'flex',
         margin: '14px',
         zIndex: '10',
         height: '32px',
-        width: 'auto',
         backgroundColor: '#fff',
         borderRadius: '4px',
         boxSizing: 'border-box',
@@ -51,9 +51,8 @@ export default class ChangeViewButton extends React.PureComponent {
         borderRadius: '2px'
       },
       divImg: {
-        float: 'left',
         width: '32px',
-        height: '32px',
+        height: '32px'
       },
       divImgInner: {
         margin: '4px 4px 0 0',

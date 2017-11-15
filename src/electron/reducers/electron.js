@@ -1,9 +1,7 @@
-import {
-  List, Map, fromJS
-} from 'immutable'
+import { List, Map, fromJS } from 'immutable'
 
-import * as fs from 'fs'
-import * as path from 'path'
+import fs from 'fs'
+import path from 'path'
 
 export const CEMU_SAVE_DATA = {
   smmdb: {},
@@ -44,17 +42,23 @@ export default function electron (state, action) {
         saveState(state)
         return state
       case 'SET_SAVE_COURSE':
-        state = state.setIn(['appSaveData', 'cemuSaveData', state.get('currentSave'), 'save', String(action.courseId)], action.course)
+        state = state.setIn(
+          ['appSaveData', 'cemuSaveData', state.get('currentSave'), 'save', String(action.courseId)],
+          action.course)
         saveState(state)
         return state
       case 'START_DOWNLOAD_COURSE':
         state = state.setIn(['currentDownloads', action.courseId], List([0, action.dataLength]))
         return state
       case 'PROGRESS_DOWNLOAD_COURSE':
-        state = state.setIn(['currentDownloads', action.courseId, '0'], state.getIn(['currentDownloads', action.courseId, '0']) + action.dataLength)
+        state = state.setIn(
+          ['currentDownloads', action.courseId, '0'],
+          state.getIn(['currentDownloads', action.courseId, '0']) + action.dataLength)
         return state
       case 'FINISH_DOWNLOAD_COURSE':
-        state = state.setIn(['currentDownloads', action.smmdbId, '0'], state.getIn(['currentDownloads', action.smmdbId, '1']))
+        state = state.setIn(
+          ['currentDownloads', action.smmdbId, '0'],
+          state.getIn(['currentDownloads', action.smmdbId, '1']))
         state = state.setIn(['appSaveData', 'downloads', action.smmdbId], Map(action.course))
         saveState(state)
         return state

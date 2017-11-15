@@ -292,7 +292,7 @@ class CoursePanel extends React.PureComponent {
     const course = this.props.course.toJS()
     const style = parseInt(course.gameStyle)
     const colorScheme = this.state.changed ? COLOR_SCHEME.RED : (this.state.saved ? COLOR_SCHEME.GREEN : COLOR_SCHEME.YELLOW)
-    const modified = this.props.downloadedCourse && this.props.downloadedCourse.get('modified') !== this.props.course.lastmodified
+    const modified = this.props.downloadedCourse && this.props.downloadedCourse.get('modified') !== course.lastmodified
     const p = this.props.progress && this.props.progress.toJS()
     const progress = (p && (100 * p[0] / p[1])) || (this.props.downloadedCourse && 100)
     const saveId = this.props.saveId

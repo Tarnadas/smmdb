@@ -1,18 +1,10 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 
 import SMMButton from '../../../client/components/buttons/SMMButton'
-import {
-  addApiKey
-} from '../../actions'
-import {
-  setAccountData
-} from '../../../client/actions'
-import {
-  initAccount
-} from '../../renderer'
+import { addApiKey } from '../../actions'
+import { setAccountData } from '../../../client/actions'
+import { initAccount } from '../../../shared/Account'
 
 export const LENGTH_API_KEY = 30
 
@@ -57,7 +49,11 @@ class EnterAPIKeyArea extends React.PureComponent {
       }
     }
     return (
-      <div>
+      <div style={{
+        height: '100%',
+        alignItems: 'center',
+        display: 'flex'
+      }}>
         <div style={styles.option}>
           <div style={styles.value}>
             Please enter your API key:

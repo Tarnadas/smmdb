@@ -75,34 +75,30 @@ class MainView extends React.PureComponent {
     const styles = {
       global: {
         display: 'flex',
-        flexWrap: 'wrap',
-        userSelect: 'none'
+        userSelect: 'none',
+        height: '100%'
       },
       content: {
         flex: '1 1 0%'
       },
       info: {
-        width: 'auto',
-        height: 'auto',
         margin: '20px 0',
         padding: '20px'
       },
       overflow: {
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'column',
         position: 'fixed',
+        width: '100%',
+        height: '100%',
         top: '0',
         left: '0',
         zIndex: '1000',
         background: 'rgba(0,0,0,0.4)'
       },
-      progress: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'column'
-      },
       progressTitle: {
-        width: 'auto',
-        height: 'auto',
         margin: '20px',
         fontSize: '24px',
         color: '#fff',
@@ -142,10 +138,8 @@ class MainView extends React.PureComponent {
             {
               isFilling &&
               <div style={styles.overflow}>
-                <div style={styles.progress}>
-                  <div style={styles.progressTitle}>Adding courses to save</div>
-                  <div style={styles.progressBar} />
-                </div>
+                <div style={styles.progressTitle}>Adding courses to save</div>
+                <div style={styles.progressBar} />
               </div>
             }
             <SideBarArea onClick={this.handleClick} view={this.state.currentView}>

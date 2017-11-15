@@ -41,8 +41,8 @@ export default function saveFileMiddleware (saveFileEditor) {
         ], [
           onStart, onProgress, onFinish, action.smmdbId, action.modified
         ], action.courseId && [
-            onAddFinish, getState().getIn(['electron', 'cemuSave']), action.smmdbId
-          ]
+          onAddFinish, getState().getIn(['electron', 'cemuSave']), action.smmdbId
+        ]
         )
         break
       case 'SAVE_DELETE_SELECTED':

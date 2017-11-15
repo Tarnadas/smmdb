@@ -129,7 +129,10 @@ class LoadSaveView extends React.PureComponent {
     const styles = {
       global: {
         width: '100%',
-        height: '100%'
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center'
       },
       center: {
         display: 'flex',
@@ -140,12 +143,7 @@ class LoadSaveView extends React.PureComponent {
         height: '100%'
       },
       loading: {
-        position: 'fixed',
-        top: '0',
-        right: '0',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
+        position: 'absolute'
       },
       text: {
         color: '#323245',
@@ -181,9 +179,7 @@ class LoadSaveView extends React.PureComponent {
         }
         {
           this.state.loading &&
-            <div style={styles.loading}>
-              <img src={'/img/load.gif'} />
-            </div>
+          <img style={styles.loading} src={'/img/load.gif'} />
         }
         {
           this.state.showApiKey &&

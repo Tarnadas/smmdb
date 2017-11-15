@@ -153,7 +153,14 @@ class SaveView extends React.Component {
         const courseName = `course${String(i).padStart(3, '000')}`
         const course = courses.hasOwnProperty(courseName) ? courses[courseName] : null
         yield (
-          <SaveFilePanel key={i} isSelected={selected.get(i)} onClick={ctrl ? self.onClickCtrl.bind(null, i) : shift ? self.onClickShift.bind(null, i) : showSaveDetails} course={course} save={save.get(String(i))} courseId={i} />
+          <SaveFilePanel
+            key={i}
+            isSelected={selected.get(i)}
+            onClick={ctrl ? self.onClickCtrl.bind(null, i) : shift ? self.onClickShift.bind(null, i) : showSaveDetails}
+            course={course}
+            save={save.get(String(i))}
+            courseId={i}
+          />
         )
       }
     })())
@@ -162,6 +169,7 @@ class SaveView extends React.Component {
     const courses = this.props.cemuSave.courses
     const styles = {
       div: {
+        height: '100%',
         display: 'flex',
         justifyContent: 'center',
         padding: '30px',
