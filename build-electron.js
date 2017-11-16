@@ -3,7 +3,11 @@ const fs = require('fs')
 const path = require('path')
 
 const packageJson = JSON.parse(fs.readFileSync('./package.json'))
-const out = path.normalize(`./build/release/${packageJson.clientVersion}`)
+let out = path.normalize('./build/release')
+if (!fs.existsSync(out)) {
+  fs.mkdirSync(out)
+}
+out = path.normalize(`./build/release/${packageJson.clientVersion}`)
 if (!fs.existsSync(out)) {
   fs.mkdirSync(out)
 }
