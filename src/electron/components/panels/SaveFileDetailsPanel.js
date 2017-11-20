@@ -1,21 +1,13 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
-import {
-  Map
-} from 'immutable'
+import { connect } from 'react-redux'
+import { Map } from 'immutable'
 import got from 'got'
 
 import { resolve } from 'url'
 
 import SMMButton from '../../../client/components/buttons/SMMButton'
-import {
-  deleteCourse, setSaveCourse
-} from '../../actions'
-import {
-  domain
-} from '../../../static'
+import { deleteCourse, setSaveCourse } from '../../actions'
+import { domain } from '../../../static'
 
 class SaveFileDetailsPanel extends React.PureComponent {
   constructor (props) {

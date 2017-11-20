@@ -1,24 +1,13 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
-import {
-  Route, withRouter
-} from 'react-router-dom'
+import { connect } from 'react-redux'
+import { Route, withRouter } from 'react-router-dom'
 import got from 'got'
 
 import { resolve } from 'url'
 import { stringify } from 'querystring'
 
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
-import {
-  setCourses64, deleteCourse64, resetFilter, resetOrder
-} from '../../actions'
-import {
-  domain
-} from '../../../static'
+import { ScreenSize } from '../../reducers/mediaQuery'
+import { setCourses64, deleteCourse64, resetFilter, resetOrder } from '../../actions'
 
 import Course64Panel from '../panels/Course64Panel'
 import AmazonPanel from '../panels/AmazonPanel'
@@ -57,7 +46,7 @@ class Courses64View extends React.PureComponent {
   async fetchCourses (shouldConcat = false, limit = LIMIT) {
     try {
       const apiKey = this.props.apiKey
-      const courses = (await got(resolve(domain, `/api/getcourses64?limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}${this.queryString ? `&${this.queryString}` : ''}`), Object.assign({
+      const courses = (await got(resolve(process.env.DOMAIN, `/api/getcourses64?limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}${this.queryString ? `&${this.queryString}` : ''}`), Object.assign({
         json: true,
         useElectronNet: false
       }, this.props.apiKey ? {

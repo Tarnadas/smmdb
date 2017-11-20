@@ -1,8 +1,11 @@
 const webpack = require('webpack')
-const path = require('path')
-
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
+
+const path = require('path')
+
+const DEV_PORT = 80
+const DEV_DOMAIN = 'http://localhost'
 
 module.exports = [
   {
@@ -27,7 +30,9 @@ module.exports = [
     plugins: [
       new webpack.EnvironmentPlugin({
         NODE_ENV: 'development',
-        IS_SERVER: false
+        IS_SERVER: false,
+        PORT: DEV_PORT,
+        DOMAIN: DEV_DOMAIN
       }),
       // new webpack.optimize.ModuleConcatenationPlugin(),
       new HtmlWebpackPlugin({
@@ -84,7 +89,9 @@ module.exports = [
     plugins: [
       new webpack.EnvironmentPlugin({
         NODE_ENV: 'development',
-        IS_SERVER: true
+        IS_SERVER: true,
+        PORT: DEV_PORT,
+        DOMAIN: DEV_DOMAIN
       }),
       new webpack.IgnorePlugin(/^.*electron\/components.*$/)
     ],

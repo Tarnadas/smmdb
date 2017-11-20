@@ -1,22 +1,13 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
-import {
-  List, Map
-} from 'immutable'
+import { connect } from 'react-redux'
+import { List, Map } from 'immutable'
 import got from 'got'
 
 import { resolve } from 'url'
 
 import SaveFilePanel from '../panels/SaveFilePanel'
 import SaveFileDetailsPanel from '../panels/SaveFileDetailsPanel'
-import {
-  setSelected, setSaveData
-} from '../../actions'
-import {
-  domain
-} from '../../../static'
+import { setSelected, setSaveData } from '../../actions'
 
 class SaveView extends React.Component {
   constructor (props) {
@@ -46,7 +37,7 @@ class SaveView extends React.Component {
     document.addEventListener('keyup', this.onKeyUp);
     (async () => {
       const ids = this.props.save.map(x => x.get('smmdbId')).reduce((str, val) => (str + ',' + val))
-      const courses = (await got(resolve(domain, `/api/getcourses?ids=${ids}&filter=id,stars,starred`), Object.assign({
+      const courses = (await got(resolve(process.env.domain, `/api/getcourses?ids=${ids}&filter=id,stars,starred`), Object.assign({
         json: true,
         useElectronNet: false
       }, this.props.apiKey ? {
@@ -120,7 +111,9 @@ class SaveView extends React.Component {
         lastIndex: i
       })
     }
-    this.props.dispatch(setSelected(this.props.selected.set(i, true).map((x, i) => i >= min && i <= max && this.props.cemuSave.courses[`course${String(i).padStart(3, '000')}`])))
+    this.props
+      .dispatch(setSelected(this.props.selected.set(i, true)
+      .map((x, i) => i >= min && i <= max && this.props.cemuSave.courses[`course${String(i).padStart(3, '000')}`])))
   }
   showSaveDetails (course, save, courseId) {
     this.props.dispatch(setSelected(List()))
@@ -188,7 +181,14 @@ class SaveView extends React.Component {
     }
     return (
       <div style={styles.div}>
-        <SaveFileDetailsPanel course={this.state.course} save={this.state.save} courseId={this.state.courseId} apiKey={this.props.apiKey} onClick={this.hideSaveDetails} onSaveChange={this.setSaveCourse} />
+        <SaveFileDetailsPanel
+          course={this.state.course}
+          save={this.state.save}
+          courseId={this.state.courseId}
+          apiKey={this.props.apiKey}
+          onClick={this.hideSaveDetails}
+          onSaveChange={this.setSaveCourse}
+        />
         <div style={styles.ul} id='scroll'>
           {
             this.renderCourses(courses)

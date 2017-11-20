@@ -1,6 +1,4 @@
-import {
-  fromJS
-} from 'immutable'
+import { fromJS } from 'immutable'
 
 export default function blog (state, action) {
   if (!action) return state

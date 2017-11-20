@@ -1,10 +1,6 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
-import {
-  Route
-} from 'react-router-dom'
+import { connect } from 'react-redux'
+import { Route } from 'react-router-dom'
 
 import LoadSaveView from './LoadSaveView'
 import MainView from './MainView'

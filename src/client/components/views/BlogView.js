@@ -1,7 +1,5 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 import got from 'got'
 import marked from 'marked'
 import { emojify } from 'node-emoji'
@@ -10,12 +8,7 @@ import { resolve } from 'url'
 
 import SMMButton from '../buttons/SMMButton'
 import UploadImageArea from '../areas/UploadImageArea'
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
-import {
-  domain
-} from '../../../static'
+import { ScreenSize } from '../../reducers/mediaQuery'
 
 const UPDATE_INTERVAL = 10000
 
@@ -48,7 +41,7 @@ class BlogView extends React.PureComponent {
     }
   }
   async doUpdate (apiKey) {
-    const res = (await got(resolve(domain, `/api/blogpost`), {
+    const res = (await got(resolve(process.env.DOMAIN, `/api/blogpost`), {
       headers: {
         'Authorization': `APIKEY ${apiKey}`
       },
@@ -71,7 +64,7 @@ class BlogView extends React.PureComponent {
     this.timer = setInterval(this.updateBlogPost.bind(this), UPDATE_INTERVAL)
   }
   async updateBlogPost () {
-    const res = (await got(resolve(domain, `/api/blogpost`), {
+    const res = (await got(resolve(process.env.DOMAIN, `/api/blogpost`), {
       headers: {
         'Authorization': `APIKEY ${this.props.apiKey}`
       },
@@ -181,12 +174,23 @@ class BlogView extends React.PureComponent {
               {
                 this.state.compose ? (
                   <div style={styles.blog} className='blog'>
-                    <UploadImageArea type='blog' courseId={this.state._id} upload={blog.get(this.state._id)} onUploadComplete={null} />
+                    <UploadImageArea
+                      type='blog'
+                      courseId={this.state._id}
+                      upload={blog.get(this.state._id)}
+                      onUploadComplete={null}
+                    />
                     <textarea style={styles.editor} value={this.state.md} onChange={this.onChange} />
                     <div style={styles.editorRendered} ref={x => { this.renderer = x }} />
                   </div>
                 ) : (
-                  <SMMButton onClick={this.onCompose} text='Compose new Blog post' iconSrc='/img/compose.svg' iconColor='bright' padding='3px' />
+                  <SMMButton
+                    onClick={this.onCompose}
+                    text='Compose new Blog post'
+                    iconSrc='/img/compose.svg'
+                    iconColor='bright'
+                    padding='3px'
+                  />
                 )
               }
             </div>

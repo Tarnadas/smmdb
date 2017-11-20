@@ -1,19 +1,13 @@
-import {
-  ObjectID
-} from 'mongodb'
-import {
-  decompress, deserialize, loadCourse
-} from 'cemu-smm'
-import {
-  zip
-} from 'cross-unzip'
+import { ObjectID } from 'mongodb'
+import { decompress, deserialize, loadCourse } from 'cemu-smm'
+import { zip } from 'cross-unzip'
 import tmp from 'tmp'
 import fileType from 'file-type'
 import randomString from 'crypto-random-string'
 import imageminWebp from 'imagemin-webp'
 
 import { resolve, join } from 'path'
-import * as fs from 'fs'
+import fs from 'fs'
 
 import Account from './Account'
 import Database from './Database'

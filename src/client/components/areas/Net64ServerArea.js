@@ -1,18 +1,11 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 import got from 'got'
 
 import { resolve } from 'url'
 
 import Net64ServerPanel from '../panels/Net64ServerPanel'
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
-import {
-  domain
-} from '../../../static'
+import { ScreenSize } from '../../reducers/mediaQuery'
 
 class Net64ServerArea extends React.PureComponent {
   constructor (props) {
@@ -32,7 +25,7 @@ class Net64ServerArea extends React.PureComponent {
   async updateServers () {
     if (this.unmount) return
     try {
-      const servers = (await got(resolve(domain, `/api/getnet64servers`), {
+      const servers = (await got(resolve(process.env.DOMAIN, `/api/getnet64servers`), {
         json: true,
         useElectronNet: false
       })).body

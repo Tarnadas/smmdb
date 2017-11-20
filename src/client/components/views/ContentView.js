@@ -1,10 +1,6 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
-import {
-  Route, withRouter
-} from 'react-router-dom'
+import { connect } from 'react-redux'
+import { Route, withRouter } from 'react-router-dom'
 
 import MainView from './MainView'
 import CoursesView from './CoursesView'
@@ -18,9 +14,7 @@ import SocialView from './SocialView'
 import PrivacyPolicyView from './PrivacyPolicyView'
 import LegalNoticeView from './LegalNoticeView'
 
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
+import { ScreenSize } from '../../reducers/mediaQuery'
 import Net64View from './Net64View'
 
 class ContentView extends React.PureComponent {
@@ -44,16 +38,32 @@ class ContentView extends React.PureComponent {
       <div style={styles.content}>
         <Route exact path='/' component={MainView} />
         <Route path='/courses' render={() => (
-          <CoursesView shouldUpdate={this.props.shouldUpdate} setFetchCourses={this.props.setFetchCourses} isServer={this.props.isServer} />
+          <CoursesView
+            shouldUpdate={this.props.shouldUpdate}
+            setFetchCourses={this.props.setFetchCourses}
+            isServer={this.props.isServer}
+          />
         )} />
         <Route path='/courses64' render={() => (
-          <Courses64View shouldUpdate={this.props.shouldUpdate} setFetchCourses={this.props.setFetchCourses} isServer={this.props.isServer} />
+          <Courses64View
+            shouldUpdate={this.props.shouldUpdate}
+            setFetchCourses={this.props.setFetchCourses}
+            isServer={this.props.isServer}
+          />
         )} />
         <Route path='/upload' render={() => (
-          <UploadView shouldUpdate={this.props.shouldUpdate} setFetchCourses={this.props.setFetchCourses} isServer={this.props.isServer} />
+          <UploadView
+            shouldUpdate={this.props.shouldUpdate}
+            setFetchCourses={this.props.setFetchCourses}
+            isServer={this.props.isServer}
+          />
         )} />
         <Route path='/upload64' render={() => (
-          <Upload64View shouldUpdate={this.props.shouldUpdate} setFetchCourses={this.props.setFetchCourses} isServer={this.props.isServer} />
+          <Upload64View
+            shouldUpdate={this.props.shouldUpdate}
+            setFetchCourses={this.props.setFetchCourses}
+            isServer={this.props.isServer}
+          />
         )} />
         <Route path='/net64' render={() => (
           <Net64View isServer={this.props.isServer} />

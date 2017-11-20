@@ -1,7 +1,7 @@
 import React from 'react'
 
 const SAVE_FOLDER_VIEW = 0
-const SMMDB_VIEW = 1
+// const SMMDB_VIEW = 1
 
 export default class ChangeViewButton extends React.PureComponent {
   constructor (props) {
@@ -69,7 +69,12 @@ export default class ChangeViewButton extends React.PureComponent {
       }
     }
     return (
-      <div style={styles.outer} onClick={this.props.onClick} onMouseOver={this.onMouseOver} onMouseLeave={this.onMouseLeave}>
+      <div
+        style={styles.outer}
+        onClick={this.props.onClick}
+        onMouseOver={this.onMouseOver}
+        onMouseLeave={this.onMouseLeave}
+      >
         <div style={styles.inner}>
           {
             this.props.view === SAVE_FOLDER_VIEW ? 'MY COURSES' : 'SMMDB COURSES'

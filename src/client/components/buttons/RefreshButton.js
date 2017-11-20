@@ -1,11 +1,7 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 
-import {
-  applyFilter
-} from '../../actions'
+import { applyFilter } from '../../actions'
 
 class RefreshButton extends React.PureComponent {
   constructor (props) {

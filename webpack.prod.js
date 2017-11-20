@@ -1,12 +1,14 @@
 const webpack = require('webpack')
 const BabiliPlugin = require('babili-webpack-plugin')
-
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const WebpackMd5Hash = require('webpack-md5-hash')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const path = require('path')
+
+const PROD_PORT = 3000
+const PROD_DOMAIN = 'https://smmdb.ddns.net'
 
 module.exports = [
   {
@@ -38,7 +40,9 @@ module.exports = [
       new WebpackMd5Hash(),
       new webpack.EnvironmentPlugin({
         NODE_ENV: 'production',
-        IS_SERVER: false
+        IS_SERVER: false,
+        PORT: PROD_PORT,
+        DOMAIN: PROD_DOMAIN
       }),
       new webpack.optimize.CommonsChunkPlugin({
         name: 'vendor',
@@ -110,7 +114,9 @@ module.exports = [
     plugins: [
       new webpack.EnvironmentPlugin({
         NODE_ENV: 'production',
-        IS_SERVER: true
+        IS_SERVER: true,
+        PORT: PROD_PORT,
+        DOMAIN: PROD_DOMAIN
       }),
       new BabiliPlugin(),
       new webpack.IgnorePlugin(/^.*electron\/components.*$/)

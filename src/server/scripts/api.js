@@ -1,12 +1,10 @@
 import parseRange from 'range-parser'
 import fileType from 'file-type'
-import {
-  ObjectID
-} from 'mongodb'
+import { ObjectID } from 'mongodb'
 import { encode } from 'ini'
 
-import * as fs from 'fs'
-import * as path from 'path'
+import fs from 'fs'
+import path from 'path'
 
 import Database from '../Database'
 import Account from '../Account'

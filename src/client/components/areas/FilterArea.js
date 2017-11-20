@@ -1,22 +1,12 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
-import {
-  Link, withRouter
-} from 'react-router-dom'
-import {
-  push
-} from 'react-router-redux'
+import { connect } from 'react-redux'
+import { Link, withRouter } from 'react-router-dom'
+import { push } from 'react-router-redux'
 
 import SMMButton from '../buttons/SMMButton'
 import FilterCloseButton from '../buttons/FilterCloseButton'
-import {
-  applyFilter, setFilter
-} from '../../actions'
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
+import { applyFilter, setFilter } from '../../actions'
+import { ScreenSize } from '../../reducers/mediaQuery'
 
 const MAX_LENGTH_TITLE = 0x20
 const MAX_LENGTH_MAKER = 10
@@ -190,19 +180,34 @@ class FilterArea extends React.PureComponent {
           <div style={styles.value}>
             Title:
           </div>
-          <input style={styles.input} value={this.state.title} onChange={this.onTitleChange} onKeyPress={this.handleKeyPress} />
+          <input
+            style={styles.input}
+            value={this.state.title}
+            onChange={this.onTitleChange}
+            onKeyPress={this.handleKeyPress}
+          />
         </div><br />
         <div style={styles.option}>
           <div style={styles.value}>
             Maker:
           </div>
-          <input style={styles.input} value={this.state.maker} onChange={this.onMakerChange} onKeyPress={this.handleKeyPress} />
+          <input
+            style={styles.input}
+            value={this.state.maker}
+            onChange={this.onMakerChange}
+            onKeyPress={this.handleKeyPress}
+          />
         </div>
         <div style={styles.option}>
           <div style={styles.value}>
             Uploader:
           </div>
-          <input style={styles.input} value={this.state.uploader} onChange={this.onUploaderChange} onKeyPress={this.handleKeyPress} />
+          <input
+            style={styles.input}
+            value={this.state.uploader}
+            onChange={this.onUploaderChange}
+            onKeyPress={this.handleKeyPress}
+          />
         </div>
         <div style={styles.option}>
           <div style={styles.value}>
@@ -210,15 +215,23 @@ class FilterArea extends React.PureComponent {
           </div>
           <div style={styles.date}>
             <span>from </span>
-            <input style={styles.dateInput} type='datetime-local' value={
-              isNaN(this.state.lastmodifiedfrom) ? ''
+            <input
+              style={styles.dateInput}
+              type='datetime-local'
+              value={isNaN(this.state.lastmodifiedfrom) ? ''
                 : (new Date(this.state.lastmodifiedfrom * 1000 - (new Date()).getTimezoneOffset() * 60000)).toISOString().slice(0, -1)
-            } onChange={this.onLastModifiedFromChange} /><br />
+              }
+              onChange={this.onLastModifiedFromChange}
+            /><br />
             <span>to </span>
-            <input style={styles.dateInput} type='datetime-local' value={
-              isNaN(this.state.lastmodifiedto) ? ''
+            <input
+              style={styles.dateInput}
+              type='datetime-local'
+              value={isNaN(this.state.lastmodifiedto) ? ''
                 : (new Date(this.state.lastmodifiedto * 1000 - (new Date()).getTimezoneOffset() * 60000)).toISOString().slice(0, -1)
-            } onChange={this.onLastModifiedToChange} />
+              }
+              onChange={this.onLastModifiedToChange}
+            />
           </div>
         </div>
         <div style={styles.option}>
@@ -227,15 +240,23 @@ class FilterArea extends React.PureComponent {
           </div>
           <div style={styles.date}>
             <span>from </span>
-            <input style={styles.dateInput} type='datetime-local' value={
-              isNaN(this.state.uploadedfrom) ? ''
+            <input
+              style={styles.dateInput}
+              type='datetime-local'
+              value={isNaN(this.state.uploadedfrom) ? ''
                 : (new Date(this.state.uploadedfrom * 1000 - (new Date()).getTimezoneOffset() * 60000)).toISOString().slice(0, -1)
-            } onChange={this.onUploadedFromChange} /><br />
+              }
+              onChange={this.onUploadedFromChange}
+            /><br />
             <span>to </span>
-            <input style={styles.dateInput} type='datetime-local' value={
-              isNaN(this.state.uploadedto) ? ''
+            <input
+              style={styles.dateInput}
+              type='datetime-local'
+              value={isNaN(this.state.uploadedto) ? ''
                 : (new Date(this.state.uploadedto * 1000 - (new Date()).getTimezoneOffset() * 60000)).toISOString().slice(0, -1)
-            } onChange={this.onUploadedToChange} />
+              }
+              onChange={this.onUploadedToChange}
+            />
           </div>
         </div>
         <div style={styles.option}>

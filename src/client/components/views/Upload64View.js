@@ -1,20 +1,11 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 import got from 'got'
 
 import { resolve } from 'url'
 
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
-import {
-  setCoursesSelf64, deleteCourseSelf64, deleteCourseUploaded64
-} from '../../actions'
-import {
-  domain
-} from '../../../static'
+import { ScreenSize } from '../../reducers/mediaQuery'
+import { setCoursesSelf64, deleteCourseSelf64, deleteCourseUploaded64 } from '../../actions'
 import Course64Panel from '../panels/Course64Panel'
 import ProgressPanel from '../panels/ProgressPanel'
 import UploadArea from '../areas/UploadArea'
@@ -45,7 +36,7 @@ class UploadView extends React.PureComponent {
     if (!accountData.get('id')) return
     try {
       const apiKey = accountData.get('apikey')
-      const courses = (await got(resolve(domain, `/api/getcourses64?uploader=${accountData.get('username')}&limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}`), {
+      const courses = (await got(resolve(process.env.DOMAIN, `/api/getcourses64?uploader=${accountData.get('username')}&limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}`), {
         headers: {
           'Authorization': `APIKEY ${apiKey}`
         },
@@ -77,7 +68,11 @@ class UploadView extends React.PureComponent {
           )
         } else {
           yield (
-            <Course64Panel key={courseId} canEdit isSelf uploaded={uploaded} course={course} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />
+            <Course64Panel
+              key={courseId}
+              canEdit isSelf uploaded={uploaded} course={course}
+              apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete}
+            />
           )
         }
         i++

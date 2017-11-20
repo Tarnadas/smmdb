@@ -1,11 +1,7 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
+import { ScreenSize } from '../../reducers/mediaQuery'
 
 let shell
 if (process.env.ELECTRON) {
@@ -90,7 +86,6 @@ class AmazonPanel extends React.PureComponent {
     const styles = {
       panel: {
         width: '100%',
-        // maxHeight: is64 ? '320px' : '',
         minWidth: is64 ? '350px' : '',
         maxWidth: is64 ? '500px' : 'calc(100% - 20px)',
         flex: is64 ? '1 0 0%' : '',
@@ -111,22 +106,18 @@ class AmazonPanel extends React.PureComponent {
         overflow: 'hidden'
       },
       img: {
-        width: 'auto',
-        height: 'auto',
         maxWidth: is64 ? '160px' : '200px',
         maxHeight: '120px',
         padding: '0 10px'
       },
       logo: {
         width: '60px',
-        height: 'auto',
         zIndex: '1',
         alignSelf: 'flex-end'
       },
       text: {
         width: '0',
         minWidth: '200px',
-        height: 'auto',
         flex: '1 0 0%',
         padding: '5px 10px',
         color: '#000',

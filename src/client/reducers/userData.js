@@ -1,6 +1,4 @@
-import {
-  Map
-} from 'immutable'
+import { Map } from 'immutable'
 
 export const DOWNLOAD_FORMAT = {
   WII_U: 0,

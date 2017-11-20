@@ -2,13 +2,9 @@ import got from 'got'
 
 import { resolve } from 'url'
 
-import {
-  domain
-} from '../static'
-
 export const initAccount = async apiKey => {
   try {
-    const account = (await got(resolve(domain, '/api/getaccountdata'), {
+    const account = (await got(resolve(process.env.DOMAIN, '/api/getaccountdata'), {
       headers: {
         'Authorization': `APIKEY ${apiKey}`
       },

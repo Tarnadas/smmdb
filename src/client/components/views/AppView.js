@@ -1,10 +1,6 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
-import {
-  Route, Link
-} from 'react-router-dom'
+import { connect } from 'react-redux'
+import { Route, Link } from 'react-router-dom'
 import { forceCheck } from 'react-lazyload'
 import got from 'got'
 import locale from 'browser-locale'
@@ -13,16 +9,8 @@ import { resolve } from 'url'
 
 import ContentView from './ContentView'
 import TopBarArea from '../areas/TopBarArea'
-
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
-import {
-  setVideoId, mediaQuery, setAmazonProducts
-} from '../../actions'
-import {
-  domain
-} from '../../../static'
+import { ScreenSize } from '../../reducers/mediaQuery'
+import { setVideoId, mediaQuery, setAmazonProducts } from '../../actions'
 
 const UPDATE_OFFSET = 500
 const STEP_LIMIT = 10
@@ -61,7 +49,7 @@ class AppView extends React.PureComponent {
       }
       if (!country) return
       try {
-        const res = (await got(resolve(domain, `/api/getamazonproducts?country=${country}`), {
+        const res = (await got(resolve(process.env.DOMAIN, `/api/getamazonproducts?country=${country}`), {
           json: true,
           useElectronNet: false
         })).body
@@ -101,7 +89,12 @@ class AppView extends React.PureComponent {
   }
   componentWillUpdate (nextProps, nextState, nextContext) {
     this.screenSize = 0
-    if (this.props.courses !== nextProps.courses || this.props.courses64 !== nextProps.courses64 || this.props.coursesSelf !== nextProps.coursesSelf || this.props.courses64Self !== nextProps.courses64Self) {
+    if (
+      this.props.courses !== nextProps.courses ||
+      this.props.courses64 !== nextProps.courses64 ||
+      this.props.coursesSelf !== nextProps.coursesSelf ||
+      this.props.courses64Self !== nextProps.courses64Self
+    ) {
       this.doUpdate = false
     }
   }
@@ -218,7 +211,16 @@ class AppView extends React.PureComponent {
               }
             </div>
           </div>
-          <Route path='/' render={() => <ContentView global={global} shouldUpdate={this.shouldUpdate} setFetchCourses={this.setFetchCourses} isServer={this.props.isServer} />} />
+          <Route
+            path='/'
+            render={
+              () => <ContentView
+                global={global}
+                shouldUpdate={this.shouldUpdate}
+                setFetchCourses={this.setFetchCourses}
+                isServer={this.props.isServer}
+              />}
+            />
           <div style={styles.footer}>
             <div style={styles.disclaimer}>
               Super Mario Maker Database (in short SMMDB) is not affiliated or associated with any other company.<br />
@@ -231,9 +233,14 @@ class AppView extends React.PureComponent {
           </div>
         </div>
         {
-          !!this.props.videoId &&
+          this.props.videoId &&
           <div style={styles.overflow} onClick={this.onVideoHide}>
-            <iframe style={styles.video} src={`//www.youtube.com/embed/${this.props.videoId}?disablekb=1&iv_load_policy=3&rel=0&showinfo=0`} frameBorder='0' allowFullScreen />
+            <iframe
+              style={styles.video}
+              src={`//www.youtube.com/embed/${this.props.videoId}?disablekb=1&iv_load_policy=3&rel=0&showinfo=0`}
+              frameBorder='0'
+              allowFullScreen
+            />
           </div>
         }
         {

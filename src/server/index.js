@@ -6,15 +6,13 @@ import cookieSession from 'cookie-session'
 import verifier from 'google-id-token-verifier'
 import favicon from 'serve-favicon'
 import device from 'device'
-import {
-  renderToString
-} from 'react-dom/server'
+import { renderToString } from 'react-dom/server'
 import pmx from 'pmx'
 
-import * as http from 'http'
-import * as fs from 'fs'
-import * as path from 'path'
-import * as qs from 'querystring'
+import http from 'http'
+import fs from 'fs'
+import path from 'path'
+import qs from 'querystring'
 
 import renderer from '../shared/renderer'
 
@@ -24,13 +22,8 @@ import API from './scripts/api'
 import Database from './Database'
 import DiscordBot from './Discord'
 
-import {
-  clientId, cookie as cookieCredentials
-} from './scripts/credentials'
-import {
-  log
-} from './scripts/util'
-import { port } from '../static'
+import { clientId, cookie as cookieCredentials } from './scripts/credentials'
+import { log } from './scripts/util'
 
 export const Bot = new DiscordBot()
 
@@ -322,7 +315,7 @@ async function main () {
     res.send(index.html())
   })
 
-  server.listen(port, () => {
-    log(`Server is listening on port ${port}`)
+  server.listen(process.env.PORT, () => {
+    log(`Server is listening on port ${process.env.PORT}`)
   })
 }

@@ -1,6 +1,4 @@
-import {
-  ObjectID
-} from 'mongodb'
+import { ObjectID } from 'mongodb'
 import jimp from 'jimp'
 
 import Account from './Account'

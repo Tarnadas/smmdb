@@ -1,24 +1,13 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 import got from 'got'
 
 import { resolve } from 'url'
 
 import SMMButton, { COLOR_SCHEME } from '../buttons/SMMButton'
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
-import {
-  domain
-} from '../../../static'
-import {
-  setAccountData
-} from '../../actions'
-import {
-  DOWNLOAD_FORMAT
-} from '../../reducers/userData'
+import { ScreenSize } from '../../reducers/mediaQuery'
+import { setAccountData } from '../../actions'
+import { DOWNLOAD_FORMAT } from '../../reducers/userData'
 
 const EnterAPIKeyArea = process.env.ELECTRON && require('../../../electron/components/areas/EnterAPIKeyArea').default
 
@@ -80,7 +69,7 @@ class ProfileView extends React.PureComponent {
         downloadformat: this.state.downloadFormat
       }
       try {
-        const res = (await got(resolve(domain, '/api/setaccountdata'), {
+        const res = (await got(resolve(process.env.DOMAIN, '/api/setaccountdata'), {
           headers: {
             'Authorization': `APIKEY ${this.props.accountData.get('apikey')}`
           },
@@ -196,24 +185,35 @@ class ProfileView extends React.PureComponent {
                     </select>
                   </div>
                 )}
-                <SMMButton text='Save' iconSrc='/img/profile.png' fontSize='13px' padding='3px' colorScheme={colorScheme} onClick={this.onProfileSubmit} />
+                <SMMButton
+                  text='Save'
+                  iconSrc='/img/profile.png'
+                  fontSize='13px'
+                  padding='3px'
+                  colorScheme={colorScheme}
+                  onClick={this.onProfileSubmit}
+                />
                 {
-                  !process.env.ELECTRON && (
+                  !process.env.ELECTRON &&
                   <div style={{ height: 'auto' }}>
                     <div style={{ height: '30px' }} />
                     <div style={styles.option}>
                       <input style={styles.input} value={apiKey} readOnly />
                     </div>
-                    <SMMButton text={apiKey ? 'Hide API Key' : 'Show API Key'} iconSrc='/img/api.png' fontSize='13px' padding='3px' onClick={this.onAPIKeyShow} />
+                    <SMMButton
+                      text={apiKey ? 'Hide API Key' : 'Show API Key'}
+                      iconSrc='/img/api.png'
+                      fontSize='13px'
+                      padding='3px'
+                      onClick={this.onAPIKeyShow}
+                    />
                   </div>
-                )}
+                }
               </div>
             ) : (
-              process.env.ELECTRON ? (
-                <EnterAPIKeyArea />
-              ) : (
-                <div style={styles.flex}>You are not logged in</div>
-              )
+              process.env.ELECTRON
+                ? <EnterAPIKeyArea />
+                : <div style={styles.flex}>You are not logged in</div>
             )
           }
         </div>

@@ -1,15 +1,7 @@
-import {
-  createStore, applyMiddleware
-} from 'redux'
-import {
-  combineReducers
-} from 'redux-immutable'
-import {
-  fromJS
-} from 'immutable'
-import {
-  routerMiddleware
-} from 'react-router-redux'
+import { createStore, applyMiddleware } from 'redux'
+import { combineReducers } from 'redux-immutable'
+import { fromJS } from 'immutable'
+import { routerMiddleware } from 'react-router-redux'
 
 import router from './router'
 import chat from './chat'

@@ -1,4 +1,4 @@
-let client = Symbol('client')
+const client = Symbol('client')
 
 export default class User {
   constructor (id, username, cl) {

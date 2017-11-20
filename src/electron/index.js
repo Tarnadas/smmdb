@@ -1,15 +1,9 @@
-import electron from 'electron'
+import { app, protocol, BrowserWindow } from 'electron'
 import rimraf from 'rimraf'
 
-import * as path from 'path'
-import * as fs from 'fs'
+import path from 'path'
+import fs from 'fs'
 import { resolve } from 'url'
-
-import { domain } from '../static'
-
-const app = electron.app
-const protocol = electron.protocol
-const BrowserWindow = electron.BrowserWindow;
 
 (async () => {
   let mainWindow = null
@@ -47,7 +41,7 @@ const BrowserWindow = electron.BrowserWindow;
         url = url.replace('img', 'images')
       }
       const urlPath = isUrl ? (
-        resolve(domain, url)
+        resolve(process.env.DOMAIN, url)
       ) : (
         isStatic ? (
           path.normalize(`${__dirname}/../static/${url}`)

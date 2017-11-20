@@ -1,7 +1,5 @@
 import React from 'react'
-import {
-  Link
-} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 export default class SubNavigationButton extends React.PureComponent {
   constructor (props) {
@@ -65,7 +63,12 @@ export default class SubNavigationButton extends React.PureComponent {
       </div>
     )
     return (
-      <div style={styles.button} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave} onClick={this.props.onClick}>
+      <div
+        style={styles.button}
+        onMouseEnter={this.onMouseEnter}
+        onMouseLeave={this.onMouseLeave}
+        onClick={this.props.onClick}
+      >
         {
           this.props.blank ? (
             <a href={this.props.link} target='__blank'>

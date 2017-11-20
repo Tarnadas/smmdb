@@ -1,17 +1,9 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
-import {
-  DOWNLOAD_FORMAT
-} from '../../reducers/userData'
-import {
-  downloadCourse, addCourse, updateCourse
-} from '../../../electron/actions'
+import { ScreenSize } from '../../reducers/mediaQuery'
+import { DOWNLOAD_FORMAT } from '../../reducers/userData'
+import { downloadCourse, addCourse, updateCourse } from '../../../electron/actions'
 
 class CourseDownloadButton extends React.PureComponent {
   constructor (props) {
@@ -112,7 +104,10 @@ class CourseDownloadButton extends React.PureComponent {
     }
     return (
       process.env.ELECTRON ? (
-        <div style={styles.href} onClick={modified ? this.onUpdateCourse : downloaded ? this.onAddCourse : this.onDownloadCourse}>
+        <div
+          style={styles.href}
+          onClick={modified ? this.onUpdateCourse : downloaded ? this.onAddCourse : this.onDownloadCourse}
+        >
           <div style={styles.button}>
             <div style={styles.icon}>
               <img style={styles.iconImg} src='/img/coursebot.png' />
@@ -129,12 +124,16 @@ class CourseDownloadButton extends React.PureComponent {
           </div>
         </div>
       ) : (
-        <a style={styles.href} href={`/api/downloadcourse${this.props.is64 ? '64' : ''}?id=${this.props.courseId}&type=${
-          downloadFormat === DOWNLOAD_FORMAT.WII_U ? 'zip'
-            : (
-              downloadFormat === DOWNLOAD_FORMAT.N3DS ? '3ds' : 'protobuf'
-            )
-        }`} download>
+        <a
+          style={styles.href}
+          href={`/api/downloadcourse${this.props.is64 ? '64' : ''}?id=${this.props.courseId}&type=${
+            downloadFormat === DOWNLOAD_FORMAT.WII_U ? 'zip'
+              : (
+                downloadFormat === DOWNLOAD_FORMAT.N3DS ? '3ds' : 'protobuf'
+              )}`
+          }
+          download
+        >
           <div style={styles.button}>
             <div style={styles.icon}>
               <img style={styles.iconImg} src='/img/coursebot.png' />

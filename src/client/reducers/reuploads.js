@@ -1,6 +1,4 @@
-import {
-  fromJS
-} from 'immutable'
+import { fromJS } from 'immutable'
 
 export default function reuploads (state, action) {
   if (!action) return state

@@ -1,10 +1,6 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
-import {
-  List
-} from 'immutable'
+import { connect } from 'react-redux'
+import { List } from 'immutable'
 import got from 'got'
 import stream from 'filereader-stream'
 import concat from 'concat-stream'
@@ -12,9 +8,9 @@ import progress from 'progress-stream'
 
 import { resolve } from 'url'
 
-import { domain } from '../../../static'
 import {
-  setUploadImageFull, setUploadImagePreview, setUploadImage64, setUploadBlog, deleteUploadImageFull, deleteUploadImagePreview, deleteUploadImage64, deleteUploadBlog
+  setUploadImageFull, setUploadImagePreview, setUploadImage64, setUploadBlog,
+  deleteUploadImageFull, deleteUploadImagePreview, deleteUploadImage64, deleteUploadBlog
 } from '../../actions'
 
 const SERVER_TIMEOUT = 30000
@@ -44,7 +40,7 @@ class UploadArea extends React.PureComponent {
           ? deleteUploadBlog : deleteUploadImagePreview
     try {
       let abort
-      const req = got.stream.post(resolve(domain, `/api/uploadimage${this.props.type}`), {
+      const req = got.stream.post(resolve(process.env.DOMAIN, `/api/uploadimage${this.props.type}`), {
         headers: {
           'Content-Type': 'application/octet-stream',
           'Authorization': `APIKEY ${this.props.apiKey}`,
@@ -166,7 +162,8 @@ class UploadArea extends React.PureComponent {
         width: this.props.type === '64' ? 'calc(100% - 40px)' : this.props.type === 'blog' ? '100%' : 'calc(50% - 40px)',
         margin: '0 20px 10px',
         padding: '15px 20px',
-        background: upload && upload.percentage ? `linear-gradient(90deg, #33cc33 ${upload.percentage}%, #fff ${upload.percentage}%)` : '#fff',
+        background: upload && upload.percentage
+          ? `linear-gradient(90deg, #33cc33 ${upload.percentage}%, #fff ${upload.percentage}%)` : '#fff',
         color: '#000',
         fontSize: '20px',
         border: ' 4px dashed #000000',
@@ -196,7 +193,14 @@ class UploadArea extends React.PureComponent {
     }
     return (
       <div style={styles.drag}>
-        <input style={styles.input} type='file' multiple value={this.state.value} onChange={this.handleChange} onClick={this.handleClick} />
+        <input
+          style={styles.input}
+          type='file'
+          multiple
+          value={this.state.value}
+          onChange={this.handleChange}
+          onClick={this.handleClick}
+        />
         {
           this.props.type === 'full' ? (
             'Upload full course image (max 6MB)'

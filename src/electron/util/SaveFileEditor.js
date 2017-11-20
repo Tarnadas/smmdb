@@ -1,16 +1,11 @@
 import DownloadedCourse from './DownloadedCourse'
-import {
-  deserialize
-} from 'cemu-smm'
+import { deserialize } from 'cemu-smm'
 import got from 'got'
 
-import * as fs from 'fs'
-import * as path from 'path'
+import fs from 'fs'
+import path from 'path'
 import { resolve } from 'url'
 import { stringify } from 'querystring'
-import {
-  domain
-} from '../../static'
 
 export default class SaveFileEditor {
   constructor (appSavePath, downloadedCourses) {
@@ -86,7 +81,7 @@ export default class SaveFileEditor {
     try {
       if (limit <= 0) return
       let progress = 0
-      const courses = (await got(resolve(domain, `/api/getcourses?limit=${limit}&random=${random ? '1' : '0'}&filter=id,lastmodified&${queryString}`), {
+      const courses = (await got(resolve(process.env.DOMAIN, `/api/getcourses?limit=${limit}&random=${random ? '1' : '0'}&filter=id,lastmodified&${queryString}`), {
         json: true,
         useElectronNet: false
       })).body

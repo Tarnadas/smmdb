@@ -1,19 +1,12 @@
 import React from 'react'
 import GoogleLogin from 'react-google-login'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 import got from 'got'
 
 import { resolve } from 'url'
 
 import ButtonSub from '../subs/ButtonSub'
-import {
-  setAccountData, setCourse, setCourse64
-} from '../../actions'
-import {
-  domain
-} from '../../../static'
+import { setAccountData, setCourse, setCourse64 } from '../../actions'
 
 class LoginButton extends React.PureComponent {
   constructor (props) {
@@ -31,7 +24,7 @@ class LoginButton extends React.PureComponent {
   componentDidMount () {
     (async () => {
       try {
-        const res = (await got(resolve(domain, '/signin'), {
+        const res = (await got(resolve(process.env.DOMAIN, '/signin'), {
           method: 'POST',
           json: true,
           useElectronNet: false
@@ -90,7 +83,7 @@ class LoginButton extends React.PureComponent {
   }
   async onGoogleLoginSuccess (response) {
     try {
-      const res = (await got(resolve(domain, '/tokensignin'), {
+      const res = (await got(resolve(process.env.DOMAIN, '/tokensignin'), {
         method: 'POST',
         body: Object.assign({}, response),
         json: true
@@ -108,7 +101,7 @@ class LoginButton extends React.PureComponent {
   }
   async onLogOut () {
     try {
-      await got(resolve(domain, '/signout'), {
+      await got(resolve(process.env.DOMAIN, '/signout'), {
         method: 'POST'
       })
       const account = this.props.accountData.toJS()
@@ -189,14 +182,20 @@ class LoginButton extends React.PureComponent {
       text = 'Sign in with Google'
     }
     return (
-      <div style={styles.smmButton} onMouseEnter={this.mouseEnter} onMouseLeave={this.mouseLeave} onClick={this.props.onClick && this.props.onClick}>
+      <div
+        style={styles.smmButton}
+        onMouseEnter={this.mouseEnter}
+        onMouseLeave={this.mouseLeave}
+        onClick={this.props.onClick && this.props.onClick}
+      >
         {
           loggedIn ? (
             <div onClick={this.onLogOut}>
               <ButtonSub iconStyle={styles.smmIcon} iconSrc={iconSrc} text={text} hover={this.state.hover} />
             </div>
           ) : (
-            <GoogleLogin style={styles.google}
+            <GoogleLogin
+              style={styles.google}
               clientId='899493559187-bnvgqj1i8cnph7ilkl4h261836skee25.apps.googleusercontent.com'
               onSuccess={this.onGoogleLoginSuccess}
               onFailure={this.onGoogleLoginFailure}

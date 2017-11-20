@@ -1,23 +1,16 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 import got from 'got'
 
 import { resolve } from 'url'
 
-import {
-  setStats
-} from '../../actions'
-import {
-  domain
-} from '../../../static'
+import { setStats } from '../../actions'
 
 class StatsPanel extends React.PureComponent {
   componentWillMount () {
     (async () => {
       try {
-        const stats = (await got(resolve(domain, `/api/getstats`), {
+        const stats = (await got(resolve(process.env.DOMAIN, `/api/getstats`), {
           json: true,
           useElectronNet: false
         })).body

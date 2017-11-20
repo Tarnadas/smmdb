@@ -1,13 +1,9 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 
 import ChangeViewButton from '../buttons/ChangeViewButton'
 import SMMButton from '../../../client/components/buttons/SMMButton'
-import {
-  unloadSave
-} from '../../actions/index'
+import { unloadSave } from '../../actions/index'
 
 class SideBarArea extends React.PureComponent {
   constructor (props) {
@@ -30,7 +26,13 @@ class SideBarArea extends React.PureComponent {
     return (
       <div style={styles.area}>
         <ChangeViewButton onClick={this.props.onClick} view={this.props.view} />
-        <SMMButton text='Change save folder' iconSrc='/img/profile.png' fontSize='13px' padding='3px' onClick={this.onChangeFolder} />
+        <SMMButton
+          text='Change save folder'
+          iconSrc='/img/profile.png'
+          fontSize='13px'
+          padding='3px'
+          onClick={this.onChangeFolder}
+        />
         { this.props.children }
       </div>
     )

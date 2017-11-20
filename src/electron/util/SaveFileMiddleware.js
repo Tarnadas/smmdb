@@ -1,5 +1,7 @@
 import {
-  startDownloadCourse, progressDownloadCourse, finishDownloadCourse, finishAddCourse, finishDeleteCourse, finishDeleteSelected, fillProgress
+  startDownloadCourse, progressDownloadCourse,
+  finishDownloadCourse, finishAddCourse, finishDeleteCourse, finishDeleteSelected,
+  fillProgress
 } from '../actions'
 
 export default function saveFileMiddleware (saveFileEditor) {
@@ -49,12 +51,14 @@ export default function saveFileMiddleware (saveFileEditor) {
         saveFileEditor.deleteSelected(onDeleteSelectedFinish, getState().getIn(['electron', 'cemuSave']), action.selected, getState().getIn(['electron', 'appSaveData', 'cemuSaveData', getState().getIn(['electron', 'currentSave']), 'save']))
         break
       case 'FILL_SAVE':
-        saveFileEditor.fillSave({onStart, onProgress, onFinish}, {onAddFinish}, getState().getIn(['electron', 'cemuSave']),
-          onFillProgress, getState().getIn(['filter', 'currentFilter']), getState().get('order'), getState().getIn(['electron', 'appSaveData', 'downloads']), getState().getIn(['electron', 'appSaveData', 'cemuSaveData', getState().getIn(['electron', 'currentSave']), 'smmdb']))
+        saveFileEditor
+          .fillSave({onStart, onProgress, onFinish}, {onAddFinish}, getState().getIn(['electron', 'cemuSave']),
+            onFillProgress, getState().getIn(['filter', 'currentFilter']), getState().get('order'), getState().getIn(['electron', 'appSaveData', 'downloads']), getState().getIn(['electron', 'appSaveData', 'cemuSaveData', getState().getIn(['electron', 'currentSave']), 'smmdb']))
         break
       case 'FILL_SAVE_RANDOM':
-        saveFileEditor.fillSave({onStart, onProgress, onFinish}, {onAddFinish}, getState().getIn(['electron', 'cemuSave']),
-          onFillProgress, getState().getIn(['filter', 'currentFilter']), getState().get('order'), getState().getIn(['electron', 'appSaveData', 'downloads']), getState().getIn(['electron', 'appSaveData', 'cemuSaveData', getState().getIn(['electron', 'currentSave']), 'smmdb']), true)
+        saveFileEditor
+          .fillSave({onStart, onProgress, onFinish}, {onAddFinish}, getState().getIn(['electron', 'cemuSave']),
+            onFillProgress, getState().getIn(['filter', 'currentFilter']), getState().get('order'), getState().getIn(['electron', 'appSaveData', 'downloads']), getState().getIn(['electron', 'appSaveData', 'cemuSaveData', getState().getIn(['electron', 'currentSave']), 'smmdb']), true)
         break
     }
     return next(action)

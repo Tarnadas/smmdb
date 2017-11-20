@@ -13,18 +13,9 @@ import CourseVideoButton from '../buttons/CourseVideoButton'
 import SMMButton, { COLOR_SCHEME } from '../buttons/SMMButton'
 import ReuploadArea from '../areas/ReuploadArea'
 import UploadImageArea from '../areas/UploadImageArea'
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
-import {
-  domain
-} from '../../../static'
-import {
-  setCourse, setCourseSelf, setCourseUploaded
-} from '../../actions'
-import {
-  DIFFICULTY
-} from '../../reducers/courseData'
+import { ScreenSize } from '../../reducers/mediaQuery'
+import { setCourse, setCourseSelf, setCourseUploaded } from '../../actions'
+import { DIFFICULTY } from '../../reducers/courseData'
 
 const MAX_LENGTH_TITLE = 32
 const MAX_LENGTH_MAKER = 10
@@ -136,7 +127,7 @@ class CoursePanel extends React.PureComponent {
         if (!VIDEO_ID.test(update.videoid) && update.videoid !== '') {
           delete update.videoid
         }
-        const res = (await got(resolve(domain, `/api/updatecourse?id=${course.id}`), {
+        const res = (await got(resolve(process.env.DOMAIN, `/api/updatecourse?id=${course.id}`), {
           headers: {
             'Authorization': `APIKEY ${this.props.apiKey}`
           },
@@ -175,7 +166,7 @@ class CoursePanel extends React.PureComponent {
     if (this.state.shouldDelete) {
       (async () => {
         try {
-          await got(resolve(domain, `/api/deletecourse?id=${this.props.course.get('id')}`), {
+          await got(resolve(process.env.DOMAIN, `/api/deletecourse?id=${this.props.course.get('id')}`), {
             headers: {
               'Authorization': `APIKEY ${this.props.apiKey}`
             },
@@ -253,7 +244,7 @@ class CoursePanel extends React.PureComponent {
   async onStar (e) {
     e.stopPropagation()
     try {
-      const course = (await got(resolve(domain, `/api/starcourse?id=${this.props.course.get('id')}`), {
+      const course = (await got(resolve(process.env.DOMAIN, `/api/starcourse?id=${this.props.course.get('id')}`), {
         headers: {
           'Authorization': `APIKEY ${this.props.apiKey}`
         },
@@ -525,7 +516,11 @@ class CoursePanel extends React.PureComponent {
             <div style={styles.preview}>
               <div style={styles.previewImgWrapper}>
                 <LazyLoad height={81} offset={100} once>
-                  <img style={styles.previewImg} src={`${domain}/courseimg/${course.id}_full${course.vFull ? `?v=${course.vFull}` : ''}`} ref={v => { this.full = v }} />
+                  <img
+                    style={styles.previewImg}
+                    src={`${process.env.DOMAIN}/courseimg/${course.id}_full${course.vFull ? `?v=${course.vFull}` : ''}`}
+                    ref={v => { this.full = v }}
+                  />
                 </LazyLoad>
               </div>
             </div>
@@ -539,7 +534,11 @@ class CoursePanel extends React.PureComponent {
             }
             <div style={styles.footer}>
               <div style={styles.stats}>
-                <img onClick={this.onStar} style={styles.statsStars} src={course.starred ? '/img/starred.png' : '/img/unstarred.png'} />
+                <img
+                  onClick={this.onStar}
+                  style={styles.statsStars}
+                  src={course.starred ? '/img/starred.png' : '/img/unstarred.png'}
+                />
                 { course.stars } /
                 <img style={styles.statsDownloads} src='/img/downloads.png' />
                 { course.downloads }
@@ -627,8 +626,18 @@ class CoursePanel extends React.PureComponent {
                 this.props.canEdit && (
                 <div style={styles.edit}>
                   <ReuploadArea courseId={course.id} upload={this.props.reupload} onUploadComplete={this.onReuploadComplete} />
-                  <UploadImageArea type='full' courseId={course.id} upload={this.props.imageFull} onUploadComplete={this.onUploadFullComplete} />
-                  <UploadImageArea type='prev' courseId={course.id} upload={this.props.imagePrev} onUploadComplete={this.onUploadPrevComplete} />
+                  <UploadImageArea
+                    type='full'
+                    courseId={course.id}
+                    upload={this.props.imageFull}
+                    onUploadComplete={this.onUploadFullComplete}
+                  />
+                  <UploadImageArea
+                    type='prev'
+                    courseId={course.id}
+                    upload={this.props.imagePrev}
+                    onUploadComplete={this.onUploadPrevComplete}
+                  />
                   <div style={styles.option}>
                     <div style={styles.value}>
                       Title:
@@ -665,10 +674,29 @@ class CoursePanel extends React.PureComponent {
                     </select>
                   </div>
                   <div style={styles.option} />
-                  <div style={{width: '100%'}}>Editor supports <a target='_blank' href='https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet'>Markdown</a> and <a target='_blank' href='https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json'>:emojis:</a></div>
+                  <div style={{width: '100%'}}>Editor supports <a
+                    target='_blank'
+                    href='https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet'
+                  >Markdown</a> and <a
+                    target='_blank'
+                    href='https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json'
+                  >:emojis:</a></div>
                   <textarea style={styles.editor} value={this.state.description} onChange={this.onMarkdownChange} />
-                  <SMMButton text='Save' iconSrc='/img/submit.png' fontSize='13px' padding='3px' colorScheme={colorScheme} onClick={this.onCourseSubmit} />
-                  <SMMButton text={this.state.shouldDelete ? 'Click again' : 'Delete'} iconSrc='/img/delete.png' fontSize='13px' padding='3px' onClick={this.onCourseDelete} />
+                  <SMMButton
+                    text='Save'
+                    iconSrc='/img/submit.png'
+                    fontSize='13px'
+                    padding='3px'
+                    colorScheme={colorScheme}
+                    onClick={this.onCourseSubmit}
+                  />
+                  <SMMButton
+                    text={this.state.shouldDelete ? 'Click again' : 'Delete'}
+                    iconSrc='/img/delete.png'
+                    fontSize='13px'
+                    padding='3px'
+                    onClick={this.onCourseDelete}
+                  />
                 </div>
               )}
               <div className='description' style={styles.editorRendered} ref={x => {
@@ -676,10 +704,21 @@ class CoursePanel extends React.PureComponent {
                 if (x && this.state.description) x.innerHTML = emojify(marked(this.state.description))
               }} />
               <div style={styles.imageLarge}>
-                <img style={styles.imgLarge} src={`${domain}/courseimg/${course.id}${course.vPrev ? `?v=${course.vPrev}` : ''}`} ref={v => { this.prev = v }} />
+                <img
+                  style={styles.imgLarge}
+                  src={`${process.env.DOMAIN}/courseimg/${course.id}${course.vPrev ? `?v=${course.vPrev}` : ''}`}
+                  ref={v => { this.prev = v }}
+                />
               </div>
               <div style={styles.buttonPanel}>
-                <CourseDownloadButton courseId={course.id} lastModified={course.lastmodified} modified={modified} progress={progress} saveId={saveId} screenSize={screenSize} />
+                <CourseDownloadButton
+                  courseId={course.id}
+                  lastModified={course.lastmodified}
+                  modified={modified}
+                  progress={progress}
+                  saveId={saveId}
+                  screenSize={screenSize}
+                />
                 {
                   course.videoid &&
                   <CourseVideoButton videoId={course.videoid} screenSize={screenSize} />
@@ -688,10 +727,12 @@ class CoursePanel extends React.PureComponent {
                   !process.env.ELECTRON &&
                   <img ref={qr => {
                     if (!qr) return
-                    QRCode.toDataURL(resolve(domain, `/api/downloadcourse?id=${this.props.course.id}&type=3ds`), (err, url) => {
-                      if (err) console.error(err)
-                      qr.src = url
-                    })
+                    QRCode.toDataURL(resolve(process.env.DOMAIN, `/api/downloadcourse?id=${course.id}&type=3ds`),
+                      (err, url) => {
+                        if (err) console.error(err)
+                        qr.src = url
+                      }
+                    )
                   }} />
                 }
               </div>

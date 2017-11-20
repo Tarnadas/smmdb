@@ -1,10 +1,6 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
-import {
-  List
-} from 'immutable'
+import { connect } from 'react-redux'
+import { List } from 'immutable'
 import got from 'got'
 import stream from 'filereader-stream'
 import concat from 'concat-stream'
@@ -12,10 +8,7 @@ import progress from 'progress-stream'
 
 import { resolve } from 'url'
 
-import { domain } from '../../../static'
-import {
-  setCoursesUploaded, setCoursesUploaded64, setUpload, setUpload64, deleteUpload, deleteUpload64
-} from '../../actions'
+import { setCoursesUploaded, setCoursesUploaded64, setUpload, setUpload64, deleteUpload, deleteUpload64 } from '../../actions'
 
 const SERVER_TIMEOUT = 30000
 
@@ -46,7 +39,7 @@ class UploadArea extends React.PureComponent {
         name = course.name.split('.').slice(0, -1).join()
         name.replace('_', ' ')
       } catch (err) {}
-      const req = got.stream.post(resolve(domain, `/api/uploadcourse${this.props.is64 ? '64' : ''}`), {
+      const req = got.stream.post(resolve(process.env.DOMAIN, `/api/uploadcourse${this.props.is64 ? '64' : ''}`), {
         headers: {
           'Content-Type': 'application/octet-stream',
           'Authorization': `APIKEY ${this.props.apiKey}`,
@@ -194,7 +187,14 @@ class UploadArea extends React.PureComponent {
     }
     return (
       <div style={styles.drag}>
-        <input style={styles.input} type='file' multiple value={this.state.value} onChange={this.handleChange} onClick={this.handleClick} />
+        <input
+          style={styles.input}
+          type='file'
+          multiple
+          value={this.state.value}
+          onChange={this.handleChange}
+          onClick={this.handleClick}
+        />
         Drag and drop or click here to upload a course (max 6MB)
         {
           err &&

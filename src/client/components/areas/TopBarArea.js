@@ -1,14 +1,10 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 
 import LoginButton from '../buttons/LoginButton'
 import SMMButton from '../buttons/SMMButton'
 import NavigationArea from './NavigationArea'
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
+import { ScreenSize } from '../../reducers/mediaQuery'
 
 class TopBarArea extends React.PureComponent {
   constructor (props) {

@@ -1,23 +1,14 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
-import {
-  remote
-} from 'electron'
-import {
-  loadSave as loadCemuSave
-} from 'cemu-smm'
+import { connect } from 'react-redux'
+import { remote } from 'electron'
+import { loadSave as loadCemuSave } from 'cemu-smm'
 
 import SMMButton from '../../../client/components/buttons/SMMButton'
 import ApiKeyArea from '../areas/ApiKeyArea'
-import {
-  addApiKey, deleteApiKey, addSave, loadSave, deleteSave
-} from '../../actions'
-import {
-  setAccountData
-} from '../../../client/actions'
+import { addApiKey, deleteApiKey, addSave, loadSave, deleteSave } from '../../actions'
+import { setAccountData } from '../../../client/actions'
 
+// TODO ???
 const dialog = remote && remote.dialog
 
 class LoadSaveView extends React.PureComponent {
@@ -63,7 +54,7 @@ class LoadSaveView extends React.PureComponent {
           await cemuSave.unlockAmiibos()
           this.props.dispatch(addSave(cemuPath, cemuSave))
         } catch (err) {
-          console.log(err)
+          console.error(err)
         }
       }
     })
@@ -118,7 +109,15 @@ class LoadSaveView extends React.PureComponent {
         self.savePath = cemuSaves.getIn([i, 'path'])
         self.saveId = i
         yield (
-          <SMMButton key={i} text={self.getSaveName()} iconSrc='/img/profile.png' fontSize='13px' padding='3px' onDelete={self.onDeleteSave} onClick={self.onLoadSave} saveId={i} />
+          <SMMButton
+            key={i}
+            text={self.getSaveName()}
+            iconSrc='/img/profile.png'
+            fontSize='13px' padding='3px'
+            onDelete={self.onDeleteSave}
+            onClick={self.onLoadSave}
+            saveId={i}
+          />
         )
       }
     })())
@@ -167,7 +166,12 @@ class LoadSaveView extends React.PureComponent {
                 cemuSaves.size > 0 &&
                 this.listCemuSaves(cemuSaves)
               }
-              <SMMButton text={cemuSaves.size === 0 ? 'Please select your Cemu SMM folder' : 'Load another Cemu SMM folder'} iconSrc='/img/profile.png' fontSize='13px' padding='3px' onClick={this.onAddSave} />
+              <SMMButton
+                text={cemuSaves.size === 0 ? 'Please select your Cemu SMM folder' : 'Load another Cemu SMM folder'}
+                iconSrc='/img/profile.png'
+                fontSize='13px' padding='3px'
+                onClick={this.onAddSave}
+              />
               {
                 cemuSaves.size === 0 &&
                 <div style={styles.text}>
@@ -183,7 +187,12 @@ class LoadSaveView extends React.PureComponent {
         }
         {
           this.state.showApiKey &&
-          <ApiKeyArea apiKey={apiKey} onAddApiKey={this.onAddApiKey} onDeleteApiKey={this.onDeleteApiKey} onClose={this.hideApiKey} />
+          <ApiKeyArea
+            apiKey={apiKey}
+            onAddApiKey={this.onAddApiKey}
+            onDeleteApiKey={this.onDeleteApiKey}
+            onClose={this.hideApiKey}
+          />
         }
       </div>
     )

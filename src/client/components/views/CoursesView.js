@@ -1,24 +1,13 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
-import {
-  Route, withRouter
-} from 'react-router-dom'
+import { connect } from 'react-redux'
+import { Route, withRouter } from 'react-router-dom'
 import got from 'got'
 
 import { resolve } from 'url'
 import { stringify } from 'querystring'
 
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
-import {
-  setCourses, deleteCourse, resetFilter, resetOrder
-} from '../../actions'
-import {
-  domain
-} from '../../../static'
+import { ScreenSize } from '../../reducers/mediaQuery'
+import { setCourses, deleteCourse, resetFilter, resetOrder } from '../../actions'
 
 import AmazonPanel from '../panels/AmazonPanel'
 import StatsPanel from '../panels/StatsPanel'
@@ -57,7 +46,7 @@ class CoursesView extends React.PureComponent {
   async fetchCourses (shouldConcat = false, limit = LIMIT) {
     try {
       const apiKey = this.props.apiKey
-      const courses = (await got(resolve(domain, `/api/getcourses?limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}${this.queryString ? `&${this.queryString}` : ''}`), Object.assign({
+      const courses = (await got(resolve(process.env.DOMAIN, `/api/getcourses?limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}${this.queryString ? `&${this.queryString}` : ''}`), Object.assign({
         json: true,
         useElectronNet: false
       }, this.props.apiKey ? {
@@ -110,9 +99,33 @@ class CoursesView extends React.PureComponent {
         }
         yield (
           (accountData.get('id') && course.owner === accountData.get('id')) || accountData.get('permissions') === 1 ? (
-            <CoursePanel key={courseId} canEdit course={course} downloadedCourse={downloadedCourse} progress={progress} reupload={reuploads.get(courseId)} imageFull={imageFull.get(courseId)} imagePrev={imagePrev.get(courseId)} saveId={saveId} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />
+            <CoursePanel
+              key={courseId}
+              canEdit
+              course={course}
+              downloadedCourse={downloadedCourse}
+              progress={progress}
+              reupload={reuploads.get(courseId)}
+              imageFull={imageFull.get(courseId)}
+              imagePrev={imagePrev.get(courseId)}
+              saveId={saveId}
+              apiKey={accountData.get('apikey')}
+              id={i}
+              onCourseDelete={onCourseDelete}
+            />
           ) : (
-            <CoursePanel key={courseId} course={course} downloadedCourse={downloadedCourse} progress={progress} reupload={reuploads.get(courseId)} imageFull={imageFull.get(courseId)} imagePrev={imagePrev.get(courseId)} saveId={saveId} apiKey={accountData.get('apikey')} id={i} />
+            <CoursePanel
+              key={courseId}
+              course={course}
+              downloadedCourse={downloadedCourse}
+              progress={progress}
+              reupload={reuploads.get(courseId)}
+              imageFull={imageFull.get(courseId)}
+              imagePrev={imagePrev.get(courseId)}
+              saveId={saveId}
+              apiKey={accountData.get('apikey')}
+              id={i}
+            />
           )
         )
         i++

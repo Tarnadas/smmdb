@@ -1,14 +1,10 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 
 import NavigationButton from '../buttons/NavigationButton'
 import SubNavigationButton from '../buttons/SubNavigationButton'
 import LoginButton from '../buttons/LoginButton'
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
+import { ScreenSize } from '../../reducers/mediaQuery'
 
 class NavigationArea extends React.PureComponent {
   render () {
@@ -37,46 +33,120 @@ class NavigationArea extends React.PureComponent {
         onMouseEnter={this.props.onMouseEnter}
         onMouseLeave={this.props.onMouseLeave}
       >
-        <NavigationButton onClick={this.props.onClick} link='/' text='Home' iconSrc='/img/home.svg' iconColor='dark' />
-        <NavigationButton onClick={this.props.onClick} link='/courses' text='Courses' iconSrc='/img/courses.png' iconColor='dark' />
+        <NavigationButton
+          onClick={this.props.onClick}
+          link='/'
+          text='Home'
+          iconSrc='/img/home.svg'
+          iconColor='dark'
+        />
+        <NavigationButton
+          onClick={this.props.onClick}
+          link='/courses'
+          text='Courses'
+          iconSrc='/img/courses.png'
+          iconColor='dark'
+        />
         {
           screenSize < ScreenSize.MEDIUM &&
-          <SubNavigationButton onClick={this.props.onClick} link='/courses/filter' text='Filter' iconSrc='/img/filter.svg' iconColor='dark' />
+          <SubNavigationButton
+            onClick={this.props.onClick}
+            link='/courses/filter'
+            text='Filter'
+            iconSrc='/img/filter.svg'
+            iconColor='dark'
+          />
         }
         {
           !process.env.ELECTRON &&
-          <NavigationButton onClick={this.props.onClick} link='/courses64' text='Courses64' iconSrc='/img/mario64.png' iconColor='dark' />
+          <NavigationButton
+            onClick={this.props.onClick}
+            link='/courses64'
+            text='Courses64'
+            iconSrc='/img/mario64.png'
+            iconColor='dark'
+          />
         }
-        <NavigationButton onClick={this.props.onClick} link='/upload' text='Upload' iconSrc='/img/upload.png' iconColor='dark' />
+        <NavigationButton
+          onClick={this.props.onClick}
+          link='/upload'
+          text='Upload'
+          iconSrc='/img/upload.png'
+          iconColor='dark'
+        />
         {
           !process.env.ELECTRON &&
-          <NavigationButton onClick={this.props.onClick} link='/upload64' text='Upload64' iconSrc='/img/upload64.png' iconColor='dark' />
+          <NavigationButton
+            onClick={this.props.onClick}
+            link='/upload64'
+            text='Upload64'
+            iconSrc='/img/upload64.png'
+            iconColor='dark'
+          />
         }
         {
           !process.env.ELECTRON &&
-          <NavigationButton onClick={this.props.onClick} link='/net64' text='Net64' iconSrc='/img/net64.svg' iconColor='dark' />
+          <NavigationButton
+            onClick={this.props.onClick}
+            link='/net64'
+            text='Net64'
+            iconSrc='/img/net64.svg'
+            iconColor='dark'
+          />
         }
-        <NavigationButton onClick={this.props.onClick} link='/profile' text='Profile' iconSrc='/img/profile.png' iconColor='dark' />
+        <NavigationButton
+          onClick={this.props.onClick}
+          link='/profile'
+          text='Profile'
+          iconSrc='/img/profile.png'
+          iconColor='dark'
+        />
         {
           !process.env.ELECTRON &&
-          <NavigationButton onClick={this.props.onClick} link='/faq' text='FAQ' iconSrc='/img/help.png' iconColor='dark' />
+          <NavigationButton
+            onClick={this.props.onClick}
+            link='/faq'
+            text='FAQ'
+            iconSrc='/img/help.png'
+            iconColor='dark'
+          />
         }
         {
           !process.env.ELECTRON &&
-          <NavigationButton onClick={this.props.onClick} link='/social' text='Social' iconSrc='/img/social.svg' iconColor='dark' />
+          <NavigationButton
+            onClick={this.props.onClick}
+            link='/social'
+            text='Social'
+            iconSrc='/img/social.svg'
+            iconColor='dark'
+          />
         }
         {
           !process.env.ELECTRON &&
-          <NavigationButton onClick={this.props.onClick} link='https://github.com/Tarnadas/smmdb' blank text='API' iconSrc='/img/api.png' iconColor='dark' />
+          <NavigationButton
+            onClick={this.props.onClick}
+            link='https://github.com/Tarnadas/smmdb'
+            blank
+            text='API'
+            iconSrc='/img/api.png'
+            iconColor='dark'
+          />
         }
         {
-          !process.env.ELECTRON && (
-          <NavigationButton onClick={this.props.onClick} link='https://github.com/Tarnadas/cemu-smmdb/releases' blank text='Client' iconSrc='/img/client.png' iconColor='dark' />
-        )
+          !process.env.ELECTRON &&
+          <NavigationButton
+            onClick={this.props.onClick}
+            link='https://github.com/Tarnadas/cemu-smmdb/releases'
+            blank
+            text='Client'
+            iconSrc='/img/client.png'
+            iconColor='dark'
+          />
         }
         <div style={{height: '20px', minHeight: '20px'}} />
         {
-          screenSize < ScreenSize.MEDIUM && !process.env.ELECTRON && <LoginButton onClick={this.props.onClick} />
+          screenSize < ScreenSize.MEDIUM && !process.env.ELECTRON &&
+          <LoginButton onClick={this.props.onClick} />
         }
         <div style={{height: '70px', minHeight: '70px'}} />
       </div>

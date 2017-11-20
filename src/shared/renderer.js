@@ -1,22 +1,14 @@
 import React from 'react'
-import {
-  Provider
-} from 'react-redux'
-import {
-  Route, StaticRouter
-} from 'react-router-dom'
-import {
-  ConnectedRouter
-} from 'react-router-redux'
+import { Provider } from 'react-redux'
+import { Route, StaticRouter } from 'react-router-dom'
+import { ConnectedRouter } from 'react-router-redux'
 import createHistory from 'history/createBrowserHistory'
 
 import initReducer from '../client/reducers'
 import AppView from '../client/components/views/AppView'
 
 import { ScreenSize } from '../client/reducers/mediaQuery'
-import {
-  setCourses, setCourses64, setStats, mediaQuery
-} from '../client/actions'
+import { setCourses, setCourses64, setStats, mediaQuery } from '../client/actions'
 
 export default function renderer (isServer = false, cb, preloadedState, req, courses, courses64, stats, isPhone, isTablet) {
   const history = isServer ? null : createHistory()

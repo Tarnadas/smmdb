@@ -1,13 +1,9 @@
 import got from 'got'
 import concat from 'concat-stream'
 
-import * as fs from 'fs'
-import * as path from 'path'
+import fs from 'fs'
+import path from 'path'
 import url from 'url'
-
-import {
-  domain
-} from '../../static'
 
 let appSavePath
 
@@ -23,7 +19,7 @@ export default class DownloadedCourse {
         fs.mkdirSync(path.join(appSavePath, 'downloads'))
       }
 
-      const req = got.stream.get(url.resolve(domain, `/api/downloadcourse?id=${courseId}`), {
+      const req = got.stream.get(url.resolve(process.env.DOMAIN, `/api/downloadcourse?id=${courseId}`), {
         decompress: false,
         useElectronNet: false
       })

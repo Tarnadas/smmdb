@@ -1,24 +1,14 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
-import {
-  Route
-} from 'react-router-dom'
-import {
-  push
-} from 'react-router-redux'
-import {
-  List
-} from 'immutable'
+import { connect } from 'react-redux'
+import { Route } from 'react-router-dom'
+import { push } from 'react-router-redux'
+import { List } from 'immutable'
 
 import SideBarArea from '../areas/SideBarArea'
 import SaveView from './SaveView'
 import AppView from '../../../client/components/views/AppView'
 import SMMButton from '../../../client/components/buttons/SMMButton'
-import {
-  deleteSelected, setSelected, fillSave, fillSaveRandom
-} from '../../actions'
+import { deleteSelected, setSelected, fillSave, fillSaveRandom } from '../../actions'
 
 const SAVE_FOLDER_VIEW = 0
 const SMMDB_VIEW = 1

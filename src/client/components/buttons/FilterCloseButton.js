@@ -1,11 +1,7 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 
-import {
-  setFilter
-} from '../../actions'
+import { setFilter } from '../../actions'
 
 class FilterCloseButton extends React.PureComponent {
   constructor (props) {

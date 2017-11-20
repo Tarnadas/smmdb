@@ -1,6 +1,4 @@
-import {
-  Map
-} from 'immutable'
+import { Map } from 'immutable'
 
 export default function filter (state, action) {
   if (!action) return state

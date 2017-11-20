@@ -1,14 +1,8 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 
-import {
-  setVideoId
-} from '../../actions'
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
+import { setVideoId } from '../../actions'
+import { ScreenSize } from '../../reducers/mediaQuery'
 
 class CourseVideoButton extends React.PureComponent {
   constructor (props) {

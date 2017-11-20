@@ -1,13 +1,9 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 
 import SMMButton from '../buttons/SMMButton'
 import AmazonPanel from '../panels/AmazonPanel'
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
+import { ScreenSize } from '../../reducers/mediaQuery'
 
 class MainView extends React.PureComponent {
   render () {
@@ -63,9 +59,27 @@ class MainView extends React.PureComponent {
           <div style={styles.header}>
             Affiliates
           </div>
-          <SMMButton link='https://sm64o.com/' blank text='Super Mario 64 Online' iconSrc='/img/sm64o.png' iconColor='bright' noText />
-          <SMMButton link='http://mariomods.net/' blank text='Mario Making Mods' iconSrc='/img/MMM.png' iconColor='bright' noText />
-          <SMMButton link='http://sm64hacks.com/' blank text='Super Mario 64 Hacks' iconSrc='/img/sm64hacks.png' iconColor='bright' noText />
+          <SMMButton
+            link='https://sm64o.com/' blank
+            text='Super Mario 64 Online'
+            iconSrc='/img/sm64o.png'
+            iconColor='bright'
+            noText
+          />
+          <SMMButton
+            link='http://mariomods.net/' blank
+            text='Mario Making Mods'
+            iconSrc='/img/MMM.png'
+            iconColor='bright'
+            noText
+          />
+          <SMMButton
+            link='http://sm64hacks.com/' blank
+            text='Super Mario 64 Hacks'
+            iconSrc='/img/sm64hacks.png'
+            iconColor='bright'
+            noText
+          />
         </div>
         <AmazonPanel />
       </div>

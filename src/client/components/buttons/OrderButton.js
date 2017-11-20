@@ -1,11 +1,7 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 
-import {
-  setOrder, swapOrder
-} from '../../actions/index'
+import { setOrder, swapOrder } from '../../actions/index'
 
 class OrderButton extends React.PureComponent {
   constructor (props) {

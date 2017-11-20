@@ -1,11 +1,7 @@
-import {
-  ObjectID
-} from 'mongodb'
+import { ObjectID } from 'mongodb'
 import randomString from 'crypto-random-string'
 
-import {
-  generateAPIKey
-} from './scripts/util'
+import { generateAPIKey } from './scripts/util'
 import Database from './Database'
 
 export const MAX_LENGTH_USERNAME = 20

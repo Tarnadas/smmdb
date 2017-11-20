@@ -1,10 +1,6 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
-import {
-  List
-} from 'immutable'
+import { connect } from 'react-redux'
+import { List } from 'immutable'
 import got from 'got'
 import stream from 'filereader-stream'
 import concat from 'concat-stream'
@@ -12,7 +8,6 @@ import progress from 'progress-stream'
 
 import { resolve } from 'url'
 
-import { domain } from '../../../static'
 import {
   setReupload, setReupload64, deleteReupload, deleteReupload64
 } from '../../actions'
@@ -39,7 +34,7 @@ class UploadArea extends React.PureComponent {
     const deleteReup = this.props.is64 ? deleteReupload64 : deleteReupload
     try {
       let abort
-      const req = got.stream.post(resolve(domain, `/api/reuploadcourse${this.props.is64 ? '64' : ''}`), {
+      const req = got.stream.post(resolve(process.env.DOMAIN, `/api/reuploadcourse${this.props.is64 ? '64' : ''}`), {
         headers: {
           'Content-Type': 'application/octet-stream',
           'Authorization': `APIKEY ${this.props.apiKey}`,
@@ -155,7 +150,8 @@ class UploadArea extends React.PureComponent {
         width: 'calc(100% - 40px)',
         margin: '0 20px 10px',
         padding: '15px 20px',
-        background: upload && upload.percentage ? `linear-gradient(90deg, #33cc33 ${upload.percentage}%, #fff ${upload.percentage}%)` : '#fff',
+        background: upload && upload.percentage
+          ? `linear-gradient(90deg, #33cc33 ${upload.percentage}%, #fff ${upload.percentage}%)` : '#fff',
         color: '#000',
         fontSize: '20px',
         border: ' 4px dashed #000000',
@@ -185,7 +181,14 @@ class UploadArea extends React.PureComponent {
     }
     return (
       <div style={styles.drag}>
-        <input style={styles.input} type='file' multiple value={this.state.value} onChange={this.handleChange} onClick={this.handleClick} />
+        <input
+          style={styles.input}
+          type='file'
+          multiple
+          value={this.state.value}
+          onChange={this.handleChange}
+          onClick={this.handleClick}
+        />
         Drag and drop or click here to reupload course (max 6MB)
         {
           err &&

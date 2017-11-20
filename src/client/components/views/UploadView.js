@@ -1,20 +1,11 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 import got from 'got'
 
 import { resolve } from 'url'
 
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
-import {
-  setCoursesSelf, deleteCourseSelf, deleteCourseUploaded
-} from '../../actions'
-import {
-  domain
-} from '../../../static'
+import { ScreenSize } from '../../reducers/mediaQuery'
+import { setCoursesSelf, deleteCourseSelf, deleteCourseUploaded } from '../../actions'
 import CoursePanel from '../panels/CoursePanel'
 import ProgressPanel from '../panels/ProgressPanel'
 import UploadArea from '../areas/UploadArea'
@@ -49,7 +40,7 @@ class UploadView extends React.PureComponent {
     if (!accountData.get('id')) return
     try {
       const apiKey = accountData.get('apikey')
-      const courses = (await got(resolve(domain, `/api/getcourses?uploader=${accountData.get('username')}&limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}`), {
+      const courses = (await got(resolve(process.env.DOMAIN, `/api/getcourses?uploader=${accountData.get('username')}&limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}`), {
         headers: {
           'Authorization': `APIKEY ${apiKey}`
         },
@@ -100,7 +91,14 @@ class UploadView extends React.PureComponent {
             saveId = smmdb.getIn([String(courseId), 'saveId'])
           }
           yield (
-            <CoursePanel key={courseId} canEdit isSelf uploaded={uploaded} course={course} downloadedCourse={downloadedCourse} progress={progress} reupload={reuploads.get(courseId)} imageFull={imageFull.get(courseId)} imagePrev={imagePrev.get(courseId)} saveId={saveId} apiKey={accountData.get('apikey')} id={i} onCourseDelete={onCourseDelete} />
+            <CoursePanel
+              key={courseId} canEdit isSelf
+              uploaded={uploaded} course={course} downloadedCourse={downloadedCourse}
+              progress={progress} reupload={reuploads.get(courseId)}
+              imageFull={imageFull.get(courseId)} imagePrev={imagePrev.get(courseId)}
+              saveId={saveId} apiKey={accountData.get('apikey')}
+              id={i} onCourseDelete={onCourseDelete}
+            />
           )
         }
         i++

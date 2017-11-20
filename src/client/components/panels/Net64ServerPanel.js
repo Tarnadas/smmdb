@@ -4,10 +4,6 @@ import { emojify } from 'node-emoji'
 
 import { resolve } from 'url'
 
-import {
-  domain
-} from '../../../static'
-
 const CHARACTER_IMAGES = [
   'mario.png', 'luigi.png', 'yoshi.png', 'wario.png', 'peach.png', 'toad.png', 'waluigi.png', 'rosalina.png'
 ]
@@ -46,7 +42,7 @@ export default class Net64ServerPanel extends React.PureComponent {
         const player = players[i]
         yield (
           <div style={style} key={i}>
-            <img src={resolve(domain, `/img/${CHARACTER_IMAGES[player.characterId]}`)} />
+            <img src={resolve(process.env.DOMAIN, `/img/${CHARACTER_IMAGES[player.characterId]}`)} />
             <div>
               { player.username }
             </div>

@@ -1,6 +1,4 @@
-import {
-  MongoClient, ObjectID
-} from 'mongodb'
+import { MongoClient, ObjectID } from 'mongodb'
 import jimp from 'jimp'
 /* import imageminWebp from 'imagemin-webp'
 import ProgressBar from 'progress'

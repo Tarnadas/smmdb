@@ -1,6 +1,4 @@
-import {
-  LOCATION_CHANGE
-} from 'react-router-redux'
+import { LOCATION_CHANGE } from 'react-router-redux'
 
 export default (state, action) => {
   if (action.type === LOCATION_CHANGE) {

@@ -42,7 +42,7 @@ export default class SaveFilePanel extends React.PureComponent {
         width: '160px',
         height: '90px',
         overflow: 'hidden',
-        display: 'inline-block',
+        display: 'inline-block'
       },
       img: {
         width: '160px',

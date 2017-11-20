@@ -12,18 +12,9 @@ import CourseVideoButton from '../buttons/CourseVideoButton'
 import SMMButton, { COLOR_SCHEME } from '../buttons/SMMButton'
 import ReuploadArea from '../areas/ReuploadArea'
 import UploadImageArea from '../areas/UploadImageArea'
-import {
-  setCourse64, setCourseSelf64, setCourseUploaded64
-} from '../../actions'
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
-import {
-  DIFFICULTY, N64_THEME
-} from '../../reducers/courseData'
-import {
-  domain
-} from '../../../static'
+import { setCourse64, setCourseSelf64, setCourseUploaded64 } from '../../actions'
+import { ScreenSize } from '../../reducers/mediaQuery'
+import { DIFFICULTY, N64_THEME } from '../../reducers/courseData'
 
 const MAX_LENGTH_TITLE = 32
 const MAX_LENGTH_VIDEOID = 12
@@ -127,7 +118,7 @@ class Course64Panel extends React.PureComponent {
         if (!VIDEO_ID.test(update.videoid) && update.videoid !== '') {
           delete update.videoid
         }
-        const res = (await got(resolve(domain, `/api/updatecourse64?id=${course.id}`), {
+        const res = (await got(resolve(process.env.DOMAIN, `/api/updatecourse64?id=${course.id}`), {
           headers: {
             'Authorization': `APIKEY ${this.props.apiKey}`
           },
@@ -166,7 +157,7 @@ class Course64Panel extends React.PureComponent {
     if (this.state.shouldDelete) {
       (async () => {
         try {
-          await got(resolve(domain, `/api/deletecourse64?id=${this.props.course.get('id')}`), {
+          await got(resolve(process.env.DOMAIN, `/api/deletecourse64?id=${this.props.course.get('id')}`), {
             headers: {
               'Authorization': `APIKEY ${this.props.apiKey}`
             },
@@ -248,7 +239,7 @@ class Course64Panel extends React.PureComponent {
   async onStar (e) {
     e.stopPropagation()
     try {
-      const course = (await got(resolve(domain, `/api/starcourse64?id=${this.props.course.get('id')}`), {
+      const course = (await got(resolve(process.env.DOMAIN, `/api/starcourse64?id=${this.props.course.get('id')}`), {
         headers: {
           'Authorization': `APIKEY ${this.props.apiKey}`
         },
@@ -493,7 +484,12 @@ class Course64Panel extends React.PureComponent {
             <div style={styles.preview}>
               <div style={styles.previewImgWrapper}>
                 <LazyLoad height={225} offset={200} once>
-                  <img style={styles.previewImg} alt='no image' src={`${domain}/course64img/${course.id}${course.vImg ? `?v=${course.vImg}` : ''}`} ref={v => { this.full = v }} />
+                  <img
+                    style={styles.previewImg}
+                    alt='no image'
+                    src={`${process.env.DOMAIN}/course64img/${course.id}${course.vImg ? `?v=${course.vImg}` : ''}`}
+                    ref={v => { this.full = v }}
+                  />
                 </LazyLoad>
               </div>
             </div>
@@ -584,10 +580,30 @@ class Course64Panel extends React.PureComponent {
                 </select>
               </div>
               <div style={styles.option} />
-              <div style={{width: '100%'}}>Editor supports <a target='_blank' href='https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet'>Markdown</a> and <a target='_blank' href='https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json'>:emojis:</a></div>
+              <div style={{width: '100%'}}>
+                Editor supports <a
+                  target='_blank'
+                  href='https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet'
+                >Markdown</a> and <a
+                  target='_blank'
+                  href='https://raw.githubusercontent.com/omnidan/node-emoji/master/lib/emoji.json'
+                >:emojis:</a></div>
               <textarea style={styles.editor} value={this.state.description} onChange={this.onMarkdownChange} />
-              <SMMButton text='Save' iconSrc='/img/submit.png' fontSize='13px' padding='3px' colorScheme={colorScheme} onClick={this.onCourseSubmit} />
-              <SMMButton text={this.state.shouldDelete ? 'Click again' : 'Delete'} iconSrc='/img/delete.png' fontSize='13px' padding='3px' onClick={this.onCourseDelete} />
+              <SMMButton
+                text='Save'
+                iconSrc='/img/submit.png'
+                fontSize='13px'
+                padding='3px'
+                colorScheme={colorScheme}
+                onClick={this.onCourseSubmit}
+              />
+              <SMMButton
+                text={this.state.shouldDelete ? 'Click again' : 'Delete'}
+                iconSrc='/img/delete.png'
+                fontSize='13px'
+                padding='3px'
+                onClick={this.onCourseDelete}
+              />
             </div>
           }
           <div className='description' style={styles.editorRendered} ref={x => {

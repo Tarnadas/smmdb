@@ -1,9 +1,7 @@
 import React from 'react'
 
 import SMMButton from '../../../client/components/buttons/SMMButton'
-import {
-  initAccount
-} from '../../../shared/Account'
+import { initAccount } from '../../../shared/Account'
 
 const LENGTH_API_KEY = 30
 
@@ -110,12 +108,29 @@ export default class ApiKeyArea extends React.PureComponent {
         <div style={styles.apiKeyExplanationSmall}>
           (With an API Key, you will be able to join verified servers with a moderation system, resulting in less cheaters)
         </div>
-        <input style={styles.apiKeyInput} type='text' value={!this.state.apiKey ? '' : this.state.apiKey} onChange={this.handleChange} />
+        <input
+          style={styles.apiKeyInput}
+          type='text'
+          value={!this.state.apiKey ? '' : this.state.apiKey}
+          onChange={this.handleChange}
+        />
         {
           apiKey &&
-          <SMMButton text='Unlink account' iconSrc='/img/delete.png' fontSize='13px' padding='3px' onClick={this.deleteApiKey} />
+          <SMMButton
+            text='Unlink account'
+            iconSrc='/img/delete.png'
+            fontSize='13px'
+            padding='3px'
+            onClick={this.deleteApiKey}
+          />
         }
-        <SMMButton text='Add API Key' iconSrc='/img/api.png' fontSize='13px' padding='3px' onClick={this.addApiKey} />
+        <SMMButton
+          text='Add API Key'
+          iconSrc='/img/api.png'
+          fontSize='13px'
+          padding='3px'
+          onClick={this.addApiKey}
+        />
       </div>
     )
   }

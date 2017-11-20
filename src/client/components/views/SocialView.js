@@ -1,12 +1,8 @@
 import React from 'react'
-import {
-  connect
-} from 'react-redux'
+import { connect } from 'react-redux'
 
 import SMMButton from '../buttons/SMMButton'
-import {
-  ScreenSize
-} from '../../reducers/mediaQuery'
+import { ScreenSize } from '../../reducers/mediaQuery'
 
 class SocialView extends React.PureComponent {
   render () {
@@ -56,26 +52,57 @@ class SocialView extends React.PureComponent {
           </div>
           <div style={styles.content}>
             You can visit us on the following platforms<br /><br />
-            <SMMButton link='https://www.reddit.com/r/CemuMarioMaker' blank text='Reddit' iconSrc='/img/reddit.svg' iconColor='bright' />
-            <SMMButton link='https://discord.gg/SPZsgSe' blank text='Discord' iconSrc='/img/discord.svg' iconColor='bright' />
+            <SMMButton
+              link='https://www.reddit.com/r/CemuMarioMaker' blank
+              text='Reddit'
+              iconSrc='/img/reddit.svg'
+              iconColor='bright'
+            />
+            <SMMButton
+              link='https://discord.gg/SPZsgSe' blank
+              text='Discord'
+              iconSrc='/img/discord.svg'
+              iconColor='bright'
+            />
           </div>
           <div style={styles.header}>
             Support me
           </div>
           <div style={styles.content}>
             Any support is greatly appreciated and helps me keep the website going<br /><br />
-            <SMMButton link='https://paypal.me/MarioReder' blank text='Paypal' iconSrc='/img/paypal.svg' padding='4px' />
-            <SMMButton link='https://flattr.com/profile/Tarnadas' blank noText iconSrc='/img/flattr.svg' padding='4px' iconColor='bright' />
-            <SMMButton link='https://ko-fi.com/A0843EPC' blank text='Ko-Fi' iconSrc='/img/kofi.svg' iconColor='dark' padding='4px' />
+            <SMMButton
+              link='https://paypal.me/MarioReder' blank
+              text='Paypal'
+              iconSrc='/img/paypal.svg'
+              padding='4px'
+            />
           </div>
           <div style={styles.header}>
             Affiliates
           </div>
           <div style={styles.content}>
             Here are all our affiliate links. If you want to become an affiliate, please contact the webmaster<br /><br />
-            <SMMButton link='https://sm64o.com/' blank text='Net64 Forum' iconSrc='/img/sm64o.png' iconColor='bright' noText />
-            <SMMButton link='http://mariomods.net/' blank text='Mario Making Mods' iconSrc='/img/MMM.png' iconColor='bright' noText />
-            <SMMButton link='http://sm64hacks.com/' blank text='Super Mario 64 Hacks' iconSrc='/img/sm64hacks.png' iconColor='bright' noText />
+            <SMMButton
+              link='https://sm64o.com/' blank
+              text='Net64 Forum'
+              iconSrc='/img/sm64o.png'
+              iconColor='bright'
+              noText
+            />
+            <SMMButton
+              link='http://mariomods.net/' blank
+              text='Mario Making Mods'
+              iconSrc='/img/MMM.png'
+              iconColor='bright'
+              noText
+            />
+            <SMMButton
+              link='http://sm64hacks.com/' blank
+              text='Super Mario 64 Hacks'
+              iconSrc='/img/sm64hacks.png'
+              iconColor='bright'
+              noText
+            />
           </div>
         </div>
       </div>
