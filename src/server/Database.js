@@ -252,25 +252,30 @@ export default class Database {
     return this.net64.updateOne({ '_id': ObjectID(id) }, { $set: server })
   }
 
-  static async getBlogPost (accountId, blogId) {
+  static async getBlogPosts ({ accountId, blogId, skip, limit, getCurrent }) {
     const query = Object.assign({ accountId: ObjectID(accountId) },
-      blogId ? { _id: ObjectID(blogId) } : { isCurrent: true })
-    const blogPost = await this.blog.find(query).toArray()
-    if (blogPost.length !== 1) return null
-    return blogPost[0]
+      blogId ? { _id: ObjectID(blogId) } : {},
+      getCurrent ? { isCurrent: true } : {}
+    )
+    let blogPosts = this.blog.find(query)
+    if (skip != null) {
+      blogPosts = blogPosts.skip(skip)
+      if (limit != null) blogPosts = blogPosts.limit(skip + limit)
+    }
+    return blogPosts.toArray()
   }
 
-  static async setBlogPost (accountId, blogPostId, md) {
+  static async setBlogPost ({ accountId, blogId, markdown }) {
     let blogPost
-    if (!blogPostId) {
+    if (!blogId) {
       blogPost = await this.blog.find({ accountId: ObjectID(accountId), isCurrent: true }).toArray()
     } else {
-      blogPost = await this.blog.find({ accountId: ObjectID(accountId), _id: ObjectID(blogPostId) }).toArray()
+      blogPost = await this.blog.find({ accountId: ObjectID(accountId), _id: ObjectID(blogId) }).toArray()
     }
     if (!blogPost || blogPost.length !== 1) {
-      return (await this.blog.insertOne({ accountId: ObjectID(accountId), md, isCurrent: true })).insertedId
+      return (await this.blog.insertOne({ accountId: ObjectID(accountId), markdown, isCurrent: true })).insertedId
     } else {
-      await this.blog.updateOne({ _id: blogPost[0]._id }, { $set: { md } })
+      await this.blog.updateOne({ _id: blogPost[0]._id }, { $set: { markdown } })
       return blogPost[0]._id
     }
   }

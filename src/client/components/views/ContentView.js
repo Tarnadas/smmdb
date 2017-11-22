@@ -10,7 +10,7 @@ import Upload64View from './Upload64View'
 import ProfileView from './ProfileView'
 import FAQView from './FAQView'
 import SocialView from './SocialView'
-// import BlogView from './BlogView'
+import BlogView from './BlogView'
 import PrivacyPolicyView from './PrivacyPolicyView'
 import LegalNoticeView from './LegalNoticeView'
 
@@ -33,7 +33,6 @@ class ContentView extends React.PureComponent {
         flex: screenSize >= ScreenSize.MEDIUM ? '1 0 auto' : '1 0 0%'
       }
     }
-    // <Route path='/blog' component={BlogView} />
     return (
       <div style={styles.content}>
         <Route exact path='/' component={MainView} />
@@ -70,6 +69,9 @@ class ContentView extends React.PureComponent {
         )} />
         <Route path='/sm64o' render={() => (
           <Net64View isServer={this.props.isServer} />
+        )} />
+        <Route path='/blog' render={() => (
+          <BlogView isServer={this.props.isServer} />
         )} />
         <Route path='/profile' component={ProfileView} />
         <Route path='/faq' component={FAQView} />

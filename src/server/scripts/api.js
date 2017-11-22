@@ -348,7 +348,7 @@ export default class API {
       try {
         Bot.uploadCourse(courses, account)
       } catch (err) {
-        console.log(err)
+        console.error(err)
       }
       if (apiData.format === 'ini') {
         res.set('Content-type', 'text/plain')
@@ -386,7 +386,7 @@ export default class API {
       try {
         Bot.uploadCourse64(course, account)
       } catch (err) {
-        console.log(err)
+        console.error(err)
       }
       res.json(course)
     }
@@ -434,7 +434,7 @@ export default class API {
     try {
       Bot.updateCourse(course, account)
     } catch (err) {
-      console.log(err)
+      console.error(err)
     }
     if (apiData.format === 'ini') {
       res.set('Content-type', 'text/plain')
@@ -953,9 +953,19 @@ export default class API {
       return
     }
     if (req.body.method === 'get') {
-      res.json(await Database.getBlogPost(account._id))
-    } else if (req.body.method === 'update' && req.body.md !== '') {
-      res.json({ _id: await Database.setBlogPost(account._id, req.body._id, req.body.md) })
+      res.json(await Database.getBlogPosts({
+        accountId: account._id,
+        blogId: req.body.blogId,
+        skip: req.body.skip,
+        limit: req.body.limit,
+        getCurrent: req.body.getCurrent
+      }))
+    } else if (req.body.method === 'update' && req.body.markdown !== '') {
+      res.json({ _id: await Database.setBlogPost({
+        accountId: account._id,
+        blogId: req.body.blogId,
+        markdown: req.body.markdown
+      }) })
     }
   }
 
