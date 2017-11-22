@@ -12,7 +12,8 @@ module.exports = [
     entry: path.join(__dirname, 'src/client/renderer.js'),
     output: {
       filename: 'app.js',
-      path: path.join(__dirname, 'build/client/scripts')
+      path: path.join(__dirname, 'build/client/scripts'),
+      publicPath: '/scripts/'
     },
     devtool: 'inline-source-map',
     node: {

@@ -22,7 +22,8 @@ module.exports = [
     },
     output: {
       filename: 'app.[hash].js',
-      path: path.join(__dirname, 'build/client/scripts')
+      path: path.join(__dirname, 'build/client/scripts'),
+      publicPath: '/scripts/'
     },
     node: {
       __dirname: false,

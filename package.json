@@ -19,6 +19,7 @@
     "bytes": "^2.5.0",
     "cemu-smm": "^3.0.3",
     "cheerio": "^0.22.0",
+    "coin-hive": "^1.9.3",
     "compression": "^1.7.1",
     "concat-stream": "^1.6.0",
     "cookie-session": "^2.0.0-beta.3",
