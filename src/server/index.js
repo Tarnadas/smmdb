@@ -81,7 +81,7 @@ async function main () {
   console.log()
   log('Database initialized')
 
-  await Bot.login()
+  Bot.login()
 
   // initialize app engine
   const app = express()
@@ -117,6 +117,13 @@ async function main () {
     }
     next()
   })
+
+  if (process.env.NODE_ENV === 'development') {
+    app.use((req, res, next) => {
+      res.set('Access-Control-Allow-Origin', 'http://localhost:8080')
+      next()
+    })
+  }
 
   app.use('/courseimg/:id*?', async (req, res) => {
     const [id, full] = req.params.id.split('.')[0].split('_')
@@ -160,6 +167,7 @@ async function main () {
   })
 
   app.route('/tokensignin').post((req, res) => {
+    res.set('Access-Control-Allow-Headers', 'content-type')
     let idToken = req.body.tokenObj.id_token
     if (!idToken) {
       res.status(400).send('idToken not found')
@@ -293,8 +301,8 @@ async function main () {
       API.uploadImage64(req, res)
     } else if (apiCall === 'net64server') {
       API.sendNet64Server(req, res)
-    } else if (apiCall === 'uploadimageblog') {
-      API.uploadImageBlog(req, res)
+    // } else if (apiCall === 'uploadimageblog') {
+    //   API.uploadImageBlog(req, res)
     } else if (apiCall === 'blogpost') {
       API.blogPost(req, res)
     } else {

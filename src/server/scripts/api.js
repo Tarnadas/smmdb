@@ -796,6 +796,7 @@ export default class API {
     }
   }
 
+  /*
   static async uploadImageBlog (req, res) {
     const auth = req.get('Authorization')
     const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
@@ -831,6 +832,7 @@ export default class API {
       res.status(400).send(`Wrong mime type: ${mime}`)
     }
   }
+  */
 
   static async getAccountData (req, res) {
     const auth = req.get('Authorization')
@@ -943,29 +945,65 @@ export default class API {
     }
     const auth = req.get('Authorization')
     const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
-    if (!apiKey) {
-      res.status(401).send('API key required')
+    let account
+    if (apiKey) {
+      account = await Account.getAccountByAPIKey(apiKey, false)
+    }
+    const method = req.body.method
+    if (!method) {
+      res.status(400).send('Method not specified')
       return
     }
-    const account = await Account.getAccountByAPIKey(apiKey, false)
-    if (account == null) {
-      res.status(400).send(`Account with API key ${apiKey} not found`)
-      return
-    }
-    if (req.body.method === 'get') {
+    if (method === 'get') {
       res.json(await Database.getBlogPosts({
-        accountId: account._id,
+        accountId: account && account._id,
         blogId: req.body.blogId,
         skip: req.body.skip,
         limit: req.body.limit,
         getCurrent: req.body.getCurrent
       }))
-    } else if (req.body.method === 'update' && req.body.markdown !== '') {
-      res.json({ _id: await Database.setBlogPost({
+    } else if (method === 'update' && req.body.markdown !== '') {
+      if (account == null) {
+        res.status(400).send(`Account with API key ${apiKey} not found`)
+        return
+      }
+      if (!account.permissions || !(account.permissions === 1 || account.permissions.blog === true)) {
+        return res.status(401).send(`Account with ID ${account._id} has no permission to edit blog posts`)
+      }
+      res.json({
+        _id: await Database.setBlogPost({
+          accountId: account._id,
+          blogId: req.body.blogId,
+          markdown: req.body.markdown
+        })
+      })
+    } else if (method === 'publish') {
+      if (account == null) {
+        res.status(400).send(`Account with API key ${apiKey} not found`)
+        return
+      }
+      if (!account.permissions || !(account.permissions === 1 || account.permissions.blog === true)) {
+        return res.status(401).send(`Account with ID ${account._id} has no permission to publish blog posts`)
+      }
+      res.json(Object.assign(await Database.publishBlogPost({
         accountId: account._id,
         blogId: req.body.blogId,
         markdown: req.body.markdown
-      }) })
+      }), {
+        ownername: account.username
+      }))
+    } else if (method === 'delete') {
+      if (account == null) {
+        res.status(400).send(`Account with API key ${apiKey} not found`)
+        return
+      }
+      if (account.permissions == null || !(account.permissions === 1 || account.permissions.blog === true)) {
+        return res.status(401).send(`Account with ID ${account._id} has no permission to publish blog posts`)
+      }
+      res.json(await Database.deleteBlogPost({
+        accountId: account._id,
+        blogId: req.body.blogId
+      }))
     }
   }
 

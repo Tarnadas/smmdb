@@ -9,6 +9,20 @@
     "type": "git",
     "url": "https://github.com/Tarnadas/smmdb.git"
   },
+  "scripts": {
+    "start": "npm-run-all --parallel watch:client watch:server watch:build",
+    "start:electron": "webpack --env=electron-dev && electron ./build/electron/main.js",
+    "watch:devserver": "webpack-dev-server --env=dev-client --hot --inline --progress --colors --content-base ./build/client",
+    "watch:client": "npm run build:dev-client -- --watch",
+    "watch:build": "npm run build:dev-server -- --watch",
+    "watch:server": "nodemon ./build/server -e js,json -i '*.spec.js' --watch ./build/server",
+    "build:dev": "npm run build:dev-server && npm run build:dev-client",
+    "build:dev-client": "webpack --env=dev-client --progress --colors",
+    "build:dev-server": "webpack --env=dev-server --progress --colors",
+    "build": "webpack --env=prod",
+    "build:electron": "webpack --env=electron-prod && node ./build-electron",
+    "test": "mocha --require babel-polyfill --compilers js:babel-register"
+  },
   "dependencies": {
     "amazon-product-api": "^0.4.4",
     "base64-arraybuffer": "^0.1.5",
@@ -32,7 +46,6 @@
     "express": "^4.16.2",
     "file-type": "^5.2.0",
     "filereader-stream": "^1.0.0",
-    "g": "^2.0.1",
     "google-id-token-verifier": "^0.2.3",
     "got": "^7.1.0",
     "history": "^4.7.2",
@@ -88,6 +101,8 @@
     "html-loader": "^0.4.5",
     "html-webpack-plugin": "^2.30.1",
     "mocha": "^3.5.3",
+    "nodemon": "^1.12.1",
+    "npm-run-all": "^4.1.2",
     "script-ext-html-webpack-plugin": "^1.8.8",
     "source-list-map": "^2.0.0",
     "source-map": "^0.5.7",
@@ -99,16 +114,6 @@
     "webpack-merge": "^4.1.1",
     "webpack-node-externals": "^1.5.4",
     "webpack-sources": "^1.0.2"
-  },
-  "scripts": {
-    "start": "npm run build-dev&& node ./build/server",
-    "start-electron": "webpack --env=electron-dev&& electron ./build/electron/main.js",
-    "start-pm2": "npm run build-dev&& pm2 ./build/server",
-    "restart-pm2": "npm run build-dev&& pm2 restart all",
-    "build-dev": "webpack --env=dev",
-    "build": "webpack --env=prod",
-    "build-electron": "webpack --env=electron-prod&& node ./build-electron",
-    "test": "mocha --require babel-polyfill --compilers js:babel-register"
   },
   "author": "Mario Reder",
   "license": "MIT"

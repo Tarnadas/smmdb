@@ -109,7 +109,29 @@ class BlogPostEditArea extends React.PureComponent {
     this.props.history.goBack()
   }
   async onPublishBlogPost () {
-    console.log('PUBLISH')
+    try {
+      const res = (await got(resolve(process.env.DOMAIN, `/api/blogpost`), {
+        headers: {
+          'Authorization': `APIKEY ${this.props.apiKey}`
+        },
+        method: 'POST',
+        body: {
+          method: 'publish',
+          blogId: this.state.blogId,
+          markdown: this.state.markdown
+        },
+        json: true,
+        useElectronNet: false
+      })).body
+      this.props.onPublish(res)
+      this.props.history.goBack()
+    } catch (err) {
+      if (err.response) {
+        console.error(err.response.body)
+      } else {
+        console.error(err)
+      }
+    }
   }
   render () {
     const styles = {

@@ -10,7 +10,7 @@ import AppView from '../client/components/views/AppView'
 import { ScreenSize } from '../client/reducers/mediaQuery'
 import { setCourses, setCourses64, setStats, mediaQuery } from '../client/actions'
 
-export default function renderer (isServer = false, cb, preloadedState, req, courses, courses64, stats, isPhone, isTablet) {
+export default function renderer (isServer = false, reactRenderer, preloadedState, req, courses, courses64, stats, isPhone, isTablet) {
   const history = isServer ? null : createHistory()
 
   const store = initReducer(preloadedState, history)
@@ -38,6 +38,6 @@ export default function renderer (isServer = false, cb, preloadedState, req, cou
       )
     }
   </Provider>
-  const html = cb(jsx, !isServer && document.getElementById('root'))
+  const html = reactRenderer(jsx, !isServer && document.getElementById('root'))
   return [html, store.getState()]
 }

@@ -1,5 +1,6 @@
 import { MongoClient, ObjectID } from 'mongodb'
-import jimp from 'jimp'
+import Account from './Account'
+// import jimp from 'jimp'
 /* import imageminWebp from 'imagemin-webp'
 import ProgressBar from 'progress'
 
@@ -253,16 +254,21 @@ export default class Database {
   }
 
   static async getBlogPosts ({ accountId, blogId, skip, limit, getCurrent }) {
-    const query = Object.assign({ accountId: ObjectID(accountId) },
+    const query = Object.assign(accountId ? { accountId: ObjectID(accountId) } : {},
       blogId ? { _id: ObjectID(blogId) } : {},
-      getCurrent ? { isCurrent: true } : {}
+      getCurrent ? { isCurrent: true } : { isCurrent: { $ne: true } }
     )
     let blogPosts = this.blog.find(query)
     if (skip != null) {
       blogPosts = blogPosts.skip(skip)
       if (limit != null) blogPosts = blogPosts.limit(skip + limit)
     }
-    return blogPosts.toArray()
+    blogPosts.sort({ published: -1 })
+    return Promise.all((await blogPosts.toArray())
+      .map(async blogPost => {
+        const ownerName = (await Account.getAccountByAccountId(blogPost.accountId)).username
+        return Object.assign(blogPost, { ownerName })
+      }))
   }
 
   static async setBlogPost ({ accountId, blogId, markdown }) {
@@ -280,6 +286,33 @@ export default class Database {
     }
   }
 
+  static async publishBlogPost ({ accountId, blogId, markdown }) {
+    const blogPost = await this.blog.find({
+      accountId: ObjectID(accountId), _id: ObjectID(blogId), isCurrent: true
+    }).toArray()
+    if (!blogPost) {
+      return {
+        err: `Blog post with id ${blogId} was not found or marked as publishable`
+      }
+    }
+    const published = Math.trunc(Date.now() / 1000)
+    await this.blog.updateOne({ _id: blogPost[0]._id }, { $set: { isCurrent: false, markdown, published } })
+    return blogPost[0]
+  }
+
+  static async deleteBlogPost ({ accountId, blogId }) {
+    const blogPost = await this.blog.find({
+      accountId: ObjectID(accountId), _id: ObjectID(blogId)
+    }).toArray()
+    if (!blogPost || blogPost.length === 0) {
+      return {
+        err: `Blog post with id ${blogId} was not found or marked as publishable`
+      }
+    }
+    await this.blog.deleteOne({ _id: blogPost[0]._id })
+  }
+
+  /*
   static async addBlogPostImage (blogId, buffer) {
     const jimpImage = await jimp.read(buffer)
     jimpImage.cover(1024, 768)
@@ -292,6 +325,7 @@ export default class Database {
     })
     return (await this.blogImages.insertOne({ blogId: ObjectID(blogId), image })).insertedId
   }
+  */
 
   // static async getBlogPostImages (id) {
   //   return this.blogImages.find({ blogId: ObjectID(blogId) }).toArray()

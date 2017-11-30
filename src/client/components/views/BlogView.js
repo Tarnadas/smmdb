@@ -20,10 +20,11 @@ class BlogView extends React.PureComponent {
     }
     this.onComposeBlogPost = this.onComposeBlogPost.bind(this)
     this.getBlogPosts = this.getBlogPosts.bind(this)
+    this.onPublishBlogPost = this.onPublishBlogPost.bind(this)
+    this.onDeleteBlogPost = this.onDeleteBlogPost.bind(this)
   }
   async componentWillMount () {
     if (process.env.IS_SERVER) return
-    if (!this.props.apiKey) return
     this.setState({
       loading: true
     })
@@ -33,7 +34,7 @@ class BlogView extends React.PureComponent {
     })
   }
   async componentWillReceiveProps (nextProps, nextState) {
-    if (!nextProps.apiKey || this.props.apiKey === nextProps.apiKey || nextState.loading) return
+    if (this.props.apiKey === nextProps.apiKey || nextState.loading) return
     this.setState({
       loading: true
     })
@@ -47,20 +48,20 @@ class BlogView extends React.PureComponent {
   }
   async getBlogPosts (apiKey) {
     try {
-      const blogPosts = (await got(resolve(process.env.DOMAIN, `/api/blogpost`), {
-        headers: {
-          'Authorization': `APIKEY ${apiKey}`
-        },
+      const blogPosts = (await got(resolve(process.env.DOMAIN, `/api/blogpost`), Object.assign({
         method: 'POST',
         body: {
           method: 'get',
           skip: 0, // TODO
-          limit: 10
+          limit: 100
         },
         json: true,
         useElectronNet: false
-      })).body
-      console.log(blogPosts)
+      }, apiKey ? {
+        headers: {
+          'Authorization': `APIKEY ${apiKey}`
+        }
+      } : {}))).body
       this.setState({
         blogPosts
       })
@@ -72,9 +73,30 @@ class BlogView extends React.PureComponent {
       }
     }
   }
+  onPublishBlogPost (blogPost) {
+    this.setState(prevState => ({
+      blogPosts: [
+        blogPost,
+        ...prevState.blogPosts
+      ]
+    }))
+  }
+  onDeleteBlogPost (blogId) {
+    const blogPosts = this.state.blogPosts.filter(blog => blog._id !== blogId)
+    this.setState({
+      blogPosts
+    })
+  }
   renderBlogPosts (blogPosts) {
+    console.log(blogPosts)
     return blogPosts.map(blogPost => (
-      <BlogPostArea key={blogPost._id} blogPost={blogPost} />
+      <BlogPostArea
+        key={blogPost._id}
+        blogPost={blogPost}
+        accountId={this.props.accountId}
+        apiKey={this.props.apiKey}
+        onDelete={this.onDeleteBlogPost}
+      />
     ))
   }
   render () {
@@ -86,15 +108,15 @@ class BlogView extends React.PureComponent {
         color: '#000',
         display: 'flex',
         textAlign: 'left',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        overflow: 'auto'
       },
       main: {
-        flex: '1 0 0%',
+        flex: '1 0 auto',
         padding: screenSize === ScreenSize.SUPER_SMALL ? '20px 10px' : '20px',
         fontSize: '16px',
         backgroundColor: 'rgba(59,189,159,1)',
         boxShadow: '0px 0px 10px 10px rgba(59,189,159,1)',
-        overflow: screenSize < ScreenSize.MEDIUM ? 'hidden' : 'auto',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center'
@@ -117,8 +139,8 @@ class BlogView extends React.PureComponent {
       }
     }
     return (
-      <div style={styles.blog}>
-        <div style={styles.main} id='scroll'>
+      <div style={styles.blog} id='scroll'>
+        <div style={styles.main}>
           {
             this.props.apiKey &&
             <Route exact path='/blog' render={() => (
@@ -134,12 +156,10 @@ class BlogView extends React.PureComponent {
           {
             this.props.apiKey &&
             <Route path='/blog/compose' render={() => (
-              <BlogPostEditArea apiKey={this.props.apiKey} />
+              <BlogPostEditArea apiKey={this.props.apiKey} onPublish={this.onPublishBlogPost} />
             )} />
           }
-          {
-            this.renderBlogPosts(this.state.blogPosts)
-          }
+          <Route exact path='/blog' render={() => this.renderBlogPosts(this.state.blogPosts)} />
         </div>
       </div>
     )
@@ -147,5 +167,6 @@ class BlogView extends React.PureComponent {
 }
 export default withRouter(connect(state => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize']),
-  apiKey: state.getIn(['userData', 'accountData', 'apikey'])
+  apiKey: state.getIn(['userData', 'accountData', 'apikey']),
+  accountId: state.getIn(['userData', 'accountData', 'id'])
 }))(BlogView))
