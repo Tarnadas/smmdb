@@ -1,5 +1,6 @@
 import React from 'react'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 import got from 'got'
 import marked from 'marked'
 import { emojify } from 'node-emoji'
@@ -25,7 +26,7 @@ class BlogPostArea extends React.PureComponent {
     this.renderer.innerHTML = emojify(marked(this.props.blogPost.markdown))
   }
   onEditBlogPost () {
-
+    this.props.onEdit(this.props.blogPost._id)
   }
   async onDeleteBlogPost () {
     if (!this.state.canDelete) {
@@ -63,13 +64,19 @@ class BlogPostArea extends React.PureComponent {
     }))
   }
   render () {
-    // console.log(this.props.blogPost)
     const collapsed = this.state.collapsed
     const canDelete = this.state.canDelete
     const blogPost = this.props.blogPost
     const date = new Date()
     date.setTime(blogPost.published * 1000)
     const localeDate = date.toLocaleDateString()
+    const localeTime = date.toLocaleTimeString()
+    let localeEditedDate
+    let localeEditedTime
+    if (blogPost.edited) {
+      date.setTime(blogPost.edited * 1000)
+      localeEditedDate = date.toLocaleDateString()
+    }
     const isOwner = this.props.accountId === blogPost.accountId
     const styles = {
       blogWrapper: {
@@ -77,8 +84,7 @@ class BlogPostArea extends React.PureComponent {
         flexDirection: 'column',
         maxHeight: collapsed ? '' : '250px',
         width: '100%',
-        margin: '20px 0',
-        overflow: 'hidden'
+        margin: '20px 0'
       },
       toggleButton: {
 
@@ -89,7 +95,8 @@ class BlogPostArea extends React.PureComponent {
         flexDirection: 'column',
         alignItems: 'stretch',
         backgroundColor: '#fffff5',
-        color: '#000'
+        color: '#000',
+        overflow: 'hidden'
       },
       header: {
         flex: '0 0 auto',
@@ -106,6 +113,11 @@ class BlogPostArea extends React.PureComponent {
       date: {
         padding: '0 20px'
       },
+      editedDate: {
+        padding: '0 10px',
+        fontSize: '13px',
+        color: '#333'
+      },
       renderer: {
         fontFamily: 'Georgia,Cambria,"Times New Roman",Times,serif',
         padding: '10px',
@@ -119,19 +131,27 @@ class BlogPostArea extends React.PureComponent {
             <div style={styles.owner}>
               { blogPost.ownerName }
             </div>
+            {
+              localeEditedDate &&
+              <div style={styles.editedDate}>
+                { localeEditedDate }
+              </div>
+            }
             <div style={styles.date}>
               { localeDate }
             </div>
             {
               isOwner &&
-              <SMMButton
-                onClick={this.onEditBlogPost}
-                text='Edit'
-                iconSrc='/img/compose.svg'
-                iconColor='bright'
-                padding='3px'
-                noMargin
-              />
+              <Link to='/blog/compose' style={{height: '40px'}}>
+                <SMMButton
+                  onClick={this.onEditBlogPost}
+                  text='Edit'
+                  iconSrc='/img/compose.svg'
+                  iconColor='bright'
+                  padding='3px'
+                  noMargin
+                />
+              </Link>
             }
             <div style={{margin: '0 5px'}} />
             {
@@ -149,7 +169,7 @@ class BlogPostArea extends React.PureComponent {
           <div style={styles.renderer} ref={x => { this.renderer = x }} />
         </div>
         <div style={styles.toggleButton} onClick={this.onToggleCollapse}>
-          Show full blog post
+          {collapsed ? 'Hide' : 'Show'} full blog post
         </div>
       </div>
     )

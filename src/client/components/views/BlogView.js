@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { Route, withRouter } from 'react-router-dom'
+import { List } from 'immutable'
 import got from 'got'
 
 import { resolve } from 'url'
@@ -15,12 +16,14 @@ class BlogView extends React.PureComponent {
   constructor (props) {
     super(props)
     this.state = {
-      blogPosts: [],
+      blogPosts: List(),
+      editBlogPost: null,
       loading: false
     }
     this.onComposeBlogPost = this.onComposeBlogPost.bind(this)
     this.getBlogPosts = this.getBlogPosts.bind(this)
     this.onPublishBlogPost = this.onPublishBlogPost.bind(this)
+    this.onEditBlogPost = this.onEditBlogPost.bind(this)
     this.onDeleteBlogPost = this.onDeleteBlogPost.bind(this)
   }
   async componentWillMount () {
@@ -44,6 +47,9 @@ class BlogView extends React.PureComponent {
     })
   }
   onComposeBlogPost () {
+    this.setState({
+      editBlogPost: null
+    })
     this.props.history.push('/blog/compose')
   }
   async getBlogPosts (apiKey) {
@@ -63,7 +69,7 @@ class BlogView extends React.PureComponent {
         }
       } : {}))).body
       this.setState({
-        blogPosts
+        blogPosts: List(blogPosts)
       })
     } catch (err) {
       if (err.response) {
@@ -73,13 +79,30 @@ class BlogView extends React.PureComponent {
       }
     }
   }
-  onPublishBlogPost (blogPost) {
-    this.setState(prevState => ({
-      blogPosts: [
-        blogPost,
-        ...prevState.blogPosts
-      ]
-    }))
+  onPublishBlogPost (blogPost, isUpdate = false) {
+    if (isUpdate) {
+      const [key] = this.state.blogPosts.findEntry(blog => blog._id === blogPost._id)
+      this.setState(prevState => ({
+        blogPosts: prevState.blogPosts.set(key, blogPost)
+      }))
+    } else {
+      this.setState(prevState => ({
+        blogPosts: prevState.blogPosts.unshift(blogPost)
+      }))
+    }
+  }
+  onEditBlogPost (blogId) {
+    let editBlogPost
+    for (const blogPost of this.state.blogPosts) {
+      if (blogPost._id === blogId) {
+        editBlogPost = blogPost
+        break
+      }
+    }
+    if (!editBlogPost) return
+    this.setState({
+      editBlogPost
+    })
   }
   onDeleteBlogPost (blogId) {
     const blogPosts = this.state.blogPosts.filter(blog => blog._id !== blogId)
@@ -88,19 +111,21 @@ class BlogView extends React.PureComponent {
     })
   }
   renderBlogPosts (blogPosts) {
-    console.log(blogPosts)
+    console.log(blogPosts.toJS())
     return blogPosts.map(blogPost => (
       <BlogPostArea
         key={blogPost._id}
         blogPost={blogPost}
         accountId={this.props.accountId}
         apiKey={this.props.apiKey}
+        onEdit={this.onEditBlogPost}
         onDelete={this.onDeleteBlogPost}
       />
-    ))
+    )).toJS()
   }
   render () {
     const screenSize = this.props.screenSize
+    const editBlogPost = this.state.editBlogPost
     const styles = {
       blog: {
         height: '100%',
@@ -156,7 +181,7 @@ class BlogView extends React.PureComponent {
           {
             this.props.apiKey &&
             <Route path='/blog/compose' render={() => (
-              <BlogPostEditArea apiKey={this.props.apiKey} onPublish={this.onPublishBlogPost} />
+              <BlogPostEditArea blogPost={editBlogPost} apiKey={this.props.apiKey} onPublish={this.onPublishBlogPost} />
             )} />
           }
           <Route exact path='/blog' render={() => this.renderBlogPosts(this.state.blogPosts)} />

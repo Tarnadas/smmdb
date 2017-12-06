@@ -22,20 +22,29 @@ class BlogPostEditArea extends React.PureComponent {
     }
     this.loadCurrentBlogPost = this.loadCurrentBlogPost.bind(this)
     this.getCurrentBlogPost = this.getCurrentBlogPost.bind(this)
-    this.updateCurrentBlogPost = this.updateCurrentBlogPost.bind(this)
+    this.updateBlogPost = this.updateBlogPost.bind(this)
     this.onTextAreaChange = this.onTextAreaChange.bind(this)
     this.onGoBack = this.onGoBack.bind(this)
     this.onPublishBlogPost = this.onPublishBlogPost.bind(this)
   }
-  async componentWillMount () {
+  async componentDidMount () {
+    const blogPost = this.props.blogPost
+    if (blogPost) {
+      this.setState({
+        markdown: blogPost.markdown || '',
+        blogId: blogPost._id
+      })
+      this.timer = setInterval(this.updateBlogPost, UPDATE_INTERVAL)
+      return
+    }
     if (!this.props.apiKey) return
     this.loadCurrentBlogPost(this.props.apiKey)
   }
   componentWillUnmount () {
     if (this.timer) clearInterval(this.timer)
   }
-  componentWillReceiveProps (nextProps, nextState) {
-    if (!nextProps.apiKey || this.props.apiKey === nextProps.apiKey || nextState.loading) return
+  componentWillReceiveProps (nextProps) {
+    if (this.timer || !nextProps.apiKey || this.props.apiKey === nextProps.apiKey || this.state.loading) return
     this.loadCurrentBlogPost(nextProps.apiKey)
   }
   async componentWillUpdate (nextProps, nextState) {
@@ -43,6 +52,8 @@ class BlogPostEditArea extends React.PureComponent {
     this.renderer.innerHTML = emojify(marked(nextState.markdown))
   }
   async loadCurrentBlogPost (apiKey) {
+    if (this.loading) return
+    this.loading = true
     this.setState({
       loading: true
     })
@@ -50,7 +61,8 @@ class BlogPostEditArea extends React.PureComponent {
     this.setState({
       loading: false
     })
-    if (!this.timer) this.timer = setInterval(this.updateCurrentBlogPost.bind(this), UPDATE_INTERVAL)
+    this.timer = setInterval(this.updateBlogPost.bind(this), UPDATE_INTERVAL)
+    this.loading = false
   }
   async getCurrentBlogPost (apiKey) {
     try {
@@ -66,9 +78,9 @@ class BlogPostEditArea extends React.PureComponent {
         json: true,
         useElectronNet: false
       })).body
-      console.log(currentBlogPost)
       if (currentBlogPost.length === 0) return
       currentBlogPost = currentBlogPost[0]
+      console.log(currentBlogPost)
       this.setState({
         markdown: currentBlogPost.markdown || '',
         blogId: currentBlogPost._id
@@ -81,7 +93,7 @@ class BlogPostEditArea extends React.PureComponent {
       }
     }
   }
-  async updateCurrentBlogPost () {
+  async updateBlogPost () {
     const res = (await got(resolve(process.env.DOMAIN, `/api/blogpost`), {
       headers: {
         'Authorization': `APIKEY ${this.props.apiKey}`
@@ -105,7 +117,7 @@ class BlogPostEditArea extends React.PureComponent {
     })
   }
   async onGoBack () {
-    await this.updateCurrentBlogPost()
+    await this.updateBlogPost()
     this.props.history.goBack()
   }
   async onPublishBlogPost () {
@@ -123,7 +135,7 @@ class BlogPostEditArea extends React.PureComponent {
         json: true,
         useElectronNet: false
       })).body
-      this.props.onPublish(res)
+      this.props.onPublish(res, !!this.props.blogPost)
       this.props.history.goBack()
     } catch (err) {
       if (err.response) {
@@ -134,10 +146,12 @@ class BlogPostEditArea extends React.PureComponent {
     }
   }
   render () {
+    const blogPost = this.props.blogPost
     const styles = {
       area: {
         width: '100%',
-        height: '100%',
+        flex: '1 0 auto',
+        minHeight: '400px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center'
@@ -202,14 +216,14 @@ class BlogPostEditArea extends React.PureComponent {
         <div style={styles.buttons}>
           <SMMButton
             onClick={this.onGoBack}
-            text='Go back and save'
+            text={blogPost ? 'Discard' : 'Go back and save'}
             iconSrc='/img/back.svg'
             iconColor='bright'
             padding='3px'
           />
           <SMMButton
             onClick={this.onPublishBlogPost}
-            text='Publish'
+            text={blogPost ? 'Update' : 'Publish'}
             iconSrc='/img/compose.svg'
             iconColor='bright'
             padding='3px'

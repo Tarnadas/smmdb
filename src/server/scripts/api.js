@@ -955,13 +955,18 @@ export default class API {
       return
     }
     if (method === 'get') {
-      res.json(await Database.getBlogPosts({
+      const blogPosts = await Database.getBlogPosts({
         accountId: account && account._id,
         blogId: req.body.blogId,
         skip: req.body.skip,
         limit: req.body.limit,
         getCurrent: req.body.getCurrent
-      }))
+      })
+      if (blogPosts.err) {
+        res.status(400).send(blogPosts.err)
+        return
+      }
+      res.json(blogPosts)
     } else if (method === 'update' && req.body.markdown !== '') {
       if (account == null) {
         res.status(400).send(`Account with API key ${apiKey} not found`)
@@ -970,12 +975,17 @@ export default class API {
       if (!account.permissions || !(account.permissions === 1 || account.permissions.blog === true)) {
         return res.status(401).send(`Account with ID ${account._id} has no permission to edit blog posts`)
       }
+      const blogId = await Database.setBlogPost({
+        accountId: account._id,
+        blogId: req.body.blogId,
+        markdown: req.body.markdown.replace(/<.*>/g, '')
+      })
+      if (blogId.err) {
+        res.status(400).send(blogId.err)
+        return
+      }
       res.json({
-        _id: await Database.setBlogPost({
-          accountId: account._id,
-          blogId: req.body.blogId,
-          markdown: req.body.markdown
-        })
+        _id: blogId
       })
     } else if (method === 'publish') {
       if (account == null) {
@@ -985,12 +995,17 @@ export default class API {
       if (!account.permissions || !(account.permissions === 1 || account.permissions.blog === true)) {
         return res.status(401).send(`Account with ID ${account._id} has no permission to publish blog posts`)
       }
-      res.json(Object.assign(await Database.publishBlogPost({
+      const blogPost = await Database.publishBlogPost({
         accountId: account._id,
         blogId: req.body.blogId,
-        markdown: req.body.markdown
-      }), {
-        ownername: account.username
+        markdown: req.body.markdown.replace(/<.*>/g, '')
+      })
+      if (blogPost.err) {
+        res.status(400).send(blogPost.err)
+        return
+      }
+      res.json(Object.assign(blogPost, {
+        ownerName: account.username
       }))
     } else if (method === 'delete') {
       if (account == null) {
@@ -1000,10 +1015,15 @@ export default class API {
       if (account.permissions == null || !(account.permissions === 1 || account.permissions.blog === true)) {
         return res.status(401).send(`Account with ID ${account._id} has no permission to publish blog posts`)
       }
-      res.json(await Database.deleteBlogPost({
+      const blogPost = await Database.deleteBlogPost({
         accountId: account._id,
         blogId: req.body.blogId
-      }))
+      })
+      if (blogPost.err) {
+        res.status(400).send(blogPost.err)
+        return
+      }
+      res.json(blogPost)
     }
   }
 

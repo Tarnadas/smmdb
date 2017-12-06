@@ -287,17 +287,29 @@ export default class Database {
   }
 
   static async publishBlogPost ({ accountId, blogId, markdown }) {
-    const blogPost = await this.blog.find({
-      accountId: ObjectID(accountId), _id: ObjectID(blogId), isCurrent: true
+    console.log({ accountId, blogId, markdown })
+    if (!blogId) {
+      blogId = (await this.blog.insertOne({ accountId: ObjectID(accountId), markdown, isCurrent: true })).insertedId
+    }
+    let blogPost = await this.blog.find({
+      accountId: ObjectID(accountId), _id: ObjectID(blogId)
     }).toArray()
-    if (!blogPost) {
+    if (!blogPost || blogPost.length === 0) {
       return {
         err: `Blog post with id ${blogId} was not found or marked as publishable`
       }
     }
+    blogPost = blogPost[0]
     const published = Math.trunc(Date.now() / 1000)
-    await this.blog.updateOne({ _id: blogPost[0]._id }, { $set: { isCurrent: false, markdown, published } })
-    return blogPost[0]
+    await this.blog.updateOne({ _id: blogPost._id }, {
+      $set: Object.assign({
+        isCurrent: false,
+        markdown
+      }, blogPost.isCurrent ? { published } : { edited: published })
+    })
+    blogPost.published = published
+    blogPost.markdown = markdown
+    return blogPost
   }
 
   static async deleteBlogPost ({ accountId, blogId }) {
@@ -310,6 +322,7 @@ export default class Database {
       }
     }
     await this.blog.deleteOne({ _id: blogPost[0]._id })
+    return blogPost
   }
 
   /*
