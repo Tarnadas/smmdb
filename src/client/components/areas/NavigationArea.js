@@ -42,13 +42,6 @@ class NavigationArea extends React.PureComponent {
         />
         <NavigationButton
           onClick={this.props.onClick}
-          link='/blog'
-          text='Blog'
-          iconSrc='/img/compose.svg'
-          iconColor='dark'
-        />
-        <NavigationButton
-          onClick={this.props.onClick}
           link='/courses'
           text='Courses'
           iconSrc='/img/courses.png'
