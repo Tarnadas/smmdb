@@ -65,6 +65,12 @@ class Net64View extends React.PureComponent {
             iconSrc='/img/discord.svg'
             iconColor='bright'
           />
+          <SMMButton
+            link='https://reddit.com/r/Net64' blank
+            text='Net64 Reddit'
+            iconSrc='/img/reddit.svg'
+            iconColor='bright'
+          />
         </div>
         <Net64ServerArea />
       </div>
