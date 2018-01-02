@@ -53,8 +53,14 @@ class SocialView extends React.PureComponent {
           <div style={styles.content}>
             You can visit us on the following platforms<br /><br />
             <SMMButton
-              link='https://www.reddit.com/r/CemuMarioMaker' blank
-              text='Reddit'
+              link='https://reddit.com/r/CemuMarioMaker' blank
+              text='Cemu SMM Reddit'
+              iconSrc='/img/reddit.svg'
+              iconColor='bright'
+            />
+            <SMMButton
+              link='https://reddit.com/r/Net64' blank
+              text='Net64 Reddit'
               iconSrc='/img/reddit.svg'
               iconColor='bright'
             />
@@ -82,13 +88,6 @@ class SocialView extends React.PureComponent {
           </div>
           <div style={styles.content}>
             Here are all our affiliate links. If you want to become an affiliate, please contact the webmaster<br /><br />
-            <SMMButton
-              link='https://sm64o.com/' blank
-              text='Net64 Forum'
-              iconSrc='/img/sm64o.png'
-              iconColor='bright'
-              noText
-            />
             <SMMButton
               link='http://mariomods.net/' blank
               text='Mario Making Mods'

@@ -60,11 +60,10 @@ class MainView extends React.PureComponent {
             Affiliates
           </div>
           <SMMButton
-            link='https://sm64o.com/' blank
-            text='Super Mario 64 Online'
-            iconSrc='/img/sm64o.png'
+            link='https://reddit.com/r/Net64' blank
+            text='Net64 Reddit'
+            iconSrc='/img/reddit.svg'
             iconColor='bright'
-            noText
           />
           <SMMButton
             link='http://mariomods.net/' blank

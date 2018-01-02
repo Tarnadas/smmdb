@@ -42,7 +42,7 @@ class Net64View extends React.PureComponent {
         </div>
         <div>
           <SMMButton
-            link='https://github.com/Tarnadas/net64plus/releases/download/1.0.1/Net64plus_win32-x64.7z' blank
+            link='https://github.com/Tarnadas/net64plus/releases/latest' blank
             text='Get the Client'
             iconSrc='/img/net64.svg'
             iconColor='bright'
@@ -59,25 +59,12 @@ class Net64View extends React.PureComponent {
             iconSrc='/img/github.svg'
             iconColor='bright'
           />
-          {
-            IS_PARTNERED &&
-            <SMMButton link='https://sm64o.com/' blank text='Net64 Forum' iconSrc='/img/sm64o.png' iconColor='bright' noText />
-          }
-          {
-            IS_PARTNERED
-              ? <SMMButton
-                link='https://discord.gg/k9QMFaB' blank
-                text='Net64 Discord'
-                iconSrc='/img/discord.svg'
-                iconColor='bright'
-              />
-              : <SMMButton
-                link='https://discord.gg/SPZsgSe' blank
-                text='SMMDB Discord'
-                iconSrc='/img/discord.svg'
-                iconColor='bright'
-              />
-          }
+          <SMMButton
+            link='https://discord.gg/k9QMFaB' blank
+            text='Net64 Discord'
+            iconSrc='/img/discord.svg'
+            iconColor='bright'
+          />
         </div>
         <Net64ServerArea />
       </div>
