@@ -40,6 +40,7 @@ export default class Net64ServerPanel extends React.PureComponent {
       for (let i in players) {
         if (!players.hasOwnProperty(i)) continue
         const player = players[i]
+        if (!player) continue
         yield (
           <div style={style} key={i}>
             <img src={resolve(process.env.DOMAIN, `/img/${CHARACTER_IMAGES[player.characterId]}`)} />
