@@ -7,6 +7,7 @@ import verifier from 'google-id-token-verifier'
 import favicon from 'serve-favicon'
 import device from 'device'
 import { renderToString } from 'react-dom/server'
+import { Helmet } from 'react-helmet'
 import pmx from 'pmx'
 
 import http from 'http'
@@ -317,8 +318,11 @@ async function main () {
     }
     const d = device(req.get('user-agent'))
     let [html, preloadedState] = renderer(true, renderToString, null, req, await API.filterCourses(null, {limit: 10}), await API.filterCourses64(null, {limit: 16}), stats, d.is('phone'), d.is('tablet'))
+    const helmet = Helmet.renderStatic()
     const index = cheerio.load($index.html())
     index('#root').html(html)
+    index('head').prepend(helmet.title.toString())
+    index('head').prepend(helmet.meta.toString())
     index('body').prepend(`<script>window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')}</script>`)
     res.send(index.html())
   })

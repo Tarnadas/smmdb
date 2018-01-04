@@ -1,4 +1,5 @@
 import React from 'react'
+import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 
 import SMMButton from '../buttons/SMMButton'
@@ -46,6 +47,9 @@ class SocialView extends React.PureComponent {
     }
     return (
       <div style={styles.social} id='scroll'>
+        <Helmet>
+          <title>SMMDB - Social</title>
+        </Helmet>
         <div style={styles.main}>
           <div style={styles.header}>
             Links

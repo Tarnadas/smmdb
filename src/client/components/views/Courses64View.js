@@ -1,4 +1,5 @@
 import React from 'react'
+import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { Route, withRouter } from 'react-router-dom'
 import got from 'got'
@@ -117,6 +118,10 @@ class Courses64View extends React.PureComponent {
     }
     return (
       <div style={styles.main}>
+        <Helmet>
+          <title>SMMDB - Courses64</title>
+          <meta name="description" content="Super Mario 64 Maker courses list for Nintendo 64 emulators. SMMDB is the official platform to share Super Mario 64 Maker courses." />
+        </Helmet>
         <StatsPanel is64 />
         {
           screenSize >= ScreenSize.MEDIUM &&

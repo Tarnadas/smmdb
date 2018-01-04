@@ -1,4 +1,5 @@
 import React from 'react'
+import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import got from 'got'
 
@@ -162,6 +163,9 @@ class ProfileView extends React.PureComponent {
     }
     return (
       <div style={styles.main}>
+        <Helmet>
+          <title>SMMDB - Profile</title>
+        </Helmet>
         <div style={styles.profile}>
           {
             accountData.id ? (

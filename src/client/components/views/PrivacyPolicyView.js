@@ -1,4 +1,5 @@
 import React from 'react'
+import { Helmet } from 'react-helmet'
 import { Link } from 'react-router-dom'
 
 export default class PrivacyPolicyView extends React.PureComponent {
@@ -33,6 +34,9 @@ export default class PrivacyPolicyView extends React.PureComponent {
     }
     return (
       <div id='scroll' style={styles.view}>
+        <Helmet>
+          <title>SMMDB - Privacy Policy</title>
+        </Helmet>
         <div style={styles.text}>
           This privacy policy tells you what to expect when SMMDB collects personal information.
         </div>

@@ -1,4 +1,5 @@
 import React from 'react'
+import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 
 import Net64ServerArea from '../areas/Net64ServerArea'
@@ -36,8 +37,12 @@ class Net64View extends React.PureComponent {
     }
     return (
       <div id='scroll' style={styles.view}>
+        <Helmet>
+          <title>SMMDB - Net64/SM64O - Server List</title>
+          <meta name="description" content="Net64/SM64O official server list. Play Super Mario 64 Online with additional characters and features!" />
+        </Helmet>
         <div style={styles.info}>
-          Net64 allows playing Super Mario 64 in an online multiplayer mode.<br />
+          Net64 aka SM64O allows playing Super Mario 64 in an online multiplayer mode.<br />
           To join any of the servers listed below, you need Net64+. The official client won't be able to connect! Just follow the links.
         </div>
         <div>

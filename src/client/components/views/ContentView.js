@@ -1,4 +1,5 @@
 import React from 'react'
+import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { Route, withRouter } from 'react-router-dom'
 
@@ -35,6 +36,10 @@ class ContentView extends React.PureComponent {
     }
     return (
       <div style={styles.content}>
+        <Helmet>
+          <title>SMMDB</title>
+          <meta name="description" content="Super Mario Maker and Super Mario 64 Maker course database for consoles Wii U, 3DS and emulators Cemu, Citra and decaf. Net64/SM64O/Super Mario 64 Online official server list." />
+        </Helmet>
         <Route exact path='/' component={MainView} />
         <Route path='/courses' render={() => (
           <CoursesView

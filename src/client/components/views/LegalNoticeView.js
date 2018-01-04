@@ -1,4 +1,5 @@
 import React from 'react'
+import { Helmet } from 'react-helmet'
 
 export default class LegalNoticeView extends React.PureComponent {
   render () {
@@ -32,13 +33,16 @@ export default class LegalNoticeView extends React.PureComponent {
     }
     return (
       <div id='scroll' style={styles.view}>
+        <Helmet>
+          <title>SMMDB - Legal Notice</title>
+        </Helmet>
         <div style={styles.header}>
           Legal Notice
         </div>
         <div style={styles.text}>
           Mario Reder<br />
-          Muldstraße 9<br />
-          67550 Worms<br />
+          Eulenburgstraße 27<br />
+          67547 Worms<br />
           Germany<br /><br />
           Tel.: +49 170 9058393<br />
           E-Mail: mreder1289@gmail.com

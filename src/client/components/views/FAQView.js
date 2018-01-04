@@ -1,4 +1,5 @@
 import React from 'react'
+import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 
 import { ScreenSize } from '../../reducers/mediaQuery'
@@ -18,7 +19,7 @@ class FAQView extends React.PureComponent {
         overflow: screenSize < ScreenSize.MEDIUM ? 'hidden' : 'auto'
       },
       content: {
-        flex: '1 0 0%',
+        flex: '1 0 auto',
         height: 'auto',
         display: 'flex',
         flexDirection: 'column',
@@ -47,6 +48,9 @@ class FAQView extends React.PureComponent {
     }
     return (
       <div style={styles.faq} id='scroll'>
+        <Helmet>
+          <title>SMMDB - FAQ</title>
+        </Helmet>
         <div style={styles.content}>
           <div style={styles.question}>
             How do I use the website with my Wii U?

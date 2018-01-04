@@ -1,4 +1,5 @@
 import React from 'react'
+import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import got from 'got'
 
@@ -154,6 +155,9 @@ class UploadView extends React.PureComponent {
       </div>
     return (
       <div style={styles.main}>
+        <Helmet>
+          <title>SMMDB - Uploads 64</title>
+        </Helmet>
         <div style={styles.upload} id='scroll' onScroll={this.handleScroll}>
           {
             accountData.id ? (

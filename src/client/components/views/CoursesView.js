@@ -1,4 +1,5 @@
 import React from 'react'
+import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { Route, withRouter } from 'react-router-dom'
 import got from 'got'
@@ -158,6 +159,10 @@ class CoursesView extends React.PureComponent {
     }
     return (
       <div style={styles.main}>
+        <Helmet>
+          <title>SMMDB - Courses</title>
+          <meta name="description" content="Super Mario Maker courses list for Cemu and consoles. SMMDB is the only cross-sharing platform for Super Mario Maker courses." />
+        </Helmet>
         <StatsPanel />
         {
           screenSize >= ScreenSize.MEDIUM &&

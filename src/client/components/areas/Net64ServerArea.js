@@ -29,6 +29,7 @@ class Net64ServerArea extends React.PureComponent {
         json: true,
         useElectronNet: false
       })).body
+      if (this.unmount) return
       this.setState({
         servers
       })
