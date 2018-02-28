@@ -29,7 +29,7 @@
     "bluebird": "^3.5.1",
     "body-parser": "^1.18.2",
     "browser-locale": "^1.0.3",
-    "bson": "^1.0.4",
+    "bson": "^2.0.0",
     "bytes": "^2.5.0",
     "cemu-smm": "^3.0.3",
     "cheerio": "^0.22.0",
