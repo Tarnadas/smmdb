@@ -9,7 +9,7 @@ const DEV_DOMAIN = 'http://localhost'
 
 module.exports = [
   {
-    entry: path.join(__dirname, 'src/client/renderer.js'),
+    entry: path.join(__dirname, 'src/client/renderer.tsx'),
     output: {
       filename: 'app.js',
       path: path.join(__dirname, 'build/client/scripts'),
@@ -35,16 +35,7 @@ module.exports = [
           target: 'http://localhost',
           secure: false
         }
-      ]/* ,
-      setup: function (app) {
-        app.use('/:p', (req, res, next) => {
-          if (!['/scripts', '/api', '/styles', '/img', '/courseimg', '/course64img', '/tokensignin', '/signin', '/signout'].includes(req.params.p)) {
-            res.sendFile(path.join(__dirname, 'build/client/index.html'))
-            return
-          }
-          next()
-        })
-      } */
+      ]
     },
     plugins: [
       new webpack.EnvironmentPlugin({
@@ -53,7 +44,6 @@ module.exports = [
         PORT: DEV_PORT,
         DOMAIN: DEV_DOMAIN
       }),
-      // new webpack.optimize.ModuleConcatenationPlugin(),
       new HtmlWebpackPlugin({
         filename: '../index.html',
         template: 'build/static/views/template.html'
@@ -63,10 +53,17 @@ module.exports = [
       }),
       new webpack.IgnorePlugin(/^.*electron\/components.*$/)
     ],
+    resolve: {
+      extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ]
+    },
     module: {
       loaders: [
         {
-          test: /\.js$/,
+          test: /\.tsx?$/,
+          loader: 'awesome-typescript-loader'
+        },
+        {
+          test: /\.jsx?$/,
           exclude: /node_modules/,
           loader: 'babel-loader',
           query: {
