@@ -8,7 +8,7 @@ const DEV_DOMAIN = 'http://localhost'
 module.exports = [
   {
     target: 'node',
-    entry: path.join(__dirname, 'src/server/index.js'),
+    entry: path.join(__dirname, 'src/server/index.ts'),
     output: {
       filename: 'index.js',
       path: path.join(__dirname, 'build/server')
@@ -28,10 +28,17 @@ module.exports = [
       new webpack.IgnorePlugin(/^.*electron\/components.*$/)
     ],
     externals: [require('webpack-node-externals')()],
+    resolve: {
+      extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ]
+    },
     module: {
       loaders: [
         {
-          test: /\.js$/,
+          test: /\.tsx?$/,
+          loader: 'awesome-typescript-loader'
+        },
+        {
+          test: /\.jsx?$/,
           exclude: /node_modules/,
           loader: 'babel-loader',
           query: {

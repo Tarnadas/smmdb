@@ -1,0 +1,39 @@
+{
+  "parser": "typescript-eslint-parser",
+  "extends": [
+    "standard-with-typescript",
+    "plugin:react/recommended"
+  ],
+  "plugins": [
+    "typescript",
+    "react"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "rules": {
+    "indent": "off",
+    "indent-legacy": ["error", 2, { "SwitchCase": 1 }],
+    "react/prop-types": "off",
+    "react/jsx-no-target-blank": "off",
+    "jsdoc/check-param-names": 1,
+    "jsdoc/check-tag-names": 1,
+    "jsdoc/check-types": 1,
+    "jsdoc/newline-after-description": 1,
+    "jsdoc/require-hyphen-before-param-description": 1,
+    "jsdoc/require-param": 1,
+    "jsdoc/require-param-description": 1,
+    "jsdoc/require-param-name": 1,
+    "jsdoc/require-param-type": 1,
+    "jsdoc/require-returns-description": 1,
+    "jsdoc/require-returns-type": 1,
+    "typescript/explicit-member-accessibility": "off"
+  },
+  "env": {
+    "browser": true,
+    "worker": true,
+    "jest": true
+  }
+}
