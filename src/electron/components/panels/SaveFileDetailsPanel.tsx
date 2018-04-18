@@ -7,7 +7,6 @@ import { resolve } from 'url'
 
 import { SMMButton } from '../../../client/components/buttons/SMMButton'
 import { deleteCourse, setSaveCourse } from '../../actions'
-const { domain } = require('../../../static')
 
 class Panel extends React.PureComponent<any, any> {
   constructor (props: any) {
@@ -20,7 +19,7 @@ class Panel extends React.PureComponent<any, any> {
   }
   async onStarCourse () {
     try {
-      const course = (await got(resolve(domain, `/api/starcourse?id=${this.props.save.get('smmdbId')}`), {
+      const course = (await got(resolve(process.env.DOMAIN!, `/api/starcourse?id=${this.props.save.get('smmdbId')}`), {
         headers: {
           'Authorization': `APIKEY ${this.props.apiKey}`
         },

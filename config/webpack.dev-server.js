@@ -2,16 +2,15 @@ const webpack = require('webpack')
 
 const path = require('path')
 
-const DEV_PORT = 80
-const DEV_DOMAIN = 'http://localhost'
+const { port, domain } = require('./environment')['dev']
 
 module.exports = [
   {
     target: 'node',
-    entry: path.join(__dirname, 'src/server/index.ts'),
+    entry: path.join(__dirname, '../src/server/index.ts'),
     output: {
       filename: 'index.js',
-      path: path.join(__dirname, 'build/server')
+      path: path.join(__dirname, '../build/server')
     },
     devtool: 'inline-source-map',
     node: {
@@ -22,8 +21,8 @@ module.exports = [
       new webpack.EnvironmentPlugin({
         NODE_ENV: 'development',
         IS_SERVER: true,
-        PORT: DEV_PORT,
-        DOMAIN: DEV_DOMAIN
+        PORT: port,
+        DOMAIN: domain
       }),
       new webpack.IgnorePlugin(/^.*electron\/components.*$/)
     ],
