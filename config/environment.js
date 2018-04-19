@@ -1,6 +1,6 @@
 module.exports = {
   dev: {
-    port: 4200,
+    port: 80,
     domain: 'localhost'
   },
   ver: {
