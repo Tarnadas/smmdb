@@ -1,8 +1,6 @@
 const webpack = require('webpack')
-const BabiliPlugin = require('babili-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
-const WebpackMd5Hash = require('webpack-md5-hash')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const path = require('path')
@@ -11,17 +9,18 @@ const { port, domain } = require('./environment')['prod']
 
 module.exports = [
   {
+    mode: 'production',
     entry: {
-      app: path.join(__dirname, 'src/client/renderer.js'),
       vendor: [
-        'react', 'react-dom', 'react-redux', 'react-router', 'react-router-dom', 'react-router-redux', 'react-google-login', 'react-lazyload',
-        'redux', 'redux-immutable', 'immutable', 'history', 'bluebird', 'got', 'concat-stream', 'filereader-stream', 'progress-stream', 'base64-arraybuffer',
-        'node-emoji', 'qrcode', 'marked'
-      ]
+        'react-redux', 'react-router', 'react-router-dom', 'react-router-redux', 'react-google-login', 'react-lazyload', 'react-helmet',
+        'redux', 'redux-immutable', 'got', 'concat-stream', 'filereader-stream', 'progress-stream', 'base64-arraybuffer',
+        'node-emoji', 'marked', 'qrcode'
+      ],
+      app: [ 'babel-polyfill', path.join(__dirname, '../src/client/renderer.tsx') ]
     },
     output: {
-      filename: 'app.[hash].js',
-      path: path.join(__dirname, 'build/client/scripts'),
+      filename: '[name].[chunkhash].js',
+      path: path.join(__dirname, '../build/client/scripts'),
       publicPath: '/scripts/'
     },
     node: {
@@ -33,25 +32,30 @@ module.exports = [
       tls: 'empty',
       child_process: 'empty'
     },
-    externals: [{
-      electron: true
-    }],
+    optimization: {
+      splitChunks: {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            chunks: 'all',
+            name: 'vendor',
+            test: 'vendor',
+            enforce: true,
+            reuseExistingChunk: true
+          }
+        }
+      },
+      runtimeChunk: true
+    },
     plugins: [
-      new WebpackMd5Hash(),
+      new webpack.HashedModuleIdsPlugin(),
       new webpack.EnvironmentPlugin({
         NODE_ENV: 'production',
         IS_SERVER: false,
         PORT: port,
         DOMAIN: domain
       }),
-      new webpack.optimize.CommonsChunkPlugin({
-        name: 'vendor',
-        filename: 'vendor.[hash].js'
-      }),
       new webpack.optimize.ModuleConcatenationPlugin(),
-      new BabiliPlugin({
-        keepFnName: true
-      }),
       new HtmlWebpackPlugin({
         filename: '../index.html',
         template: 'build/static/views/template.html'
@@ -61,36 +65,48 @@ module.exports = [
       }),
       new BundleAnalyzerPlugin({
         analyzerMode: 'static',
-        reportFilename: path.join(__dirname, 'report.html'),
+        reportFilename: path.join(__dirname, '../report.html'),
         openAnalyzer: false,
         generateStatsFile: true,
-        statsFilename: path.join(__dirname, 'stats.json')
+        statsFilename: path.join(__dirname, '../stats.json')
       }),
       new webpack.IgnorePlugin(/^.*electron\/components.*$/)
     ],
+    resolve: {
+      extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ]
+    },
     module: {
-      loaders: [
+      rules: [
         {
-          test: /\.js$/,
+          test: /\.tsx?$/,
           exclude: /node_modules/,
-          loader: 'babel-loader',
-          query: {
-            babelrc: false,
-            presets: [
-              ['env', {
-                targets: {
-                  browsers: [
-                    '> 1%',
-                    'last 2 versions',
-                    'not ie < 11'
-                  ]
-                },
-                modules: false,
-                useBuiltIns: true
-              }]
-            ],
-            plugins: ['transform-react-jsx']
-          }
+          use: [
+            {
+              loader: 'babel-loader',
+              query: {
+                babelrc: false,
+                presets: [
+                  ['env', {
+                    targets: {
+                      browsers: [
+                        '> 1%',
+                        'last 2 versions',
+                        'not ie <=11'
+                      ]
+                    },
+                    modules: false,
+                    useBuiltIns: true
+                  }]
+                ],
+                plugins: [
+                  'transform-react-jsx'
+                ]
+              }
+            },
+            {
+              loader: 'awesome-typescript-loader'
+            }
+          ]
         },
         {
           test: /\.html$/,
@@ -100,12 +116,13 @@ module.exports = [
     }
   },
   {
+    mode: 'production',
     target: 'node',
     devtool: 'source-map',
-    entry: path.join(__dirname, 'src/server/index.js'),
+    entry: path.join(__dirname, '../src/server/index.ts'),
     output: {
       filename: 'index.js',
-      path: path.join(__dirname, 'build/server')
+      path: path.join(__dirname, '../build/server')
     },
     node: {
       __dirname: false,
@@ -118,14 +135,20 @@ module.exports = [
         PORT: port,
         DOMAIN: domain
       }),
-      new BabiliPlugin(),
       new webpack.IgnorePlugin(/^.*electron\/components.*$/)
     ],
     externals: [require('webpack-node-externals')()],
+    resolve: {
+      extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ]
+    },
     module: {
-      loaders: [
+      rules: [
         {
-          test: /\.js$/,
+          test: /\.tsx?$/,
+          loader: 'awesome-typescript-loader'
+        },
+        {
+          test: /\.jsx?$/,
           exclude: /node_modules/,
           loader: 'babel-loader',
           query: {

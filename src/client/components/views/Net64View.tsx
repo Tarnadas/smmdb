@@ -49,7 +49,7 @@ class View extends React.PureComponent<any, any> {
           <SMMButton
             link='https://github.com/Tarnadas/net64plus/releases/latest' blank
             text='Get the Client'
-            iconSrc='/img/net64.svg'
+            iconSrc='/img/net64.png'
             iconColor='bright'
           />
           <SMMButton
