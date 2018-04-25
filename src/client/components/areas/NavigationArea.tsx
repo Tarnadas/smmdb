@@ -91,7 +91,7 @@ class Area extends React.PureComponent<any, any> {
             onClick={this.props.onClick}
             link='/net64'
             text='Net64'
-            iconSrc='/img/net64.svg'
+            iconSrc='/img/net64.png'
             iconColor='dark'
           />
         }

@@ -50,28 +50,33 @@ module.exports = [
       loaders: [
         {
           test: /\.tsx?$/,
-          loader: 'awesome-typescript-loader'
-        },
-        {
-          test: /\.jsx?$/,
           exclude: /node_modules/,
-          loader: 'babel-loader',
-          query: {
-            babelrc: false,
-            presets: [
-              ['env', {
-                targets: {
-                  browsers: [
-                    'last 3 Chrome versions',
-                    'last 2 ff versions'
-                  ]
-                },
-                modules: false,
-                useBuiltIns: true
-              }]
-            ],
-            plugins: ['transform-react-jsx']
-          }
+          use: [
+            {
+              loader: 'babel-loader',
+              query: {
+                babelrc: false,
+                presets: [
+                  ['env', {
+                    targets: {
+                      browsers: [
+                        'last 3 Chrome versions',
+                        'last 2 ff versions'
+                      ]
+                    },
+                    modules: false,
+                    useBuiltIns: true
+                  }]
+                ],
+                plugins: [
+                  'transform-react-jsx'
+                ]
+              }
+            },
+            {
+              loader: 'awesome-typescript-loader'
+            }
+          ]
         },
         {
           test: /\.html$/,

@@ -527,7 +527,7 @@ class Panel extends React.PureComponent<any, any> {
                 <LazyLoad height={81} offset={100} once>
                   <img
                     style={styles.previewImg}
-                    src={`${process.env.DOMAIN}/courseimg/${course.id}_full${course.vFull ? `?v=${course.vFull}` : ''}`}
+                    src={`/courseimg/${course.id}_full${course.vFull ? `?v=${course.vFull}` : ''}`}
                     ref={v => { this.full = v }}
                   />
                 </LazyLoad>
@@ -715,7 +715,7 @@ class Panel extends React.PureComponent<any, any> {
               <div style={styles.imageLarge}>
                 <img
                   style={styles.imgLarge}
-                  src={`${process.env.DOMAIN}/courseimg/${course.id}${course.vPrev ? `?v=${course.vPrev}` : ''}`}
+                  src={`/courseimg/${course.id}${course.vPrev ? `?v=${course.vPrev}` : ''}`}
                   ref={v => { this.prev = v }}
                 />
               </div>
