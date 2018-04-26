@@ -8,6 +8,7 @@ const { port, domain } = require('./environment')['dev']
 
 module.exports = [
   {
+    mode: 'development',
     entry: path.join(__dirname, '../src/client/renderer.tsx'),
     output: {
       filename: 'app.js',
@@ -47,7 +48,7 @@ module.exports = [
       extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ]
     },
     module: {
-      loaders: [
+      rules: [
         {
           test: /\.tsx?$/,
           exclude: /node_modules/,

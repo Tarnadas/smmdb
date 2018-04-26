@@ -933,6 +933,8 @@ export class API {
       server.players = req.body.players
       server.playerCount = req.body.players.length
     }
+    if (req.body.version && typeof req.body.version === 'string') server.version = req.body.version
+    if (req.body.gameMode && typeof req.body.gameMode === 'number') server.gameMode = req.body.gameMode
     server.owner = account._id
     server.ownername = account.username
     server.updated = Math.trunc(Date.now() / 1000)
