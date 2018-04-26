@@ -6,6 +6,7 @@ const { port, domain } = require('./environment')['dev']
 
 module.exports = [
   {
+    mode: 'development',
     target: 'node',
     entry: path.join(__dirname, '../src/server/index.ts'),
     output: {
@@ -31,7 +32,7 @@ module.exports = [
       extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ]
     },
     module: {
-      loaders: [
+      rules: [
         {
           test: /\.tsx?$/,
           loader: 'awesome-typescript-loader'
