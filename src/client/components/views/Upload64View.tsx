@@ -13,7 +13,7 @@ import { UploadArea } from '../areas/UploadArea'
 
 const LIMIT = 10
 
-class View extends React.PureComponent<any, any> {
+class Upload64View extends React.PureComponent<any, any> {
   constructor (props: any) {
     super(props)
     this.fetchCourses = this.fetchCourses.bind(this)
@@ -176,10 +176,10 @@ class View extends React.PureComponent<any, any> {
     )
   }
 }
-export const Upload64View = connect((state: any) => ({
+export default connect((state: any) => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize']),
   accountData: state.getIn(['userData', 'accountData']),
   courses: state.getIn(['courseData', 'self64']),
   uploads: state.get('uploads64'),
   uploadedCourses: state.getIn(['courseData', 'uploaded64'])
-}))(View) as any
+}))(Upload64View) as any

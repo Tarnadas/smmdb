@@ -30,9 +30,10 @@ class View extends React.PureComponent<any, any> {
     this.handleScroll = this.handleScroll.bind(this)
     this.shouldUpdate = this.shouldUpdate.bind(this)
   }
+
+  // #if !process.env.ELECTRON
   componentWillMount () {
     if (this.props.isServer) return
-    if (process.env.ELECTRON) return
     const listener = (size: any, query: any) => {
       if (query.matches) {
         this.props.dispatch(mediaQuery(size))
@@ -57,6 +58,8 @@ class View extends React.PureComponent<any, any> {
       this.props.dispatch(mediaQuery(ScreenSize.SUPER_SMALL))
     }
   }
+  // #endif
+
   componentWillUpdate (nextProps: any) {
     if (
       this.props.courses !== nextProps.courses ||

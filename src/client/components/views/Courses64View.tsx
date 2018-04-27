@@ -17,7 +17,7 @@ import { FilterArea } from '../areas/FilterArea'
 
 const LIMIT = 16
 
-class View extends React.PureComponent<any, any> {
+class Courses64View extends React.PureComponent<any, any> {
   public queryString: string
   public scroll: any
 
@@ -136,11 +136,11 @@ class View extends React.PureComponent<any, any> {
     )
   }
 }
-export const Courses64View = withRouter(connect((state: any) => ({
+export default withRouter(connect((state: any) => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize']),
   courses: state.getIn(['courseData', 'main64']),
   accountData: state.getIn(['userData', 'accountData']),
   filter: state.getIn(['filter', 'currentFilter']),
   order: state.get('order'),
   apiKey: state.getIn(['userData', 'accountData', 'apikey'])
-}))(View) as any) as any
+}))(Courses64View) as any) as any

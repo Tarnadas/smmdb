@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 
 import { ScreenSize } from '../../reducers/mediaQuery'
 
-class View extends React.PureComponent<any, any> {
+class FAQView extends React.PureComponent<any, any> {
   render () {
     const screenSize = this.props.screenSize
     const styles: React.CSSProperties = {
@@ -118,6 +118,6 @@ class View extends React.PureComponent<any, any> {
     )
   }
 }
-export const FAQView = connect((state: any) => ({
+export default connect((state: any) => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize'])
-}))(View)
+}))(FAQView)

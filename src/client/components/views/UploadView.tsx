@@ -15,7 +15,7 @@ const EnterAPIKeyArea = process.env.ELECTRON && require('../../../electron/compo
 
 const LIMIT = 10
 
-class View extends React.PureComponent<any, any> {
+class UploadView extends React.PureComponent<any, any> {
   constructor (props: any) {
     super(props)
     this.fetchCourses = this.fetchCourses.bind(this)
@@ -66,14 +66,11 @@ class View extends React.PureComponent<any, any> {
     const imagePrev = this.props.imagePrev
     const accountData = this.props.accountData
     const onCourseDelete = uploaded ? this.onCourseDeleteRecent : this.onCourseDelete
-    let downloads
-    let currentDownloads
-    let smmdb
-    if (process.env.ELECTRON) {
-      downloads = this.props.downloads
-      currentDownloads = this.props.currentDownloads
-      smmdb = this.props.smmdb
-    }
+    // #if process.env.ELECTRON
+    const downloads = this.props.downloads
+    const currentDownloads = this.props.currentDownloads
+    const smmdb = this.props.smmdb
+    // #endif
     return Array.from((function * () {
       let i = 0
       for (let course of courses) {
@@ -83,21 +80,23 @@ class View extends React.PureComponent<any, any> {
             <ProgressPanel course={course} key={courseId} />
           )
         } else {
-          let downloadedCourse
-          let progress
-          let saveId
-          if (process.env.ELECTRON) {
-            downloadedCourse = downloads.get(String(courseId))
-            progress = currentDownloads.get(String(courseId))
-            saveId = smmdb.getIn([String(courseId), 'saveId'])
-          }
+          // #if process.env.ELECTRON
+          const downloadedCourse = downloads.get(String(courseId))
+          const progress = currentDownloads.get(String(courseId))
+          const saveId = smmdb.getIn([String(courseId), 'saveId'])
+          // #endif
           yield (
             <CoursePanel
               key={courseId} canEdit isSelf
-              uploaded={uploaded} course={course} downloadedCourse={downloadedCourse}
-              progress={progress} reupload={reuploads.get(courseId)}
+              uploaded={uploaded} course={course}
+              // #if process.env.ELECTRON
+              downloadedCourse={downloadedCourse}
+              progress={progress}
+              saveId={saveId}
+              // #endif
+              reupload={reuploads.get(courseId)}
               imageFull={imageFull.get(courseId)} imagePrev={imagePrev.get(courseId)}
-              saveId={saveId} apiKey={accountData.get('apikey')}
+              apiKey={accountData.get('apikey')}
               id={i} onCourseDelete={onCourseDelete}
             />
           )
@@ -196,7 +195,7 @@ class View extends React.PureComponent<any, any> {
     )
   }
 }
-export const UploadView = connect((state: any) => ({
+export default connect((state: any) => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize']),
   accountData: state.getIn(['userData', 'accountData']),
   courses: state.getIn(['courseData', 'self']),
@@ -208,4 +207,4 @@ export const UploadView = connect((state: any) => ({
   imageFull: state.getIn(['image', 'full']),
   imagePrev: state.getIn(['image', 'prev']),
   reuploads: state.get('reuploads')
-}))(View) as any
+}))(UploadView) as any

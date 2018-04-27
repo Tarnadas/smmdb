@@ -16,7 +16,7 @@ const USERNAME = /^[a-z0-9A-Z|.]+$/
 const MIN_LENGTH_USERNAME = 3
 const MAX_LENGTH_USERNAME = 20
 
-class View extends React.PureComponent<any, any> {
+class ProfileView extends React.PureComponent<any, any> {
   public onDownloadFormatChange: any
 
   constructor (props: any) {
@@ -227,7 +227,7 @@ class View extends React.PureComponent<any, any> {
     )
   }
 }
-export const ProfileView = connect((state: any) => ({
+export default connect((state: any) => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize']),
   accountData: state.getIn(['userData', 'accountData'])
-}))(View)
+}))(ProfileView)
