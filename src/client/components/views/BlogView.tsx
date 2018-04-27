@@ -11,7 +11,7 @@ import { BlogPostArea } from '../areas/BlogPostArea'
 import { BlogPostEditArea } from '../areas/BlogPostEditArea'
 import { ScreenSize } from '../../reducers/mediaQuery'
 
-class View extends React.PureComponent<any, any> {
+class BlogView extends React.PureComponent<any, any> {
   constructor (props: any) {
     super(props)
     this.state = {
@@ -189,8 +189,8 @@ class View extends React.PureComponent<any, any> {
     )
   }
 }
-export const BlogView = withRouter(connect((state: any) => ({
+export default withRouter(connect((state: any) => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize']),
   apiKey: state.getIn(['userData', 'accountData', 'apikey']),
   accountId: state.getIn(['userData', 'accountData', 'id'])
-}))(View) as any) as any
+}))(BlogView) as any) as any

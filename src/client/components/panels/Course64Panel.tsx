@@ -493,7 +493,7 @@ class Panel extends React.PureComponent<any, any> {
                   <img
                     style={styles.previewImg}
                     alt='no image'
-                    src={`${process.env.DOMAIN}/course64img/${course.id}${course.vImg ? `?v=${course.vImg}` : ''}`}
+                    src={`/course64img/${course.id}${course.vImg ? `?v=${course.vImg}` : ''}`}
                     ref={v => { (this as any).full = v }}
                   />
                 </LazyLoad>

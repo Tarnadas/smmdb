@@ -70,13 +70,15 @@ module.exports = [
                   }]
                 ],
                 plugins: [
-                  'transform-react-jsx'
+                  'transform-react-jsx',
+                  'syntax-dynamic-import'
                 ]
               }
             },
             {
               loader: 'awesome-typescript-loader'
-            }
+            },
+            'webpack-conditional-loader'
           ]
         },
         {

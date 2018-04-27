@@ -17,7 +17,7 @@ import { FilterArea } from '../areas/FilterArea'
 
 const LIMIT = 10
 
-class View extends React.PureComponent<any, any> {
+class CoursesView extends React.PureComponent<any, any> {
   public queryString: string
   public scroll: any
 
@@ -75,38 +75,34 @@ class View extends React.PureComponent<any, any> {
     const imageFull = this.props.imageFull
     const imagePrev = this.props.imagePrev
     const onCourseDelete = this.onCourseDelete
-    let downloads
-    let currentDownloads
-    let smmdb
-    if (process.env.ELECTRON) {
-      downloads = this.props.downloads
-      currentDownloads = this.props.currentDownloads
-      smmdb = this.props.smmdb
-    }
+    // #if process.env.ELECTRON
+    const downloads = this.props.downloads
+    const currentDownloads = this.props.currentDownloads
+    const smmdb = this.props.smmdb
+    // #endif
     return Array.from((function * () {
       let i = 0
       for (let course of courses) {
         const courseId = course.get('id')
-        let downloadedCourse
-        let progress
-        let saveId
-        if (process.env.ELECTRON) {
-          downloadedCourse = downloads.get(String(course.get('id')))
-          progress = currentDownloads.get(String(course.get('id')))
-          saveId = smmdb.getIn([String(course.get('id')), 'saveId'])
-        }
+        // #if process.env.ELECTRON
+        const downloadedCourse = downloads.get(String(course.get('id')))
+        const progress = currentDownloads.get(String(course.get('id')))
+        const saveId = smmdb.getIn([String(course.get('id')), 'saveId'])
+        // #endif
         yield (
           (accountData.get('id') && course.owner === accountData.get('id')) || accountData.get('permissions') === 1 ? (
             <CoursePanel
               key={courseId}
               canEdit
               course={course}
+              // #if process.env.ELECTRON
               downloadedCourse={downloadedCourse}
               progress={progress}
+              saveId={saveId}
+              // #endif
               reupload={reuploads.get(courseId)}
               imageFull={imageFull.get(courseId)}
               imagePrev={imagePrev.get(courseId)}
-              saveId={saveId}
               apiKey={accountData.get('apikey')}
               id={i}
               onCourseDelete={onCourseDelete}
@@ -115,12 +111,14 @@ class View extends React.PureComponent<any, any> {
             <CoursePanel
               key={courseId}
               course={course}
+              // #if process.env.ELECTRON
               downloadedCourse={downloadedCourse}
               progress={progress}
+              saveId={saveId}
+              // #endif
               reupload={reuploads.get(courseId)}
               imageFull={imageFull.get(courseId)}
               imagePrev={imagePrev.get(courseId)}
-              saveId={saveId}
               apiKey={accountData.get('apikey')}
               id={i}
             />
@@ -175,7 +173,7 @@ class View extends React.PureComponent<any, any> {
     )
   }
 }
-export const CoursesView = withRouter(connect((state: any) => ({
+export default withRouter(connect((state: any) => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize']),
   courses: state.getIn(['courseData', 'main']),
   accountData: state.getIn(['userData', 'accountData']),
@@ -188,4 +186,4 @@ export const CoursesView = withRouter(connect((state: any) => ({
   imageFull: state.getIn(['image', 'full']),
   imagePrev: state.getIn(['image', 'prev']),
   reuploads: state.get('reuploads')
-}))(View) as any) as any
+}))(CoursesView) as any) as any

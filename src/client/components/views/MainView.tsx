@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { SMMButton } from '../buttons/SMMButton'
 import { ScreenSize } from '../../reducers/mediaQuery'
 
-class View extends React.PureComponent<any, any> {
+class MainView extends React.PureComponent<any, any> {
   render () {
     const screenSize = this.props.screenSize
     const styles: React.CSSProperties = {
@@ -83,6 +83,6 @@ class View extends React.PureComponent<any, any> {
     )
   }
 }
-export const MainView = connect((state: any) => ({
+export default connect((state: any) => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize'])
-}))(View)
+}))(MainView)

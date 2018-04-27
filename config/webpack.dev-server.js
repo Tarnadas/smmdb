@@ -35,7 +35,10 @@ module.exports = [
       rules: [
         {
           test: /\.tsx?$/,
-          loader: 'awesome-typescript-loader'
+          loader: [
+            'awesome-typescript-loader',
+            'webpack-conditional-loader'
+          ]
         },
         {
           test: /\.jsx?$/,
@@ -50,7 +53,13 @@ module.exports = [
                 }
               }]
             ],
-            plugins: ['transform-react-jsx']
+            plugins: [
+              'transform-react-jsx',
+              'syntax-dynamic-import',
+              ['import-inspector', {
+                'serverSideRequirePath': true
+              }]
+            ]
           }
         }
       ]

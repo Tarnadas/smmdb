@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Helmet } from 'react-helmet'
 
-export class LegalNoticeView extends React.PureComponent {
+export default class LegalNoticeView extends React.PureComponent {
   render () {
     const styles: React.CSSProperties = {
       view: {

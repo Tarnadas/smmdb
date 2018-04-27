@@ -12,7 +12,8 @@ module.exports = [
     mode: 'production',
     entry: {
       vendor: [
-        'react-redux', 'react-router', 'react-router-dom', 'react-router-redux', 'react-google-login', 'react-lazyload', 'react-helmet',
+        'react-redux', 'react-router', 'react-router-dom', 'react-router-redux',
+        'react-google-login', 'react-lazyload', 'react-helmet', 'react-loadable',
         'redux', 'redux-immutable', 'got', 'concat-stream', 'filereader-stream', 'progress-stream', 'base64-arraybuffer',
         'node-emoji', 'marked', 'qrcode'
       ],
@@ -90,8 +91,8 @@ module.exports = [
                     targets: {
                       browsers: [
                         '> 1%',
-                        'last 2 versions',
-                        'not ie <=11'
+                        'not ie > 0',
+                        'not op_mini all'
                       ]
                     },
                     modules: false,
@@ -99,13 +100,15 @@ module.exports = [
                   }]
                 ],
                 plugins: [
-                  'transform-react-jsx'
+                  'transform-react-jsx',
+                  'syntax-dynamic-import'
                 ]
               }
             },
             {
               loader: 'awesome-typescript-loader'
-            }
+            },
+            'webpack-conditional-loader'
           ]
         },
         {
@@ -145,7 +148,10 @@ module.exports = [
       rules: [
         {
           test: /\.tsx?$/,
-          loader: 'awesome-typescript-loader'
+          loader: [
+            'awesome-typescript-loader',
+            'webpack-conditional-loader'
+          ]
         },
         {
           test: /\.jsx?$/,
@@ -160,7 +166,13 @@ module.exports = [
                 }
               }]
             ],
-            plugins: ['transform-react-jsx']
+            plugins: [
+              'transform-react-jsx',
+              'syntax-dynamic-import',
+              ['import-inspector', {
+                'serverSideRequirePath': true
+              }]
+            ]
           }
         }
       ]

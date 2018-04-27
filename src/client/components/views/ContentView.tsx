@@ -3,17 +3,19 @@ import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { Route, withRouter } from 'react-router-dom'
 
-import { MainView } from './MainView'
-import { CoursesView } from './CoursesView'
-import { Courses64View } from './Courses64View'
-import { UploadView } from './UploadView'
-import { Upload64View } from './Upload64View'
-import { ProfileView } from './ProfileView'
-import { FAQView } from './FAQView'
-import { SocialView } from './SocialView'
-import { BlogView } from './BlogView'
-import { PrivacyPolicyView } from './PrivacyPolicyView'
-import { LegalNoticeView } from './LegalNoticeView'
+import {
+  BlogView,
+  CoursesView,
+  Courses64View,
+  FAQView,
+  PrivacyPolicyView,
+  ProfileView,
+  LegalNoticeView,
+  MainView,
+  SocialView,
+  UploadView,
+  Upload64View
+} from './RouteLoading'
 
 import { ScreenSize } from '../../reducers/mediaQuery'
 import { Net64View } from './Net64View'
