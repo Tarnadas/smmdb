@@ -889,7 +889,9 @@ export class API {
             description: server.description,
             countryCode: server.countryCode,
             ownername: server.ownername,
-            players: server.players
+            players: server.players,
+            version: server.version,
+            gameMode: server.gameMode
           }
         }
       }
