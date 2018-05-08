@@ -932,8 +932,9 @@ export class API {
     if (req.body.lat != null && typeof req.body.lat === 'number') server.lat = req.body.lat
     if (req.body.lon != null && typeof req.body.lon === 'number') server.lon = req.body.lon
     if (req.body.players) {
-      server.players = req.body.players
-      server.playerCount = req.body.players.length
+      const players = req.body.players.filter((player: any) => !!player)
+      server.players = players
+      server.playerCount = players.length
     }
     if (req.body.version && typeof req.body.version === 'string') server.version = req.body.version
     if (req.body.gameMode && typeof req.body.gameMode === 'number') server.gameMode = req.body.gameMode
