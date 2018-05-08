@@ -5,8 +5,16 @@ import { emojify } from 'node-emoji'
 import { resolve } from 'url'
 
 const CHARACTER_IMAGES = [
-  'mario.png', 'luigi.png', 'yoshi.png', 'wario.png', 'peach.png', 'toad.png', 'waluigi.png', 'rosalina.png'
+  'mario.png', 'luigi.png', 'yoshi.png', 'wario.png', 'peach.png', 'toad.png', 'waluigi.png', 'rosalina.png', 'sonic.png', 'knuckles.png', 'goomba.png', 'kirby.png'
 ]
+
+export interface Player {
+  /** Player username */
+  username?: string | null
+
+  /** Player characterId */
+  characterId?: number | null
+}
 
 export class Net64ServerPanel extends React.PureComponent<any, any> {
   public description: any
@@ -32,27 +40,37 @@ export class Net64ServerPanel extends React.PureComponent<any, any> {
       display: !prevState.display
     }))
   }
-  renderPlayers (players: any) {
-    const style = {
-      borderBottom: '1px solid black',
-      borderTop: '1px solid black',
-      display: 'flex'
+  renderPlayers (players: Player[]) {
+    const styles: React.CSSProperties = {
+      div: {
+        borderBottom: '1px solid black',
+        borderTop: '1px solid black',
+        display: 'flex'
+      },
+      imgWrapper: {
+        width: '24px',
+        height: '24px'
+      },
+      img: {
+        height: '100%'
+      }
     }
-    return Array.from((function * () {
-      for (let i in players) {
-        if (!players.hasOwnProperty(i)) continue
-        const player = players[i]
-        if (!player) continue
-        yield (
-          <div style={style} key={i}>
-            <img src={resolve(process.env.DOMAIN!, `/img/${CHARACTER_IMAGES[player.characterId]}`)} />
+    return players
+      .filter(player => player)
+      .map(
+        (player, index) =>
+          <div
+            key={index}
+            style={styles.div}
+          >
+            <div style={styles.imgWrapper}>
+              <img src={`img/${CHARACTER_IMAGES[player.characterId || 0]}`} style={styles.img} />
+            </div>
             <div>
               { player.username }
             </div>
           </div>
-        )
-      }
-    })())
+      )
   }
   render () {
     const server = this.props.server
