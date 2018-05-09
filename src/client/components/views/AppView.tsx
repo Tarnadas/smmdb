@@ -31,7 +31,6 @@ class View extends React.PureComponent<any, any> {
     this.shouldUpdate = this.shouldUpdate.bind(this)
   }
 
-  // #if !process.env.ELECTRON
   componentWillMount () {
     if (this.props.isServer) return
     const listener = (size: any, query: any) => {
@@ -58,7 +57,6 @@ class View extends React.PureComponent<any, any> {
       this.props.dispatch(mediaQuery(ScreenSize.SUPER_SMALL))
     }
   }
-  // #endif
 
   componentWillUpdate (nextProps: any) {
     if (

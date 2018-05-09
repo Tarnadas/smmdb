@@ -18,10 +18,6 @@ import { order } from './order'
 import { userData } from './userData'
 import { mediaQuery } from './mediaQuery'
 
-// #if process.env.ELECTRON
-import electron from '../../electron/reducers/electron'
-// #endif
-
 const APP_SAVE_DATA = {
   cemuSaveData: [],
   apiKey: '',
@@ -86,26 +82,6 @@ export function initReducer (preloadedState: any, history: any, electronSave?: a
     userData,
     mediaQuery
   }
-  // #if process.env.ELECTRON
-  const appSaveData = electronSave.appSaveData || APP_SAVE_DATA
-  appSaveData.version = process.env.CLIENT_VERSION
-  const appSavePath = electronSave.appSavePath || ''
-  initialState = initialState.merge(fromJS({
-    electron: {
-      appSaveData,
-      appSavePath,
-      cemuSave: null,
-      currentSave: null,
-      currentDownloads: {},
-      saveFileEditor,
-      selected: [],
-      fillProgress: []
-    }
-  }))
-  Object.assign(reducers, {
-    electron
-  })
-  // #endif
   const middleware = process.env.ELECTRON ? applyMiddleware(routerMiddleware(history), electronMiddleware) : applyMiddleware(routerMiddleware(history))
   return createStore(combineReducers(reducers), initialState, middleware)
 }

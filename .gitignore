@@ -1,5 +1,5 @@
 
-/src/server/scripts/credentials.js
+/src/server/scripts/credentials.ts
 /node_modules/
 /.idea/
 /db/
@@ -14,8 +14,10 @@
 /build/client/
 /build/release/
 /build/net64/
+/build/react-loadable.json
 /7z.exe
 /report.html
 /stats.json
 /report_electron.html
 /stats_electron.json
+/mongo/db

@@ -17,10 +17,14 @@ export const BlogView = Loadable<any, any>({
   delay: routeLoadingDelay
 })
 
+// const join = process.env.SERVER ? require('path').join : () => {}
 export const CoursesView = Loadable<any, any>({
   loader: () => import('./CoursesView'),
   loading: () => RouteLoading(),
-  delay: routeLoadingDelay
+  delay: routeLoadingDelay,
+  modules: ['./CoursesView'],
+  // @ts-ignore
+  webpack: () => [require.resolveWeak('./CoursesView')]
 })
 
 export const Courses64View = Loadable<any, any>({

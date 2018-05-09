@@ -1,6 +1,8 @@
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
+const ReactLoadablePlugin = require('react-loadable/webpack').ReactLoadablePlugin
+const ManifestPlugin = require('webpack-manifest-plugin')
 
 const path = require('path')
 
@@ -28,6 +30,11 @@ module.exports = [
     externals: [{
       electron: true
     }],
+    optimization: {
+      runtimeChunk: {
+        name: 'manifest'
+      }
+    },
     plugins: [
       new webpack.EnvironmentPlugin({
         NODE_ENV: 'development',
@@ -42,6 +49,10 @@ module.exports = [
       new ScriptExtHtmlWebpackPlugin({
         preload: /\.js/
       }),
+      new ReactLoadablePlugin({
+        filename: './build/react-loadable.json',
+      }),
+      new ManifestPlugin(),
       new webpack.IgnorePlugin(/^.*electron\/components.*$/)
     ],
     resolve: {
@@ -54,31 +65,31 @@ module.exports = [
           exclude: /node_modules/,
           use: [
             {
-              loader: 'babel-loader',
-              query: {
-                babelrc: false,
-                presets: [
-                  ['env', {
-                    targets: {
-                      browsers: [
-                        'last 3 Chrome versions',
-                        'last 2 ff versions'
-                      ]
-                    },
-                    modules: false,
-                    useBuiltIns: true
-                  }]
-                ],
-                plugins: [
-                  'transform-react-jsx',
-                  'syntax-dynamic-import'
-                ]
+              loader: 'awesome-typescript-loader',
+              options: {
+                useBabel: true,
+                babelOptions: {
+                  babelrc: false,
+                  presets: [
+                    ['env', {
+                      targets: {
+                        browsers: [
+                          'last 3 Chrome versions',
+                          'last 2 ff versions'
+                        ]
+                      },
+                      modules: false,
+                      useBuiltIns: true
+                    }]
+                  ],
+                  plugins: [
+                    'react-loadable/babel',
+                    'transform-react-jsx',
+                    'syntax-dynamic-import'
+                  ]
+                }
               }
-            },
-            {
-              loader: 'awesome-typescript-loader'
-            },
-            'webpack-conditional-loader'
+            }
           ]
         },
         {

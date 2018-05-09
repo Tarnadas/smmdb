@@ -66,11 +66,6 @@ class UploadView extends React.PureComponent<any, any> {
     const imagePrev = this.props.imagePrev
     const accountData = this.props.accountData
     const onCourseDelete = uploaded ? this.onCourseDeleteRecent : this.onCourseDelete
-    // #if process.env.ELECTRON
-    const downloads = this.props.downloads
-    const currentDownloads = this.props.currentDownloads
-    const smmdb = this.props.smmdb
-    // #endif
     return Array.from((function * () {
       let i = 0
       for (let course of courses) {
@@ -80,20 +75,10 @@ class UploadView extends React.PureComponent<any, any> {
             <ProgressPanel course={course} key={courseId} />
           )
         } else {
-          // #if process.env.ELECTRON
-          const downloadedCourse = downloads.get(String(courseId))
-          const progress = currentDownloads.get(String(courseId))
-          const saveId = smmdb.getIn([String(courseId), 'saveId'])
-          // #endif
           yield (
             <CoursePanel
               key={courseId} canEdit isSelf
               uploaded={uploaded} course={course}
-              // #if process.env.ELECTRON
-              downloadedCourse={downloadedCourse}
-              progress={progress}
-              saveId={saveId}
-              // #endif
               reupload={reuploads.get(courseId)}
               imageFull={imageFull.get(courseId)} imagePrev={imagePrev.get(courseId)}
               apiKey={accountData.get('apikey')}

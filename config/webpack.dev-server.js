@@ -35,32 +35,35 @@ module.exports = [
       rules: [
         {
           test: /\.tsx?$/,
-          loader: [
-            'awesome-typescript-loader',
-            'webpack-conditional-loader'
-          ]
-        },
-        {
-          test: /\.jsx?$/,
           exclude: /node_modules/,
-          loader: 'babel-loader',
-          query: {
-            babelrc: false,
-            presets: [
-              ['env', {
-                targets: {
-                  node: 'current'
+          use: [
+            {
+              loader: 'awesome-typescript-loader',
+              options: {
+                useBabel: true,
+                babelOptions: {
+                  babelrc: false,
+                  presets: [
+                    ['env', {
+                      targets: {
+                        node: 'current'
+                      },
+                      modules: false
+                    }]
+                  ],
+                  plugins: [
+                    'syntax-dynamic-import',
+                    'react-loadable/babel',
+                    'transform-react-jsx',
+                    /* ['import-inspector', {
+                      'serverSideRequirePath': true,
+                      'webpackRequireWeakId': true
+                    }] */
+                  ]
                 }
-              }]
-            ],
-            plugins: [
-              'transform-react-jsx',
-              'syntax-dynamic-import',
-              ['import-inspector', {
-                'serverSideRequirePath': true
-              }]
-            ]
-          }
+              }
+            }
+          ]
         }
       ]
     }

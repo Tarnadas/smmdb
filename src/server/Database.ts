@@ -9,7 +9,7 @@ import path from 'path' */
 
 import { log } from './scripts/util'
 
-const mongoUrl = 'mongodb://localhost:27017'
+const mongoUrl = `mongodb://${process.env.DOCKER === 'docker' ? 'mongodb' : 'localhost'}:27017`
 
 export abstract class Database {
   private static database?: Db
@@ -32,7 +32,18 @@ export abstract class Database {
 
   public static async initialize (isTest = false): Promise<void> {
     log('Connecting to database')
-    this.database = await MongoClient.connect(mongoUrl) as any
+    const connect = () => {
+      return new Promise(async (resolve) => {
+        try {
+          this.database = await MongoClient.connect(mongoUrl) as any
+          resolve()
+        } catch (err) {
+          console.warn('Connecting to MongoDB failed. Retrying...')
+          setTimeout(connect, 5000)
+        }
+      })
+    }
+    await connect()
     log('Connected')
 
     if (isTest) {

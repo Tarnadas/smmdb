@@ -1,0 +1,8 @@
+node_modules
+mongo
+data
+build/server/
+build/electron/
+build/client/
+build/release/
+build/net64/

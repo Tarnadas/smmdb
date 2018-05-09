@@ -6,7 +6,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPl
 
 const path = require('path')
 
-const { port, domain } = require('./environment')['prod']
+const { port, domain } = require('./environment')['ver']
 
 module.exports = [
   {

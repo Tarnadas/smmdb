@@ -7,7 +7,7 @@
     "jsx": "react",
     "sourceMap": true,
     "strict": true,
-    "moduleResolution": "node",
+    "moduleResolution": "node"
   },
   "include": [
     "./src/**/*"

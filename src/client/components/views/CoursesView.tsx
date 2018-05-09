@@ -75,31 +75,16 @@ class CoursesView extends React.PureComponent<any, any> {
     const imageFull = this.props.imageFull
     const imagePrev = this.props.imagePrev
     const onCourseDelete = this.onCourseDelete
-    // #if process.env.ELECTRON
-    const downloads = this.props.downloads
-    const currentDownloads = this.props.currentDownloads
-    const smmdb = this.props.smmdb
-    // #endif
     return Array.from((function * () {
       let i = 0
       for (let course of courses) {
         const courseId = course.get('id')
-        // #if process.env.ELECTRON
-        const downloadedCourse = downloads.get(String(course.get('id')))
-        const progress = currentDownloads.get(String(course.get('id')))
-        const saveId = smmdb.getIn([String(course.get('id')), 'saveId'])
-        // #endif
         yield (
           (accountData.get('id') && course.owner === accountData.get('id')) || accountData.get('permissions') === 1 ? (
             <CoursePanel
               key={courseId}
               canEdit
               course={course}
-              // #if process.env.ELECTRON
-              downloadedCourse={downloadedCourse}
-              progress={progress}
-              saveId={saveId}
-              // #endif
               reupload={reuploads.get(courseId)}
               imageFull={imageFull.get(courseId)}
               imagePrev={imagePrev.get(courseId)}
@@ -111,11 +96,6 @@ class CoursesView extends React.PureComponent<any, any> {
             <CoursePanel
               key={courseId}
               course={course}
-              // #if process.env.ELECTRON
-              downloadedCourse={downloadedCourse}
-              progress={progress}
-              saveId={saveId}
-              // #endif
               reupload={reuploads.get(courseId)}
               imageFull={imageFull.get(courseId)}
               imagePrev={imagePrev.get(courseId)}
