@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import got from 'got'
 
 import { resolve } from 'url'
 
@@ -10,17 +9,12 @@ class Panel extends React.PureComponent<any, any> {
   componentWillMount () {
     (async () => {
       try {
-        const stats = (await got(resolve(process.env.DOMAIN!, `/api/getstats`), {
-          json: true,
-          useElectronNet: false
-        })).body
+        const response = await fetch(resolve(process.env.DOMAIN!, `/api/getstats`))
+        if (!response.ok) throw new Error(response.statusText)
+        const stats = await response.json()
         this.props.dispatch(setStats(stats))
       } catch (err) {
-        if (err.response) {
-          console.error(err.response.body)
-        } else {
-          console.error(err)
-        }
+        console.error(err)
       }
     })()
   }

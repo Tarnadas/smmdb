@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { GoogleLogin } from 'react-google-login'
 import { connect } from 'react-redux'
-import got from 'got'
 
 import { resolve } from 'url'
 
@@ -21,24 +20,19 @@ class Button extends React.PureComponent<any, any> {
     this.onGoogleLoginFailure = this.onGoogleLoginFailure.bind(this)
     this.onLogOut = this.onLogOut.bind(this)
   }
-  componentDidMount () {
-    (async () => {
-      try {
-        const res = (await got(resolve(process.env.DOMAIN!, '/signin'), {
-          method: 'POST',
-          json: true,
-          useElectronNet: false
-        })).body
-        this.props.dispatch(setAccountData(res))
-        this.updateCourseStars(this.props, res)
-      } catch (err) {
-        if (err.response) {
-          console.error(err.response.body)
-        } else {
-          console.error(err)
-        }
-      }
-    })()
+  async componentDidMount () {
+    try {
+      const response = await fetch(resolve(process.env.DOMAIN!, '/signin'), {
+        method: 'POST',
+        credentials: 'include'
+      })
+      if (!response.ok) throw new Error(response.statusText)
+      const accountData = await response.json()
+      this.props.dispatch(setAccountData(accountData))
+      this.updateCourseStars(this.props, accountData)
+    } catch (err) {
+      console.error(err)
+    }
   }
   componentWillReceiveProps (nextProps: any) {
     if (this.props.accountData !== nextProps.accountData) {
@@ -81,19 +75,21 @@ class Button extends React.PureComponent<any, any> {
       hover: false
     })
   }
-  async onGoogleLoginSuccess (response: any) {
+  async onGoogleLoginSuccess (accessKey: any) {
     try {
-      const res = (await got(resolve(process.env.DOMAIN!, '/tokensignin'), {
+      const response = await fetch(resolve(process.env.DOMAIN!, '/tokensignin'), {
         method: 'POST',
-        body: Object.assign({}, response),
-        json: true
-      })).body
-      this.props.dispatch(setAccountData(res))
-      this.updateCourseStars(this.props, res)
+        body: JSON.stringify(accessKey),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      if (!response.ok) throw new Error(response.statusText)
+      const accountData = await response.json()
+      this.props.dispatch(setAccountData(accountData))
+      this.updateCourseStars(this.props, accountData)
     } catch (err) {
-      if (err.response) {
-        console.error(err.response.body)
-      }
+      console.error(err)
     }
   }
   onGoogleLoginFailure (response: any) {
@@ -101,7 +97,7 @@ class Button extends React.PureComponent<any, any> {
   }
   async onLogOut () {
     try {
-      await got(resolve(process.env.DOMAIN!, '/signout'), {
+      await fetch(resolve(process.env.DOMAIN!, '/signout'), {
         method: 'POST'
       })
       const account = this.props.accountData.toJS()
@@ -123,11 +119,7 @@ class Button extends React.PureComponent<any, any> {
       }
       this.props.dispatch(setAccountData())
     } catch (err) {
-      if (err.response) {
-        console.error(err.response.body)
-      } else {
-        console.error(err)
-      }
+      console.error(err)
     }
   }
   render () {

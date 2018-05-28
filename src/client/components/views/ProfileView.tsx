@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
-import got from 'got'
 
 import { resolve } from 'url'
 
@@ -72,22 +71,23 @@ class ProfileView extends React.PureComponent<any, any> {
         downloadformat: this.state.downloadFormat
       }
       try {
-        const res = (await got(resolve(process.env.DOMAIN!, '/api/setaccountdata'), {
+        const response = await fetch(resolve(process.env.DOMAIN!, '/api/setaccountdata'), {
           headers: {
-            'Authorization': `APIKEY ${this.props.accountData.get('apikey')}`
+            'Authorization': `APIKEY ${this.props.accountData.get('apikey')}`,
+            'Content-Type': 'application/json'
           },
           method: 'POST',
-          body: profile,
-          json: true,
-          useElectronNet: false
-        })).body
-        this.props.dispatch(setAccountData(res))
+          body: JSON.stringify(profile)
+        })
+        if (!response.ok) throw new Error(response.statusText)
+        const accountData = await response.json()
+        this.props.dispatch(setAccountData(accountData))
         this.setState({
           changed: false,
           saved: true
         })
       } catch (err) {
-        console.error(err.response.body)
+        console.error(err)
       }
     })()
   }

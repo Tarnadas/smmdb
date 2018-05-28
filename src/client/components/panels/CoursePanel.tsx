@@ -1,7 +1,6 @@
 import * as React from 'react'
 import LazyLoad from 'react-lazyload'
 import { connect } from 'react-redux'
-import got from 'got'
 const QRCode = require('qrcode')
 import marked from 'marked'
 import { emojify } from 'node-emoji'
@@ -136,22 +135,29 @@ class Panel extends React.PureComponent<any, any> {
         if (!VIDEO_ID.test(update.videoid) && update.videoid !== '') {
           delete update.videoid
         }
-        const res = (await got(resolve(process.env.DOMAIN!, `/api/updatecourse?id=${course.id}`), {
+        const response = await fetch(resolve(process.env.DOMAIN!, `/api/updatecourse?id=${course.id}`), {
           headers: {
-            'Authorization': `APIKEY ${this.props.apiKey}`
+            'Authorization': `APIKEY ${this.props.apiKey}`,
+            'Content-Type': 'application/json'
           },
           method: 'POST',
-          body: update,
-          json: true,
-          useElectronNet: false
-        })).body
+          body: JSON.stringify(update)
+        })
+        if (!response.ok) {
+          if (response.status === 400) {
+            this.props.onCourseDelete(this.props.id)
+            return
+          }
+          throw new Error(response.statusText)
+        }
+        const courseSMM = await response.json()
         if (this.props.uploaded) {
-          this.props.dispatch(setCourseUploaded(this.props.id, res))
+          this.props.dispatch(setCourseUploaded(this.props.id, courseSMM))
         } else {
           if (this.props.isSelf) {
-            this.props.dispatch(setCourseSelf(this.props.id, res))
+            this.props.dispatch(setCourseSelf(this.props.id, courseSMM))
           } else {
-            this.props.dispatch(setCourse(this.props.id, res))
+            this.props.dispatch(setCourse(this.props.id, courseSMM))
           }
         }
         this.setState({
@@ -159,15 +165,7 @@ class Panel extends React.PureComponent<any, any> {
           saved: true
         })
       } catch (err) {
-        if (err.response) {
-          if (err.response.body.includes('not found')) {
-            this.props.onCourseDelete(this.props.id)
-          } else {
-            console.error(err.response.body)
-          }
-        } else {
-          console.error(err)
-        }
+        console.error(err)
       }
     })()
   }
@@ -175,11 +173,10 @@ class Panel extends React.PureComponent<any, any> {
     if (this.state.shouldDelete) {
       (async () => {
         try {
-          await got(resolve(process.env.DOMAIN!, `/api/deletecourse?id=${this.props.course.get('id')}`), {
+          await fetch(resolve(process.env.DOMAIN!, `/api/deletecourse?id=${this.props.course.get('id')}`), {
             headers: {
               'Authorization': `APIKEY ${this.props.apiKey}`
-            },
-            useElectronNet: false
+            }
           })
           this.props.onCourseDelete(this.props.id)
         } catch (err) {
@@ -253,31 +250,26 @@ class Panel extends React.PureComponent<any, any> {
   async onStar (e: any) {
     e.stopPropagation()
     try {
-      const course = (await got(resolve(process.env.DOMAIN!, `/api/starcourse?id=${this.props.course.get('id')}`), {
+      const response = await fetch(resolve(process.env.DOMAIN!, `/api/starcourse?id=${this.props.course.get('id')}`), {
         headers: {
           'Authorization': `APIKEY ${this.props.apiKey}`
         },
-        method: 'POST',
-        json: true,
-        useElectronNet: false
-      })).body
-      if (course != null) {
-        if (this.props.uploaded) {
-          this.props.dispatch(setCourseUploaded(this.props.id, course))
+        method: 'POST'
+      })
+      if (!response.ok) throw new Error(response.statusText)
+      const course = await response.json()
+      if (!course) return
+      if (this.props.uploaded) {
+        this.props.dispatch(setCourseUploaded(this.props.id, course))
+      } else {
+        if (this.props.isSelf) {
+          this.props.dispatch(setCourseSelf(this.props.id, course))
         } else {
-          if (this.props.isSelf) {
-            this.props.dispatch(setCourseSelf(this.props.id, course))
-          } else {
-            this.props.dispatch(setCourse(this.props.id, course))
-          }
+          this.props.dispatch(setCourse(this.props.id, course))
         }
       }
     } catch (err) {
-      if (err.response) {
-        console.error(err.response.body)
-      } else {
-        console.error(err)
-      }
+      console.error(err)
     }
   }
   onMarkdownChange (e: any) {

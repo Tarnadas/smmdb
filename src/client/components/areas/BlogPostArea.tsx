@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
-import got from 'got'
 import marked from 'marked'
 import { emojify } from 'node-emoji'
 
@@ -57,26 +56,23 @@ class Area extends React.PureComponent<BlogPostProps, BlogPostState> {
       return
     }
     try {
-      const res = (await got(resolve(process.env.DOMAIN!, `/api/blogpost`), {
+      const response = await fetch(resolve(process.env.DOMAIN!, `/api/blogpost`), {
         headers: {
-          'Authorization': `APIKEY ${this.props.apiKey}`
+          'Authorization': `APIKEY ${this.props.apiKey}`,
+          'Content-Type': 'application/json'
         },
         method: 'POST',
-        body: {
+        body: JSON.stringify({
           method: 'delete',
           blogId: this.props.blogPost._id
-        },
-        json: true,
-        useElectronNet: false
-      })).body
-      console.log(res)
+        })
+      })
+      if (!response.ok) throw new Error(response.statusText)
+      const data = await response.json()
+      console.log(data)
       this.props.onDelete(this.props.blogPost._id)
     } catch (err) {
-      if (err.response) {
-        console.error(err.response.body)
-      } else {
-        console.error(err)
-      }
+      console.error(err)
     }
   }
   onToggleCollapse () {

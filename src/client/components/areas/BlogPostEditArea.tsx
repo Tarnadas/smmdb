@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { withRouter } from 'react-router-dom'
-import got from 'got'
 import marked from 'marked'
 import { emojify } from 'node-emoji'
 
@@ -72,18 +71,19 @@ class Area extends React.PureComponent<any, any> {
   }
   async getCurrentBlogPost (apiKey: string) {
     try {
-      let currentBlogPost = (await got(resolve(process.env.DOMAIN!, `/api/blogpost`), {
+      const response = await fetch(resolve(process.env.DOMAIN!, `/api/blogpost`), {
         headers: {
-          'Authorization': `APIKEY ${apiKey}`
+          'Authorization': `APIKEY ${apiKey}`,
+          'Content-Type': 'application/json'
         },
         method: 'POST',
-        body: {
+        body: JSON.stringify({
           method: 'get',
           getCurrent: true
-        },
-        json: true,
-        useElectronNet: false
-      })).body
+        })
+      })
+      if (!response.ok) throw new Error(response.statusText)
+      let currentBlogPost = await response.json()
       if (currentBlogPost.length === 0) return
       currentBlogPost = currentBlogPost[0]
       console.log(currentBlogPost)
@@ -92,29 +92,26 @@ class Area extends React.PureComponent<any, any> {
         blogId: currentBlogPost._id
       })
     } catch (err) {
-      if (err.response) {
-        console.error(err.response.body)
-      } else {
-        console.error(err)
-      }
+      console.error(err)
     }
   }
   async updateBlogPost () {
-    const res = (await got(resolve(process.env.DOMAIN!, `/api/blogpost`), {
+    const response = await fetch(resolve(process.env.DOMAIN!, `/api/blogpost`), {
       headers: {
-        'Authorization': `APIKEY ${this.props.apiKey}`
+        'Authorization': `APIKEY ${this.props.apiKey}`,
+        'Content-Type': 'application/json'
       },
       method: 'POST',
-      body: {
+      body: JSON.stringify({
         method: 'update',
         markdown: this.state.markdown,
         blogId: this.state.blogId
-      },
-      json: true,
-      useElectronNet: false
-    })).body
+      })
+    })
+    if (!response.ok) throw new Error(response.statusText)
+    const blogPost = await response.json()
     this.setState({
-      blogId: res._id
+      blogId: blogPost._id
     })
   }
   onTextAreaChange (e: any) {
@@ -128,27 +125,24 @@ class Area extends React.PureComponent<any, any> {
   }
   async onPublishBlogPost () {
     try {
-      const res = (await got(resolve(process.env.DOMAIN!, `/api/blogpost`), {
+      const response = await fetch(resolve(process.env.DOMAIN!, `/api/blogpost`), {
         headers: {
-          'Authorization': `APIKEY ${this.props.apiKey}`
+          'Authorization': `APIKEY ${this.props.apiKey}`,
+          'Content-Type': 'application/json'
         },
         method: 'POST',
-        body: {
+        body: JSON.stringify({
           method: 'publish',
           blogId: this.state.blogId,
           markdown: this.state.markdown
-        },
-        json: true,
-        useElectronNet: false
-      })).body
-      this.props.onPublish(res, !!this.props.blogPost)
+        })
+      })
+      if (!response.ok) throw new Error(response.statusText)
+      const blogPost = await response.json()
+      this.props.onPublish(blogPost, !!this.props.blogPost)
       this.props.history.goBack()
     } catch (err) {
-      if (err.response) {
-        console.error(err.response.body)
-      } else {
-        console.error(err)
-      }
+      console.error(err)
     }
   }
   render () {

@@ -2,7 +2,6 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { Route, withRouter } from 'react-router-dom'
 import { List } from 'immutable'
-import got from 'got'
 
 import { resolve } from 'url'
 
@@ -53,29 +52,29 @@ class BlogView extends React.PureComponent<any, any> {
   }
   async getBlogPosts (apiKey: any) {
     try {
-      const blogPosts = (await got(resolve(process.env.DOMAIN!, `/api/blogpost`), Object.assign({
+      const response = await fetch(resolve(process.env.DOMAIN!, `/api/blogpost`), {
         method: 'POST',
-        body: {
+        body: JSON.stringify({
           method: 'get',
           skip: 0, // TODO
           limit: 100
-        },
-        json: true,
-        useElectronNet: false
-      }, apiKey ? {
-        headers: {
-          'Authorization': `APIKEY ${apiKey}`
-        }
-      } : {}))).body
+        }),
+        headers: apiKey
+          ? {
+            'Authorization': `APIKEY ${apiKey}`,
+            'Content-Type': 'application/json'
+          }
+          : {
+            'Content-Type': 'application/json'
+          }
+      })
+      if (!response.ok) throw new Error(response.statusText)
+      const blogPosts = await response.json()
       this.setState({
         blogPosts: List(blogPosts)
       })
     } catch (err) {
-      if (err.response) {
-        console.error(err.response.body)
-      } else {
-        console.error(err)
-      }
+      console.error(err)
     }
   }
   onPublishBlogPost (blogPost: any, isUpdate = false) {

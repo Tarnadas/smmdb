@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { List, Map } from 'immutable'
-import got from 'got'
 
 import { resolve } from 'url'
 
@@ -36,15 +35,17 @@ class View extends React.Component<any, any> {
     document.addEventListener('keydown', this.onKeyDown)
     document.addEventListener('keyup', this.onKeyUp);
     (async () => {
+      const { apiKey } = this.props
       const ids = this.props.save.map((x: any) => x.get('smmdbId')).reduce((str: any, val: any) => (str + ',' + val))
-      const courses = (await got(resolve(process.env.domain!, `/api/getcourses?ids=${ids}&filter=id,stars,starred`), Object.assign({
-        json: true,
-        useElectronNet: false
-      }, this.props.apiKey ? {
-        headers: {
-          'Authorization': `APIKEY ${this.props.apiKey}`
-        }
-      } : null))).body
+      const response = await fetch(resolve(process.env.domain!, `/api/getcourses?ids=${ids}&filter=id,stars,starred`), {
+        headers: apiKey
+          ? {
+            'Authorization': `APIKEY ${this.props.apiKey}`
+          }
+          : undefined
+      })
+      if (!response.ok) throw new Error(response.statusText)
+      const courses = await response.json()
       const c: any = {}
       for (let i in courses) {
         c[courses[i].id] = courses[i]

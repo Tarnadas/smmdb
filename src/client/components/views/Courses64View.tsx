@@ -2,7 +2,6 @@ import * as React from 'react'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { Route, withRouter } from 'react-router-dom'
-import got from 'got'
 
 import { resolve } from 'url'
 import { stringify } from 'querystring'
@@ -48,24 +47,21 @@ class Courses64View extends React.PureComponent<any, any> {
   }
   async fetchCourses (shouldConcat = false, limit = LIMIT) {
     try {
-      const apiKey = this.props.apiKey
-      const courses = (await got(resolve(process.env.DOMAIN!, `/api/getcourses64?limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}${this.queryString ? `&${this.queryString}` : ''}`), Object.assign({
-        json: true,
-        useElectronNet: false
-      }, this.props.apiKey ? {
-        headers: {
-          'Authorization': `APIKEY ${this.props.apiKey}`
-        }
-      } : null))).body
-      if (courses != null && apiKey === this.props.apiKey) {
-        this.props.dispatch(setCourses64(courses, shouldConcat))
-      }
+      const { apiKey } = this.props
+      const url = `/api/getcourses64?limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}${this.queryString ? `&${this.queryString}` : ''}`
+      const response = await fetch(resolve(process.env.DOMAIN!, url), {
+        headers: apiKey
+          ? {
+            'Authorization': `APIKEY ${this.props.apiKey}`
+          }
+          : undefined
+      })
+      if (!response.ok) throw new Error(response.statusText)
+      const courses = await response.json()
+      if (!courses) return
+      this.props.dispatch(setCourses64(courses, shouldConcat))
     } catch (err) {
-      if (err.response) {
-        console.error(err.response.body)
-      } else {
-        console.error(err)
-      }
+      console.error(err)
     }
   }
   renderCourses () {

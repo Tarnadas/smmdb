@@ -2,6 +2,7 @@
 /src/server/scripts/credentials.ts
 /node_modules/
 /.idea/
+/.vscode/
 /db/
 /courses/
 /uploads/

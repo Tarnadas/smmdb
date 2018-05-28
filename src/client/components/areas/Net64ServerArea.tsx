@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import got from 'got'
 
 import { resolve } from 'url'
 
@@ -27,15 +26,16 @@ class Area extends React.PureComponent<any, any> {
   async updateServers () {
     if (this.unmount) return
     try {
-      const servers = (await got(resolve(process.env.DOMAIN!, `/api/getnet64servers`), {
-        json: true,
-        useElectronNet: false
-      })).body
+      const response = await fetch(resolve(process.env.DOMAIN!, `/api/getnet64servers`))
+      if (!response.ok) throw new Error(response.statusText)
+      const servers = await response.json()
       if (this.unmount) return
       this.setState({
         servers
       })
-    } catch (err) {}
+    } catch (err) {
+      console.error(err)
+    }
     setTimeout(this.updateServers, 10000)
   }
   renderServers (servers: any) {

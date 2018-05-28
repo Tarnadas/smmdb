@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import { Map } from 'immutable'
-import got from 'got'
 
 import { resolve } from 'url'
 
@@ -19,25 +18,20 @@ class Panel extends React.PureComponent<any, any> {
   }
   async onStarCourse () {
     try {
-      const course = (await got(resolve(process.env.DOMAIN!, `/api/starcourse?id=${this.props.save.get('smmdbId')}`), {
+      const response = await fetch(resolve(process.env.DOMAIN!, `/api/starcourse?id=${this.props.save.get('smmdbId')}`), {
         headers: {
           'Authorization': `APIKEY ${this.props.apiKey}`
         },
-        method: 'POST',
-        json: true,
-        useElectronNet: false
-      })).body
-      if (course != null) {
-        const save = Map(this.props.save.merge({ stars: course.stars, starred: !!course.starred }))
-        this.props.dispatch(setSaveCourse(this.props.courseId, save))
-        this.props.onSaveChange(save)
-      }
+        method: 'POST'
+      })
+      if (!response.ok) throw new Error(response.statusText)
+      const course = await response.json()
+      if (!course) return
+      const save = Map(this.props.save.merge({ stars: course.stars, starred: !!course.starred }))
+      this.props.dispatch(setSaveCourse(this.props.courseId, save))
+      this.props.onSaveChange(save)
     } catch (err) {
-      if (err.response) {
-        console.error(err.response.body)
-      } else {
-        console.error(err)
-      }
+      console.error(err)
     }
   }
   render () {

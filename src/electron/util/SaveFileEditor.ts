@@ -1,6 +1,5 @@
 import DownloadedCourse from './DownloadedCourse'
 import { deserialize } from 'cemu-smm'
-import got from 'got'
 
 import * as fs from 'fs'
 import * as path from 'path'
@@ -85,10 +84,9 @@ export class SaveFileEditor {
     try {
       if (limit <= 0) return
       let progress = 0
-      const courses = (await got(resolve(process.env.DOMAIN!, `/api/getcourses?limit=${limit}&random=${random ? '1' : '0'}&filter=id,lastmodified&${queryString}`), {
-        json: true,
-        useElectronNet: false
-      })).body
+      const response = await fetch(resolve(process.env.DOMAIN!, `/api/getcourses?limit=${limit}&random=${random ? '1' : '0'}&filter=id,lastmodified&${queryString}`))
+      if (!response.ok) throw new Error(response.statusText)
+      const courses = await response.json()
       if (courses.length < limit) limit = courses.length
       downloads = downloads.toJS()
       smmdb = smmdb.toJS()

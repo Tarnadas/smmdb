@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
-import got from 'got'
 
 import { resolve } from 'url'
 
@@ -37,22 +36,18 @@ class Upload64View extends React.PureComponent<any, any> {
     if (!accountData.get('id')) return
     try {
       const apiKey = accountData.get('apikey')
-      const courses = (await got(resolve(process.env.DOMAIN!, `/api/getcourses64?uploader=${accountData.get('username')}&limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}`), {
+      const response = await fetch(resolve(process.env.DOMAIN!, `/api/getcourses64?uploader=${accountData.get('username')}&limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}`), {
         headers: {
           'Authorization': `APIKEY ${apiKey}`
-        },
-        json: true,
-        useElectronNet: false
-      })).body
+        }
+      })
+      if (!response.ok) throw new Error(response.statusText)
+      const courses = await response.json()
       if (courses && courses.length > 0) {
         props.dispatch(setCoursesSelf64(courses, shouldConcat))
       }
     } catch (err) {
-      if (err.response) {
-        console.error(err.response.body)
-      } else {
-        console.error(err)
-      }
+      console.error(err)
     }
   }
   renderCourses (uploaded = false) {
