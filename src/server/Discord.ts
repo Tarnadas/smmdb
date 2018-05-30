@@ -7,17 +7,17 @@ const FAQ_ID = '335060849091936256'
 export class DiscordBot {
   private client: Discord.Client
 
-  private channel?: Discord.Channel
+  private channel?: Discord.TextChannel
 
-  private faqChannel?: Discord.Channel
+  private faqChannel?: Discord.TextChannel
 
   constructor () {
     this.client = new Discord.Client()
 
     this.client.on('ready', () => {
       console.log('Discord bot initialized')
-      this.channel = this.client.channels.get('334977257456271360')
-      this.faqChannel = this.client.channels.get(FAQ_ID)
+      this.channel = this.client.channels.get('334977257456271360') as Discord.TextChannel
+      this.faqChannel = this.client.channels.get(FAQ_ID) as Discord.TextChannel
       this.updateFAQ()
     })
 
@@ -108,7 +108,7 @@ export class DiscordBot {
             '  • Now, you should be done, when you launch your game\'s RPX through cemu, it will be modified with the texturepack. If for some reason it didn\'t, you can delete the modifed game and start over.')
       }
     ]
-    const channelMessages: any[] = (await (this.faqChannel as any).fetchMessages({ limit: messages.length })).array().reverse()
+    const channelMessages: any[] = (await this.faqChannel!.fetchMessages({ limit: messages.length })).array().reverse()
     for (let i in channelMessages) {
       await channelMessages[i].edit(messages[i])
     }
@@ -157,7 +157,7 @@ export class DiscordBot {
       messages[messageIndex] += append
     }
     for (let i in messages) {
-      (this.channel as any).send(messages[i])
+      this.channel!.send(messages[i])
     }
   }
 
@@ -192,6 +192,6 @@ export class DiscordBot {
             ? '    <:smw:334989248539262978>'
             : '    <:nsmbu:334989248975470592>'
       } ${course.title} by ${course.maker}${autoScroll ? ` ${autoScroll}` : ''}`
-    ;(this.channel as any).send(message)
+    this.channel!.send(message)
   }
 }
