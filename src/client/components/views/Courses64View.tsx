@@ -29,9 +29,10 @@ class Courses64View extends React.PureComponent<any, any> {
     this.handleScroll = this.handleScroll.bind(this)
   }
   componentWillMount () {
+    if (process.env.IS_SERVER) return
     this.props.dispatch(resetFilter())
     this.props.dispatch(resetOrder())
-    if (!this.props.isServer) this.props.setFetchCourses(this.fetchCourses)
+    this.props.setFetchCourses(this.fetchCourses)
     this.fetchCourses()
   }
   componentWillReceiveProps (nextProps: any) {

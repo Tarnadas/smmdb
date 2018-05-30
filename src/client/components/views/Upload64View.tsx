@@ -22,7 +22,8 @@ class Upload64View extends React.PureComponent<any, any> {
     this.handleScroll = this.handleScroll.bind(this)
   }
   componentWillMount () {
-    if (!this.props.isServer) this.props.setFetchCourses(this.fetchCourses)
+    if (process.env.IS_SERVER) return
+    this.props.setFetchCourses(this.fetchCourses)
     if (this.props.accountData.get('id')) {
       this.fetchCourses()
     }

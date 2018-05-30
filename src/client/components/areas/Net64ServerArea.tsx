@@ -18,7 +18,8 @@ class Area extends React.PureComponent<any, any> {
     this.renderServers = this.renderServers.bind(this)
   }
   componentWillMount () {
-    if (!this.props.isServer) this.updateServers()
+    if (process.env.IS_SERVER) return
+    this.updateServers()
   }
   componentWillUnmount () {
     this.unmount = true

@@ -17,7 +17,7 @@ export const BlogView = Loadable<any, any>({
   delay: routeLoadingDelay
 })
 
-// const join = process.env.SERVER ? require('path').join : () => {}
+// const join = process.env.IS_SERVER ? require('path').join : () => {}
 export const CoursesView = Loadable<any, any>({
   loader: () => import('./CoursesView'),
   loading: () => RouteLoading(),

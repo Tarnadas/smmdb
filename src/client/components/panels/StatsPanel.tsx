@@ -6,17 +6,16 @@ import { resolve } from 'url'
 import { setStats } from '../../actions'
 
 class Panel extends React.PureComponent<any, any> {
-  componentWillMount () {
-    (async () => {
-      try {
-        const response = await fetch(resolve(process.env.DOMAIN!, `/api/getstats`))
-        if (!response.ok) throw new Error(response.statusText)
-        const stats = await response.json()
-        this.props.dispatch(setStats(stats))
-      } catch (err) {
-        console.error(err)
-      }
-    })()
+  async componentWillMount () {
+    if (process.env.IS_SERVER) return
+    try {
+      const response = await fetch(resolve(process.env.DOMAIN!, `/api/getstats`))
+      if (!response.ok) throw new Error(response.statusText)
+      const stats = await response.json()
+      this.props.dispatch(setStats(stats))
+    } catch (err) {
+      console.error(err)
+    }
   }
   render () {
     const stats = this.props.stats.toJS()
