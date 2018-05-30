@@ -1,12 +1,19 @@
 version: '3.6'
+networks:
+  default:
+    external:
+      name: webproxy
 services:
   smmdb:
     build: .
     ports:
-      - 3000:3000
-    volumes:
-      - .:/usr/src/app
+      - 3001:3001
     working_dir: /usr/src/app
+    environment:
+      - VIRTUAL_HOST=tarnadas.ddns.net
+      - LETSENCRYPT_HOST=tarnadas.ddns.net
+      - LETSENCRYPT_EMAIL=mreder1289@gmail.com
+      - VIRTUAL_PORT=3001
     links:
       - mongodb
     depends_on:
@@ -18,14 +25,14 @@ services:
       - MONGO_DATA_DIR=/data/db
       - MONGO_LOG_DIR=/dev/null
     volumes:
-      - ./data:/data
+      - /home/root/mongodb/data:/data
     ports:
       - 27017:27017
-  mongorestore:
-    build: mongo
-    links:
-      - mongodb
-    depends_on:
-      - mongodb
+#  mongorestore:
+#    build: mongo
+#    links:
+#      - mongodb
+#    depends_on:
+#      - mongodb
   
 

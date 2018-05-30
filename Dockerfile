@@ -14,10 +14,12 @@ COPY . /usr/src/app
 
 # Build
 ENV DOCKER=docker
-RUN yarn build
+RUN yarn build:ver
+RUN apt-get update && apt-get install -y p7zip p7zip-full zip
+#RUN yarn global add 7zip
 
 # Run
 ENV NODE_ENV production
-EXPOSE 3000
+EXPOSE 3001
 RUN chmod +x ./build/server
 CMD [ "node", "./build/server" ]
