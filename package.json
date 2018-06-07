@@ -21,7 +21,9 @@
     "build:ver": "webpack --env=ver --progress --colors",
     "build": "webpack --env=prod --progress --colors",
     "build:electron": "webpack --env=electron-prod && node ./build-electron",
-    "test": "jest spec"
+    "test": "jest spec",
+    "backup": "node ./backup.js",
+    "restore": "cd mongo && docker-compose up"
   },
   "sideEffects": false,
   "dependencies": {

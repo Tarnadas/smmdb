@@ -3,6 +3,7 @@
 /node_modules/
 /.idea/
 /.vscode/
+/.mongorc.json
 /db/
 /courses/
 /uploads/

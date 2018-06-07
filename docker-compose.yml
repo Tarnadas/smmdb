@@ -7,13 +7,13 @@ services:
   smmdb:
     build: .
     ports:
-      - 3001:3001
+      - 3000:3000
     working_dir: /usr/src/app
     environment:
-      - VIRTUAL_HOST=tarnadas.ddns.net
-      - LETSENCRYPT_HOST=tarnadas.ddns.net
+      - VIRTUAL_HOST=smmdb.ddns.net
+      - LETSENCRYPT_HOST=smmdb.ddns.net
       - LETSENCRYPT_EMAIL=mreder1289@gmail.com
-      - VIRTUAL_PORT=3001
+      - VIRTUAL_PORT=3000
     links:
       - mongodb
     depends_on:
@@ -25,14 +25,9 @@ services:
       - MONGO_DATA_DIR=/data/db
       - MONGO_LOG_DIR=/dev/null
     volumes:
-      - /home/root/mongodb/data:/data
+      - mongodatabase:/data/db
     ports:
       - 27017:27017
-#  mongorestore:
-#    build: mongo
-#    links:
-#      - mongodb
-#    depends_on:
-#      - mongodb
-  
+volumes:
+  mongodatabase:  
 
