@@ -23,7 +23,9 @@
     "build:electron": "webpack --env=electron-prod && node ./build-electron",
     "test": "jest spec",
     "backup": "node ./backup.js",
-    "restore": "cd mongo && docker-compose up"
+    "restore": "cd mongo && docker-compose up",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "sideEffects": false,
   "dependencies": {
@@ -76,7 +78,8 @@
     "smm-protobuf": "git+https://github.com/Tarnadas/smm-protobuf.git",
     "tasklist": "^3.1.0",
     "tmp": "0.0.31",
-    "win-7zip": "^0.1.1"
+    "win-7zip": "^0.1.1",
+    "snyk": "^1.85.0"
   },
   "devDependencies": {
     "@types/cheerio": "^0.22.7",
@@ -150,5 +153,6 @@
     "webpack-node-externals": "^1.5.4"
   },
   "author": "Mario Reder",
-  "license": "MIT"
+  "license": "MIT",
+  "snyk": true
 }
