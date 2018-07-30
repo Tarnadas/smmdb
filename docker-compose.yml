@@ -7,7 +7,7 @@ services:
   smmdb:
     build: .
     ports:
-      - 3000:3000
+      - "127.0.0.1:3000:3000"
     working_dir: /usr/src/app
     environment:
       - VIRTUAL_HOST=smmdb.ddns.net
@@ -18,6 +18,7 @@ services:
       - mongodb
     depends_on:
       - mongodb
+    restart: always
   mongodb:
     image: mongo:3.4
     container_name: "mongodb"
@@ -27,7 +28,8 @@ services:
     volumes:
       - mongodatabase:/data/db
     ports:
-      - 27017:27017
+      - "127.0.0.1:27017:27017"
+    restart: always
 volumes:
   mongodatabase:  
 
