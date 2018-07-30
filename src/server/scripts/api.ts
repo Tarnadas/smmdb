@@ -891,7 +891,9 @@ export class API {
             ownername: server.ownername,
             players: server.players,
             version: server.version,
-            gameMode: server.gameMode
+            compatVersion: server.compatVersion || '1.0',
+            gameMode: server.gameMode,
+            passwordRequired: server.passwordRequired || false
           }
         }
       }
@@ -937,7 +939,9 @@ export class API {
       server.playerCount = players.length
     }
     if (req.body.version && typeof req.body.version === 'string') server.version = req.body.version
+    if (req.body.compatVersion && typeof req.body.compatVersion === 'string') server.compatVersion = req.body.compatVersion
     if (req.body.gameMode && typeof req.body.gameMode === 'number') server.gameMode = req.body.gameMode
+    if (req.body.passwordRequired && typeof req.body.passwordRequired === 'boolean') server.passwordRequired = req.body.passwordRequired
     server.owner = account._id
     server.ownername = account.username
     server.updated = Math.trunc(Date.now() / 1000)
