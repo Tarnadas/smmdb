@@ -55,20 +55,11 @@ export class DiscordBot {
             'The game has very few shaders, so don\'t waste your time searching for it and just play.')
       }, {
         embed: new Discord.RichEmbed().setTitle('Where do I download a Super Mario Maker wud/iso/rom and how do I install it?').setColor(0x00FF00).setThumbnail('http://smmdb.ddns.net/img/coursebot.png')
-          .setDescription('The easiest way to download and update your games is via [Wii U USB Helper](https://www.wiiuusbhelper.com/)\n' +
+          .setDescription('You can download Super Mario Maker [right here](https://mega.nz/#F!3HJxhaAJ!PYcAR8Ur0gp3VJ1vurLQFg)\n' +
             '\n' +
             '*Warning: please only download games that you own legally*\n' +
             '\n' +
-            '  • When you first start Wii U USB Helper you will be prompted to insert a link to decrypt files. Use this one: http://wiiu.titlekeys.gq/\n' +
-            '  • You should set your region to **EUR** as it is more stable\n' +
-            '  • You should set your extraction directory so that you can find your games easily\n' +
-            '  • Just search for "Super Mario Maker". You will see two games, one of them has a "(Media)" in its name. That\'s the wrong one, use the one without it\n' +
-            '  • Download the game and the latest update. Unpack/extract/decrypt both of them (by right clicking after download or by clicking the unpack flag while downloading)\n' +
-            '  • Go inside your extraction folder. You should see the extracted game and the update\n' +
-            '  • The game can be wherever you want. The update must go inside your Cemu folder at a very specific path like so: "\\path\\to\\cemu\\mlc01\\usr\\title\\0005000e\\1018dd00" (1018dc00 for US version)\n' +
-            '  • Copy and paste the three folders "code, content, meta" inside this path\n' +
-            '  • If you update your Cemu version and put it in a different folder, you have to repeat above steps\n' +
-            '  • To start your game, open Cemu and select "\\path\\to\\your\\extracted\\smm\\code\\Block.rpx')
+            'The link includes the game itself and the latest update. You will have to use Cemu\'s "install update" feature to install the update.')
       }, {
         embed: new Discord.RichEmbed().setTitle('Can I play online?').setColor(0x0000FF).setThumbnail('http://smmdb.ddns.net/img/courses.png')
           .setDescription('No. When you do anything in game related with online gaming, Cemu will just hang and crash.\n' +
