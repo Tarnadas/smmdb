@@ -115,7 +115,8 @@ class Area extends React.PureComponent<any, any> {
           </div>
           <div style={styles.button}>
             {
-              !process.env.ELECTRON && screenSize >= ScreenSize.MEDIUM && <LoginButton />
+              screenSize >= ScreenSize.MEDIUM &&
+              <LoginButton />
             }
           </div>
         </div>

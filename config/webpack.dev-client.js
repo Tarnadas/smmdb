@@ -27,9 +27,6 @@ module.exports = [
       tls: 'empty',
       child_process: 'empty'
     },
-    externals: [{
-      electron: true
-    }],
     optimization: {
       runtimeChunk: {
         name: 'manifest'
@@ -52,8 +49,7 @@ module.exports = [
       new ReactLoadablePlugin({
         filename: './build/react-loadable.json',
       }),
-      new ManifestPlugin(),
-      new webpack.IgnorePlugin(/^.*electron\/components.*$/)
+      new ManifestPlugin()
     ],
     resolve: {
       extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ]

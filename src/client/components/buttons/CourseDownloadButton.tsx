@@ -89,6 +89,5 @@ class Button extends React.PureComponent<any, any> {
   }
 }
 export const CourseDownloadButton = connect((state: any) => ({
-  downloadFormat: state.getIn(['userData', 'accountData', 'downloadformat']),
-  saveFull: state.getIn(['electron', 'saveFull'])
+  downloadFormat: state.getIn(['userData', 'accountData', 'downloadformat'])
 }))(Button) as any

@@ -77,8 +77,7 @@ module.exports = [
         openAnalyzer: false,
         generateStatsFile: true,
         statsFilename: path.join(__dirname, '../stats.json')
-      }),
-      new webpack.IgnorePlugin(/^.*electron\/components.*$/)
+      })
     ],
     resolve: {
       extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ]
@@ -144,8 +143,7 @@ module.exports = [
         PORT: port,
         DOMAIN: domain,
         DOCKER: process.env.DOCKER
-      }),
-      new webpack.IgnorePlugin(/^.*electron\/components.*$/)
+      })
     ],
     externals: [require('webpack-node-externals')()],
     resolve: {

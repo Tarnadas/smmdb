@@ -47,9 +47,9 @@ class View extends React.PureComponent<any, any> {
       this.props.dispatch(mediaQuery(ScreenSize.LARGE))
     } else if (queryMedium.matches) {
       this.props.dispatch(mediaQuery(ScreenSize.MEDIUM))
-    } else if (querySmall.matches && !process.env.ELECTRON) {
+    } else if (querySmall.matches) {
       this.props.dispatch(mediaQuery(ScreenSize.SMALL))
-    } else if (queryMobile.matches && !process.env.ELECTRON) {
+    } else if (queryMobile.matches) {
       this.props.dispatch(mediaQuery(ScreenSize.SUPER_SMALL))
     }
   }

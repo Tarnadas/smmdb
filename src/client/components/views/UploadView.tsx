@@ -10,8 +10,6 @@ import { CoursePanel } from '../panels/CoursePanel'
 import { ProgressPanel } from '../panels/ProgressPanel'
 import { UploadArea } from '../areas/UploadArea'
 
-const EnterAPIKeyArea = process.env.ELECTRON && require('../../../electron/components/areas/EnterAPIKeyArea').default
-
 const LIMIT = 10
 
 class UploadView extends React.PureComponent<any, any> {
@@ -164,11 +162,7 @@ class UploadView extends React.PureComponent<any, any> {
                 </div>
               </div>
             ) : (
-              process.env.ELECTRON ? (
-                <EnterAPIKeyArea />
-              ) : (
-                <div style={styles.text}>You are not logged in</div>
-              )
+              <div style={styles.text}>You are not logged in</div>
             )
           }
         </div>
@@ -182,9 +176,6 @@ export default connect((state: any) => ({
   courses: state.getIn(['courseData', 'self']),
   uploads: state.get('uploads'),
   uploadedCourses: state.getIn(['courseData', 'uploaded']),
-  downloads: state.getIn(['electron', 'appSaveData', 'downloads']),
-  currentDownloads: state.getIn(['electron', 'currentDownloads']),
-  smmdb: state.getIn(['electron', 'appSaveData', 'cemuSaveData', state.getIn(['electron', 'currentSave']), 'smmdb']),
   imageFull: state.getIn(['image', 'full']),
   imagePrev: state.getIn(['image', 'prev']),
   reuploads: state.get('reuploads')

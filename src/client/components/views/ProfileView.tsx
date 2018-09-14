@@ -9,8 +9,6 @@ import { ScreenSize } from '../../reducers/mediaQuery'
 import { setAccountData } from '../../actions'
 import { DOWNLOAD_FORMAT } from '../../reducers/userData'
 
-const EnterAPIKeyArea = process.env.ELECTRON && require('../../../electron/components/areas/EnterAPIKeyArea').default
-
 const USERNAME = /^[a-z0-9A-Z|.]+$/
 const MIN_LENGTH_USERNAME = 3
 const MAX_LENGTH_USERNAME = 20
@@ -178,19 +176,16 @@ class ProfileView extends React.PureComponent<any, any> {
                   </div>
                   <input style={styles.input} value={this.state.username} onChange={this.onUsernameChange} />
                 </div>
-                {
-                  !process.env.ELECTRON && (
-                  <div style={styles.option}>
-                    <div style={styles.value}>
-                      Preferred download format:
-                    </div>
-                    <select style={styles.select} value={this.state.downloadFormat} onChange={this.onDownloadFormatChange}>
-                      <option value={DOWNLOAD_FORMAT.WII_U}>Wii U</option>
-                      <option value={DOWNLOAD_FORMAT.N3DS}>3DS</option>
-                      <option value={DOWNLOAD_FORMAT.PROTOBUF}>Protocol Buffer</option>
-                    </select>
+                <div style={styles.option}>
+                  <div style={styles.value}>
+                    Preferred download format:
                   </div>
-                )}
+                  <select style={styles.select} value={this.state.downloadFormat} onChange={this.onDownloadFormatChange}>
+                    <option value={DOWNLOAD_FORMAT.WII_U}>Wii U</option>
+                    <option value={DOWNLOAD_FORMAT.N3DS}>3DS</option>
+                    <option value={DOWNLOAD_FORMAT.PROTOBUF}>Protocol Buffer</option>
+                  </select>
+                </div>
                 <SMMButton
                   text='Save'
                   iconSrc='/img/profile.png'
@@ -199,27 +194,22 @@ class ProfileView extends React.PureComponent<any, any> {
                   colorScheme={colorScheme}
                   onClick={this.onProfileSubmit}
                 />
-                {
-                  !process.env.ELECTRON &&
-                  <div style={{ height: 'auto' }}>
-                    <div style={{ height: '30px' }} />
-                    <div style={styles.option}>
-                      <input style={styles.input} value={apiKey} readOnly />
-                    </div>
-                    <SMMButton
-                      text={apiKey ? 'Hide API Key' : 'Show API Key'}
-                      iconSrc='/img/api.png'
-                      fontSize='13px'
-                      padding='3px'
-                      onClick={this.onAPIKeyShow}
-                    />
+                <div style={{ height: 'auto' }}>
+                  <div style={{ height: '30px' }} />
+                  <div style={styles.option}>
+                    <input style={styles.input} value={apiKey} readOnly />
                   </div>
-                }
+                  <SMMButton
+                    text={apiKey ? 'Hide API Key' : 'Show API Key'}
+                    iconSrc='/img/api.png'
+                    fontSize='13px'
+                    padding='3px'
+                    onClick={this.onAPIKeyShow}
+                  />
+                </div>
               </div>
             ) : (
-              process.env.ELECTRON
-                ? <EnterAPIKeyArea />
-                : <div style={styles.flex}>You are not logged in</div>
+              <div style={styles.flex}>You are not logged in</div>
             )
           }
         </div>

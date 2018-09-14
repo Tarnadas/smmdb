@@ -58,16 +58,13 @@ class Area extends React.PureComponent<any, any> {
             iconColor='dark'
           />
         }
-        {
-          !process.env.ELECTRON &&
-          <NavigationButton
-            onClick={this.props.onClick}
-            link='/courses64'
-            text='Courses64'
-            iconSrc='/img/mario64.png'
-            iconColor='dark'
-          />
-        }
+        <NavigationButton
+          onClick={this.props.onClick}
+          link='/courses64'
+          text='Courses64'
+          iconSrc='/img/mario64.png'
+          iconColor='dark'
+        />
         <NavigationButton
           onClick={this.props.onClick}
           link='/upload'
@@ -75,26 +72,20 @@ class Area extends React.PureComponent<any, any> {
           iconSrc='/img/upload.png'
           iconColor='dark'
         />
-        {
-          !process.env.ELECTRON &&
-          <NavigationButton
-            onClick={this.props.onClick}
-            link='/upload64'
-            text='Upload64'
-            iconSrc='/img/upload64.png'
-            iconColor='dark'
-          />
-        }
-        {
-          !process.env.ELECTRON &&
-          <NavigationButton
-            onClick={this.props.onClick}
-            link='/net64'
-            text='Net64'
-            iconSrc='/img/net64.png'
-            iconColor='dark'
-          />
-        }
+        <NavigationButton
+          onClick={this.props.onClick}
+          link='/upload64'
+          text='Upload64'
+          iconSrc='/img/upload64.png'
+          iconColor='dark'
+        />
+        <NavigationButton
+          onClick={this.props.onClick}
+          link='/net64'
+          text='Net64'
+          iconSrc='/img/net64.png'
+          iconColor='dark'
+        />
         <NavigationButton
           onClick={this.props.onClick}
           link='/profile'
@@ -102,51 +93,39 @@ class Area extends React.PureComponent<any, any> {
           iconSrc='/img/profile.png'
           iconColor='dark'
         />
-        {
-          !process.env.ELECTRON &&
-          <NavigationButton
-            onClick={this.props.onClick}
-            link='/faq'
-            text='FAQ'
-            iconSrc='/img/help.png'
-            iconColor='dark'
-          />
-        }
-        {
-          !process.env.ELECTRON &&
-          <NavigationButton
-            onClick={this.props.onClick}
-            link='/social'
-            text='Social'
-            iconSrc='/img/social.svg'
-            iconColor='dark'
-          />
-        }
-        {
-          !process.env.ELECTRON &&
-          <NavigationButton
-            onClick={this.props.onClick}
-            link='https://github.com/Tarnadas/smmdb'
-            blank
-            text='API'
-            iconSrc='/img/api.png'
-            iconColor='dark'
-          />
-        }
-        {
-          !process.env.ELECTRON &&
-          <NavigationButton
-            onClick={this.props.onClick}
-            link='https://github.com/Tarnadas/cemu-smmdb/releases'
-            blank
-            text='Client'
-            iconSrc='/img/client.png'
-            iconColor='dark'
-          />
-        }
+        <NavigationButton
+          onClick={this.props.onClick}
+          link='/faq'
+          text='FAQ'
+          iconSrc='/img/help.png'
+          iconColor='dark'
+        />
+        <NavigationButton
+          onClick={this.props.onClick}
+          link='/social'
+          text='Social'
+          iconSrc='/img/social.svg'
+          iconColor='dark'
+        />
+        <NavigationButton
+          onClick={this.props.onClick}
+          link='https://github.com/Tarnadas/smmdb'
+          blank
+          text='API'
+          iconSrc='/img/api.png'
+          iconColor='dark'
+        />
+        <NavigationButton
+          onClick={this.props.onClick}
+          link='https://github.com/Tarnadas/cemu-smmdb/releases'
+          blank
+          text='Client'
+          iconSrc='/img/client.png'
+          iconColor='dark'
+        />
         <div style={{height: '20px', minHeight: '20px'}} />
         {
-          screenSize < ScreenSize.MEDIUM && !process.env.ELECTRON &&
+          screenSize < ScreenSize.MEDIUM &&
           <LoginButton onClick={this.props.onClick} />
         }
         <div style={{height: '70px', minHeight: '70px'}} />

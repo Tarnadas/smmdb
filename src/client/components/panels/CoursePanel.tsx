@@ -293,23 +293,7 @@ class Panel extends React.PureComponent<any, any> {
       panel: {
         height: this.state.showDetails ? 'auto' : '169px',
         maxWidth: '906px',
-        backgroundColor: process.env.ELECTRON ? (
-          downloaded ? (
-            modified ? (
-              '#DD8F33'
-            ) : (
-              saveId != null ? (
-                '#6ddd83'
-              ) : (
-                '#9fdd96'
-              )
-            )
-          ) : (
-            '#d4dda5'
-          )
-        ) : (
-          '#d4dda5'
-        ),
+        backgroundColor: '#d4dda5',
         borderRadius: '10px',
         margin: '10px',
         color: '#000',
@@ -724,18 +708,15 @@ class Panel extends React.PureComponent<any, any> {
                   course.videoid &&
                   <CourseVideoButton videoId={course.videoid} screenSize={screenSize} />
                 }
-                {
-                  !process.env.ELECTRON &&
-                  <img ref={qr => {
-                    if (!qr) return
-                    QRCode.toDataURL(resolve(process.env.DOMAIN!, `/api/downloadcourse?id=${course.id}&type=3ds`),
-                      (err: any, url: any) => {
-                        if (err) console.error(err)
-                        qr.src = url
-                      }
-                    )
-                  }} />
-                }
+                <img ref={qr => {
+                  if (!qr) return
+                  QRCode.toDataURL(resolve(process.env.DOMAIN!, `/api/downloadcourse?id=${course.id}&type=3ds`),
+                    (err: any, url: any) => {
+                      if (err) console.error(err)
+                      qr.src = url
+                    }
+                  )
+                }} />
               </div>
             </div>
           )}

@@ -12,7 +12,6 @@
 /build/static/coursedata/
 /src/static.js
 /build/server/
-/build/electron/
 /build/client/
 /build/release/
 /build/net64/
@@ -20,6 +19,4 @@
 /7z.exe
 /report.html
 /stats.json
-/report_electron.html
-/stats_electron.json
 /mongo/db

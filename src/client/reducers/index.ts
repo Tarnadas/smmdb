@@ -18,13 +18,7 @@ import { order } from './order'
 import { userData } from './userData'
 import { mediaQuery } from './mediaQuery'
 
-const APP_SAVE_DATA = {
-  cemuSaveData: [],
-  apiKey: '',
-  downloads: {}
-}
-
-export function initReducer (preloadedState: any, history: any, electronSave?: any, electronMiddleware?: any, saveFileEditor?: any) {
+export function initReducer (preloadedState: any, history: any) {
   let initialState = preloadedState || fromJS({
     router: {
       location: null
@@ -82,6 +76,6 @@ export function initReducer (preloadedState: any, history: any, electronSave?: a
     userData,
     mediaQuery
   }
-  const middleware = process.env.ELECTRON ? applyMiddleware(routerMiddleware(history), electronMiddleware) : applyMiddleware(routerMiddleware(history))
+  const middleware = applyMiddleware(routerMiddleware(history))
   return createStore(combineReducers(reducers), initialState, middleware)
 }
