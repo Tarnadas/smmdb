@@ -2,10 +2,6 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 import { Route, Link } from 'react-router-dom'
 import { forceCheck } from 'react-lazyload'
-import got from 'got'
-import locale from 'browser-locale'
-
-import { resolve } from 'url'
 
 import { ContentView } from './ContentView'
 import { TopBarArea } from '../areas/TopBarArea'
