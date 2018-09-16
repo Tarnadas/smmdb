@@ -41,6 +41,7 @@ export class DiscordBot {
   }
 
   public async updateFAQ (): Promise<void> {
+    if (process.env.NODE_ENV === 'development') return
     const messages = [
       {
         embed: new Discord.RichEmbed().setTitle('What Cemu version should I use?').setColor(0xFF0000).setThumbnail('http://compat.cemu.info/w/CemuLogo2.png')
@@ -106,6 +107,7 @@ export class DiscordBot {
   }
 
   public uploadCourse (courses: any[], account: any): void {
+    if (process.env.NODE_ENV === 'development') return
     if (courses.length === 0) return
     const isMany = courses.length > 1
     const ownerName = account.username
@@ -153,10 +155,12 @@ export class DiscordBot {
   }
 
   public uploadCourse64 (course: any, account: any): void {
+    if (process.env.NODE_ENV === 'development') return
     (this.channel as any).send(`A new <:sm64m:352480143706685442> course has been uploaded by ${account.username}\n          ${course.title}`)
   }
 
   public updateCourse (course: any, account: any): void {
+    if (process.env.NODE_ENV === 'development') return
     const ownerName = account.username
     let autoScroll = `${course.autoScroll === 1
       ? '<:turtle:334989248526811146>'

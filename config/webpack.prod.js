@@ -15,7 +15,7 @@ module.exports = [
       vendor: [
         'react-redux', 'react-router', 'react-router-dom', 'react-router-redux',
         'react-google-login', 'react-lazyload', 'react-helmet', 'react-loadable',
-        'redux', 'redux-immutable', 'got', 'concat-stream', 'filereader-stream', 'progress-stream',
+        'redux', 'redux-immutable',
         'node-emoji', 'marked', 'qrcode'
       ],
       app: [ 'babel-polyfill', path.join(__dirname, '../src/client/renderer.tsx') ]
@@ -77,7 +77,8 @@ module.exports = [
         openAnalyzer: false,
         generateStatsFile: true,
         statsFilename: path.join(__dirname, '../stats.json')
-      })
+      }),
+      new webpack.IgnorePlugin(/^electron$/)
     ],
     resolve: {
       extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ]

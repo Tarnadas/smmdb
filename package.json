@@ -26,11 +26,11 @@
   },
   "sideEffects": false,
   "dependencies": {
+    "axios": "^0.18.0",
     "body-parser": "^1.18.2",
     "cemu-smm": "^3.0.3",
     "cheerio": "^0.22.0",
     "compression": "^1.7.1",
-    "concat-stream": "^1.6.0",
     "cookie-session": "^2.0.0-beta.3",
     "cross-unzip": "^0.2.1",
     "crypto-random-string": "^1.0.0",
@@ -38,9 +38,7 @@
     "discord.js": "^11.2.1",
     "express": "^4.16.2",
     "file-type": "^5.2.0",
-    "filereader-stream": "^1.0.0",
     "google-id-token-verifier": "^0.2.3",
-    "got": "7",
     "history": "^4.7.2",
     "imagemin-webp": "^4.0.0",
     "immutable": "^3.8.2",
@@ -51,7 +49,6 @@
     "node-emoji": "^1.8.1",
     "pmx": "^1.5.4",
     "progress": "^2.0.0",
-    "progress-stream": "^2.0.0",
     "qrcode": "^0.9.0",
     "range-parser": "^1.2.0",
     "react": "^16.1.0",
@@ -73,6 +70,7 @@
     "win-7zip": "^0.1.1"
   },
   "devDependencies": {
+    "@types/axios": "^0.14.0",
     "@types/cheerio": "^0.22.7",
     "@types/compression": "^0.0.36",
     "@types/cookie-session": "^2.0.34",

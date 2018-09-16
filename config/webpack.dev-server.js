@@ -24,7 +24,8 @@ module.exports = [
         IS_SERVER: true,
         PORT: port,
         DOMAIN: domain
-      })
+      }),
+      new webpack.IgnorePlugin(/^electron$/)
     ],
     externals: [require('webpack-node-externals')()],
     resolve: {

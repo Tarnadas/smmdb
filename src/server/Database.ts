@@ -31,7 +31,7 @@ export abstract class Database {
   private static blog: any
 
   public static async initialize (isTest = false): Promise<void> {
-    log('Connecting to database')
+    log(`Connecting to database at ${mongoUrl}`)
     const connect = () => {
       return new Promise(async (resolve) => {
         try {

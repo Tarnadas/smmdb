@@ -1,143 +1,114 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { List } from 'immutable'
-import got from 'got'
-const stream = require('filereader-stream')
-const concat = require('concat-stream')
-const progress = require('progress-stream')
+import { Dispatch } from 'redux';
+import axios from 'axios'
 
 import { resolve } from 'url'
 
+import { ErrorMessage } from '../shared/ErrorMessage';
 import {
   setUploadImageFull, setUploadImagePreview, setUploadImage64, setUploadBlog,
   deleteUploadImageFull, deleteUploadImagePreview, deleteUploadImage64, deleteUploadBlog
 } from '../../actions'
 
-const SERVER_TIMEOUT = 30000
+interface UploadImageAreaProps {
+  courseId: string
+  apiKey: string
+  type: string
+  upload?: any
+  onUploadComplete: (...args: any[]) => void
+  dispatch: Dispatch<any>
+}
 
-class Area extends React.PureComponent<any, any> {
-  constructor (props: any) {
+interface UploadImageAreaState {
+  value: string
+  err?: Error
+}
+
+class Area extends React.PureComponent<UploadImageAreaProps, UploadImageAreaState> {
+  constructor (props: UploadImageAreaProps) {
     super(props)
     this.state = {
       value: '',
-      uploads: List(),
-      err: ''
+      err: undefined
     }
     this.sendImage = this.sendImage.bind(this)
     this.handleChange = this.handleChange.bind(this)
     this.handleClick = this.handleClick.bind(this)
   }
-  sendImage (course: any) {
-    let timeout: any
-    const id = this.props.courseId
-    const setUpload = this.props.type === 'full'
-      ? setUploadImageFull : this.props.type === '64'
-        ? setUploadImage64 : this.props.type === 'blog'
-          ? setUploadBlog : setUploadImagePreview
-    const deleteUpload = this.props.type === 'full'
-      ? deleteUploadImageFull : this.props.type === '64'
-        ? deleteUploadImage64 : this.props.type === 'blog'
-          ? deleteUploadBlog : deleteUploadImagePreview
+
+  private async sendImage (image: File): Promise<void> {
+    const { courseId, type } = this.props
+    const setUpload = type === 'full'
+      ? setUploadImageFull
+      : type === '64'
+        ? setUploadImage64
+        : type === 'blog'
+          ? setUploadBlog
+          : setUploadImagePreview
+    const deleteUpload = type === 'full'
+      ? deleteUploadImageFull
+      : type === '64'
+        ? deleteUploadImage64
+        : type === 'blog'
+          ? deleteUploadBlog
+          : deleteUploadImagePreview
+    const reqUrl = resolve(process.env.DOMAIN!, `/api/uploadimage${type}`)
+
+    this.props.dispatch(setUpload(courseId, {
+      courseId,
+      title: image.name,
+      percentage: 0,
+      eta: 0
+    }))
+    this.setState({
+      err: undefined
+    })
+
     try {
-      let abort: any
-      const req = (got as any).stream.post(resolve(process.env.DOMAIN!, `/api/uploadimage${this.props.type}`), {
-        headers: {
-          'Content-Type': 'application/octet-stream',
-          'Authorization': `APIKEY ${this.props.apiKey}`,
-          'course-id': String(id)
-        },
-        useElectronNet: false
-      })
-      req.on('request', (r: any) => {
-        abort = r.abort
-        this.props.dispatch(setUpload(id, {
-          id,
-          title: course.name,
-          percentage: 0,
-          eta: 0
-        }))
-        this.setState({
-          err: ''
-        })
-      })
-      req.on('response', () => {
-        if (timeout) {
-          clearTimeout(timeout)
-          this.props.dispatch(deleteUpload(id))
-        }
-      })
-      req.on('error', (err: any) => {
-        if (err.response) {
-          console.log(err.response.body)
-        } else {
-          console.error(err)
-        }
-        if (timeout) {
-          clearTimeout(timeout)
-          this.props.dispatch(deleteUpload(id))
-        }
-      })
-      const prog = progress({
-        length: course.size,
-        time: 1000
-      })
-      prog.on('progress', (progress: any) => {
-        this.props.dispatch(setUpload(id, {
-          id,
-          title: course.name,
-          percentage: progress.percentage,
-          eta: progress.eta
-        }))
-        this.setState({
-          err: ''
-        })
-        if (progress.percentage === 100) {
-          timeout = setTimeout(() => {
-            if (abort) {
-              abort()
-              this.props.dispatch(deleteUpload(id))
-            }
-          }, SERVER_TIMEOUT)
-        }
-      })
-      req.pipe(concat((buf: any) => {
-        let res = ''
-        try {
-          res = new (window as any).TextDecoder('utf-8').decode(buf)
-          if (this.props.type !== 'blog') {
-            const course = JSON.parse(res)
-            this.props.onUploadComplete(course)
-          } else {
-            console.log(res)
-          }
-        } catch (err) {
-          this.setState({
-            err: res
-          })
-          if (timeout) {
-            clearTimeout(timeout)
-            this.props.dispatch(deleteUpload(id))
-          }
-        }
-      }))
-      const s = stream(course)
-      s.pipe(prog).pipe(req)
+      await this.makeUploadRequest(reqUrl, image, courseId, setUpload)
     } catch (err) {
-      console.log(err)
-      if (err.response.body) {
-        console.log(err.response.body)
-      }
-      if (timeout) {
-        clearTimeout(timeout)
-        this.props.dispatch(deleteUpload(id))
-      }
+      this.setState({
+        err
+      })
+      this.props.dispatch(deleteUpload(courseId))
     }
   }
-  handleChange (e: any) {
+
+  private async makeUploadRequest (reqUrl: string, course: File, courseId: string, setUpload: any): Promise<void> {
+    const { apiKey, dispatch } = this.props
+    const res = await axios.post(
+      reqUrl,
+      course,
+      {
+        headers: {
+          'Content-Type': 'application/octet-stream',
+          'Authorization': `APIKEY ${apiKey}`,
+          'course-id': courseId
+        },
+        onUploadProgress: ({ loaded, total }) => {
+          const percentage = loaded * 100 / total
+          dispatch(setUpload(courseId, {
+            courseId,
+            title: course.name,
+            percentage,
+            eta: 0
+          }))
+          this.setState({
+            err: undefined
+          })
+        }
+      }
+    )
+    this.props.onUploadComplete(res.data)
+  }
+
+  private handleChange ({ target }: React.ChangeEvent<HTMLInputElement>): void {
     this.setState({
-      value: e.target.value
+      value: target.value
     })
-    const files = e.target.files
+    const files = target.files
+    if (!files) return
     for (let i in files) {
       const file = files[i]
       if (!(file instanceof Blob)) continue
@@ -149,12 +120,14 @@ class Area extends React.PureComponent<any, any> {
       reader.readAsText(file)
     }
   }
-  handleClick () {
+
+  private handleClick (): void {
     this.setState({
       value: ''
     })
   }
-  render () {
+
+  public render (): JSX.Element {
     const err = this.state.err
     const upload = this.props.upload && this.props.upload.toJS()
     const styles: React.CSSProperties = {
@@ -214,13 +187,9 @@ class Area extends React.PureComponent<any, any> {
         }
         {
           err &&
-          <div style={styles.err}>
-            {
-              err.split('\n').map((item: any, key: any) => {
-                return <span key={key}>{item}<br /></span>
-              })
-            }
-          </div>
+          <ErrorMessage
+            err={err}
+          />
         }
       </div>
     )
