@@ -49,8 +49,7 @@ module.exports = [
       new ReactLoadablePlugin({
         filename: './build/react-loadable.json',
       }),
-      new ManifestPlugin(),
-      new webpack.IgnorePlugin(/^electron$/)
+      // new ManifestPlugin()
     ],
     resolve: {
       extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ]

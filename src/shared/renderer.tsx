@@ -52,11 +52,5 @@ export default async function renderer (isServer = false, reactRenderer: any, pr
     await preloadReady()
   }
   const html = reactRenderer(jsx, !isServer && document.getElementById('root'))
-  let bundles: any
-  if (isServer) {
-    const getBundles = require('react-loadable/webpack').getBundles
-    const stats = require('../../build/react-loadable.json')
-    bundles = getBundles(stats, modules)
-  }
-  return [html, store.getState(), bundles]
+  return [html, store.getState(), modules]
 }

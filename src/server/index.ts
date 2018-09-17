@@ -312,12 +312,25 @@ async function main () {
   })
 
   app.use('/', async (req, res) => {
-    const stats = {
+    const websiteStats = {
       courses: await Course.getCourseAmount(),
       accounts: await Account.getAccountAmount()
     }
     const d = device(req.get('user-agent'))
-    let [html, preloadedState, bundles] = await renderer(true, renderToString, null, req, await API.filterCourses(null, {limit: 10}), await API.filterCourses64(null!, {limit: 16}), stats, d.is('phone'), d.is('tablet'))
+    let [html, preloadedState, modules] = await renderer(
+      true,
+      renderToString,
+      null,
+      req,
+      await API.filterCourses(null, {limit: 10}),
+      await API.filterCourses64(null!, {limit: 16}),
+      websiteStats,
+      d.is('phone'),
+      d.is('tablet')
+    )
+    const getBundles = require('react-loadable/webpack').getBundles
+    const stats = require('../../build/react-loadable.json')
+    const bundles = getBundles(stats, modules)
     const helmet = Helmet.renderStatic()
     const index = cheerio.load($index.html())
     index('#root').html(html)

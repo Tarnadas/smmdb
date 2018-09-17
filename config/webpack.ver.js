@@ -77,8 +77,7 @@ module.exports = [
         openAnalyzer: false,
         generateStatsFile: true,
         statsFilename: path.join(__dirname, '../stats.json')
-      }),
-      new webpack.IgnorePlugin(/^electron$/)
+      })
     ],
     resolve: {
       extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ]

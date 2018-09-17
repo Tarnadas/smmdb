@@ -1,29 +1,34 @@
 const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
+const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
+const ReactLoadablePlugin = require('react-loadable/webpack').ReactLoadablePlugin
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const path = require('path')
 
-const { port, domain } = require('./environment')['dev']
+const { port, domain } = require('./environment')['prod']
 
 module.exports = [
   {
-    mode: 'development',
+    mode: 'production',
     target: 'node',
+    devtool: 'source-map',
     entry: path.join(__dirname, '../src/server/index.ts'),
     output: {
       filename: 'index.js',
       path: path.join(__dirname, '../build/server')
     },
-    devtool: 'inline-source-map',
     node: {
       __dirname: false,
       __filename: false
     },
     plugins: [
       new webpack.EnvironmentPlugin({
-        NODE_ENV: 'development',
+        NODE_ENV: 'production',
         IS_SERVER: true,
         PORT: port,
-        DOMAIN: domain
+        DOMAIN: domain,
+        DOCKER: process.env.DOCKER
       })
     ],
     externals: [require('webpack-node-externals')()],
@@ -52,12 +57,11 @@ module.exports = [
                   ],
                   plugins: [
                     'react-loadable/babel',
-                    'syntax-dynamic-import',
                     'transform-react-jsx',
-                    ['import-inspector', {
-                      'serverSideRequirePath': true,
-                      'webpackRequireWeakId': true
-                    }]
+                    'syntax-dynamic-import',
+                    // ['import-inspector', {
+                    //   'serverSideRequirePath': true
+                    // }]
                   ]
                 }
               }

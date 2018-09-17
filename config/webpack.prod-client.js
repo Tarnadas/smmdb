@@ -46,9 +46,6 @@ module.exports = [
             reuseExistingChunk: true
           }
         }
-      },
-      runtimeChunk: {
-        name: 'manifest'
       }
     },
     plugins: [
@@ -77,8 +74,7 @@ module.exports = [
         openAnalyzer: false,
         generateStatsFile: true,
         statsFilename: path.join(__dirname, '../stats.json')
-      }),
-      new webpack.IgnorePlugin(/^electron$/)
+      })
     ],
     resolve: {
       extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ]
@@ -109,6 +105,7 @@ module.exports = [
                     }]
                   ],
                   plugins: [
+                    'react-loadable/babel',
                     'transform-react-jsx',
                     'syntax-dynamic-import'
                   ]
@@ -120,67 +117,6 @@ module.exports = [
         {
           test: /\.html$/,
           loader: 'html-loader'
-        }
-      ]
-    }
-  },
-  {
-    mode: 'production',
-    target: 'node',
-    devtool: 'source-map',
-    entry: path.join(__dirname, '../src/server/index.ts'),
-    output: {
-      filename: 'index.js',
-      path: path.join(__dirname, '../build/server')
-    },
-    node: {
-      __dirname: false,
-      __filename: false
-    },
-    plugins: [
-      new webpack.EnvironmentPlugin({
-        NODE_ENV: 'production',
-        IS_SERVER: true,
-        PORT: port,
-        DOMAIN: domain,
-        DOCKER: process.env.DOCKER
-      })
-    ],
-    externals: [require('webpack-node-externals')()],
-    resolve: {
-      extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ]
-    },
-    module: {
-      rules: [
-        {
-          test: /\.tsx?$/,
-          exclude: /node_modules/,
-          use: [
-            {
-              loader: 'awesome-typescript-loader',
-              options: {
-                useBabel: true,
-                babelOptions: {
-                  babelrc: false,
-                  presets: [
-                    ['env', {
-                      targets: {
-                        node: 'current'
-                      },
-                      modules: false
-                    }]
-                  ],
-                  plugins: [
-                    'transform-react-jsx',
-                    'syntax-dynamic-import',
-                    ['import-inspector', {
-                      'serverSideRequirePath': true
-                    }]
-                  ]
-                }
-              }
-            }
-          ]
         }
       ]
     }
