@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Provider } from 'react-redux'
 import { Route, StaticRouter } from 'react-router-dom'
 import { ConnectedRouter } from 'react-router-redux'
-import createHistory from 'history/createBrowserHistory'
+import { createBrowserHistory } from 'history'
 import { preloadReady } from 'react-loadable'
 
 import { initReducer } from '../client/reducers'
@@ -12,7 +12,7 @@ import { ScreenSize } from '../client/reducers/mediaQuery'
 import { setCourses, setCourses64, setStats, mediaQuery } from '../client/actions'
 
 export default async function renderer (isServer = false, reactRenderer: any, preloadedState: any, req?: any, courses?: any, courses64?: any, stats?: any, isPhone?: any, isTablet?: any) {
-  const history = isServer ? null : createHistory()
+  const history = isServer ? null : createBrowserHistory()
 
   const store = initReducer(preloadedState, history)
   let Capture: any
