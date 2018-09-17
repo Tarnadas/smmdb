@@ -18,7 +18,7 @@ module.exports = [
         'redux', 'redux-immutable', 'axios',
         'node-emoji', 'marked', 'qrcode'
       ],
-      app: [ 'babel-polyfill', path.join(__dirname, '../src/client/renderer.tsx') ]
+      app: [ '@babel/polyfill', path.join(__dirname, '../src/client/renderer.tsx') ]
     },
     output: {
       filename: '[name].[chunkhash].js',
@@ -95,7 +95,7 @@ module.exports = [
                 babelOptions: {
                   babelrc: false,
                   presets: [
-                    ['env', {
+                    ['@babel/env', {
                       targets: {
                         browsers: [
                           '> 1%',
@@ -104,12 +104,13 @@ module.exports = [
                         ]
                       },
                       modules: false,
-                      useBuiltIns: 'entry'
-                    }]
+                      useBuiltIns: 'usage'
+                    }],
+                    '@babel/react'
                   ],
                   plugins: [
-                    'transform-react-jsx',
-                    'syntax-dynamic-import'
+                    'react-loadable/babel',
+                    '@babel/plugin-syntax-dynamic-import'
                   ]
                 }
               }
@@ -162,19 +163,17 @@ module.exports = [
                 babelOptions: {
                   babelrc: false,
                   presets: [
-                    ['env', {
+                    ['@babel/env', {
                       targets: {
                         node: 'current'
                       },
                       modules: false
-                    }]
+                    }],
+                    '@babel/react'
                   ],
                   plugins: [
-                    'transform-react-jsx',
-                    'syntax-dynamic-import',
-                    ['import-inspector', {
-                      'serverSideRequirePath': true
-                    }]
+                    'react-loadable/babel',
+                    '@babel/plugin-syntax-dynamic-import'
                   ]
                 }
               }

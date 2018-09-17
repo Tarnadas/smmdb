@@ -43,21 +43,17 @@ module.exports = [
                 babelOptions: {
                   babelrc: false,
                   presets: [
-                    ['env', {
+                    ['@babel/env', {
                       targets: {
                         node: 'current'
                       },
                       modules: false
-                    }]
+                    }],
+                    '@babel/react'
                   ],
                   plugins: [
                     'react-loadable/babel',
-                    'syntax-dynamic-import',
-                    'transform-react-jsx',
-                    ['import-inspector', {
-                      'serverSideRequirePath': true,
-                      'webpackRequireWeakId': true
-                    }]
+                    '@babel/plugin-syntax-dynamic-import'
                   ]
                 }
               }

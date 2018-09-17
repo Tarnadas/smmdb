@@ -2,7 +2,6 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const ReactLoadablePlugin = require('react-loadable/webpack').ReactLoadablePlugin
-const ManifestPlugin = require('webpack-manifest-plugin')
 
 const path = require('path')
 
@@ -48,8 +47,7 @@ module.exports = [
       }),
       new ReactLoadablePlugin({
         filename: './build/react-loadable.json',
-      }),
-      // new ManifestPlugin()
+      })
     ],
     resolve: {
       extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ]
@@ -72,7 +70,7 @@ module.exports = [
                 babelOptions: {
                   babelrc: false,
                   presets: [
-                    ['env', {
+                    ['@babel/env', {
                       targets: {
                         browsers: [
                           'last 3 Chrome versions',
@@ -80,13 +78,13 @@ module.exports = [
                         ]
                       },
                       modules: false,
-                      useBuiltIns: true
-                    }]
+                      useBuiltIns: 'usage'
+                    }],
+                    '@babel/react'
                   ],
                   plugins: [
                     'react-loadable/babel',
-                    'transform-react-jsx',
-                    'syntax-dynamic-import'
+                    '@babel/plugin-syntax-dynamic-import'
                   ]
                 }
               }

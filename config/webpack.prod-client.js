@@ -18,7 +18,7 @@ module.exports = [
         'redux', 'redux-immutable', 'axios',
         'node-emoji', 'marked', 'qrcode'
       ],
-      app: [ 'babel-polyfill', path.join(__dirname, '../src/client/renderer.tsx') ]
+      app: [ '@babel/polyfill', path.join(__dirname, '../src/client/renderer.tsx') ]
     },
     output: {
       filename: '[name].[chunkhash].js',
@@ -46,6 +46,9 @@ module.exports = [
             reuseExistingChunk: true
           }
         }
+      },
+      runtimeChunk: {
+        name: 'manifest'
       }
     },
     plugins: [
@@ -92,7 +95,7 @@ module.exports = [
                 babelOptions: {
                   babelrc: false,
                   presets: [
-                    ['env', {
+                    ['@babel/env', {
                       targets: {
                         browsers: [
                           '> 1%',
@@ -101,13 +104,13 @@ module.exports = [
                         ]
                       },
                       modules: false,
-                      useBuiltIns: 'entry'
-                    }]
+                      useBuiltIns: 'usage'
+                    }],
+                    '@babel/react'
                   ],
                   plugins: [
                     'react-loadable/babel',
-                    'transform-react-jsx',
-                    'syntax-dynamic-import'
+                    '@babel/plugin-syntax-dynamic-import'
                   ]
                 }
               }

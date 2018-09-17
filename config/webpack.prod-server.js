@@ -48,20 +48,17 @@ module.exports = [
                 babelOptions: {
                   babelrc: false,
                   presets: [
-                    ['env', {
+                    ['@babel/env', {
                       targets: {
                         node: 'current'
                       },
                       modules: false
-                    }]
+                    }],
+                    '@babel/react'
                   ],
                   plugins: [
                     'react-loadable/babel',
-                    'transform-react-jsx',
-                    'syntax-dynamic-import',
-                    // ['import-inspector', {
-                    //   'serverSideRequirePath': true
-                    // }]
+                    '@babel/plugin-syntax-dynamic-import'
                   ]
                 }
               }
