@@ -55,6 +55,11 @@ module.exports = [
     resolve: {
       extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ]
     },
+    watchOptions: {
+      ignored: [
+        /build\/.*/
+      ]
+    },
     module: {
       rules: [
         {

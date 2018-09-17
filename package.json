@@ -22,7 +22,8 @@
     "test": "jest spec",
     "backup": "node ./backup.js",
     "restore": "cd mongo && docker-compose up",
-    "docker:mongo": "docker-compose -f docker-compose.dev.yml up"
+    "docker:mongo": "docker-compose -f docker-compose.dev.yml up",
+    "clean": "rimraf ./build/client && rimraf ./build/server"
   },
   "sideEffects": false,
   "dependencies": {
