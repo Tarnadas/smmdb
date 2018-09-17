@@ -15,7 +15,7 @@ module.exports = [
       vendor: [
         'react-redux', 'react-router', 'react-router-dom', 'react-router-redux',
         'react-google-login', 'react-lazyload', 'react-helmet', 'react-loadable',
-        'redux', 'redux-immutable',
+        'redux', 'redux-immutable', 'axios',
         'node-emoji', 'marked', 'qrcode'
       ],
       app: [ 'babel-polyfill', path.join(__dirname, '../src/client/renderer.tsx') ]
@@ -105,7 +105,7 @@ module.exports = [
                         ]
                       },
                       modules: false,
-                      useBuiltIns: true
+                      useBuiltIns: 'entry'
                     }]
                   ],
                   plugins: [
