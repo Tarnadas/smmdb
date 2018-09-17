@@ -9,9 +9,10 @@
     "url": "https://github.com/Tarnadas/smmdb.git"
   },
   "scripts": {
-    "start": "npm-run-all --parallel watch:client watch:server",
+    "start": "npm-run-all --parallel watch start:server",
     "start:server": "nodemon ./build/server -e ts,js,json -i '*.spec.js' --watch ./build/server",
     "watch:devserver": "webpack-dev-server --env=dev-client --hot --inline --progress --colors --content-base ./build/client",
+    "watch": "npm-run-all --parallel watch:client watch:server",
     "watch:client": "npm run build:dev-client -- --watch",
     "watch:server": "npm run build:dev-server -- --watch",
     "build:dev": "npm run build:dev-server && npm run build:dev-client",
