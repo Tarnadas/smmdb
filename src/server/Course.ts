@@ -129,7 +129,12 @@ export class Course {
       return Course.prepare(course)
     }
     try {
-      if (mime === 'application/x-rar-compressed' || mime === 'application/zip' || mime === 'application/x-7z-compressed' || mime === 'application/x-tar') {
+      if (mime === 'application/x-rar-compressed') {
+        return {
+          code: 400,
+          err: `Server cannot decompress rar files, because it is a commercial software. Better use 7zip`
+        }
+      } else if (mime === 'application/zip' || mime === 'application/x-7z-compressed' || mime === 'application/x-tar') {
         try {
           const courseData = await decompress(tmpFile)
           if (courseData == null || courseData.length === 0) {
@@ -227,7 +232,12 @@ export class Course {
       await Database.updateCourseData(course._id, updateData)
     }
     try {
-      if (mime === 'application/x-rar-compressed' || mime === 'application/zip' || mime === 'application/x-7z-compressed' || mime === 'application/x-tar') {
+      if (mime === 'application/x-rar-compressed') {
+        return {
+          code: 400,
+          err: `Server cannot decompress rar files, because it is a commercial software. Better use 7zip`
+        }
+      } else if (mime === 'application/zip' || mime === 'application/x-7z-compressed' || mime === 'application/x-tar') {
         try {
           const courseData = await decompress(tmpFile)
           if (!courseData || courseData.length !== 1) {

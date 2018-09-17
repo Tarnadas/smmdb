@@ -152,7 +152,7 @@ Downloads course with ID `ihavenoidea` as zip-compressed folder.
 
 **Querystring**: empty
 
-**POST body**: Raw binary data with header `{ 'Content-Type': 'application/octet-stream', 'Authorization': 'APIKEY myapikey' }`. Server assumes zip/rar/7z compressed files to contain Wii U courses. Raw binary data is checked, if it is a 3DS course. Server accepts gzipped/deflated streams.
+**POST body**: Raw binary data with header `{ 'Content-Type': 'application/octet-stream', 'Authorization': 'APIKEY myapikey' }`. Server assumes zip/7z compressed files to contain Wii U courses. Raw binary data is checked, if it is a 3DS course. Server accepts gzipped/deflated streams.
 
 ### Update course
 
