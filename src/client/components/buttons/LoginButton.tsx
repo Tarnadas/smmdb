@@ -31,7 +31,6 @@ class Button extends React.PureComponent<any, any> {
       this.props.dispatch(setAccountData(accountData))
       this.updateCourseStars(this.props, accountData)
     } catch (err) {
-      console.error(err)
     }
   }
   componentWillReceiveProps (nextProps: any) {
