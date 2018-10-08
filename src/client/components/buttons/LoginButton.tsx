@@ -124,7 +124,7 @@ class Button extends React.PureComponent<any, any> {
   render () {
     const accountData = this.props.accountData.toJS()
     const loggedIn = !!accountData.id
-    const styles: React.CSSProperties = {
+    const styles: any = {
       smmButton: {
         margin: '0 10px 10px 10px',
         lineHeight: '40px',

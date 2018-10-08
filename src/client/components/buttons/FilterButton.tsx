@@ -5,7 +5,7 @@ export class FilterButton extends React.PureComponent<any, any> {
   public onSetFilter: any
 
   render () {
-    const styles = {
+    const styles: any = {
       button: {
         height: 'auto',
         cursor: 'pointer'

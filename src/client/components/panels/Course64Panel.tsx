@@ -276,7 +276,7 @@ class Panel extends React.PureComponent<any, any> {
     const course = this.props.course.toJS()
     const canEdit = this.props.canEdit
     const colorScheme = this.state.changed ? COLOR_SCHEME.RED : (this.state.saved ? COLOR_SCHEME.GREEN : COLOR_SCHEME.YELLOW)
-    const styles: React.CSSProperties = {
+    const styles: any = {
       panel: {
         height: 'auto',
         minWidth: screenSize === ScreenSize.SUPER_SMALL ? '300px' : '350px',

@@ -16,7 +16,7 @@ interface XhrError {
 export class ErrorMessage extends React.PureComponent<ErrorMessageProps> {
   public render (): JSX.Element {
     const { err } = this.props
-    const styles = {
+    const styles: any = {
       err: {
         color: '#a20007',
         marginTop: '20px',

@@ -13,7 +13,7 @@ class Button extends React.PureComponent<any, any> {
     this.props.dispatch(setFilter(filter))
   }
   render () {
-    const styles = {
+    const styles: any = {
       close: {
         cursor: 'pointer',
         width: '32px',

@@ -11,7 +11,7 @@ const IS_PARTNERED = true
 class View extends React.PureComponent<any, any> {
   render () {
     const screenSize = this.props.screenSize
-    const styles: React.CSSProperties = {
+    const styles: any = {
       view: {
         height: '100%',
         fontSize: '14px',

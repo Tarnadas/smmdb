@@ -116,7 +116,7 @@ class Area extends React.PureComponent<ReuploadAreaProps, ReuploadAreaState> {
   public render (): JSX.Element {
     const { err } = this.state
     const upload = this.props.upload && this.props.upload.toJS()
-    const styles: React.CSSProperties = {
+    const styles: any = {
       drag: {
         height: 'auto',
         width: 'calc(100% - 40px)',

@@ -22,7 +22,7 @@ export class SubNavigationButton extends React.PureComponent<any, any> {
   }
   render () {
     const hover = this.state.hover
-    const styles: React.CSSProperties = {
+    const styles: any = {
       button: {
         width: 'auto',
         height: '32px',

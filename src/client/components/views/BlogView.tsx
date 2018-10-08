@@ -124,7 +124,7 @@ class BlogView extends React.PureComponent<any, any> {
   render () {
     const screenSize = this.props.screenSize
     const editBlogPost = this.state.editBlogPost
-    const styles: React.CSSProperties = {
+    const styles: any = {
       blog: {
         height: '100%',
         padding: '3% 5%',

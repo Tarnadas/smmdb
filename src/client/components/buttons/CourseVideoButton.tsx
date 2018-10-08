@@ -16,7 +16,7 @@ class Button extends React.PureComponent<any, any> {
   }
   render () {
     const screenSize = this.props.screenSize
-    const styles = {
+    const styles: any = {
       button: {
         backgroundColor: '#11c2b0',
         color: '#fff',

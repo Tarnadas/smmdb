@@ -7,7 +7,7 @@ import { ScreenSize } from '../../reducers/mediaQuery'
 class MainView extends React.PureComponent<any, any> {
   render () {
     const screenSize = this.props.screenSize
-    const styles: React.CSSProperties = {
+    const styles: any = {
       main: {
         height: '100%',
         padding: screenSize === ScreenSize.SUPER_SMALL ? '6% 5%' : '6% 10%',

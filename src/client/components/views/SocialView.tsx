@@ -8,7 +8,7 @@ import { ScreenSize } from '../../reducers/mediaQuery'
 class SocialView extends React.PureComponent<any, any> {
   render () {
     const screenSize = this.props.screenSize
-    const styles: React.CSSProperties = {
+    const styles: any = {
       social: {
         height: '100%',
         padding: '3% 5%',

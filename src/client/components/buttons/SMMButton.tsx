@@ -51,7 +51,7 @@ export class SMMButton extends React.PureComponent<any, any> {
   render () {
     const colorScheme = this.props.colorScheme || COLOR_SCHEME.YELLOW
     const onDelete = this.props.onDelete
-    const styles: React.CSSProperties = {
+    const styles: any = {
       smmButton: {
         margin: this.props.noMargin ? '' : '0 10px 10px 10px',
         lineHeight: '40px',

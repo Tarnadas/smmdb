@@ -50,7 +50,7 @@ class Area extends React.PureComponent<any, any> {
   render () {
     const screenSize = this.props.screenSize
     const hover = this.state.buttonHover || this.state.navHover
-    const styles: React.CSSProperties = {
+    const styles: any = {
       topbar: {
         width: '100%',
         height: '0',

@@ -127,7 +127,7 @@ class Area extends React.PureComponent<UploadAreaProps, UploadAreaState> {
 
   public render (): JSX.Element {
     const err = this.state.err
-    const styles: React.CSSProperties = {
+    const styles: any = {
       drag: {
         maxWidth: '950px',
         padding: '40px 20px',

@@ -28,7 +28,7 @@ class View extends React.PureComponent<any, any> {
   }
   render () {
     const screenSize = this.props.screenSize
-    const styles = {
+    const styles: any = {
       content: {
         backgroundColor: '#24997e',
         height: screenSize >= ScreenSize.MEDIUM ? '0%' : 'auto',

@@ -3,7 +3,7 @@ import * as React from 'react'
 export class ProgressPanel extends React.PureComponent<any, any> {
   render () {
     const course = this.props.course.toJS()
-    const styles: React.CSSProperties = {
+    const styles: any = {
       panel: {
         height: '169px',
         width: 'calc(100% - 20px)',

@@ -113,7 +113,7 @@ class CoursesView extends React.PureComponent<any, any> {
   }
   render () {
     const screenSize = this.props.screenSize
-    const styles: React.CSSProperties = {
+    const styles: any = {
       main: {
         height: '100%',
         display: 'flex',

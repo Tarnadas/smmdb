@@ -52,7 +52,7 @@ class Area extends React.PureComponent<any, any> {
     const screenSize = this.props.screenSize
     const isNet64 = this.props.isNet64
     const servers = this.state.servers
-    const styles: React.CSSProperties = {
+    const styles: any = {
       list: {
         margin: isNet64 ? '0' : '20px',
         overflowY: 'auto',

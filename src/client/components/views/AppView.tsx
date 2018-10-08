@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { connect } from 'react-redux'
+import { connect, Dispatch } from 'react-redux'
 import { Route, Link } from 'react-router-dom'
 import { forceCheck } from 'react-lazyload'
 
@@ -7,15 +7,29 @@ import { ContentView } from './ContentView'
 import { TopBarArea } from '../areas/TopBarArea'
 import { ScreenSize } from '../../reducers/mediaQuery'
 import { setVideoId, mediaQuery } from '../../actions'
+import { State } from '../../models/State'
 
 const UPDATE_OFFSET = 500
 const STEP_LIMIT = 10
 
-class View extends React.PureComponent<any, any> {
-  public doUpdate: boolean
-  public global: any
+interface AppViewProps {
+  isServer: boolean
+  screenSize: number
+  courses: any
+  courses64: any
+  coursesSelf: any
+  courses64Self: any
+  userName: string
+  videoId: string
+  showFilter: boolean
+  dispatch: Dispatch<State>
+}
 
-  constructor (props: any) {
+class View extends React.PureComponent<AppViewProps, any> {
+  public doUpdate: boolean
+  public global?: HTMLDivElement | null
+
+  constructor (props: AppViewProps) {
     super(props)
     this.state = {
       fetchCourses: null
@@ -86,7 +100,7 @@ class View extends React.PureComponent<any, any> {
     }
   }
   render () {
-    const screenSize = this.props.screenSize
+    const { screenSize } = this.props
     const styles: any = {
       react: {
         width: '100%',
@@ -226,4 +240,4 @@ export const AppView = connect((state: any) => ({
   courses64: state.getIn(['courseData', 'main64']),
   courses64Self: state.getIn(['courseData', 'self64']),
   showFilter: state.get('showFilter')
-}))(View) as any
+}))(View)

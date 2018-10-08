@@ -130,7 +130,7 @@ class Area extends React.PureComponent<UploadImageAreaProps, UploadImageAreaStat
   public render (): JSX.Element {
     const err = this.state.err
     const upload = this.props.upload && this.props.upload.toJS()
-    const styles: React.CSSProperties = {
+    const styles: any = {
       drag: {
         width: this.props.type === '64' ? 'calc(100% - 40px)' : this.props.type === 'blog' ? '100%' : 'calc(50% - 40px)',
         margin: '0 20px 10px',

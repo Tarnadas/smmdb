@@ -12,7 +12,7 @@ class Button extends React.PureComponent<any, any> {
     this.props.dispatch(applyFilter())
   }
   render () {
-    const styles = {
+    const styles: any = {
       button: {
         height: 'auto',
         cursor: 'pointer'

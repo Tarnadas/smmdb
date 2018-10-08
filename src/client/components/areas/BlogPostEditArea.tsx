@@ -147,7 +147,7 @@ class Area extends React.PureComponent<any, any> {
   }
   render () {
     const blogPost = this.props.blogPost
-    const styles: React.CSSProperties = {
+    const styles: any = {
       area: {
         width: '100%',
         flex: '1 0 auto',

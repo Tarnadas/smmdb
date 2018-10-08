@@ -289,7 +289,7 @@ class Panel extends React.PureComponent<any, any> {
     const progress = (p && (100 * p[0] / p[1])) || (this.props.downloadedCourse && 100)
     const saveId = this.props.saveId
     const downloaded = progress === 100
-    const styles: React.CSSProperties = {
+    const styles: any = {
       panel: {
         height: this.state.showDetails ? 'auto' : '169px',
         maxWidth: '906px',

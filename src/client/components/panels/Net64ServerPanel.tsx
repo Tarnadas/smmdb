@@ -41,7 +41,7 @@ export class Net64ServerPanel extends React.PureComponent<any, any> {
     }))
   }
   renderPlayers (players: Player[]) {
-    const styles: React.CSSProperties = {
+    const styles: any = {
       div: {
         borderBottom: '1px solid black',
         borderTop: '1px solid black',
@@ -74,7 +74,7 @@ export class Net64ServerPanel extends React.PureComponent<any, any> {
   }
   render () {
     const server = this.props.server
-    const styles: React.CSSProperties = {
+    const styles: any = {
       panel: {
         fontSize: '18px',
         margin: '10px 0',

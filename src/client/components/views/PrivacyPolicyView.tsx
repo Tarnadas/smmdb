@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 
 export default class PrivacyPolicyView extends React.PureComponent<any, any> {
   render () {
-    const styles: React.CSSProperties = {
+    const styles: any = {
       view: {
         height: '100%',
         fontSize: '14px',

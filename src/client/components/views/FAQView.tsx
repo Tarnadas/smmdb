@@ -7,7 +7,7 @@ import { ScreenSize } from '../../reducers/mediaQuery'
 class FAQView extends React.PureComponent<any, any> {
   render () {
     const screenSize = this.props.screenSize
-    const styles: React.CSSProperties = {
+    const styles: any = {
       faq: {
         width: '100%',
         height: '100%',

@@ -132,7 +132,7 @@ class Area extends React.PureComponent<any, any> {
   }
   render () {
     const screenSize = this.props.screenSize
-    const styles: React.CSSProperties = {
+    const styles: any = {
       area: {
         textAlign: 'left',
         position: 'fixed',

@@ -10,7 +10,7 @@ class Area extends React.PureComponent<any, any> {
   render () {
     const screenSize = this.props.screenSize
     const display = this.props.display
-    const styles: React.CSSProperties = {
+    const styles: any = {
       navigation: {
         display: 'flex',
         width: '240px',

@@ -18,7 +18,7 @@ class Button extends React.PureComponent<any, any> {
     }
   }
 
-  private getButton(styles: React.CSSProperties): JSX.Element {
+  private getButton(styles: any): JSX.Element {
     const screenSize = this.props.screenSize
     const downloadFormat = this.props.downloadFormat ? this.props.downloadFormat : DOWNLOAD_FORMAT.WII_U
     return (
@@ -57,7 +57,7 @@ class Button extends React.PureComponent<any, any> {
   
   public render (): JSX.Element {
     const screenSize = this.props.screenSize
-    const styles: React.CSSProperties = {
+    const styles: any = {
       href: {
         height: screenSize >= ScreenSize.MEDIUM ? '180px' : 'auto',
         margin: '0px 5px 10px 5px',

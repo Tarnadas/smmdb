@@ -5,7 +5,7 @@ import { FilterButton } from '../buttons/FilterButton'
 
 export class SideBarArea extends React.PureComponent<any, any> {
   render () {
-    const styles: React.CSSProperties = {
+    const styles: any = {
       sideBar: {
         display: 'flex',
         width: '100px',

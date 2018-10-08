@@ -20,7 +20,7 @@ class Panel extends React.PureComponent<any, any> {
   render () {
     const stats = this.props.stats.toJS()
     if (!stats) return null
-    const styles = {
+    const styles: any = {
       panel: {
         width: '100%',
         textAlign: 'left',

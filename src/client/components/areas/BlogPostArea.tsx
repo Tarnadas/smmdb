@@ -95,7 +95,7 @@ class Area extends React.PureComponent<BlogPostProps, BlogPostState> {
       localeEditedDate = date.toLocaleDateString()
     }
     const isOwner = this.props.accountId === blogPost.accountId
-    const styles: React.CSSProperties = {
+    const styles: any = {
       blogWrapper: {
         display: 'flex',
         flexDirection: 'column',

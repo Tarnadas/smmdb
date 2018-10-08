@@ -23,7 +23,7 @@ class Button extends React.PureComponent<any, any> {
   }
   render () {
     const direction = this.props.direction
-    const styles: React.CSSProperties = {
+    const styles: any = {
       button: {
         height: 'auto',
         marginBottom: '20px'

@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet'
 
 export default class LegalNoticeView extends React.PureComponent {
   render () {
-    const styles: React.CSSProperties = {
+    const styles: any = {
       view: {
         height: '100%',
         fontSize: '14px',
