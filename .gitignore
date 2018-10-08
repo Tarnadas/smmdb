@@ -15,6 +15,7 @@
 /build/client/
 /build/release/
 /build/net64/
+/build/similarity/
 /build/react-loadable.json
 /7z.exe
 /report.html

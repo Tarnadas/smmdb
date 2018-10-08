@@ -26,11 +26,12 @@ export class Course {
     return course
   }
 
-  private static toJSON (filter: any): any {
+  private static toJSON (filter?: any): any {
     let result: any = Object.assign({}, this)
     result.id = (this as any)._id
     if (result.stars == null) result.stars = 0
     delete result._id
+    delete result.hash
     if (filter) {
       for (let i in result) {
         if (!filter.includes(i)) {
@@ -357,6 +358,7 @@ export class Course {
   public static async delete (courseId: string): Promise<any> {
     await Database.deleteCourse(courseId)
     await Database.deleteCourseData(courseId)
+    await Database.deleteSimilarity(courseId)
   }
 
   public static async star (course: any, accountId: string): Promise<any> {

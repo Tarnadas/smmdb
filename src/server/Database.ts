@@ -1,4 +1,4 @@
-import { MongoClient, ObjectID, Db } from 'mongodb'
+import { MongoClient, ObjectID, Db, Collection, UpdateWriteOpResult, DeleteWriteOpResultObject } from 'mongodb'
 import { Account } from './Account'
 // import jimp from 'jimp'
 /* import imageminWebp from 'imagemin-webp'
@@ -8,8 +8,11 @@ import fs from 'fs'
 import path from 'path' */
 
 import { log } from './scripts/util'
+import { Match } from '../models/Match';
 
 const mongoUrl = `mongodb://${process.env.DOCKER === 'docker' ? 'mongodb' : 'localhost'}:27017`
+
+type SimilartySchema = { _id: ObjectID, similarCourses: Match[] }
 
 export abstract class Database {
   private static database?: Db
@@ -30,6 +33,8 @@ export abstract class Database {
 
   private static blog: any
 
+  private static similarity: Collection<SimilartySchema>
+
   public static async initialize (isTest = false): Promise<void> {
     log(`Connecting to database at ${mongoUrl}`)
     const connect = () => {
@@ -46,27 +51,32 @@ export abstract class Database {
     await connect()
     log('Connected')
 
+    if (!this.database) {
+      throw new Error()
+    }
+
     if (isTest) {
       try {
-        await this.database!.collection('coursesTest').drop()
+        await this.database.collection('coursesTest').drop()
       } catch (err) {}
       try {
-        await this.database!.collection('accountsTest').drop()
+        await this.database.collection('accountsTest').drop()
       } catch (err) {}
-      this.courses = this.database!.collection('coursesTest')
-      this.courses64 = this.database!.collection('courses64Test')
-      this.accounts = this.database!.collection('accountsTest')
-      this.stars = this.database!.collection('starsTest')
-      this.stars64 = this.database!.collection('stars64Test')
+      this.courses = this.database.collection('coursesTest')
+      this.courses64 = this.database.collection('courses64Test')
+      this.accounts = this.database.collection('accountsTest')
+      this.stars = this.database.collection('starsTest')
+      this.stars64 = this.database.collection('stars64Test')
     } else {
-      this.courses = this.database!.collection('courses')
-      this.courseData = this.database!.collection('courseData')
-      this.courses64 = this.database!.collection('courses64')
-      this.accounts = this.database!.collection('accounts')
-      this.stars = this.database!.collection('stars')
-      this.stars64 = this.database!.collection('stars64')
-      this.net64 = this.database!.collection('net64')
-      this.blog = this.database!.collection('blog')
+      this.courses = this.database.collection('courses')
+      this.courseData = this.database.collection('courseData')
+      this.courses64 = this.database.collection('courses64')
+      this.accounts = this.database.collection('accounts')
+      this.stars = this.database.collection('stars')
+      this.stars64 = this.database.collection('stars64')
+      this.net64 = this.database.collection('net64')
+      this.blog = this.database.collection('blog')
+      this.similarity = this.database.collection('similarity')
     }
     /* const imgPath = path.join(__dirname, 'img')
     const optPath = path.join(__dirname, 'opt')
@@ -167,11 +177,11 @@ export abstract class Database {
     }
   }
 
-  public static deleteCourse (id: string): any {
+  public static deleteCourse (id: string): Promise<any> {
     return this.courses.deleteOne({ '_id': new ObjectID(id) })
   }
 
-  public static deleteCourseData (id: string): any {
+  public static deleteCourseData (id: string): Promise<any> {
     return this.courseData.deleteOne({ '_id': new ObjectID(id) })
   }
 
@@ -349,5 +359,22 @@ export abstract class Database {
     }
     await this.blog.deleteOne({ _id: blogPost[0]._id })
     return blogPost
+  }
+
+  public static updateSimilarity (courseId: string | ObjectID, similarCourses: Match[]): Promise<UpdateWriteOpResult> {
+    return this.similarity.updateOne({ '_id': new ObjectID(courseId) }, { $set: { similarCourses } }, { upsert: true })
+  }
+
+  public static async deleteSimilarity (id: string): Promise<DeleteWriteOpResultObject> {
+    const courseId = new ObjectID(id)
+    const matches: SimilartySchema[] = await (await this.similarity.find<SimilartySchema>({ '_id': courseId })).toArray()
+    for (const match of matches) {
+      const similarCourses = (await this.similarity.findOne<SimilartySchema>({ '_id': match._id }))
+      if (!similarCourses) continue
+      const similarCourseIds = similarCourses.similarCourses
+      const similarCourseIdsWithoutDeletedOne = similarCourseIds.filter(({ courseId: _courseId }) => _courseId !== String(courseId))// .map(({ similarCourses }) => similarCourses )
+      await Database.updateSimilarity(match._id, similarCourseIdsWithoutDeletedOne);
+    }
+    return this.similarity.deleteOne({ '_id': courseId })
   }
 }
