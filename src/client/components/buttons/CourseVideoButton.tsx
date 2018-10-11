@@ -5,17 +5,19 @@ import { setVideoId } from '../../actions'
 import { ScreenSize } from '../../reducers/mediaQuery'
 
 class Button extends React.PureComponent<any, any> {
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     this.onClick = this.onClick.bind(this)
   }
-  onClick () {
+
+  private onClick (): void {
     if (this.props.screenSize > ScreenSize.SMALL) {
       this.props.dispatch(setVideoId(this.props.videoId))
     }
   }
-  render () {
-    const screenSize = this.props.screenSize
+
+  public render (): JSX.Element {
+    const { screenSize } = this.props
     const styles: any = {
       button: {
         backgroundColor: '#11c2b0',
@@ -50,15 +52,14 @@ class Button extends React.PureComponent<any, any> {
       }
     }
     const Wrapper = screenSize > ScreenSize.SMALL
-    ? (props: any) => (
-      <div style={styles.button} onClick={this.onClick}>
-        { props.children }
-      </div>
-    ) : (props: any) => (
-      <a style={styles.button} href={`https://youtu.be/${this.props.videoId}`} target='_blank'>
-        { props.children }
-      </a>
-    )
+      ? (props: any): JSX.Element =>
+        <div style={styles.button} onClick={this.onClick}>
+          { props.children }
+        </div>
+      : (props: any): JSX.Element =>
+        <a style={styles.button} href={`https://youtu.be/${this.props.videoId}`} target='_blank'>
+          { props.children }
+        </a>
     return (
       <Wrapper>
         <div style={styles.icon}>

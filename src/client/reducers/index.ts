@@ -1,4 +1,5 @@
 import { createStore, applyMiddleware } from 'redux'
+import { Store } from 'react-redux'
 import { combineReducers } from 'redux-immutable'
 import { fromJS } from 'immutable'
 import { routerMiddleware } from 'react-router-redux'
@@ -17,8 +18,9 @@ import { filter } from './filter'
 import { order } from './order'
 import { userData } from './userData'
 import { mediaQuery } from './mediaQuery'
+import { State } from '../models/State'
 
-export function initReducer (preloadedState: any, history: any) {
+export function initReducer (preloadedState: any, history: any): Store<State> {
   let initialState = preloadedState || fromJS({
     router: {
       location: null

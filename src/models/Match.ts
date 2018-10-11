@@ -25,6 +25,9 @@ export type CourseData = {
   tiles: Array<{ tileData: Buffer }>
 }
 
-export type Match = { courseId: string, sim: number }
+export type Match = {
+  courseId: string
+  sim: number
+}
 
 export type Matches = { [key: string]: Match[]}

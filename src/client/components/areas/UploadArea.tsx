@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Dispatch } from 'redux';
+import { Dispatch } from 'redux'
 import axios from 'axios'
 
 import { resolve } from 'url'
 
-import { ErrorMessage } from '../shared/ErrorMessage';
+import { ErrorMessage } from '../shared/ErrorMessage'
 import {
   setCoursesUploaded, setCoursesUploaded64, setUpload, setUpload64, deleteUpload, deleteUpload64
 } from '../../actions'
@@ -25,7 +25,7 @@ interface UploadAreaState {
 class Area extends React.PureComponent<UploadAreaProps, UploadAreaState> {
   public currentUpload: number
 
-  constructor (props: UploadAreaProps) {
+  public constructor (props: UploadAreaProps) {
     super(props)
     this.state = {
       value: '',
@@ -43,7 +43,7 @@ class Area extends React.PureComponent<UploadAreaProps, UploadAreaState> {
     const { is64 } = this.props
     const upload = is64 ? setUpload64 : setUpload
     const del = is64 ? deleteUpload64 : deleteUpload
-    const reqUrl = resolve(process.env.DOMAIN!, `/api/uploadcourse${is64 ? '64' : ''}`)
+    const reqUrl = resolve(process.env.DOMAIN || '', `/api/uploadcourse${is64 ? '64' : ''}`)
 
     this.props.dispatch(upload(courseId, {
       courseId,
@@ -83,7 +83,7 @@ class Area extends React.PureComponent<UploadAreaProps, UploadAreaState> {
           'Authorization': `APIKEY ${apiKey}`,
           'Filename': name
         },
-        onUploadProgress: ({ loaded, total }) => {
+        onUploadProgress: ({ loaded, total }): void => {
           const percentage = loaded * 100 / total
           dispatch(upload(courseId, {
             courseId,
@@ -112,7 +112,7 @@ class Area extends React.PureComponent<UploadAreaProps, UploadAreaState> {
       if (!(file instanceof Blob)) continue
       if (file.size > 6 * 1024 * 1024) continue
       const reader = new FileReader()
-      reader.onload = () => {
+      reader.onload = (): void => {
         this.sendCourse(file)
       }
       reader.readAsText(file)
@@ -181,6 +181,6 @@ class Area extends React.PureComponent<UploadAreaProps, UploadAreaState> {
     )
   }
 }
-export const UploadArea = connect((state: any) => ({
+export const UploadArea = connect((state: any): any => ({
   apiKey: state.getIn(['userData', 'accountData', 'apikey'])
 }))(Area) as any

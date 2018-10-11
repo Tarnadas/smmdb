@@ -13,7 +13,7 @@ import { UploadArea } from '../areas/UploadArea'
 const LIMIT = 10
 
 class Upload64View extends React.PureComponent<any, any> {
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     this.fetchCourses = this.fetchCourses.bind(this)
     this.renderCourses = this.renderCourses.bind(this)
@@ -21,23 +21,28 @@ class Upload64View extends React.PureComponent<any, any> {
     this.onCourseDeleteRecent = this.onCourseDeleteRecent.bind(this)
     this.handleScroll = this.handleScroll.bind(this)
   }
-  componentWillMount () {
+
+  // eslint-disable-next-line
+  public UNSAFE_componentWillMount (): void {
     if (process.env.IS_SERVER) return
     this.props.setFetchCourses(this.fetchCourses)
     if (this.props.accountData.get('id')) {
       this.fetchCourses()
     }
   }
-  componentWillReceiveProps (nextProps: any) {
+
+  // eslint-disable-next-line
+  public UNSAFE_componentWillReceiveProps (nextProps: any): any {
     if (nextProps.accountData === this.props.accountData || !nextProps.accountData.get('id')) return
     this.fetchCourses(false, LIMIT, nextProps)
   }
-  async fetchCourses (shouldConcat = false, limit = LIMIT, props = this.props) {
+
+  private async fetchCourses (shouldConcat = false, limit = LIMIT, props = this.props): Promise<void> {
     const accountData = props.accountData
     if (!accountData.get('id')) return
     try {
       const apiKey = accountData.get('apikey')
-      const response = await fetch(resolve(process.env.DOMAIN!, `/api/getcourses64?uploader=${accountData.get('username')}&limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}`), {
+      const response = await fetch(resolve(process.env.DOMAIN || '', `/api/getcourses64?uploader=${accountData.get('username')}&limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}`), {
         headers: {
           'Authorization': `APIKEY ${apiKey}`
         }
@@ -51,11 +56,12 @@ class Upload64View extends React.PureComponent<any, any> {
       console.error(err)
     }
   }
-  renderCourses (uploaded = false) {
+
+  private renderCourses (uploaded = false): JSX.Element[] {
     const courses = uploaded ? this.props.uploads.toList().merge(this.props.uploadedCourses) : this.props.courses
     const accountData = this.props.accountData
     const onCourseDelete = uploaded ? this.onCourseDeleteRecent : this.onCourseDelete
-    return Array.from((function * () {
+    return Array.from((function * (): IterableIterator<JSX.Element> {
       let i = 0
       for (let course of courses) {
         const courseId = course.get('id')
@@ -76,17 +82,21 @@ class Upload64View extends React.PureComponent<any, any> {
       }
     })())
   }
-  onCourseDelete (courseId: any) {
+
+  private onCourseDelete (courseId: any): void {
     this.props.dispatch(deleteCourseSelf64(courseId))
   }
-  onCourseDeleteRecent (courseId: any) {
+
+  private onCourseDeleteRecent (courseId: any): void {
     this.props.dispatch(deleteCourseUploaded64(courseId))
   }
-  handleScroll (e: any) {
+
+  private handleScroll (e: any): void {
     this.props.shouldUpdate(e.target)
   }
-  render () {
-    const screenSize = this.props.screenSize
+
+  public render (): JSX.Element {
+    const { screenSize } = this.props
     const accountData = this.props.accountData.toJS()
     const uploads = this.props.uploads.toList().toJS()
     const uploadedCourses = this.props.uploadedCourses.toJS()
@@ -172,7 +182,7 @@ class Upload64View extends React.PureComponent<any, any> {
     )
   }
 }
-export default connect((state: any) => ({
+export default connect((state: any): any => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize']),
   accountData: state.getIn(['userData', 'accountData']),
   courses: state.getIn(['courseData', 'self64']),

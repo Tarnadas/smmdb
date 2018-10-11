@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Link } from 'react-router-dom'
 
 export class NavigationButton extends React.PureComponent<any, any> {
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     this.state = {
       hover: false
@@ -11,7 +11,8 @@ export class NavigationButton extends React.PureComponent<any, any> {
     this.onMouseEnter = this.onMouseEnter.bind(this)
     this.onMouseLeave = this.onMouseLeave.bind(this)
   }
-  onClick () {
+
+  private onClick (): void {
     try {
       if (this.props.link && this.props.link.charAt(0) === '/') {
         (window as any).ga('send', 'pageview', {
@@ -21,18 +22,21 @@ export class NavigationButton extends React.PureComponent<any, any> {
     } catch (err) {}
     this.props.onClick()
   }
-  onMouseEnter () {
+
+  private onMouseEnter (): void {
     this.setState({
       hover: true
     })
   }
-  onMouseLeave () {
+
+  private onMouseLeave (): void {
     this.setState({
       hover: false
     })
   }
-  render () {
-    const hover = this.state.hover
+
+  public render (): JSX.Element {
+    const { hover } = this.state
     const styles: any = {
       button: {
         width: 'auto',
@@ -80,15 +84,13 @@ export class NavigationButton extends React.PureComponent<any, any> {
         onClick={this.onClick}
       >
         {
-          this.props.blank ? (
-            <a href={this.props.link} target='_blank'>
+          this.props.blank
+            ? <a href={this.props.link} target='_blank'>
               { content }
             </a>
-          ) : (
-            <Link to={this.props.link}>
+            : <Link to={this.props.link}>
               { content }
             </Link>
-          )
         }
       </div>
     )

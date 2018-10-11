@@ -52,13 +52,13 @@ export class Course {
     await course.writeToSave(0, zipDir)
     const outPath = path.join(tmpDir.name, `${title.replace(/[^a-z|A-Z|0-9| |\-|!]/g, '')}.zip`)
     try {
-      const res = await new Promise((resolve, reject) => {
-        zip(zipDir, outPath, (err: Error) => {
+      const res = await new Promise((resolve, reject): void => {
+        zip(zipDir, outPath, (err: Error): void => {
           if (err) reject(err)
           resolve(outPath)
         })
       })
-      setTimeout(() => {
+      setTimeout((): void => {
         tmpDir.removeCallback()
       }, 20000)
       return res
@@ -83,7 +83,7 @@ export class Course {
     const type = fileType(buffer)
     const mime = type && type.mime
     const buf = new Uint8Array(buffer)
-    const is3DS = () => {
+    const is3DS = (): boolean => {
       const header = [0x04, 0x30, 0x04, 0x00, 0x7D, 0x00, 0x00, 0x00, 0xDD, 0xBA, 0xFE, 0xCA]
       for (let i = 0; i < header.length; i++) {
         if (header[i] !== buf[i + 4]) {
@@ -92,7 +92,7 @@ export class Course {
       }
       return true
     }
-    const createCourse = async (courseData: any) => {
+    const createCourse = async (courseData: any): Promise<any> => {
       const course: any = Object.assign({}, courseData)
       const courseD: any = {}
       course.owner = account._id
@@ -184,7 +184,7 @@ export class Course {
     const type = fileType(buffer)
     const mime = type && type.mime
     const buf = new Uint8Array(buffer)
-    const is3DS = () => {
+    const is3DS = (): boolean => {
       const header = [0x04, 0x30, 0x04, 0x00, 0x7D, 0x00, 0x00, 0x00, 0xDD, 0xBA, 0xFE, 0xCA]
       for (let i = 0; i < header.length; i++) {
         if (header[i] !== buf[i + 4]) {
@@ -193,7 +193,7 @@ export class Course {
       }
       return true
     }
-    const doUpdate = async (course: any, courseData: any) => {
+    const doUpdate = async (course: any, courseData: any): Promise<void> => {
       const update: any = {}
       const updateData: any = {}
       if (!(await courseData.isThumbnailBroken())) {
@@ -377,7 +377,7 @@ export class Course {
     }
   }
 
-  static getCourseAmount () {
+  public static getCourseAmount (): Promise<number> {
     return Database.getCoursesCount()
   }
 }

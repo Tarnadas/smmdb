@@ -3,7 +3,7 @@ import { User } from './User'
 export class Lobby {
   private users: any
 
-  constructor () {
+  public constructor () {
     this.users = {}
 
     this.addUser = this.addUser.bind(this)

@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Helmet } from 'react-helmet'
 
 export default class LegalNoticeView extends React.PureComponent {
-  render () {
+  public render (): JSX.Element {
     const styles: any = {
       view: {
         height: '100%',

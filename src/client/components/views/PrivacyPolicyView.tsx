@@ -3,7 +3,7 @@ import { Helmet } from 'react-helmet'
 import { Link } from 'react-router-dom'
 
 export default class PrivacyPolicyView extends React.PureComponent<any, any> {
-  render () {
+  public render (): JSX.Element {
     const styles: any = {
       view: {
         height: '100%',
@@ -48,7 +48,7 @@ export default class PrivacyPolicyView extends React.PureComponent<any, any> {
             or when you use our services and their communication tools.<br /><br />
 
           SMMDB may store all communications exchanged between You and any other person while using the website.
-            This not only includes "public" messages, but also includes all messages exchanged in private using our Services.<br /><br />
+            This not only includes &#34;public&#34; messages, but also includes all messages exchanged in private using our Services.<br /><br />
 
           The communication data will be stored by SMMDB on its own servers.<br /><br />
 
@@ -71,16 +71,16 @@ export default class PrivacyPolicyView extends React.PureComponent<any, any> {
           Personally Identifiable information while using our Services
         </div>
         <div style={styles.text}>
-          When you create an Account for SMMDB's Services, your IP Address (the Internet Protocol Address from which you have created the Account via) and E-mail Address may be stored in our records.<br />
+          When you create an Account for SMMDB&#39;s Services, your IP Address (the Internet Protocol Address from which you have created the Account via) and E-mail Address may be stored in our records.<br />
           When you use any Service provided by SMMDB, your IP Address (the Internet Protocol address from which you access any Service provided by SMMDB) may be stored in our records.<br /><br />
 
-          When you make a donation to SMMDB, your payment information and transaction is processed by a third party. SMMDB may store information about donation history through uniquely identifiable Account information and IP Addresses. SMMDB does not store any payment information used to complete the transaction initiated by You. Further details about the third party's Terms and Conditions that you agree to when donating to SMMDB may be found at their website.
+          When you make a donation to SMMDB, your payment information and transaction is processed by a third party. SMMDB may store information about donation history through uniquely identifiable Account information and IP Addresses. SMMDB does not store any payment information used to complete the transaction initiated by You. Further details about the third party&#39;s Terms and Conditions that you agree to when donating to SMMDB may be found at their website.
         </div>
         <div style={styles.header}>
           2. Cookies and Related Technology
         </div>
         <div style={styles.text}>
-          When someone visits http://smmdb.ddns.net/ we collect standard internet log information and details of visitor behavior patterns. We do this to find out things such as the number of visitors to the parts of the site. We collect this information in a way which does not identify anyone. We do not make any attempt to identify users who visit our website while not logged in to a SMMDB Account, and we will not associate any data gathered from this site with any personally identifiable information from any source.
+          When someone visits http:// smmdb.ddns.net/ we collect standard internet log information and details of visitor behavior patterns. We do this to find out things such as the number of visitors to the parts of the site. We collect this information in a way which does not identify anyone. We do not make any attempt to identify users who visit our website while not logged in to a SMMDB Account, and we will not associate any data gathered from this site with any personally identifiable information from any source.
         </div>
         <div style={styles.smallHeader}>
           Use of Cookies by SMMDB
@@ -106,11 +106,11 @@ export default class PrivacyPolicyView extends React.PureComponent<any, any> {
         </div>
         <div style={styles.text}>
           Our Services are not directed to young children, and SMMDB does not provide membership for persons under the age of 13.
-            If You are under the age of 13, You may not create an Account for SMMDB's Services nor may you use any of SMMDB's Services. SMMDB will not knowingly collect, maintain, or disclose any personal information from children under the age of 13.<br /><br />
+            If You are under the age of 13, You may not create an Account for SMMDB&#39;s Services nor may you use any of SMMDB&#39;s Services. SMMDB will not knowingly collect, maintain, or disclose any personal information from children under the age of 13.<br /><br />
 
           If you are under the age of legal capacity in your country of residence and are above the age of 13, you must have your parent or guardian accept these Terms of Service before giving us any personally identifiable information or using our Services.<br /><br />
 
-          If you are a parent or guardian who has discovered that your child has entered this agreement without your consent, SMMDB will take reasonable steps to remove personally identifiable information from SMMDB's servers at your request. To request removal of your child's information, please send an e-mail to mreder1289@gmail.com. Be sure to include in your message the affected Accounts and e-mail addresses used by the child who registered for our Services.
+          If you are a parent or guardian who has discovered that your child has entered this agreement without your consent, SMMDB will take reasonable steps to remove personally identifiable information from SMMDB&#39;s servers at your request. To request removal of your child&#39;s information, please send an e-mail to mreder1289@gmail.com. Be sure to include in your message the affected Accounts and e-mail addresses used by the child who registered for our Services.
         </div>
       </div>
     )

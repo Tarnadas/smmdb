@@ -1,6 +1,8 @@
 import { Map } from 'immutable'
 
-export function stats (state: any, action: any) {
+import { State } from '../models/State'
+
+export function stats (state: any, action: any): State {
   if (!action) return state
   switch (action.type) {
     case 'SET_STATS':

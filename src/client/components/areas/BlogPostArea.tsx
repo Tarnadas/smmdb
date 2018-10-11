@@ -7,7 +7,7 @@ import { emojify } from 'node-emoji'
 import { resolve } from 'url'
 
 import { SMMButton } from '../buttons/SMMButton'
-import { ScreenSize } from '../../reducers/mediaQuery'
+import { State } from '../../models/State'
 
 interface BlogPostProps {
   apiKey: string
@@ -30,9 +30,9 @@ interface BlogPostState {
 }
 
 class Area extends React.PureComponent<BlogPostProps, BlogPostState> {
-  private renderer?: HTMLElement
+  private renderer?: HTMLDivElement | null
 
-  constructor (props: BlogPostProps) {
+  public constructor (props: BlogPostProps) {
     super(props)
     this.state = {
       collapsed: false,
@@ -42,13 +42,17 @@ class Area extends React.PureComponent<BlogPostProps, BlogPostState> {
     this.onDeleteBlogPost = this.onDeleteBlogPost.bind(this)
     this.onToggleCollapse = this.onToggleCollapse.bind(this)
   }
-  componentDidMount () {
-    this.renderer!.innerHTML = emojify(marked(this.props.blogPost.markdown))
+
+  public componentDidMount (): void {
+    if (!this.renderer) return
+    this.renderer.innerHTML = emojify(marked(this.props.blogPost.markdown))
   }
-  onEditBlogPost () {
+
+  private onEditBlogPost (): void {
     this.props.onEdit(this.props.blogPost._id)
   }
-  async onDeleteBlogPost () {
+
+  private async onDeleteBlogPost (): Promise<void> {
     if (!this.state.canDelete) {
       this.setState({
         canDelete: true
@@ -56,7 +60,7 @@ class Area extends React.PureComponent<BlogPostProps, BlogPostState> {
       return
     }
     try {
-      const response = await fetch(resolve(process.env.DOMAIN!, `/api/blogpost`), {
+      const response = await fetch(resolve(process.env.DOMAIN || '', `/api/blogpost`), {
         headers: {
           'Authorization': `APIKEY ${this.props.apiKey}`,
           'Content-Type': 'application/json'
@@ -75,12 +79,14 @@ class Area extends React.PureComponent<BlogPostProps, BlogPostState> {
       console.error(err)
     }
   }
-  onToggleCollapse () {
-    this.setState(prevState => ({
+
+  private onToggleCollapse (): void {
+    this.setState((prevState: any): State => ({
       collapsed: !prevState.collapsed
     }))
   }
-  render () {
+
+  public render (): JSX.Element {
     const collapsed = this.state.collapsed
     const canDelete = this.state.canDelete
     const blogPost = this.props.blogPost
@@ -183,7 +189,7 @@ class Area extends React.PureComponent<BlogPostProps, BlogPostState> {
               />
             }
           </div>
-          <div style={styles.renderer} ref={x => { this.renderer = x! }} />
+          <div style={styles.renderer} ref={(x): void => { this.renderer = x }} />
         </div>
         <div style={styles.toggleButton} onClick={this.onToggleCollapse}>
           {collapsed ? 'Hide' : 'Show'} full blog post
@@ -192,6 +198,6 @@ class Area extends React.PureComponent<BlogPostProps, BlogPostState> {
     )
   }
 }
-export const BlogPostArea: any = connect((state: any) => ({
+export const BlogPostArea: any = connect((state: any): any => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize'])
-}))(Area as any)
+}))(Area)

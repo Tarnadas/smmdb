@@ -5,8 +5,8 @@ import { SMMButton } from '../buttons/SMMButton'
 import { ScreenSize } from '../../reducers/mediaQuery'
 
 class MainView extends React.PureComponent<any, any> {
-  render () {
-    const screenSize = this.props.screenSize
+  public render (): JSX.Element {
+    const { screenSize } = this.props
     const styles: any = {
       main: {
         height: '100%',
@@ -49,7 +49,7 @@ class MainView extends React.PureComponent<any, any> {
           <div style={styles.header}>
             Welcome to SMMDB!
           </div>
-          You can share your Super Mario Maker courses platform independently on this website. Supported platforms are Wii U, 3DS and Cemu. For Cemu there is even a save file editor. Just navigate to 'Client'.<br />
+          You can share your Super Mario Maker courses platform independently on this website. Supported platforms are Wii U, 3DS and Cemu. For Cemu there is even a save file editor. Just navigate to &#39;Client&#39;.<br />
           It also features courses for Super Mario 64 Maker and a server list for Net64+, popular ROM hacks by Kaze Emanuar.<br /><br />
           To use all features on this website it is recommended to sign in with Google.<br /><br />
           All content on this website is user-created. We do not share any copyrighted stuff.
@@ -83,6 +83,6 @@ class MainView extends React.PureComponent<any, any> {
     )
   }
 }
-export default connect((state: any) => ({
+export default connect((state: any): any => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize'])
 }))(MainView)

@@ -73,7 +73,7 @@ export const cacheMaxAgeCSS = '1d'
 export const cacheMaxAgeJS = '1y';
 
 // initialize database
-(async () => {
+(async (): Promise<void> => {
   try {
     await Database.initialize()
     await main()
@@ -82,7 +82,7 @@ export const cacheMaxAgeJS = '1y';
   }
 })()
 
-async function main () {
+async function main (): Promise<void> {
   console.log()
   log('Database initialized')
 
@@ -111,12 +111,12 @@ async function main () {
     maxAge: 24 * 60 * 60 * 1000
   }))
   const connections: any = {}
-  app.use((req, res, next) => {
+  app.use((req, res, next): void => {
     const ip = req.ip
     if (!connections.hasOwnProperty(ip)) {
       usersPerDay.mark()
       connections[ip] = {}
-      setTimeout(() => {
+      setTimeout((): void => {
         delete connections[ip]
       }, 86400 * 1000)
     }
@@ -124,20 +124,21 @@ async function main () {
   })
 
   if (process.env.NODE_ENV === 'development') {
-    app.use((req, res, next) => {
+    app.use((req, res, next): void => {
       res.set('Access-Control-Allow-Origin', 'http://localhost:8080')
       next()
     })
   }
 
-  app.use('/courseimg/:id*?', async (req, res) => {
+  app.use('/courseimg/:id*?', async (req, res): Promise<void> => {
     const [id, full] = req.params.id.split('.')[0].split('_')
     if (id == null) {
       res.status(404).send('No course ID specified')
       return
     }
     try {
-      const acceptWebp = req.get('accept') && req.get('accept')!.includes('image/webp')
+      const acceptHeader = req.get('accept')
+      const acceptWebp = acceptHeader && acceptHeader.includes('image/webp')
       const img = await Database.getImage(id, !!full, !!acceptWebp)
       if (img == null) {
         res.status(404).send(`Course with ID ${id} has no image`)
@@ -151,7 +152,7 @@ async function main () {
     }
   })
 
-  app.use('/course64img/:id*?', async (req, res) => {
+  app.use('/course64img/:id*?', async (req, res): Promise<void> => {
     const id = req.params.id
     if (id == null) {
       res.status(404).send('No course ID specified')
@@ -171,13 +172,13 @@ async function main () {
     }
   })
 
-  app.route('/tokensignin').post((req, res) => {
+  app.route('/tokensignin').post((req, res): void => {
     res.set('Access-Control-Allow-Headers', 'content-type')
     let idToken = req.body.tokenObj.id_token
     if (!idToken) {
       res.status(400).send('idToken not found')
     } else {
-      verifier.verify(idToken, clientId, async (err: Error, tokenInfo: any) => {
+      verifier.verify(idToken, clientId, async (err: Error, tokenInfo: any): Promise<void> => {
         if (err) {
           res.status(400).send('idToken not verified')
         }
@@ -207,7 +208,7 @@ async function main () {
     }
   })
 
-  app.route('/signin').post(async (req, res) => {
+  app.route('/signin').post(async (req, res): Promise<void> => {
     if (!req.session.idtoken) {
       res.status(400).send('No idToken submitted. Have you enabled cookies?')
       return
@@ -220,7 +221,7 @@ async function main () {
     res.json(account)
   })
 
-  app.route('/signout').post(async (req, res) => {
+  app.route('/signout').post(async (req, res): Promise<void> => {
     if (!req.session.idtoken) {
       res.status(400).send('No idToken submitted. Have you enabled cookies?')
       return
@@ -234,7 +235,7 @@ async function main () {
     res.send('OK')
   })
 
-  app.route('/api/:apicall*?').get(async (req, res) => {
+  app.route('/api/:apicall*?').get(async (req, res): Promise<void> => {
     if (req.url.includes('/') && req.url.length > 5) {
       const apiCall = req.params.apicall
       let apiData = {}
@@ -269,7 +270,7 @@ async function main () {
     } else {
       res.status(400).send('Wrong syntax')
     }
-  }).post(async (req, res) => {
+  }).post(async (req, res): Promise<void> => {
     let apiCall = req.params.apicall
     let apiData = {}
     if (req.url.includes('?')) {
@@ -311,7 +312,7 @@ async function main () {
     }
   })
 
-  app.use('/', async (req, res) => {
+  app.use('/', async (req, res): Promise<void> => {
     const websiteStats = {
       courses: await Course.getCourseAmount(),
       accounts: await Account.getAccountAmount()
@@ -322,8 +323,8 @@ async function main () {
       renderToString,
       null,
       req,
-      await API.filterCourses(null, {limit: 10}),
-      await API.filterCourses64(null!, {limit: 16}),
+      await API.filterCourses(undefined, { limit: 10 }),
+      await API.filterCourses64(undefined, { limit: 16 }),
       websiteStats,
       d.is('phone'),
       d.is('tablet')
@@ -336,7 +337,7 @@ async function main () {
     index('#root').html(html)
     index('head').prepend(helmet.title.toString())
     index('head').prepend(helmet.meta.toString())
-    index('head').prepend(bundles.map((bundle: any) =>
+    index('head').prepend(bundles.map((bundle: any): string =>
       `<link rel="preload" href="/scripts/${bundle.file}" as="script">`
     ).join('\n'))
     index('body').prepend(`<script>window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')}</script>`)
@@ -344,7 +345,7 @@ async function main () {
   })
 
   await preloadAll()
-  server.listen(process.env.PORT, () => {
+  server.listen(process.env.PORT, (): void => {
     log(`Server is listening on port ${process.env.PORT}`)
   })
 }

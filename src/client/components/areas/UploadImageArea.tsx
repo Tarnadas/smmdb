@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Dispatch } from 'redux';
+import { Dispatch } from 'redux'
 import axios from 'axios'
 
 import { resolve } from 'url'
 
-import { ErrorMessage } from '../shared/ErrorMessage';
+import { ErrorMessage } from '../shared/ErrorMessage'
 import {
   setUploadImageFull, setUploadImagePreview, setUploadImage64, setUploadBlog,
   deleteUploadImageFull, deleteUploadImagePreview, deleteUploadImage64, deleteUploadBlog
@@ -26,7 +26,7 @@ interface UploadImageAreaState {
 }
 
 class Area extends React.PureComponent<UploadImageAreaProps, UploadImageAreaState> {
-  constructor (props: UploadImageAreaProps) {
+  public constructor (props: UploadImageAreaProps) {
     super(props)
     this.state = {
       value: '',
@@ -53,7 +53,7 @@ class Area extends React.PureComponent<UploadImageAreaProps, UploadImageAreaStat
         : type === 'blog'
           ? deleteUploadBlog
           : deleteUploadImagePreview
-    const reqUrl = resolve(process.env.DOMAIN!, `/api/uploadimage${type}`)
+    const reqUrl = resolve(process.env.DOMAIN || '', `/api/uploadimage${type}`)
 
     this.props.dispatch(setUpload(courseId, {
       courseId,
@@ -86,7 +86,7 @@ class Area extends React.PureComponent<UploadImageAreaProps, UploadImageAreaStat
           'Authorization': `APIKEY ${apiKey}`,
           'course-id': courseId
         },
-        onUploadProgress: ({ loaded, total }) => {
+        onUploadProgress: ({ loaded, total }): void => {
           const percentage = loaded * 100 / total
           dispatch(setUpload(courseId, {
             courseId,
@@ -114,7 +114,7 @@ class Area extends React.PureComponent<UploadImageAreaProps, UploadImageAreaStat
       if (!(file instanceof Blob)) continue
       if (file.size > 6 * 1024 * 1024) continue
       const reader = new FileReader()
-      reader.onload = () => {
+      reader.onload = (): void => {
         this.sendImage(file)
       }
       reader.readAsText(file)
@@ -195,6 +195,6 @@ class Area extends React.PureComponent<UploadImageAreaProps, UploadImageAreaStat
     )
   }
 }
-export const UploadImageArea = connect((state: any) => ({
+export const UploadImageArea = connect((state: any): any => ({
   apiKey: state.getIn(['userData', 'accountData', 'apikey'])
 }))(Area) as any

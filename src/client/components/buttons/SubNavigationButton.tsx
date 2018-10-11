@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Link } from 'react-router-dom'
 
 export class SubNavigationButton extends React.PureComponent<any, any> {
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     this.state = {
       hover: false
@@ -10,18 +10,21 @@ export class SubNavigationButton extends React.PureComponent<any, any> {
     this.onMouseEnter = this.onMouseEnter.bind(this)
     this.onMouseLeave = this.onMouseLeave.bind(this)
   }
-  onMouseEnter () {
+
+  private onMouseEnter (): void {
     this.setState({
       hover: true
     })
   }
-  onMouseLeave () {
+
+  private onMouseLeave (): void {
     this.setState({
       hover: false
     })
   }
-  render () {
-    const hover = this.state.hover
+
+  public render (): JSX.Element {
+    const { hover } = this.state
     const styles: any = {
       button: {
         width: 'auto',

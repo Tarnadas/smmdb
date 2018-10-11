@@ -11,21 +11,21 @@ export class DiscordBot {
 
   private faqChannel?: Discord.TextChannel
 
-  constructor () {
+  public constructor () {
     this.client = new Discord.Client()
 
-    this.client.on('ready', () => {
+    this.client.on('ready', (): void => {
       console.log('Discord bot initialized')
       this.channel = this.client.channels.get('334977257456271360') as Discord.TextChannel
       this.faqChannel = this.client.channels.get(FAQ_ID) as Discord.TextChannel
       this.updateFAQ()
     })
 
-    this.client.on('guildMemberAdd', member => {
+    this.client.on('guildMemberAdd', (member: Discord.Client): void => {
       (this.channel as any).send(`User "${member.user.username}" has joined the server`)
     })
 
-    this.client.on('guildMemberRemove', member => {
+    this.client.on('guildMemberRemove', (member: Discord.Client): void => {
       (this.channel as any).send(`User "${member.user.username}" has left the server`)
     })
   }
@@ -34,7 +34,7 @@ export class DiscordBot {
     try {
       await this.client.login(discordToken)
     } catch (err) {
-      setTimeout(() => {
+      setTimeout((): void => {
         this.login()
       }, 30000)
     }
@@ -100,7 +100,8 @@ export class DiscordBot {
             '  • Now, you should be done, when you launch your game\'s RPX through cemu, it will be modified with the texturepack. If for some reason it didn\'t, you can delete the modifed game and start over.')
       }
     ]
-    const channelMessages: any[] = (await this.faqChannel!.fetchMessages({ limit: messages.length })).array().reverse()
+    if (!this.faqChannel) throw new Error()
+    const channelMessages: any[] = (await this.faqChannel.fetchMessages({ limit: messages.length })).array().reverse()
     for (let i in channelMessages) {
       await channelMessages[i].edit(messages[i])
     }
@@ -149,8 +150,9 @@ export class DiscordBot {
       }
       messages[messageIndex] += append
     }
+    if (!this.channel) throw new Error()
     for (let i in messages) {
-      this.channel!.send(messages[i])
+      this.channel.send(messages[i])
     }
   }
 
@@ -187,6 +189,7 @@ export class DiscordBot {
             ? '    <:smw:334989248539262978>'
             : '    <:nsmbu:334989248975470592>'
       } ${course.title} by ${course.maker}${autoScroll ? ` ${autoScroll}` : ''}`
-    this.channel!.send(message)
+    if (!this.channel) throw new Error()
+    this.channel.send(message)
   }
 }

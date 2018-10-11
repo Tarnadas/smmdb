@@ -29,7 +29,8 @@
     "backup": "node ./backup.js",
     "restore": "cd mongo && docker-compose up",
     "docker:mongo": "docker-compose -f docker-compose.dev.yml up",
-    "clean": "rimraf ./build/client && rimraf ./build/server"
+    "clean": "rimraf ./build/client && rimraf ./build/server",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx src"
   },
   "sideEffects": false,
   "dependencies": {
@@ -122,6 +123,7 @@
     "eslint-plugin-import": "^2.8.0",
     "eslint-plugin-node": "^6.0.1",
     "eslint-plugin-promise": "^3.7.0",
+    "eslint-plugin-react": "^7.11.1",
     "eslint-plugin-standard": "^3.0.1",
     "eslint-plugin-typescript": "^0.10.0",
     "file-loader": "^0.11.2",
@@ -132,7 +134,7 @@
     "npm-run-all": "^4.1.2",
     "script-ext-html-webpack-plugin": "^2.0.1",
     "typescript": "3",
-    "typescript-eslint-parser": "^14.0.0",
+    "typescript-eslint-parser": "19",
     "url-loader": "^0.5.9",
     "webpack": "^4.6.0",
     "webpack-bundle-analyzer": "^2.9.1",

@@ -1,11 +1,11 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
-import { Dispatch } from 'redux';
+import { Dispatch } from 'redux'
 import axios from 'axios'
 
 import { resolve } from 'url'
 
-import { ErrorMessage } from '../shared/ErrorMessage';
+import { ErrorMessage } from '../shared/ErrorMessage'
 import {
   setReupload, setReupload64, deleteReupload, deleteReupload64
 } from '../../actions'
@@ -39,7 +39,7 @@ class Area extends React.PureComponent<ReuploadAreaProps, ReuploadAreaState> {
     const { courseId, is64 } = this.props
     const reupload = is64 ? setReupload64 : setReupload
     const deleteReup = is64 ? deleteReupload64 : deleteReupload
-    const reqUrl = resolve(process.env.DOMAIN!, `/api/reuploadcourse${is64 ? '64' : ''}`)
+    const reqUrl = resolve(process.env.DOMAIN || '', `/api/reuploadcourse${is64 ? '64' : ''}`)
 
     this.props.dispatch(reupload(courseId, {
       courseId,
@@ -73,7 +73,7 @@ class Area extends React.PureComponent<ReuploadAreaProps, ReuploadAreaState> {
           'Authorization': `APIKEY ${apiKey}`,
           'course-id': courseId
         },
-        onUploadProgress: ({ loaded, total }) => {
+        onUploadProgress: ({ loaded, total }): void => {
           const percentage = loaded * 100 / total
           dispatch(reupload(courseId, {
             courseId,
@@ -100,7 +100,7 @@ class Area extends React.PureComponent<ReuploadAreaProps, ReuploadAreaState> {
       if (!(file instanceof Blob)) continue
       if (file.size > 6 * 1024 * 1024) continue
       const reader = new FileReader()
-      reader.onload = () => {
+      reader.onload = (): void => {
         this.sendCourse(file)
       }
       reader.readAsText(file)
@@ -166,6 +166,6 @@ class Area extends React.PureComponent<ReuploadAreaProps, ReuploadAreaState> {
     )
   }
 }
-export const ReuploadArea = connect((state: any) => ({
+export const ReuploadArea = connect((state: any): any => ({
   apiKey: state.getIn(['userData', 'accountData', 'apikey'])
 }))(Area) as any

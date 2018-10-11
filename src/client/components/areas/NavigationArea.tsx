@@ -7,9 +7,8 @@ import { LoginButton } from '../buttons/LoginButton'
 import { ScreenSize } from '../../reducers/mediaQuery'
 
 class Area extends React.PureComponent<any, any> {
-  render () {
-    const screenSize = this.props.screenSize
-    const display = this.props.display
+  public render (): JSX.Element {
+    const { display, screenSize } = this.props
     const styles: any = {
       navigation: {
         display: 'flex',
@@ -133,6 +132,6 @@ class Area extends React.PureComponent<any, any> {
     )
   }
 }
-export const NavigationArea = connect((state: any) => ({
+export const NavigationArea = connect((state: any): any => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize'])
 }))(Area) as any

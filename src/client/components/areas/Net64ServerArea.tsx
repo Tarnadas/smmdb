@@ -9,7 +9,7 @@ import { ScreenSize } from '../../reducers/mediaQuery'
 class Area extends React.PureComponent<any, any> {
   private unmount: any
 
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     this.state = {
       servers: []
@@ -17,17 +17,21 @@ class Area extends React.PureComponent<any, any> {
     this.updateServers = this.updateServers.bind(this)
     this.renderServers = this.renderServers.bind(this)
   }
-  componentWillMount () {
+
+  // eslint-disable-next-line
+  public UNSAFE_componentWillMount () {
     if (process.env.IS_SERVER) return
     this.updateServers()
   }
-  componentWillUnmount () {
+
+  public componentWillUnmount (): void {
     this.unmount = true
   }
-  async updateServers () {
+
+  private async updateServers (): Promise<void> {
     if (this.unmount) return
     try {
-      const response = await fetch(resolve(process.env.DOMAIN!, `/api/getnet64servers`))
+      const response = await fetch(resolve(process.env.DOMAIN || '', `/api/getnet64servers`))
       if (!response.ok) throw new Error(response.statusText)
       const servers = await response.json()
       if (this.unmount) return
@@ -39,8 +43,9 @@ class Area extends React.PureComponent<any, any> {
     }
     setTimeout(this.updateServers, 10000)
   }
-  renderServers (servers: any) {
-    return Array.from((function * () {
+
+  private renderServers (servers: any): JSX.Element[] {
+    return Array.from((function * (): IterableIterator<JSX.Element> {
       for (const server of servers) {
         yield (
           <Net64ServerPanel key={server.id} server={server} />
@@ -48,7 +53,8 @@ class Area extends React.PureComponent<any, any> {
       }
     })())
   }
-  render () {
+
+  public render (): JSX.Element {
     const screenSize = this.props.screenSize
     const isNet64 = this.props.isNet64
     const servers = this.state.servers
@@ -71,6 +77,6 @@ class Area extends React.PureComponent<any, any> {
     )
   }
 }
-export const Net64ServerArea = connect((state: any) => ({
+export const Net64ServerArea = connect((state: any): any => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize'])
 }))(Area)

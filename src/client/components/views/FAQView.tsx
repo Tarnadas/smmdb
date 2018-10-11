@@ -5,8 +5,8 @@ import { connect } from 'react-redux'
 import { ScreenSize } from '../../reducers/mediaQuery'
 
 class FAQView extends React.PureComponent<any, any> {
-  render () {
-    const screenSize = this.props.screenSize
+  public render (): JSX.Element {
+    const { screenSize } = this.props
     const styles: any = {
       faq: {
         width: '100%',
@@ -94,7 +94,7 @@ class FAQView extends React.PureComponent<any, any> {
           <div style={styles.answer}>
             For a basic tutorial on how to use SM64M in general, watch <a href='https://youtu.be/XNZk4ggJkcc'>this video</a>.<br />
             You use save states in your emulator to save your current course. You can then just upload the zip file containing the save state.<br />
-            Downloaded courses can be loaded with the emulator's load state function.
+            Downloaded courses can be loaded with the emulator&#39;s load state function.
           </div>
           <div style={styles.question}>
             What is Net64 and what is Net64+?
@@ -102,7 +102,7 @@ class FAQView extends React.PureComponent<any, any> {
           <div style={styles.answer}>
             Net64 (formerly SM64O) is an <a href='https://github.com/Guad/sm64o' target='_blank'>open sourced</a> program to play Super Mario 64 online multiplayer.
             There are various people involved in the project, most notably Kaze, who is known for Last Impact and his great influence in the SM64 ROM hacking scene.
-            Some wouldn't call Net64 a ROM hack, but in fact it works the same as a ROM hack except that its source gets injected into RAM rather than modifying a ROM before playing.
+            Some wouldn&#39;t call Net64 a ROM hack, but in fact it works the same as a ROM hack except that its source gets injected into RAM rather than modifying a ROM before playing.
             This makes it safe to distribute and not be a victim of Nintendo shutting it down.<br />
             <a href='https://github.com/Tarnadas/net64plus' target='_blank'>Net64+</a> is a modified version of Net64. It uses a different and more performant networking technique. Right now both programs are not compatible with each other, but the client devs are working it.
             Net64+ also has a <a href='https://github.com/Tarnadas/net64plus-server' target='_blank'>dedicated server software</a>, which makes it extremely easy to host or find servers. There is a server list integrated inside the client, so you will always immediately find servers to play on.
@@ -118,6 +118,6 @@ class FAQView extends React.PureComponent<any, any> {
     )
   }
 }
-export default connect((state: any) => ({
+export default connect((state: any): any => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize'])
 }))(FAQView)

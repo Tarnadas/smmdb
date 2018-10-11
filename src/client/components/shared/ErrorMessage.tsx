@@ -6,8 +6,8 @@ interface ErrorMessageProps {
 
 interface XhrError {
   response: {
-    data: string,
-    request: XMLHttpRequest,
+    data: string
+    request: XMLHttpRequest
     status: number
     statusText: string
   }
@@ -33,7 +33,7 @@ export class ErrorMessage extends React.PureComponent<ErrorMessageProps> {
     return (
       <div style={styles.err}>
         {
-          errorMessage.split('\n').map((item: any, key: any) => {
+          errorMessage.split('\n').map((item: any, key: any): JSX.Element => {
             return <span key={key}>{item}<br /></span>
           })
         }

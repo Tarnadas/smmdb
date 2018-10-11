@@ -4,7 +4,7 @@ import { OrderButton } from '../buttons/OrderButton'
 import { FilterButton } from '../buttons/FilterButton'
 
 export class SideBarArea extends React.PureComponent<any, any> {
-  render () {
+  public render (): JSX.Element {
     const styles: any = {
       sideBar: {
         display: 'flex',

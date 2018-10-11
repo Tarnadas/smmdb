@@ -11,7 +11,7 @@ import { BlogPostEditArea } from '../areas/BlogPostEditArea'
 import { ScreenSize } from '../../reducers/mediaQuery'
 
 class BlogView extends React.PureComponent<any, any> {
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     this.state = {
       blogPosts: List(),
@@ -24,7 +24,9 @@ class BlogView extends React.PureComponent<any, any> {
     this.onEditBlogPost = this.onEditBlogPost.bind(this)
     this.onDeleteBlogPost = this.onDeleteBlogPost.bind(this)
   }
-  async componentWillMount () {
+
+  // eslint-disable-next-line
+  public async UNSAFE_componentWillMount (): Promise<void> {
     if (process.env.IS_SERVER) return
     this.setState({
       loading: true
@@ -34,7 +36,9 @@ class BlogView extends React.PureComponent<any, any> {
       loading: false
     })
   }
-  async componentWillReceiveProps (nextProps: any, nextState: any) {
+
+  // eslint-disable-next-line
+  public async UNSAFE_componentWillReceiveProps (nextProps: any, nextState: any): Promise<void> {
     if (this.props.apiKey === nextProps.apiKey || nextState.loading) return
     this.setState({
       loading: true
@@ -44,15 +48,17 @@ class BlogView extends React.PureComponent<any, any> {
       loading: false
     })
   }
-  onComposeBlogPost () {
+
+  private onComposeBlogPost (): void {
     this.setState({
       editBlogPost: null
     })
     this.props.history.push('/blog/compose')
   }
-  async getBlogPosts (apiKey: any) {
+
+  private async getBlogPosts (apiKey: any): Promise<void> {
     try {
-      const response = await fetch(resolve(process.env.DOMAIN!, `/api/blogpost`), {
+      const response = await fetch(resolve(process.env.DOMAIN || '', `/api/blogpost`), {
         method: 'POST',
         body: JSON.stringify({
           method: 'get',
@@ -77,19 +83,21 @@ class BlogView extends React.PureComponent<any, any> {
       console.error(err)
     }
   }
-  onPublishBlogPost (blogPost: any, isUpdate = false) {
+
+  private onPublishBlogPost (blogPost: any, isUpdate = false): void {
     if (isUpdate) {
-      const [key] = this.state.blogPosts.findEntry((blog: any) => blog._id === blogPost._id)
-      this.setState((prevState: any) => ({
+      const [key] = this.state.blogPosts.findEntry((blog: any): boolean => blog._id === blogPost._id)
+      this.setState((prevState: any): any => ({
         blogPosts: prevState.blogPosts.set(key, blogPost)
       }))
     } else {
-      this.setState((prevState: any) => ({
+      this.setState((prevState: any): any => ({
         blogPosts: prevState.blogPosts.unshift(blogPost)
       }))
     }
   }
-  onEditBlogPost (blogId: any) {
+
+  private onEditBlogPost (blogId: any): void {
     let editBlogPost
     for (const blogPost of this.state.blogPosts) {
       if (blogPost._id === blogId) {
@@ -102,15 +110,17 @@ class BlogView extends React.PureComponent<any, any> {
       editBlogPost
     })
   }
-  onDeleteBlogPost (blogId: any) {
-    const blogPosts = this.state.blogPosts.filter((blog: any) => blog._id !== blogId)
+
+  private onDeleteBlogPost (blogId: any): void {
+    const blogPosts = this.state.blogPosts.filter((blog: any): boolean => blog._id !== blogId)
     this.setState({
       blogPosts
     })
   }
-  renderBlogPosts (blogPosts: any) {
+
+  private renderBlogPosts (blogPosts: any): JSX.Element[] {
     console.log(blogPosts.toJS())
-    return blogPosts.map((blogPost: any) => (
+    return blogPosts.map((blogPost: any): JSX.Element => (
       <BlogPostArea
         key={blogPost._id}
         blogPost={blogPost}
@@ -121,9 +131,10 @@ class BlogView extends React.PureComponent<any, any> {
       />
     )).toJS()
   }
-  render () {
-    const screenSize = this.props.screenSize
-    const editBlogPost = this.state.editBlogPost
+
+  public render (): JSX.Element {
+    const { screenSize } = this.props
+    const { editBlogPost } = this.state
     const styles: any = {
       blog: {
         height: '100%',
@@ -166,7 +177,7 @@ class BlogView extends React.PureComponent<any, any> {
         <div style={styles.main}>
           {
             this.props.apiKey &&
-            <Route exact path='/blog' render={() => (
+            <Route exact path='/blog' render={(): JSX.Element => (
               <SMMButton
                 onClick={this.onComposeBlogPost}
                 text='Compose new Blog post'
@@ -178,17 +189,17 @@ class BlogView extends React.PureComponent<any, any> {
           }
           {
             this.props.apiKey &&
-            <Route path='/blog/compose' render={() => (
+            <Route path='/blog/compose' render={(): JSX.Element => (
               <BlogPostEditArea blogPost={editBlogPost} apiKey={this.props.apiKey} onPublish={this.onPublishBlogPost} />
             )} />
           }
-          <Route exact path='/blog' render={() => this.renderBlogPosts(this.state.blogPosts)} />
+          <Route exact path='/blog' render={(): JSX.Element[] => this.renderBlogPosts(this.state.blogPosts)} />
         </div>
       </div>
     )
   }
 }
-export default withRouter(connect((state: any) => ({
+export default withRouter(connect((state: any): any => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize']),
   apiKey: state.getIn(['userData', 'accountData', 'apikey']),
   accountId: state.getIn(['userData', 'accountData', 'id'])

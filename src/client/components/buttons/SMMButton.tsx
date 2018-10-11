@@ -10,7 +10,7 @@ export const COLOR_SCHEME = {
 }
 
 export class SMMButton extends React.PureComponent<any, any> {
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     this.state = {
       hover: false,
@@ -22,33 +22,39 @@ export class SMMButton extends React.PureComponent<any, any> {
     this.deleteLeave = this.deleteLeave.bind(this)
     this.onDelete = this.onDelete.bind(this)
   }
-  mouseEnter () {
+
+  private mouseEnter (): void {
     this.setState({
       hover: true
     })
     if (this.props.onMouseEnter) this.props.onMouseEnter()
   }
-  mouseLeave () {
+
+  private mouseLeave (): void {
     this.setState({
       hover: false
     })
     if (this.props.onMouseLeave) this.props.onMouseLeave()
   }
-  deleteEnter () {
+
+  private deleteEnter (): void {
     this.setState({
       deleteHover: true
     })
   }
-  deleteLeave () {
+
+  private deleteLeave (): void {
     this.setState({
       deleteHover: false
     })
   }
-  onDelete (e: any) {
+
+  private onDelete (e: any): void {
     e.stopPropagation()
     this.props.onDelete(this.props.saveId)
   }
-  render () {
+
+  public render (): JSX.Element {
     const colorScheme = this.props.colorScheme || COLOR_SCHEME.YELLOW
     const onDelete = this.props.onDelete
     const styles: any = {

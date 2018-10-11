@@ -7,18 +7,19 @@ import { DOWNLOAD_FORMAT } from '../../reducers/userData'
 class Button extends React.PureComponent<any, any> {
   public isAdding: boolean
 
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     this.isAdding = false
   }
 
-  public componentWillReceiveProps (nextProps: any) {
+  // eslint-disable-next-line
+  public UNSAFE_componentWillReceiveProps (nextProps: any): void {
     if (this.props.saveId !== nextProps.saveId) {
       this.isAdding = false
     }
   }
 
-  private getButton(styles: any): JSX.Element {
+  private getButton (styles: any): JSX.Element {
     const screenSize = this.props.screenSize
     const downloadFormat = this.props.downloadFormat ? this.props.downloadFormat : DOWNLOAD_FORMAT.WII_U
     return (
@@ -54,7 +55,7 @@ class Button extends React.PureComponent<any, any> {
     )
   }
   // #endif
-  
+
   public render (): JSX.Element {
     const screenSize = this.props.screenSize
     const styles: any = {
@@ -88,6 +89,6 @@ class Button extends React.PureComponent<any, any> {
     return jsx
   }
 }
-export const CourseDownloadButton = connect((state: any) => ({
+export const CourseDownloadButton = connect((state: any): any => ({
   downloadFormat: state.getIn(['userData', 'accountData', 'downloadformat'])
 }))(Button) as any

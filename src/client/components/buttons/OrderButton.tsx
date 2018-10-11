@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { setOrder, swapOrder } from '../../actions/index'
 
 class Button extends React.PureComponent<any, any> {
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     this.state = {
       order: 'lastmodified'
@@ -12,16 +12,19 @@ class Button extends React.PureComponent<any, any> {
     this.onClick = this.onClick.bind(this)
     this.onChange = this.onChange.bind(this)
   }
-  onClick () {
+
+  private onClick (): void {
     this.props.dispatch(swapOrder())
   }
-  onChange (e: any) {
+
+  private onChange (e: any): void {
     this.setState({
       order: e.target.value
     })
     this.props.dispatch(setOrder(e.target.value))
   }
-  render () {
+
+  public render (): JSX.Element {
     const direction = this.props.direction
     const styles: any = {
       button: {
@@ -55,6 +58,6 @@ class Button extends React.PureComponent<any, any> {
     )
   }
 }
-export const OrderButton = connect((state: any) => ({
+export const OrderButton = connect((state: any): any => ({
   direction: state.getIn(['order', 'dir'])
 }))(Button)

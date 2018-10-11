@@ -1,5 +1,7 @@
 import { fromJS } from 'immutable'
 
+import { State } from '../models/State'
+
 export const DIFFICULTY = {
   EASY: 0,
   NORMAL: 1,
@@ -21,7 +23,7 @@ export const N64_THEME = {
   FORTRESS: 11
 }
 
-export function courseData (state: any, action: any) {
+export function courseData (state: any, action: any): State {
   if (!action) return state
   switch (action.type) {
     case 'SET_COURSE':
@@ -34,7 +36,7 @@ export function courseData (state: any, action: any) {
       if (action.concat) {
         let list = state.get('main').concat(fromJS(action.courses))
         const a: any[] = []
-        list = list.filter((x: any) => {
+        list = list.filter((x: any): boolean => {
           if (!a.includes(x.get('id'))) {
             a.push(x.get('id'))
             return true
@@ -50,7 +52,7 @@ export function courseData (state: any, action: any) {
       if (action.concat) {
         let list = state.get('main64').concat(fromJS(action.courses))
         const a: any[] = []
-        list = list.filter((x: any) => {
+        list = list.filter((x: any): boolean => {
           if (!a.includes(x.get('id'))) {
             a.push(x.get('id'))
             return true
@@ -81,8 +83,8 @@ export function courseData (state: any, action: any) {
       } else {
         list = fromJS(action.courses)
       }
-      const a: any[] = state.get('uploaded').map((course: any) => course.id).toJS()
-      list = list.filter((x: any) => {
+      const a: any[] = state.get('uploaded').map((course: any): string => course.id).toJS()
+      list = list.filter((x: any): boolean => {
         if (!a.includes(x.get('id'))) {
           a.push(x.get('id'))
           return true
@@ -98,8 +100,8 @@ export function courseData (state: any, action: any) {
       } else {
         list64 = fromJS(action.courses)
       }
-      const b: any[] = state.get('uploaded64').map((course: any) => course.id).toJS()
-      list64 = list64.filter((x: any) => {
+      const b: any[] = state.get('uploaded64').map((course: any): string => course.id).toJS()
+      list64 = list64.filter((x: any): boolean => {
         if (!b.includes(x.get('id'))) {
           b.push(x.get('id'))
           return true

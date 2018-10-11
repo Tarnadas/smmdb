@@ -1,12 +1,14 @@
 import { Map } from 'immutable'
 
+import { State } from '../models/State'
+
 export const DOWNLOAD_FORMAT = {
   WII_U: 0,
   N3DS: 1,
   PROTOBUF: 2
 }
 
-export function userData (state: any, action: any) {
+export function userData (state: any, action: any): State {
   if (!action) return state
   switch (action.type) {
     case 'SET_ACCOUNT_DATA':

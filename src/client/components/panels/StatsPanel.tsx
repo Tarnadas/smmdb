@@ -6,10 +6,11 @@ import { resolve } from 'url'
 import { setStats } from '../../actions'
 
 class Panel extends React.PureComponent<any, any> {
-  async componentWillMount () {
+  // eslint-disable-next-line
+  public async UNSAFE_componentWillMount (): Promise<void> {
     if (process.env.IS_SERVER) return
     try {
-      const response = await fetch(resolve(process.env.DOMAIN!, `/api/getstats`))
+      const response = await fetch(resolve(process.env.DOMAIN || '', `/api/getstats`))
       if (!response.ok) throw new Error(response.statusText)
       const stats = await response.json()
       this.props.dispatch(setStats(stats))
@@ -17,7 +18,8 @@ class Panel extends React.PureComponent<any, any> {
       console.error(err)
     }
   }
-  render () {
+
+  public render (): JSX.Element | null {
     const stats = this.props.stats.toJS()
     if (!stats) return null
     const styles: any = {
@@ -35,6 +37,6 @@ class Panel extends React.PureComponent<any, any> {
     )
   }
 }
-export const StatsPanel = connect((state: any) => ({
+export const StatsPanel = connect((state: any): any => ({
   stats: state.get('stats')
 }))(Panel) as any

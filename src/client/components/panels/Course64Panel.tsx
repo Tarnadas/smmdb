@@ -27,7 +27,7 @@ class Panel extends React.PureComponent<any, any> {
   public onStarsChange: any
   public onThemeChange: any
 
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     const course = props.course.toJS()
     this.state = {
@@ -56,7 +56,9 @@ class Panel extends React.PureComponent<any, any> {
     this.onStar = this.onStar.bind(this)
     this.onMarkdownChange = this.onMarkdownChange.bind(this)
   }
-  componentWillReceiveProps (nextProps: any) {
+
+  // eslint-disable-next-line
+  public UNSAFE_componentWillReceiveProps (nextProps: any): void {
     const course = nextProps.course.toJS()
     if (course.title !== this.state.title) {
       this.setState({
@@ -89,103 +91,104 @@ class Panel extends React.PureComponent<any, any> {
       })
     }
   }
-  onShowDetails (e: any) {
-    e.stopPropagation()
+
+  private onShowDetails (event: React.MouseEvent<HTMLDivElement>): any {
+    event.stopPropagation()
     if (!this.state.showDetails) {
       this.setState({
         showDetails: true
       })
     }
   }
-  onHideDetails () {
+
+  private onHideDetails (): any {
     this.setState({
       showDetails: false
     })
   }
-  onCourseSubmit () {
+
+  private async onCourseSubmit (): Promise<void> {
     const course = this.props.course.toJS()
     if (this.state.title === course.title &&
       this.state.videoId === course.videoid &&
       this.state.difficulty === course.difficulty &&
       this.state.stars === course.stars &&
       this.state.theme === course.theme &&
-      this.state.description === course.description) return;
-    (async () => {
-      try {
-        const update = {
-          title: this.state.title,
-          videoid: this.state.videoId,
-          difficulty: this.state.difficulty,
-          stars: this.state.stars,
-          theme: this.state.theme,
-          description: this.state.description
-        }
-        if (!VIDEO_ID.test(update.videoid) && update.videoid !== '') {
-          delete update.videoid
-        }
-        const response = await fetch(resolve(process.env.DOMAIN!, `/api/updatecourse64?id=${course.id}`), {
-          headers: {
-            'Authorization': `APIKEY ${this.props.apiKey}`,
-            'Content-Type': 'application/json'
-          },
-          method: 'POST',
-          body: JSON.stringify(update)
-        })
-        if (!response.ok) {
-          if (response.status === 400) {
-            this.props.onCourseDelete(this.props.id)
-            return
-          }
-          throw new Error(response.statusText)
-        }
-        const course64 = await response.json()
-        if (this.props.uploaded) {
-          this.props.dispatch(setCourseUploaded64(this.props.id, course64))
-        } else {
-          if (this.props.isSelf) {
-            this.props.dispatch(setCourseSelf64(this.props.id, course64))
-          } else {
-            this.props.dispatch(setCourse64(this.props.id, course64))
-          }
-        }
-        this.setState({
-          changed: false,
-          saved: true
-        })
-      } catch (err) {
-        console.error(err)
+      this.state.description === course.description) return
+    try {
+      const update = {
+        title: this.state.title,
+        videoid: this.state.videoId,
+        difficulty: this.state.difficulty,
+        stars: this.state.stars,
+        theme: this.state.theme,
+        description: this.state.description
       }
-    })()
-  }
-  onCourseDelete () {
-    if (this.state.shouldDelete) {
-      (async () => {
-        try {
-          await fetch(resolve(process.env.DOMAIN!, `/api/deletecourse64?id=${this.props.course.get('id')}`), {
-            headers: {
-              'Authorization': `APIKEY ${this.props.apiKey}`
-            }
-          })
+      if (!VIDEO_ID.test(update.videoid) && update.videoid !== '') {
+        delete update.videoid
+      }
+      const response = await fetch(resolve(process.env.DOMAIN || '', `/api/updatecourse64?id=${course.id}`), {
+        headers: {
+          'Authorization': `APIKEY ${this.props.apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        body: JSON.stringify(update)
+      })
+      if (!response.ok) {
+        if (response.status === 400) {
           this.props.onCourseDelete(this.props.id)
-        } catch (err) {
-          if (err.response) {
-            if (err.response.body.includes('not found')) {
-              this.props.onCourseDelete(this.props.id)
-            } else {
-              console.error(err.response.body)
-            }
-          } else {
-            console.error(err)
-          }
+          return
         }
-      })()
+        throw new Error(response.statusText)
+      }
+      const course64 = await response.json()
+      if (this.props.uploaded) {
+        this.props.dispatch(setCourseUploaded64(this.props.id, course64))
+      } else {
+        if (this.props.isSelf) {
+          this.props.dispatch(setCourseSelf64(this.props.id, course64))
+        } else {
+          this.props.dispatch(setCourse64(this.props.id, course64))
+        }
+      }
+      this.setState({
+        changed: false,
+        saved: true
+      })
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  private async onCourseDelete (): Promise<void> {
+    if (this.state.shouldDelete) {
+      try {
+        await fetch(resolve(process.env.DOMAIN || '', `/api/deletecourse64?id=${this.props.course.get('id')}`), {
+          headers: {
+            'Authorization': `APIKEY ${this.props.apiKey}`
+          }
+        })
+        this.props.onCourseDelete(this.props.id)
+      } catch (err) {
+        if (err.response) {
+          if (err.response.body.includes('not found')) {
+            this.props.onCourseDelete(this.props.id)
+          } else {
+            console.error(err.response.body)
+          }
+        } else {
+          console.error(err)
+        }
+      }
     } else {
       this.setState({
         shouldDelete: true
       })
     }
   }
-  onStringChange (value: any, limit: any, e: any) {
+
+  private onStringChange (value: any, limit: any, e: any): void {
     let val = e.target.value
     if (val.length > limit) {
       val = val.substr(0, limit)
@@ -197,7 +200,8 @@ class Panel extends React.PureComponent<any, any> {
     res[value] = val
     this.setState(res)
   }
-  onIntegerChange (value: any, min: any, max: any, e: any) {
+
+  private onIntegerChange (value: any, min: any, max: any, e: any): void {
     const val = parseInt(e.target.value)
     if (Number.isNaN(val)) return
     if (val < min || val > max) return
@@ -208,7 +212,8 @@ class Panel extends React.PureComponent<any, any> {
     res[value] = String(val)
     this.setState(res)
   }
-  onSelectChange (value: any, e: any) {
+
+  private onSelectChange (value: any, e: any): void {
     const val = e.target.value
     const res: any = {
       changed: true,
@@ -217,7 +222,8 @@ class Panel extends React.PureComponent<any, any> {
     res[value] = val
     this.setState(res)
   }
-  onReuploadComplete (course: any) {
+
+  private onReuploadComplete (course: any): void {
     if (this.props.uploaded) {
       this.props.dispatch(setCourseUploaded64(this.props.id, course))
     } else {
@@ -228,7 +234,8 @@ class Panel extends React.PureComponent<any, any> {
       }
     }
   }
-  onUploadImageComplete (course: any) {
+
+  private onUploadImageComplete (course: any): void {
     if (this.props.uploaded) {
       this.props.dispatch(setCourseUploaded64(this.props.id, course))
     } else {
@@ -239,10 +246,11 @@ class Panel extends React.PureComponent<any, any> {
       }
     }
   }
-  async onStar (e: any) {
+
+  private async onStar (e: any): Promise<void> {
     e.stopPropagation()
     try {
-      const response = await fetch(resolve(process.env.DOMAIN!, `/api/starcourse64?id=${this.props.course.get('id')}`), {
+      const response = await fetch(resolve(process.env.DOMAIN || '', `/api/starcourse64?id=${this.props.course.get('id')}`), {
         headers: {
           'Authorization': `APIKEY ${this.props.apiKey}`
         },
@@ -264,17 +272,18 @@ class Panel extends React.PureComponent<any, any> {
       console.error(err)
     }
   }
-  onMarkdownChange (e: any) {
+
+  private onMarkdownChange (e: any): void {
     this.setState({
       description: e.target.value.replace(/<.*>/g, '').substr(0, MAX_LENGTH_DESCRIPTION),
       changed: true,
       saved: false
     })
   }
-  render () {
-    const screenSize = this.props.screenSize
+
+  public render (): JSX.Element {
+    const { screenSize, canEdit } = this.props
     const course = this.props.course.toJS()
-    const canEdit = this.props.canEdit
     const colorScheme = this.state.changed ? COLOR_SCHEME.RED : (this.state.saved ? COLOR_SCHEME.GREEN : COLOR_SCHEME.YELLOW)
     const styles: any = {
       panel: {
@@ -486,7 +495,7 @@ class Panel extends React.PureComponent<any, any> {
                     style={styles.previewImg}
                     alt='no image'
                     src={`/course64img/${course.id}${course.vImg ? `?v=${course.vImg}` : ''}`}
-                    ref={v => { (this as any).full = v }}
+                    ref={(v): void => { (this as any).full = v }}
                   />
                 </LazyLoad>
               </div>
@@ -498,23 +507,15 @@ class Panel extends React.PureComponent<any, any> {
             <img style={styles.downloads} src='/img/downloads.png' />
             { course.downloads }
             <img style={styles.difficulty} src={
-              course.difficulty === DIFFICULTY.EASY ? (
-                '/img/easy.png'
-              ) : (
-                course.difficulty === DIFFICULTY.NORMAL ? (
-                  '/img/normal.png'
-                ) : (
-                  course.difficulty === DIFFICULTY.EXPERT ? (
-                    '/img/expert.png'
-                  ) : (
-                    course.difficulty === DIFFICULTY.SUPER_EXPERT ? (
-                      '/img/superexpert.png'
-                    ) : (
-                      '/img/normal.png'
-                    )
-                  )
-                )
-              )
+              course.difficulty === DIFFICULTY.EASY
+                ? '/img/easy.png'
+                : course.difficulty === DIFFICULTY.NORMAL
+                  ? '/img/normal.png'
+                  : course.difficulty === DIFFICULTY.EXPERT
+                    ? '/img/expert.png'
+                    : course.difficulty === DIFFICULTY.SUPER_EXPERT
+                      ? '/img/superexpert.png'
+                      : '/img/normal.png'
             } />
             { course.courseStars ? <img style={styles.courseStars} src='/img/coursestar.png' /> : null }
             { course.courseStars ? course.courseStars : null }
@@ -604,7 +605,7 @@ class Panel extends React.PureComponent<any, any> {
               />
             </div>
           }
-          <div className='description' style={styles.editorRendered} ref={x => {
+          <div className='description' style={styles.editorRendered} ref={(x): void => {
             (this as any).renderer = x
             if (x && this.state.description) x.innerHTML = emojify(marked(this.state.description))
           }} />
@@ -618,6 +619,6 @@ class Panel extends React.PureComponent<any, any> {
     )
   }
 }
-export const Course64Panel = connect((state: any) => ({
+export const Course64Panel = connect((state: any): any => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize'])
 }))(Panel) as any

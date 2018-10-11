@@ -6,8 +6,8 @@ import { SMMButton } from '../buttons/SMMButton'
 import { ScreenSize } from '../../reducers/mediaQuery'
 
 class SocialView extends React.PureComponent<any, any> {
-  render () {
-    const screenSize = this.props.screenSize
+  public render (): JSX.Element {
+    const { screenSize } = this.props
     const styles: any = {
       social: {
         height: '100%',
@@ -112,6 +112,6 @@ class SocialView extends React.PureComponent<any, any> {
     )
   }
 }
-export default connect((state: any) => ({
+export default connect((state: any): any => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize'])
 }))(SocialView)

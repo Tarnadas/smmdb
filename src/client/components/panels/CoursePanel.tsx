@@ -1,7 +1,6 @@
 import * as React from 'react'
 import LazyLoad from 'react-lazyload'
 import { connect } from 'react-redux'
-const QRCode = require('qrcode')
 import marked from 'marked'
 import { emojify } from 'node-emoji'
 
@@ -15,6 +14,8 @@ import { UploadImageArea } from '../areas/UploadImageArea'
 import { ScreenSize } from '../../reducers/mediaQuery'
 import { setCourse, setCourseSelf, setCourseUploaded } from '../../actions'
 import { DIFFICULTY } from '../../reducers/courseData'
+
+const QRCode = require('qrcode')
 
 const MAX_LENGTH_TITLE = 32
 const MAX_LENGTH_MAKER = 10
@@ -33,7 +34,7 @@ class Panel extends React.PureComponent<any, any> {
   public full: any
   public prev: any
 
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     const course = props.course.toJS()
     this.state = {
@@ -63,7 +64,9 @@ class Panel extends React.PureComponent<any, any> {
     this.onStar = this.onStar.bind(this)
     this.onMarkdownChange = this.onMarkdownChange.bind(this)
   }
-  componentWillReceiveProps (nextProps: any) {
+
+  // eslint-disable-next-line
+  public UNSAFE_componentWillReceiveProps (nextProps: any): void {
     if (nextProps.course.get('title') !== this.state.title) {
       this.setState({
         title: nextProps.course.get('title')
@@ -95,12 +98,15 @@ class Panel extends React.PureComponent<any, any> {
       })
     }
   }
-  componentWillUpdate (nextProps: any, nextState: any) {
+
+  // eslint-disable-next-line
+  public UNSAFE_componentWillUpdate (nextProps: any, nextState: any): void {
     if (nextState.description && nextState.description !== this.state.description) {
       this.renderer.innerHTML = emojify(marked(nextState.description))
     }
   }
-  onShowDetails (e: any) {
+
+  private onShowDetails (e: any): void {
     e.stopPropagation()
     if (!this.state.showDetails) {
       this.setState({
@@ -109,91 +115,91 @@ class Panel extends React.PureComponent<any, any> {
       })
     }
   }
-  onHideDetails () {
+
+  private onHideDetails (): void {
     this.setState({
       showDetails: false
     })
   }
-  onCourseSubmit () {
+
+  private async onCourseSubmit (): Promise<void> {
     const course = this.props.course.toJS()
     if (this.state.title === course.title &&
       this.state.maker === course.maker &&
       this.state.nnId === course.nintendoid &&
       this.state.videoId === course.videoid &&
       this.state.difficulty === course.difficulty &&
-      this.state.description === course.description) return;
-    (async () => {
-      try {
-        const update = {
-          title: this.state.title,
-          maker: this.state.maker,
-          nintendoid: this.state.nnId,
-          videoid: this.state.videoId,
-          difficulty: this.state.difficulty,
-          description: this.state.description
-        }
-        if (!VIDEO_ID.test(update.videoid) && update.videoid !== '') {
-          delete update.videoid
-        }
-        const response = await fetch(resolve(process.env.DOMAIN!, `/api/updatecourse?id=${course.id}`), {
-          headers: {
-            'Authorization': `APIKEY ${this.props.apiKey}`,
-            'Content-Type': 'application/json'
-          },
-          method: 'POST',
-          body: JSON.stringify(update)
-        })
-        if (!response.ok) {
-          if (response.status === 400) {
-            this.props.onCourseDelete(this.props.id)
-            return
-          }
-          throw new Error(response.statusText)
-        }
-        const courseSMM = await response.json()
-        if (this.props.uploaded) {
-          this.props.dispatch(setCourseUploaded(this.props.id, courseSMM))
-        } else {
-          if (this.props.isSelf) {
-            this.props.dispatch(setCourseSelf(this.props.id, courseSMM))
-          } else {
-            this.props.dispatch(setCourse(this.props.id, courseSMM))
-          }
-        }
-        this.setState({
-          changed: false,
-          saved: true
-        })
-      } catch (err) {
-        console.error(err)
+      this.state.description === course.description) return
+    try {
+      const update = {
+        title: this.state.title,
+        maker: this.state.maker,
+        nintendoid: this.state.nnId,
+        videoid: this.state.videoId,
+        difficulty: this.state.difficulty,
+        description: this.state.description
       }
-    })()
-  }
-  onCourseDelete () {
-    if (this.state.shouldDelete) {
-      (async () => {
-        try {
-          await fetch(resolve(process.env.DOMAIN!, `/api/deletecourse?id=${this.props.course.get('id')}`), {
-            headers: {
-              'Authorization': `APIKEY ${this.props.apiKey}`
-            }
-          })
+      if (!VIDEO_ID.test(update.videoid) && update.videoid !== '') {
+        delete update.videoid
+      }
+      const response = await fetch(resolve(process.env.DOMAIN || '', `/api/updatecourse?id=${course.id}`), {
+        headers: {
+          'Authorization': `APIKEY ${this.props.apiKey}`,
+          'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        body: JSON.stringify(update)
+      })
+      if (!response.ok) {
+        if (response.status === 400) {
           this.props.onCourseDelete(this.props.id)
-        } catch (err) {
-          if (err.response.body.includes('not found')) {
-            this.props.onCourseDelete(this.props.id)
-          } else {
-            console.error(err.response.body)
-          }
+          return
         }
-      })()
+        throw new Error(response.statusText)
+      }
+      const courseSMM = await response.json()
+      if (this.props.uploaded) {
+        this.props.dispatch(setCourseUploaded(this.props.id, courseSMM))
+      } else {
+        if (this.props.isSelf) {
+          this.props.dispatch(setCourseSelf(this.props.id, courseSMM))
+        } else {
+          this.props.dispatch(setCourse(this.props.id, courseSMM))
+        }
+      }
+      this.setState({
+        changed: false,
+        saved: true
+      })
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  private async onCourseDelete (): Promise<void> {
+    if (this.state.shouldDelete) {
+      try {
+        await fetch(resolve(process.env.DOMAIN || '', `/api/deletecourse?id=${this.props.course.get('id')}`), {
+          headers: {
+            'Authorization': `APIKEY ${this.props.apiKey}`
+          }
+        })
+        this.props.onCourseDelete(this.props.id)
+      } catch (err) {
+        if (err.response.body.includes('not found')) {
+          this.props.onCourseDelete(this.props.id)
+        } else {
+          console.error(err.response.body)
+        }
+      }
     } else {
       this.setState({
         shouldDelete: true
       })
     }
   }
-  onStringChange (value: any, limit: any, e: any) {
+
+  private onStringChange (value: any, limit: any, e: any): void {
     let val = e.target.value
     if (val.length > limit) {
       val = val.substr(0, limit)
@@ -205,7 +211,8 @@ class Panel extends React.PureComponent<any, any> {
     res[value] = val
     this.setState(res)
   }
-  onSelectChange (value: any, e: any) {
+
+  private onSelectChange (value: any, e: any): void {
     const val = e.target.value
     const res: any = {
       changed: true,
@@ -214,7 +221,8 @@ class Panel extends React.PureComponent<any, any> {
     res[value] = val
     this.setState(res)
   }
-  onReuploadComplete (course: any) {
+
+  private onReuploadComplete (course: any): void {
     if (this.props.uploaded) {
       this.props.dispatch(setCourseUploaded(this.props.id, course))
     } else {
@@ -225,7 +233,8 @@ class Panel extends React.PureComponent<any, any> {
       }
     }
   }
-  onUploadFullComplete (course: any) {
+
+  private onUploadFullComplete (course: any): any {
     if (this.props.uploaded) {
       this.props.dispatch(setCourseUploaded(this.props.id, course))
     } else {
@@ -236,7 +245,8 @@ class Panel extends React.PureComponent<any, any> {
       }
     }
   }
-  onUploadPrevComplete (course: any) {
+
+  private onUploadPrevComplete (course: any): void {
     if (this.props.uploaded) {
       this.props.dispatch(setCourseUploaded(this.props.id, course))
     } else {
@@ -247,10 +257,11 @@ class Panel extends React.PureComponent<any, any> {
       }
     }
   }
-  async onStar (e: any) {
+
+  private async onStar (e: any): Promise<void> {
     e.stopPropagation()
     try {
-      const response = await fetch(resolve(process.env.DOMAIN!, `/api/starcourse?id=${this.props.course.get('id')}`), {
+      const response = await fetch(resolve(process.env.DOMAIN || '', `/api/starcourse?id=${this.props.course.get('id')}`), {
         headers: {
           'Authorization': `APIKEY ${this.props.apiKey}`
         },
@@ -272,14 +283,16 @@ class Panel extends React.PureComponent<any, any> {
       console.error(err)
     }
   }
-  onMarkdownChange (e: any) {
+
+  private onMarkdownChange (e: any): void {
     this.setState({
       description: e.target.value.replace(/<.*>/g, '').substr(0, MAX_LENGTH_DESCRIPTION),
       changed: true,
       saved: false
     })
   }
-  render () {
+
+  public render (): JSX.Element {
     const screenSize = this.props.screenSize
     const course = this.props.course.toJS()
     const style = parseInt(course.gameStyle)
@@ -504,7 +517,7 @@ class Panel extends React.PureComponent<any, any> {
                   <img
                     style={styles.previewImg}
                     src={`/courseimg/${course.id}_full${course.vFull ? `?v=${course.vFull}` : ''}`}
-                    ref={v => { this.full = v }}
+                    ref={(v): void => { this.full = v }}
                   />
                 </LazyLoad>
               </div>
@@ -684,7 +697,7 @@ class Panel extends React.PureComponent<any, any> {
                   />
                 </div>
               )}
-              <div className='description' style={styles.editorRendered} ref={x => {
+              <div className='description' style={styles.editorRendered} ref={(x): void => {
                 this.renderer = x
                 if (x && this.state.description) x.innerHTML = emojify(marked(this.state.description))
               }} />
@@ -692,7 +705,7 @@ class Panel extends React.PureComponent<any, any> {
                 <img
                   style={styles.imgLarge}
                   src={`/courseimg/${course.id}${course.vPrev ? `?v=${course.vPrev}` : ''}`}
-                  ref={v => { this.prev = v }}
+                  ref={(v): void => { this.prev = v }}
                 />
               </div>
               <div style={styles.buttonPanel}>
@@ -708,10 +721,10 @@ class Panel extends React.PureComponent<any, any> {
                   course.videoid &&
                   <CourseVideoButton videoId={course.videoid} screenSize={screenSize} />
                 }
-                <img ref={qr => {
+                <img ref={(qr): void => {
                   if (!qr) return
-                  QRCode.toDataURL(resolve(process.env.DOMAIN!, `/api/downloadcourse?id=${course.id}&type=3ds`),
-                    (err: any, url: any) => {
+                  QRCode.toDataURL(resolve(process.env.DOMAIN || '', `/api/downloadcourse?id=${course.id}&type=3ds`),
+                    (err: any, url: any): void => {
                       if (err) console.error(err)
                       qr.src = url
                     }
@@ -725,6 +738,6 @@ class Panel extends React.PureComponent<any, any> {
     )
   }
 }
-export const CoursePanel = connect((state: any) => ({
+export const CoursePanel = connect((state: any): any => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize'])
 }))(Panel) as any

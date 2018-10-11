@@ -1,8 +1,8 @@
 import { resolve } from 'url'
 
-export const initAccount = async (apiKey: string) => {
+export const initAccount = async (apiKey: string): Promise<any> => {
   try {
-    const response = await fetch(resolve(process.env.DOMAIN!, '/api/getaccountdata'), {
+    const response = await fetch(resolve(process.env.DOMAIN || '', '/api/getaccountdata'), {
       headers: {
         'Authorization': `APIKEY ${apiKey}`
       }

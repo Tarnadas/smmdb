@@ -1,6 +1,8 @@
 import { fromJS } from 'immutable'
 
-export function reuploads64 (state: any, action: any) {
+import { State } from '../models/State'
+
+export function reuploads64 (state: any, action: any): State {
   if (!action) return state
   switch (action.type) {
     case 'SET_REUPLOAD64':

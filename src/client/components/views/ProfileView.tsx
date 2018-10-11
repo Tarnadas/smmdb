@@ -16,7 +16,7 @@ const MAX_LENGTH_USERNAME = 20
 class ProfileView extends React.PureComponent<any, any> {
   public onDownloadFormatChange: any
 
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     const accountData = props.accountData.toJS()
     this.state = {
@@ -31,7 +31,9 @@ class ProfileView extends React.PureComponent<any, any> {
     this.onDownloadFormatChange = this.onSelectChange.bind(this, 'downloadFormat')
     this.onAPIKeyShow = this.onAPIKeyShow.bind(this)
   }
-  componentWillReceiveProps (nextProps: any) {
+
+  // eslint-disable-next-line
+  public UNSAFE_componentWillReceiveProps (nextProps: any): void {
     if (nextProps.accountData === this.props.accountData) return
     const nextAccountData = nextProps.accountData.toJS()
     const accountData = this.props.accountData.toJS()
@@ -53,43 +55,43 @@ class ProfileView extends React.PureComponent<any, any> {
       })
     }
   }
-  onProfileSubmit () {
-    (async () => {
-      if (!this.state.changed) return
-      if (this.state.username < MIN_LENGTH_USERNAME || this.state.username > MAX_LENGTH_USERNAME) {
-        console.log('Username must have between 3 and 20 characters') // TODO
-        return
-      }
-      if (!USERNAME.test(this.state.username)) {
-        console.log('Username contains invalid characters') // TODO
-        return
-      }
-      const profile = {
-        username: this.state.username,
-        downloadformat: this.state.downloadFormat
-      }
-      try {
-        const response = await fetch(resolve(process.env.DOMAIN!, '/api/setaccountdata'), {
-          headers: {
-            'Authorization': `APIKEY ${this.props.accountData.get('apikey')}`,
-            'Content-Type': 'application/json'
-          },
-          method: 'POST',
-          body: JSON.stringify(profile)
-        })
-        if (!response.ok) throw new Error(response.statusText)
-        const accountData = await response.json()
-        this.props.dispatch(setAccountData(accountData))
-        this.setState({
-          changed: false,
-          saved: true
-        })
-      } catch (err) {
-        console.error(err)
-      }
-    })()
+
+  private async onProfileSubmit (): Promise<void> {
+    if (!this.state.changed) return
+    if (this.state.username < MIN_LENGTH_USERNAME || this.state.username > MAX_LENGTH_USERNAME) {
+      console.log('Username must have between 3 and 20 characters') // TODO
+      return
+    }
+    if (!USERNAME.test(this.state.username)) {
+      console.log('Username contains invalid characters') // TODO
+      return
+    }
+    const profile = {
+      username: this.state.username,
+      downloadformat: this.state.downloadFormat
+    }
+    try {
+      const response = await fetch(resolve(process.env.DOMAIN || '', '/api/setaccountdata'), {
+        headers: {
+          'Authorization': `APIKEY ${this.props.accountData.get('apikey')}`,
+          'Content-Type': 'application/json'
+        },
+        method: 'POST',
+        body: JSON.stringify(profile)
+      })
+      if (!response.ok) throw new Error(response.statusText)
+      const accountData = await response.json()
+      this.props.dispatch(setAccountData(accountData))
+      this.setState({
+        changed: false,
+        saved: true
+      })
+    } catch (err) {
+      console.error(err)
+    }
   }
-  onUsernameChange (e: any) {
+
+  private onUsernameChange (e: any): void {
     let username = e.target.value
     if (username.length > MAX_LENGTH_USERNAME) {
       username = username.substr(0, MAX_LENGTH_USERNAME)
@@ -100,7 +102,8 @@ class ProfileView extends React.PureComponent<any, any> {
       saved: false
     })
   }
-  onSelectChange (value: any, e: any) {
+
+  private onSelectChange (value: any, e: any): void {
     const val = e.target.value
     const res: any = {
       changed: true,
@@ -109,13 +112,15 @@ class ProfileView extends React.PureComponent<any, any> {
     res[value] = val
     this.setState(res)
   }
-  onAPIKeyShow () {
-    this.setState((prevState: any) => ({
+
+  private onAPIKeyShow (): void {
+    this.setState((prevState: any): any => ({
       showAPIKey: !prevState.showAPIKey
     }))
   }
-  render () {
-    const screenSize = this.props.screenSize
+
+  public render (): JSX.Element {
+    const { screenSize } = this.props
     const accountData = this.props.accountData.toJS()
     const apiKey = accountData && this.state.showAPIKey ? accountData.apikey : ''
     const colorScheme = this.state.changed ? COLOR_SCHEME.RED : (this.state.saved ? COLOR_SCHEME.GREEN : COLOR_SCHEME.YELLOW)
@@ -217,7 +222,7 @@ class ProfileView extends React.PureComponent<any, any> {
     )
   }
 }
-export default connect((state: any) => ({
+export default connect((state: any): any => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize']),
   accountData: state.getIn(['userData', 'accountData'])
 }))(ProfileView)

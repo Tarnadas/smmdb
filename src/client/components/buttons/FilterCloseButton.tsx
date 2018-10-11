@@ -4,15 +4,17 @@ import { connect } from 'react-redux'
 import { setFilter } from '../../actions'
 
 class Button extends React.PureComponent<any, any> {
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     this.onFilterHide = this.onFilterHide.bind(this)
   }
-  onFilterHide () {
+
+  private onFilterHide (): void {
     const filter = this.props.getFilter()
     this.props.dispatch(setFilter(filter))
   }
-  render () {
+
+  public render (): JSX.Element {
     const styles: any = {
       close: {
         cursor: 'pointer',

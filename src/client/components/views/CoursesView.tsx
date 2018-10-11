@@ -20,7 +20,7 @@ class CoursesView extends React.PureComponent<any, any> {
   public queryString: string
   public scroll: any
 
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     this.queryString = stringify(props.filter.toJS())
     this.fetchCourses = this.fetchCourses.bind(this)
@@ -28,14 +28,18 @@ class CoursesView extends React.PureComponent<any, any> {
     this.onCourseDelete = this.onCourseDelete.bind(this)
     this.handleScroll = this.handleScroll.bind(this)
   }
-  componentWillMount () {
+
+  // eslint-disable-next-line
+  public UNSAFE_componentWillMount (): void {
     if (process.env.IS_SERVER) return
     this.props.dispatch(resetFilter())
     this.props.dispatch(resetOrder())
     this.props.setFetchCourses(this.fetchCourses)
     this.fetchCourses()
   }
-  componentWillReceiveProps (nextProps: any) {
+
+  // eslint-disable-next-line
+  public UNSAFE_componentWillReceiveProps (nextProps: any): void {
     if (nextProps.filter === this.props.filter && nextProps.order === this.props.order) return
     if (this.scroll) this.scroll.scrollTop = 0
     const order = nextProps.order.toJS()
@@ -46,11 +50,12 @@ class CoursesView extends React.PureComponent<any, any> {
     // this.scrollBar.scrollToTop(); // TODO
     this.fetchCourses()
   }
-  async fetchCourses (shouldConcat = false, limit = LIMIT) {
+
+  private async fetchCourses (shouldConcat = false, limit = LIMIT): Promise<void> {
     try {
       const { apiKey } = this.props
       const url = `/api/getcourses?limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}${this.queryString ? `&${this.queryString}` : ''}`
-      const response = await fetch(resolve(process.env.DOMAIN!, url), {
+      const response = await fetch(resolve(process.env.DOMAIN || '', url), {
         headers: apiKey
           ? {
             'Authorization': `APIKEY ${this.props.apiKey}`
@@ -65,20 +70,21 @@ class CoursesView extends React.PureComponent<any, any> {
       console.error(err)
     }
   }
-  renderCourses () {
+
+  private renderCourses (): JSX.Element[] {
     const accountData = this.props.accountData
     const courses = this.props.courses
     const reuploads = this.props.reuploads
     const imageFull = this.props.imageFull
     const imagePrev = this.props.imagePrev
     const onCourseDelete = this.onCourseDelete
-    return Array.from((function * () {
+    return Array.from((function * (): IterableIterator<JSX.Element> {
       let i = 0
       for (let course of courses) {
         const courseId = course.get('id')
         yield (
-          (accountData.get('id') && course.owner === accountData.get('id')) || accountData.get('permissions') === 1 ? (
-            <CoursePanel
+          (accountData.get('id') && course.owner === accountData.get('id')) || accountData.get('permissions') === 1
+            ? <CoursePanel
               key={courseId}
               canEdit
               course={course}
@@ -89,8 +95,7 @@ class CoursesView extends React.PureComponent<any, any> {
               id={i}
               onCourseDelete={onCourseDelete}
             />
-          ) : (
-            <CoursePanel
+            : <CoursePanel
               key={courseId}
               course={course}
               reupload={reuploads.get(courseId)}
@@ -99,20 +104,22 @@ class CoursesView extends React.PureComponent<any, any> {
               apiKey={accountData.get('apikey')}
               id={i}
             />
-          )
         )
         i++
       }
     })())
   }
-  onCourseDelete (courseId: any) {
+
+  private onCourseDelete (courseId: any): void{
     this.props.dispatch(deleteCourse(courseId))
   }
-  handleScroll (e: any) {
+
+  private handleScroll (e: any): void {
     this.props.shouldUpdate(e.target)
   }
-  render () {
-    const screenSize = this.props.screenSize
+
+  public render (): JSX.Element {
+    const { screenSize } = this.props
     const styles: any = {
       main: {
         height: '100%',
@@ -140,7 +147,7 @@ class CoursesView extends React.PureComponent<any, any> {
           screenSize >= ScreenSize.MEDIUM &&
           <SideBarArea />
         }
-        <div style={styles.content} id='scroll' onScroll={this.handleScroll} ref={scroll => { this.scroll = scroll }}>
+        <div style={styles.content} id='scroll' onScroll={this.handleScroll} ref={(scroll): void => { this.scroll = scroll }}>
           {
             this.renderCourses()
           }
@@ -150,7 +157,7 @@ class CoursesView extends React.PureComponent<any, any> {
     )
   }
 }
-export default withRouter(connect((state: any) => ({
+export default withRouter(connect((state: any): any => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize']),
   courses: state.getIn(['courseData', 'main']),
   accountData: state.getIn(['userData', 'accountData']),

@@ -113,9 +113,9 @@ export class Course64 {
       const image = await jimp.read(buffer)
       image.autocrop()
       image.cover(400, 225)
-      course.image = await new Promise((resolve, reject) => {
+      course.image = await new Promise((resolve, reject): void => {
         image.quality(95)
-        image.getBuffer(jimp.MIME_JPEG, (err, buffer) => {
+        image.getBuffer(jimp.MIME_JPEG, (err, buffer): void => {
           if (err) reject(err)
           resolve(buffer)
         })

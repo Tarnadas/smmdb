@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 export class FilterButton extends React.PureComponent<any, any> {
   public onSetFilter: any
 
-  render () {
+  public render (): JSX.Element {
     const styles: any = {
       button: {
         height: 'auto',

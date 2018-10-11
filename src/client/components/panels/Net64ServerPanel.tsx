@@ -19,7 +19,7 @@ export interface Player {
 export class Net64ServerPanel extends React.PureComponent<any, any> {
   public description: any
 
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     this.state = {
       display: false
@@ -27,20 +27,25 @@ export class Net64ServerPanel extends React.PureComponent<any, any> {
     this.onToggle = this.onToggle.bind(this)
     this.renderPlayers = this.renderPlayers.bind(this)
   }
-  componentDidMount () {
+
+  public componentDidMount (): void {
     if (this.props.server.description) this.description.innerHTML = emojify(marked(this.props.server.description))
   }
-  componentWillUpdate (nextProps: any) {
+
+  // eslint-disable-next-line
+  public UNSAFE_componentWillUpdate (nextProps: any): void {
     if (nextProps.server.description !== this.props.server.description) {
       this.description.innerHTML = emojify(marked(nextProps.server.description))
     }
   }
-  onToggle () {
-    this.setState((prevState: any) => ({
+
+  private onToggle (): void {
+    this.setState((prevState: any): any => ({
       display: !prevState.display
     }))
   }
-  renderPlayers (players: Player[]) {
+
+  private renderPlayers (players: Player[]): JSX.Element[] {
     const styles: any = {
       div: {
         borderBottom: '1px solid black',
@@ -56,9 +61,9 @@ export class Net64ServerPanel extends React.PureComponent<any, any> {
       }
     }
     return players
-      .filter(player => player)
+      .filter((player): boolean => !!player)
       .map(
-        (player, index) =>
+        (player, index): JSX.Element =>
           <div
             key={index}
             style={styles.div}
@@ -72,8 +77,9 @@ export class Net64ServerPanel extends React.PureComponent<any, any> {
           </div>
       )
   }
-  render () {
-    const server = this.props.server
+
+  public render (): JSX.Element {
+    const { server } = this.props
     const styles: any = {
       panel: {
         fontSize: '18px',
@@ -143,7 +149,7 @@ export class Net64ServerPanel extends React.PureComponent<any, any> {
             <div style={styles.el}>
               { server.domain || server.ip }:{ server.port }
             </div>
-            <div className='markdown' style={styles.el} ref={x => { this.description = x }} />
+            <div className='markdown' style={styles.el} ref={(x): void => { this.description = x }} />
           </div>
           <div style={styles.right}>
             {

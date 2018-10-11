@@ -1,7 +1,7 @@
 import * as React from 'react'
 
 export class ProgressPanel extends React.PureComponent<any, any> {
-  render () {
+  public render (): JSX.Element {
     const course = this.props.course.toJS()
     const styles: any = {
       panel: {

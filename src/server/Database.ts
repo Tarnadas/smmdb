@@ -8,11 +8,14 @@ import fs from 'fs'
 import path from 'path' */
 
 import { log } from './scripts/util'
-import { Match } from '../models/Match';
+import { Match } from '../models/Match'
 
 const mongoUrl = `mongodb://${process.env.DOCKER === 'docker' ? 'mongodb' : 'localhost'}:27017`
 
-type SimilartySchema = { _id: ObjectID, similarCourses: Match[] }
+type SimilartySchema = {
+  _id: ObjectID
+  similarCourses: Match[]
+}
 
 export abstract class Database {
   private static database?: Db
@@ -37,8 +40,8 @@ export abstract class Database {
 
   public static async initialize (isTest = false): Promise<void> {
     log(`Connecting to database at ${mongoUrl}`)
-    const connect = () => {
-      return new Promise(async (resolve) => {
+    const connect = (): Promise<void> => {
+      return new Promise(async (resolve): Promise<void> => {
         try {
           this.database = await MongoClient.connect(mongoUrl) as any
           resolve()
@@ -301,7 +304,7 @@ export abstract class Database {
     }
     blogPosts.sort({ published: -1 })
     return Promise.all((await blogPosts.toArray())
-      .map(async (blogPost: any) => {
+      .map(async (blogPost: any): Promise<void> => {
         const ownerName = (await Account.getAccountByAccountId(blogPost.accountId)).username
         return Object.assign(blogPost, { ownerName })
       }))
@@ -322,7 +325,7 @@ export abstract class Database {
     }
   }
 
-  public static async publishBlogPost ({ accountId, blogId, markdown }: any) {
+  public static async publishBlogPost ({ accountId, blogId, markdown }: any): Promise<any> {
     console.log({ accountId, blogId, markdown })
     if (!blogId) {
       blogId = (await this.blog.insertOne({ accountId: new ObjectID(accountId), markdown, isCurrent: true })).insertedId
@@ -372,8 +375,8 @@ export abstract class Database {
       const similarCourses = (await this.similarity.findOne<SimilartySchema>({ '_id': match._id }))
       if (!similarCourses) continue
       const similarCourseIds = similarCourses.similarCourses
-      const similarCourseIdsWithoutDeletedOne = similarCourseIds.filter(({ courseId: _courseId }) => _courseId !== String(courseId))// .map(({ similarCourses }) => similarCourses )
-      await Database.updateSimilarity(match._id, similarCourseIdsWithoutDeletedOne);
+      const similarCourseIdsWithoutDeletedOne = similarCourseIds.filter(({ courseId: _courseId }): boolean => _courseId !== String(courseId))
+      await Database.updateSimilarity(match._id, similarCourseIdsWithoutDeletedOne)
     }
     return this.similarity.deleteOne({ '_id': courseId })
   }

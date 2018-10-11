@@ -5,9 +5,9 @@ import * as ProgressBar from 'progress'
 
 import { Database } from '../server/Database'
 import { Course, CourseMap, CourseData, Matches } from '../models/Match'
-import { Course as ServerCourse } from '../server/Course';
+import { Course as ServerCourse } from '../server/Course'
 
-async function start () {
+async function start (): Promise<void> {
   const similarCourses: Matches = {}
   const lshIndex = new LshIndex()
 
@@ -23,7 +23,7 @@ async function start () {
   await calculateHashes(courseList, courses, lshIndex)
 
   await compareCourses(courseList, courses, similarCourses, lshIndex)
-  
+
   const matchesFound = countMatches(similarCourses)
 
   const canDelete: Course[] = []
@@ -67,7 +67,7 @@ async function calculateHash (course: Course, courses: CourseMap): Promise<Minha
   return hash
 }
 
-async function compareCourses(courseList: Course[], courses: CourseMap, similarCourses: Matches, lshIndex: LshIndex): Promise<void> {
+async function compareCourses (courseList: Course[], courses: CourseMap, similarCourses: Matches, lshIndex: LshIndex): Promise<void> {
   for (const courseId in courses) {
     similarCourses[courseId] = []
   }
@@ -88,13 +88,13 @@ async function compareCourses(courseList: Course[], courses: CourseMap, similarC
         throw new Error(`Hash for course with ID ${course._id} was not defined`)
       }
       sequenceMatcher.setSeq1(matchedCourse.hash.hashbands)
-      const sim = sequenceMatcher.ratio();
+      const sim = sequenceMatcher.ratio()
       if (sim < 0.1) continue
       similarCourses[courseId].push({ sim, courseId: matchedCourse._id })
       similarCourses[matchId].push({ sim, courseId: course._id })
     }
     alreadyAssignedCourseIds.push(courseId)
-    progressBar.tick();
+    progressBar.tick()
   }
 }
 
@@ -118,7 +118,7 @@ function findDeletableCourses (canDelete: Course[], courses: CourseMap, similarC
       const similarCourse = courses[match.courseId]
       if (course.uploaded > similarCourse.uploaded && course.lastmodified <= similarCourse.lastmodified) {
         canDelete.push(course)
-        similarCourses[match.courseId] = similarCourses[match.courseId].filter(({ courseId }) => course._id !== courseId)
+        similarCourses[match.courseId] = similarCourses[match.courseId].filter(({ courseId }): boolean => course._id !== courseId)
       }
     }
   }

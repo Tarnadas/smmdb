@@ -1,6 +1,8 @@
 import { fromJS } from 'immutable'
 
-export function blog (state: any, action: any) {
+import { State } from '../models/State'
+
+export function blog (state: any, action: any): State {
   if (!action) return state
   switch (action.type) {
     case 'SET_BLOG_UPLOAD':

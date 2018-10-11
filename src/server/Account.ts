@@ -11,7 +11,7 @@ export abstract class Account {
   public static async createAccount ({ googleid, username, email, idtoken }: any): Promise<any> {
     if (username.length < MIN_LENGTH_USERNAME) throw new Error('Username received by Google account was too short')
     if (username.length > MAX_LENGTH_USERNAME) username = username.substr(0, MAX_LENGTH_USERNAME)
-    const accountNames = (await Database.filterAccounts().toArray()).map((ac: any) => ac.username)
+    const accountNames = (await Database.filterAccounts().toArray()).map((ac: any): string => ac.username)
     while (accountNames.includes(username)) {
       username = username.substr(0, 15) + randomString(3)
     }

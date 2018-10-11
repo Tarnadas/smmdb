@@ -7,18 +7,17 @@ import { emojify } from 'node-emoji'
 import { resolve } from 'url'
 
 import { SMMButton } from '../buttons/SMMButton'
-import { ScreenSize } from '../../reducers/mediaQuery'
 
 const UPDATE_INTERVAL = 10000
 
 class Area extends React.PureComponent<any, any> {
   private timer: any
 
-  private renderer: any
+  private renderer?: HTMLDivElement | null
 
   private loading: any
 
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     this.state = {
       loading: false,
@@ -32,7 +31,8 @@ class Area extends React.PureComponent<any, any> {
     this.onGoBack = this.onGoBack.bind(this)
     this.onPublishBlogPost = this.onPublishBlogPost.bind(this)
   }
-  async componentDidMount () {
+
+  public async componentDidMount (): Promise<void> {
     const blogPost = this.props.blogPost
     if (blogPost) {
       this.setState({
@@ -45,18 +45,25 @@ class Area extends React.PureComponent<any, any> {
     if (!this.props.apiKey) return
     this.loadCurrentBlogPost(this.props.apiKey)
   }
-  componentWillUnmount () {
+
+  public componentWillUnmount (): void {
     if (this.timer) clearInterval(this.timer)
   }
-  componentWillReceiveProps (nextProps: any) {
+
+  // eslint-disable-next-line
+  public UNSAFE_componentWillReceiveProps (nextProps: any): void {
     if (this.timer || !nextProps.apiKey || this.props.apiKey === nextProps.apiKey || this.state.loading) return
     this.loadCurrentBlogPost(nextProps.apiKey)
   }
-  async componentWillUpdate (nextProps: any, nextState: any) {
+
+  // eslint-disable-next-line
+  public async UNSAFE_componentWillUpdate (nextProps: any, nextState: any): Promise<void> {
     if (!nextState.markdown || nextState.markdown === this.state.markdown) return
+    if (!this.renderer) return
     this.renderer.innerHTML = emojify(marked(nextState.markdown))
   }
-  async loadCurrentBlogPost (apiKey: string) {
+
+  private async loadCurrentBlogPost (apiKey: string): Promise<void> {
     if (this.loading) return
     this.loading = true
     this.setState({
@@ -69,9 +76,10 @@ class Area extends React.PureComponent<any, any> {
     this.timer = setInterval(this.updateBlogPost.bind(this), UPDATE_INTERVAL)
     this.loading = false
   }
-  async getCurrentBlogPost (apiKey: string) {
+
+  private async getCurrentBlogPost (apiKey: string): Promise<void> {
     try {
-      const response = await fetch(resolve(process.env.DOMAIN!, `/api/blogpost`), {
+      const response = await fetch(resolve(process.env.DOMAIN || '', `/api/blogpost`), {
         headers: {
           'Authorization': `APIKEY ${apiKey}`,
           'Content-Type': 'application/json'
@@ -95,8 +103,9 @@ class Area extends React.PureComponent<any, any> {
       console.error(err)
     }
   }
-  async updateBlogPost () {
-    const response = await fetch(resolve(process.env.DOMAIN!, `/api/blogpost`), {
+
+  private async updateBlogPost (): Promise<void> {
+    const response = await fetch(resolve(process.env.DOMAIN || '', `/api/blogpost`), {
       headers: {
         'Authorization': `APIKEY ${this.props.apiKey}`,
         'Content-Type': 'application/json'
@@ -114,18 +123,21 @@ class Area extends React.PureComponent<any, any> {
       blogId: blogPost._id
     })
   }
-  onTextAreaChange (e: any) {
+
+  private onTextAreaChange (e: any): void {
     this.setState({
       markdown: e.target.value.replace(/<.*>/g, '')
     })
   }
-  async onGoBack () {
+
+  private async onGoBack (): Promise<void> {
     await this.updateBlogPost()
     this.props.history.goBack()
   }
-  async onPublishBlogPost () {
+
+  private async onPublishBlogPost (): Promise<void> {
     try {
-      const response = await fetch(resolve(process.env.DOMAIN!, `/api/blogpost`), {
+      const response = await fetch(resolve(process.env.DOMAIN || '', `/api/blogpost`), {
         headers: {
           'Authorization': `APIKEY ${this.props.apiKey}`,
           'Content-Type': 'application/json'
@@ -145,7 +157,8 @@ class Area extends React.PureComponent<any, any> {
       console.error(err)
     }
   }
-  render () {
+
+  public render (): JSX.Element {
     const blogPost = this.props.blogPost
     const styles: any = {
       area: {
@@ -211,7 +224,7 @@ class Area extends React.PureComponent<any, any> {
       <div style={styles.area}>
         <div style={styles.blog} className='blog'>
           <textarea style={styles.editor} value={this.state.markdown} onChange={this.onTextAreaChange} />
-          <div style={styles.editorRendered} ref={x => { this.renderer = x }} />
+          <div style={styles.editorRendered} ref={(x): void => { this.renderer = x }} />
         </div>
         <div style={styles.buttons}>
           <SMMButton
@@ -233,6 +246,6 @@ class Area extends React.PureComponent<any, any> {
     )
   }
 }
-export const BlogPostEditArea: any = withRouter(connect((state: any) => ({
+export const BlogPostEditArea: any = withRouter(connect((state: any): any => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize'])
 }))(Area as any) as any)

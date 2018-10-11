@@ -21,13 +21,14 @@ import { ScreenSize } from '../../reducers/mediaQuery'
 import { Net64View } from './Net64View'
 
 class View extends React.PureComponent<any, any> {
-  componentDidUpdate (prevProps: any) {
+  public componentDidUpdate (prevProps: any): void {
     if (this.props.location !== prevProps.location) {
       this.props.global.scrollTop = 0
     }
   }
-  render () {
-    const screenSize = this.props.screenSize
+
+  public render (): JSX.Element {
+    const { screenSize } = this.props
     const styles: any = {
       content: {
         backgroundColor: '#24997e',
@@ -43,41 +44,41 @@ class View extends React.PureComponent<any, any> {
           <meta name="description" content="Super Mario Maker and Super Mario 64 Maker course database for consoles Wii U, 3DS and emulators Cemu, Citra and decaf. Net64/SM64O/Super Mario 64 Online official server list." />
         </Helmet>
         <Route exact path='/' component={MainView} />
-        <Route path='/courses' render={() => (
+        <Route path='/courses' render={(): JSX.Element => (
           <CoursesView
             shouldUpdate={this.props.shouldUpdate}
             setFetchCourses={this.props.setFetchCourses}
             isServer={this.props.isServer}
           />
         )} />
-        <Route path='/courses64' render={() => (
+        <Route path='/courses64' render={(): JSX.Element => (
           <Courses64View
             shouldUpdate={this.props.shouldUpdate}
             setFetchCourses={this.props.setFetchCourses}
             isServer={this.props.isServer}
           />
         )} />
-        <Route path='/upload' render={() => (
+        <Route path='/upload' render={(): JSX.Element => (
           <UploadView
             shouldUpdate={this.props.shouldUpdate}
             setFetchCourses={this.props.setFetchCourses}
             isServer={this.props.isServer}
           />
         )} />
-        <Route path='/upload64' render={() => (
+        <Route path='/upload64' render={(): JSX.Element => (
           <Upload64View
             shouldUpdate={this.props.shouldUpdate}
             setFetchCourses={this.props.setFetchCourses}
             isServer={this.props.isServer}
           />
         )} />
-        <Route path='/net64' render={() => (
+        <Route path='/net64' render={(): JSX.Element => (
           <Net64View isServer={this.props.isServer} />
         )} />
-        <Route path='/sm64o' render={() => (
+        <Route path='/sm64o' render={(): JSX.Element => (
           <Net64View isServer={this.props.isServer} />
         )} />
-        <Route path='/blog' render={() => (
+        <Route path='/blog' render={(): JSX.Element => (
           <BlogView isServer={this.props.isServer} />
         )} />
         <Route path='/profile' component={ProfileView} />
@@ -89,6 +90,6 @@ class View extends React.PureComponent<any, any> {
     )
   }
 }
-export const ContentView = withRouter(connect((state: any) => ({
+export const ContentView = withRouter(connect((state: any): any => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize'])
 }))(View) as any) as any

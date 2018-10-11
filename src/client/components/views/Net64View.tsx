@@ -9,8 +9,8 @@ import { ScreenSize } from '../../reducers/mediaQuery'
 const IS_PARTNERED = true
 
 class View extends React.PureComponent<any, any> {
-  render () {
-    const screenSize = this.props.screenSize
+  public render (): JSX.Element {
+    const { screenSize } = this.props
     const styles: any = {
       view: {
         height: '100%',
@@ -43,7 +43,7 @@ class View extends React.PureComponent<any, any> {
         </Helmet>
         <div style={styles.info}>
           Net64 aka SM64O allows playing Super Mario 64 in an online multiplayer mode.<br />
-          To join any of the servers listed below, you need Net64+. The official client won't be able to connect! Just follow the links.
+          To join any of the servers listed below, you need Net64+. The official client won&#39;t be able to connect! Just follow the links.
         </div>
         <div>
           <SMMButton
@@ -82,6 +82,6 @@ class View extends React.PureComponent<any, any> {
     )
   }
 }
-export const Net64View = connect((state: any) => ({
+export const Net64View = connect((state: any): any => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize'])
 }))(View) as any

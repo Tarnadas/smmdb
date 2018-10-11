@@ -25,11 +25,15 @@ interface AppViewProps {
   dispatch: Dispatch<State>
 }
 
-class View extends React.PureComponent<AppViewProps, any> {
+interface AppViewState {
+  fetchCourses: any
+}
+
+class View extends React.PureComponent<AppViewProps, AppViewState> {
   public doUpdate: boolean
   public global?: HTMLDivElement | null
 
-  constructor (props: AppViewProps) {
+  public constructor (props: AppViewProps) {
     super(props)
     this.state = {
       fetchCourses: null
@@ -41,9 +45,10 @@ class View extends React.PureComponent<AppViewProps, any> {
     this.shouldUpdate = this.shouldUpdate.bind(this)
   }
 
-  componentWillMount () {
+  // eslint-disable-next-line
+  public UNSAFE_componentWillMount (): void {
     if (this.props.isServer) return
-    const listener = (size: any, query: any) => {
+    const listener = (size: any, query: any): void => {
       if (query.matches) {
         this.props.dispatch(mediaQuery(size))
       }
@@ -68,7 +73,8 @@ class View extends React.PureComponent<AppViewProps, any> {
     }
   }
 
-  componentWillUpdate (nextProps: any) {
+  // eslint-disable-next-line
+  public UNSAFE_componentWillUpdate (nextProps: AppViewProps): void {
     if (
       this.props.courses !== nextProps.courses ||
       this.props.courses64 !== nextProps.courses64 ||
@@ -78,19 +84,23 @@ class View extends React.PureComponent<AppViewProps, any> {
       this.doUpdate = false
     }
   }
-  setFetchCourses (fetchCourses: any) {
+
+  private setFetchCourses (fetchCourses: any): void {
     this.setState({
       fetchCourses
     })
   }
-  onVideoHide () {
+
+  private onVideoHide (): void {
     this.props.dispatch(setVideoId(''))
   }
-  handleScroll (e: any) {
+
+  private handleScroll (e: any): any {
     if (this.props.screenSize >= ScreenSize.MEDIUM) return
     this.shouldUpdate(e.target)
   }
-  shouldUpdate (values: any) {
+
+  private shouldUpdate (values: any): void {
     forceCheck()
     if (this.doUpdate) return
     const shouldUpdate = values.scrollHeight - values.scrollTop - values.clientHeight < UPDATE_OFFSET
@@ -99,7 +109,8 @@ class View extends React.PureComponent<AppViewProps, any> {
       if (this.state.fetchCourses) this.state.fetchCourses(true, STEP_LIMIT)
     }
   }
-  render () {
+
+  public render (): JSX.Element {
     const { screenSize } = this.props
     const styles: any = {
       react: {
@@ -175,7 +186,7 @@ class View extends React.PureComponent<AppViewProps, any> {
     return (
       <div style={styles.react}>
         <TopBarArea isLoggedIn={isLoggedIn} />
-        <div style={styles.global} onScroll={this.handleScroll} ref={glob => { this.global = glob }}>
+        <div style={styles.global} onScroll={this.handleScroll} ref={(glob): void => { this.global = glob }}>
           <div style={styles.logo}>
             <div style={styles.logoFont}>
               {
@@ -194,7 +205,7 @@ class View extends React.PureComponent<AppViewProps, any> {
           <Route
             path='/'
             render={
-              () => <ContentView
+              (): JSX.Element => <ContentView
                 global={global}
                 shouldUpdate={this.shouldUpdate}
                 setFetchCourses={this.setFetchCourses}
@@ -231,8 +242,8 @@ class View extends React.PureComponent<AppViewProps, any> {
     )
   }
 }
-export const AppView = connect((state: any) => ({
-  screenSize: state.getIn(['mediaQuery', 'screenSize']),
+export const AppView = connect((state: any): any => ({
+  screenSize: state.getIn(['mediaQuery', 'screenSize']) as number,
   userName: state.getIn(['userData', 'userName']) || '',
   videoId: state.getIn(['userData', 'videoId']) || '',
   courses: state.getIn(['courseData', 'main']),
@@ -240,4 +251,4 @@ export const AppView = connect((state: any) => ({
   courses64: state.getIn(['courseData', 'main64']),
   courses64Self: state.getIn(['courseData', 'self64']),
   showFilter: state.get('showFilter')
-}))(View)
+}))(View) as any

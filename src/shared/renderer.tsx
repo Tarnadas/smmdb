@@ -11,14 +11,14 @@ import { AppView } from '../client/components/views/AppView'
 import { ScreenSize } from '../client/reducers/mediaQuery'
 import { setCourses, setCourses64, setStats, mediaQuery } from '../client/actions'
 
-export default async function renderer (isServer = false, reactRenderer: any, preloadedState: any, req?: any, courses?: any, courses64?: any, stats?: any, isPhone?: any, isTablet?: any) {
+export default async function renderer (isServer = false, reactRenderer: any, preloadedState: any, req?: any, courses?: any, courses64?: any, stats?: any, isPhone?: any, isTablet?: any): Promise<any> {
   const history = isServer ? null : createBrowserHistory()
 
   const store = initReducer(preloadedState, history)
   let Capture: any
   if (isServer) {
-    store.dispatch(setCourses(courses.map((course: any) => course.toJSON()), false))
-    store.dispatch(setCourses64(courses64.map((course: any) => course.toJSON()), false))
+    store.dispatch(setCourses(courses.map((course: any): any => course.toJSON()), false))
+    store.dispatch(setCourses64(courses64.map((course: any): any => course.toJSON()), false))
     store.dispatch(setStats(stats))
     if (isPhone) store.dispatch(mediaQuery(ScreenSize.SUPER_SMALL))
     else if (isTablet) store.dispatch(mediaQuery(ScreenSize.SMALL))
@@ -31,17 +31,17 @@ export default async function renderer (isServer = false, reactRenderer: any, pr
     {
       isServer
         ? <StaticRouter location={req.url} context={context}>
-          <Route path='/' render={() => (
+          <Route path='/' render={(): JSX.Element => (
             <AppView isServer />
           )} />
         </StaticRouter>
-        : <ConnectedRouter history={history!}>
+        : <ConnectedRouter history={history!}> {/* eslint-disable-line typescript/no-non-null-assertion */}
           <Route path='/' component={AppView} />
         </ConnectedRouter>
     }
   </Provider>
   const jsx = isServer
-    ? <Capture report={(moduleName: any) => {
+    ? <Capture report={(moduleName: any): any => {
       modules.push(moduleName)
     }}>
       { _jsx }

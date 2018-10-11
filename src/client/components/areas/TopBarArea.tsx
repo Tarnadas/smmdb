@@ -12,7 +12,7 @@ class Area extends React.PureComponent<any, any> {
   public onMouseEnterNav: any
   public onMouseLeaveNav: any
 
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     this.state = {
       buttonHover: false,
@@ -25,17 +25,20 @@ class Area extends React.PureComponent<any, any> {
     this.onMouseEnterNav = this.onMouseEnter.bind(this, 'navHover')
     this.onMouseLeaveNav = this.onMouseLeave.bind(this, 'navHover')
   }
-  onClick () {
-    this.setState((prevState: any) => ({
+
+  private onClick (): void {
+    this.setState((prevState: any): any => ({
       buttonHover: !prevState.buttonHover
     }))
   }
-  onMouseEnter (type: any) {
+
+  private onMouseEnter (type: string): void {
     this.setState({
       [type]: true
     })
   }
-  onMouseLeave (type: any) {
+
+  private onMouseLeave (type: any): void {
     if (typeof type === 'string') {
       this.setState({
         [type]: false
@@ -47,8 +50,9 @@ class Area extends React.PureComponent<any, any> {
       })
     }
   }
-  render () {
-    const screenSize = this.props.screenSize
+
+  public render (): JSX.Element {
+    const { screenSize } = this.props
     const hover = this.state.buttonHover || this.state.navHover
     const styles: any = {
       topbar: {
@@ -124,6 +128,6 @@ class Area extends React.PureComponent<any, any> {
     )
   }
 }
-export const TopBarArea = connect((state: any) => ({
+export const TopBarArea = connect((state: any): any => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize'])
 }))(Area) as any

@@ -12,100 +12,100 @@ function RouteLoading (): JSX.Element {
 }
 
 export const BlogView = Loadable<any, any>({
-  loader: () => import('./BlogView'),
-  loading: () => RouteLoading(),
+  loader: (): any => import('./BlogView'),
+  loading: (): JSX.Element => RouteLoading(),
   delay: routeLoadingDelay,
   modules: ['./BlogView'],
   // @ts-ignore
-  webpack: () => [require.resolveWeak('./BlogView')]
+  webpack: (): any => [require.resolveWeak('./BlogView')]
 })
 
 export const CoursesView = Loadable<any, any>({
-  loader: () => import('./CoursesView'),
-  loading: () => RouteLoading(),
+  loader: (): any => import('./CoursesView'),
+  loading: (): JSX.Element => RouteLoading(),
   delay: routeLoadingDelay,
   modules: ['./CoursesView'],
   // @ts-ignore
-  webpack: () => [require.resolveWeak('./CoursesView')]
+  webpack: (): any => [require.resolveWeak('./CoursesView')]
 })
 
 export const Courses64View = Loadable<any, any>({
-  loader: () => import('./Courses64View'),
-  loading: () => RouteLoading(),
+  loader: (): any => import('./Courses64View'),
+  loading: (): JSX.Element => RouteLoading(),
   delay: routeLoadingDelay,
   modules: ['./Courses64View'],
   // @ts-ignore
-  webpack: () => [require.resolveWeak('./Courses64View')]
+  webpack: (): any => [require.resolveWeak('./Courses64View')]
 })
 
 export const FAQView = Loadable<any, any>({
-  loader: () => import('./FAQView'),
-  loading: () => RouteLoading(),
+  loader: (): any => import('./FAQView'),
+  loading: (): JSX.Element => RouteLoading(),
   delay: routeLoadingDelay,
   modules: ['./FAQView'],
   // @ts-ignore
-  webpack: () => [require.resolveWeak('./FAQView')]
+  webpack: (): any => [require.resolveWeak('./FAQView')]
 })
 
 export const LegalNoticeView = Loadable<any, any>({
-  loader: () => import('./LegalNoticeView'),
-  loading: () => RouteLoading(),
+  loader: (): any => import('./LegalNoticeView'),
+  loading: (): JSX.Element => RouteLoading(),
   delay: routeLoadingDelay,
   modules: ['./LegalNoticeView'],
   // @ts-ignore
-  webpack: () => [require.resolveWeak('./LegalNoticeView')]
+  webpack: (): any => [require.resolveWeak('./LegalNoticeView')]
 })
 
 export const MainView = Loadable<any, any>({
-  loader: () => import('./MainView'),
-  loading: () => RouteLoading(),
+  loader: (): any => import('./MainView'),
+  loading: (): JSX.Element => RouteLoading(),
   delay: routeLoadingDelay,
   modules: ['./MainView'],
   // @ts-ignore
-  webpack: () => [require.resolveWeak('./MainView')]
+  webpack: (): any => [require.resolveWeak('./MainView')]
 })
 
 export const PrivacyPolicyView = Loadable<any, any>({
-  loader: () => import('./PrivacyPolicyView'),
-  loading: () => RouteLoading(),
+  loader: (): any => import('./PrivacyPolicyView'),
+  loading: (): JSX.Element => RouteLoading(),
   delay: routeLoadingDelay,
   modules: ['./PrivacyPolicyView'],
   // @ts-ignore
-  webpack: () => [require.resolveWeak('./PrivacyPolicyView')]
+  webpack: (): any => [require.resolveWeak('./PrivacyPolicyView')]
 })
 
 export const ProfileView = Loadable<any, any>({
-  loader: () => import('./ProfileView'),
-  loading: () => RouteLoading(),
+  loader: (): any => import('./ProfileView'),
+  loading: (): JSX.Element => RouteLoading(),
   delay: routeLoadingDelay,
   modules: ['./ProfileView'],
   // @ts-ignore
-  webpack: () => [require.resolveWeak('./ProfileView')]
+  webpack: (): any => [require.resolveWeak('./ProfileView')]
 })
 
 export const SocialView = Loadable<any, any>({
-  loader: () => import('./SocialView'),
-  loading: () => RouteLoading(),
+  loader: (): any => import('./SocialView'),
+  loading: (): JSX.Element => RouteLoading(),
   delay: routeLoadingDelay,
   modules: ['./SocialView'],
   // @ts-ignore
-  webpack: () => [require.resolveWeak('./SocialView')]
+  webpack: (): any => [require.resolveWeak('./SocialView')]
 })
 
 export const UploadView = Loadable<any, any>({
-  loader: () => import('./UploadView'),
-  loading: () => RouteLoading(),
+  loader: (): any => import('./UploadView'),
+  loading: (): JSX.Element => RouteLoading(),
   delay: routeLoadingDelay,
   modules: ['./UploadView'],
   // @ts-ignore
-  webpack: () => [require.resolveWeak('./UploadView')]
+  webpack: (): any => [require.resolveWeak('./UploadView')]
 })
 
 export const Upload64View = Loadable<any, any>({
-  loader: () => import('./Upload64View'),
-  loading: () => RouteLoading(),
+  loader: (): any => import('./Upload64View'),
+  loading: (): JSX.Element => RouteLoading(),
   delay: routeLoadingDelay,
   modules: ['./Upload64View'],
   // @ts-ignore
-  webpack: () => [require.resolveWeak('./Upload64View')]
+  webpack: (): any => [require.resolveWeak('./Upload64View')]
 })

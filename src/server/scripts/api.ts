@@ -65,7 +65,7 @@ export class API {
     }
   }
 
-  public static async filterCourses (accountId: any, filterData: any = {}): Promise<any> {
+  public static async filterCourses (accountId?: string, filterData: any = {}): Promise<any> {
     let orderBy = 'lastmodified'
     let dir = -1
 
@@ -173,7 +173,7 @@ export class API {
     return res
   }
 
-  public static async filterCourses64 (accountId: string, filterData: any = {}): Promise<any> {
+  public static async filterCourses64 (accountId?: string, filterData: any = {}): Promise<any> {
     let orderBy = 'lastmodified'
     let dir = -1
 
@@ -285,7 +285,7 @@ export class API {
         }
         let resBuffer = Buffer.alloc(0)
         if (range.type === 'bytes') {
-          range.forEach((r: any) => {
+          range.forEach((r: any): void => {
             resBuffer = Buffer.concat([resBuffer, course3ds.slice(r.start, r.end)])
           })
           res.send(resBuffer)
@@ -879,7 +879,7 @@ export class API {
     const servers = await Database.getNet64Servers(id ? [{ $match: { _id: new ObjectID(id) } }] : null)
     if (servers) {
       for (const server of servers) {
-        server.toJSON = () => {
+        server.toJSON = (): any => {
           return {
             id: server._id,
             ip: server.ip,
@@ -934,7 +934,7 @@ export class API {
     if (req.body.lat != null && typeof req.body.lat === 'number') server.lat = req.body.lat
     if (req.body.lon != null && typeof req.body.lon === 'number') server.lon = req.body.lon
     if (req.body.players) {
-      const players = req.body.players.filter((player: any) => !!player)
+      const players = req.body.players.filter((player: any): boolean => !!player)
       server.players = players
       server.playerCount = players.length
     }

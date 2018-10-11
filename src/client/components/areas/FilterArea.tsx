@@ -27,7 +27,7 @@ class Area extends React.PureComponent<any, any> {
   private onCourseThemeSubChange: any
   private onAutoScrollChange: any
 
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     this.state = {}
     this.getFilter = this.getFilter.bind(this)
@@ -47,7 +47,9 @@ class Area extends React.PureComponent<any, any> {
     this.onCourseThemeSubChange = this.onSelectChange.bind(this, 'coursethemesub')
     this.onAutoScrollChange = this.onSelectChange.bind(this, 'autoscroll')
   }
-  componentWillMount () {
+
+  // eslint-disable-next-line
+  public UNSAFE_componentWillMount (): void {
     const filter = this.props.filter.toJS()
     if (filter) {
       this.setState({
@@ -67,7 +69,8 @@ class Area extends React.PureComponent<any, any> {
       })
     }
   }
-  getFilter () {
+
+  private getFilter (): any {
     const filter = {
       title: this.state.title,
       maker: this.state.maker,
@@ -98,18 +101,22 @@ class Area extends React.PureComponent<any, any> {
     if (!this.state.autoscroll) delete filter.autoscroll
     return filter
   }
-  setFilter () {
+
+  private setFilter (): void {
     const filter = this.getFilter()
     this.props.dispatch(setFilter(filter))
     this.props.dispatch(applyFilter())
   }
-  handleKeyPress (e: any) {
-    if (e.key !== 'Enter') return
+
+  private handleKeyPress ({ key }: React.KeyboardEvent<HTMLInputElement>): void {
+    if (key !== 'Enter') return
     this.setFilter()
     this.props.dispatch(push('/courses'))
   }
-  onStringChange (value: any, limit: any, e: any) {
-    let val = e.target.value
+
+  private onStringChange (value: any, limit: any, { target }: any): void {
+    if (!target) return
+    let val = target.value
     if (val.length > limit) {
       val = val.substr(0, limit)
     }
@@ -117,21 +124,24 @@ class Area extends React.PureComponent<any, any> {
     res[value] = val
     this.setState(res)
   }
-  onDateChange (value: any, e: any) {
+
+  private onDateChange (value: any, e: any): void {
     const offset = (new Date()).getTimezoneOffset() * -1
     const sign = (new Date()).getTimezoneOffset() >= 0 ? '-' : '+'
     const res: any = {}
     res[value] = (new Date(`${e.target.value}${sign}${String(offset / 60).padStart(2, '00')}:${String(offset % 60).padStart(2)}`)).valueOf() / 1000
     this.setState(res)
   }
-  onSelectChange (value: any, e: any) {
+
+  private onSelectChange (value: any, e: any): void {
     const val = e.target.value
     const res: any = {}
     res[value] = val
     this.setState(res)
   }
-  render () {
-    const screenSize = this.props.screenSize
+
+  public render (): JSX.Element {
+    const { screenSize } = this.props
     const styles: any = {
       area: {
         textAlign: 'left',
@@ -362,7 +372,7 @@ class Area extends React.PureComponent<any, any> {
     )
   }
 }
-export const FilterArea = withRouter(connect((state: any) => ({
+export const FilterArea = withRouter(connect((state: any): any => ({
   filter: state.getIn(['filter', 'nextFilter']),
   screenSize: state.getIn(['mediaQuery', 'screenSize'])
 }))(Area as any) as any)

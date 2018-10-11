@@ -8,7 +8,7 @@ import ButtonSub from '../subs/ButtonSub'
 import { setAccountData, setCourse, setCourse64 } from '../../actions'
 
 class Button extends React.PureComponent<any, any> {
-  constructor (props: any) {
+  public constructor (props: any) {
     super(props)
     this.state = {
       hover: false
@@ -20,9 +20,10 @@ class Button extends React.PureComponent<any, any> {
     this.onGoogleLoginFailure = this.onGoogleLoginFailure.bind(this)
     this.onLogOut = this.onLogOut.bind(this)
   }
-  async componentDidMount () {
+
+  public async componentDidMount (): Promise<void> {
     try {
-      const response = await fetch(resolve(process.env.DOMAIN!, '/signin'), {
+      const response = await fetch(resolve(process.env.DOMAIN || '', '/signin'), {
         method: 'POST',
         credentials: 'include'
       })
@@ -33,22 +34,25 @@ class Button extends React.PureComponent<any, any> {
     } catch (err) {
     }
   }
-  componentWillReceiveProps (nextProps: any) {
+
+  // eslint-disable-next-line
+  public UNSAFE_componentWillReceiveProps (nextProps: any): void {
     if (this.props.accountData !== nextProps.accountData) {
       this.setState({
         hover: false
       })
     }
   }
-  updateCourseStars (props: any, account: any) {
+
+  private updateCourseStars (props: any, account: any): void {
     const main: any = {}
     let i = 0
-    props.courseData.get('main').forEach((course: any) => {
+    props.courseData.get('main').forEach((course: any): void => {
       main[course.get('id')] = i++
     })
     const main64: any = {}
     i = 0
-    props.courseData.get('main64').forEach((course: any) => {
+    props.courseData.get('main64').forEach((course: any): void => {
       main64[course.get('id')] = i++
     })
     for (let i in account.stars) {
@@ -64,19 +68,22 @@ class Button extends React.PureComponent<any, any> {
       }
     }
   }
-  mouseEnter () {
+
+  private mouseEnter (): void {
     this.setState({
       hover: true
     })
   }
-  mouseLeave () {
+
+  private mouseLeave (): void {
     this.setState({
       hover: false
     })
   }
-  async onGoogleLoginSuccess (accessKey: any) {
+
+  private async onGoogleLoginSuccess (accessKey: any): Promise<void> {
     try {
-      const response = await fetch(resolve(process.env.DOMAIN!, '/tokensignin'), {
+      const response = await fetch(resolve(process.env.DOMAIN || '', '/tokensignin'), {
         method: 'POST',
         body: JSON.stringify(accessKey),
         headers: {
@@ -91,12 +98,14 @@ class Button extends React.PureComponent<any, any> {
       console.error(err)
     }
   }
-  onGoogleLoginFailure (response: any) {
+
+  private onGoogleLoginFailure (response: any): void {
     console.log(response)
   }
-  async onLogOut () {
+
+  private async onLogOut (): Promise<void> {
     try {
-      await fetch(resolve(process.env.DOMAIN!, '/signout'), {
+      await fetch(resolve(process.env.DOMAIN || '', '/signout'), {
         method: 'POST'
       })
       const account = this.props.accountData.toJS()
@@ -121,7 +130,8 @@ class Button extends React.PureComponent<any, any> {
       console.error(err)
     }
   }
-  render () {
+
+  public render (): JSX.Element {
     const accountData = this.props.accountData.toJS()
     const loggedIn = !!accountData.id
     const styles: any = {
@@ -199,7 +209,7 @@ class Button extends React.PureComponent<any, any> {
     )
   }
 }
-export const LoginButton = connect((state: any) => ({
+export const LoginButton = connect((state: any): any => ({
   accountData: state.getIn(['userData', 'accountData']),
   courseData: state.get('courseData')
 }))(Button) as any
