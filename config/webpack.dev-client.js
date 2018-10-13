@@ -1,6 +1,7 @@
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 const ReactLoadablePlugin = require('react-loadable/webpack').ReactLoadablePlugin
 
 const path = require('path')
@@ -46,11 +47,16 @@ module.exports = [
         preload: /\.js/
       }),
       new ReactLoadablePlugin({
-        filename: './build/react-loadable.json',
+        filename: './build/react-loadable.json'
       })
     ],
     resolve: {
-      extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ]
+      extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ],
+      plugins: [
+        new TsconfigPathsPlugin({
+          configFile: './tsconfig.json'
+        })
+      ]
     },
     watchOptions: {
       ignored: [

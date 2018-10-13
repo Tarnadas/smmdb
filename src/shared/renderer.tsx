@@ -5,8 +5,8 @@ import { ConnectedRouter } from 'react-router-redux'
 import { createBrowserHistory } from 'history'
 import { preloadReady } from 'react-loadable'
 
+import { AppView } from '@/client/modules/app/AppView'
 import { initReducer } from '../client/reducers'
-import { AppView } from '../client/components/views/AppView'
 
 import { ScreenSize } from '../client/reducers/mediaQuery'
 import { setCourses, setCourses64, setStats, mediaQuery } from '../client/actions'

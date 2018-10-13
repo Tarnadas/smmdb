@@ -7,7 +7,12 @@
     "jsx": "react",
     "sourceMap": true,
     "strict": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@/client/*": [ "./src/client/*" ],
+      "@/server/*": [ "./src/server/*" ]
+    }
   },
   "include": [
     "./src/**/*"

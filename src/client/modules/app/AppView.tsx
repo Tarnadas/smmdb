@@ -3,16 +3,18 @@ import { connect, Dispatch } from 'react-redux'
 import { Route, Link } from 'react-router-dom'
 import { forceCheck } from 'react-lazyload'
 
-import { ContentView } from './ContentView'
-import { TopBarArea } from '../areas/TopBarArea'
+import { ContentView } from '../../components/views/ContentView'
+import { TopBarArea } from '../../components/areas/TopBarArea'
 import { ScreenSize } from '../../reducers/mediaQuery'
 import { setVideoId, mediaQuery } from '../../actions'
 import { State } from '../../models/State'
 
+import { App, Footer, Logo, Main } from './styles'
+
 const UPDATE_OFFSET = 500
 const STEP_LIMIT = 10
 
-interface AppViewProps {
+export interface AppViewProps {
   isServer: boolean
   screenSize: number
   courses: any
@@ -113,44 +115,6 @@ class View extends React.PureComponent<AppViewProps, AppViewState> {
   public render (): JSX.Element {
     const { screenSize } = this.props
     const styles: any = {
-      react: {
-        width: '100%',
-        height: '100%'
-      },
-      global: {
-        width: '100%',
-        maxWidth: '100%',
-        height: '100%',
-        maxHeight: '100%',
-        overflowY: screenSize >= ScreenSize.MEDIUM ? 'visible' : 'auto',
-        display: 'flex',
-        flexDirection: 'column'
-      },
-      logo: {
-        fontSize: '44px',
-        textAlign: 'center',
-        boxShadow: '0px 10px 20px 0px rgba(0,0,0,0.3)',
-        zIndex: '1',
-        flex: '0 0',
-        margin: '5px 0'
-      },
-      logoFont: {
-        display: 'inline-block',
-        color: '#000',
-        whiteSpace: 'nowrap'
-      },
-      footer: {
-        padding: screenSize >= ScreenSize.MEDIUM ? '' : '4px 0',
-        fontSize: '11px',
-        textAlign: 'center',
-        background: 'rgba(44, 44, 44, 0.3)',
-        fontFamily: 'Consolas, "courier new", serif',
-        fontWeight: 'bold',
-        color: '#000',
-        height: screenSize >= ScreenSize.MEDIUM ? '39px' : '',
-        display: screenSize >= ScreenSize.MEDIUM ? 'flex' : '',
-        alignItems: screenSize >= ScreenSize.MEDIUM ? 'center' : ''
-      },
       overflow: {
         display: 'flex',
         position: 'absolute',
@@ -184,24 +148,21 @@ class View extends React.PureComponent<AppViewProps, AppViewState> {
     const isLoggedIn = !!this.props.userName
     const global = this.global
     return (
-      <div style={styles.react}>
+      <App>
         <TopBarArea isLoggedIn={isLoggedIn} />
-        <div style={styles.global} onScroll={this.handleScroll} ref={(glob): void => { this.global = glob }}>
-          <div style={styles.logo}>
-            <div style={styles.logoFont}>
-              {
-                screenSize === ScreenSize.LARGE ? (
-                  'SUPER MARIO MAKER DATABASE'
-                ) : (
-                  screenSize === ScreenSize.MEDIUM ? (
-                    'SMM DATABASE'
-                  ) : (
-                    'SMMDB'
-                  )
-                )
-              }
-            </div>
-          </div>
+        <Main
+          onScroll={this.handleScroll}
+          ref={(glob: any): void => { this.global = glob }}
+        >
+          <Logo>
+            {
+              screenSize === ScreenSize.LARGE
+                ? 'SUPER MARIO MAKER DATABASE'
+                : screenSize === ScreenSize.MEDIUM
+                  ? 'SMM DATABASE'
+                  : 'SMMDB'
+            }
+          </Logo>
           <Route
             path='/'
             render={
@@ -212,7 +173,7 @@ class View extends React.PureComponent<AppViewProps, AppViewState> {
                 isServer={this.props.isServer}
               />}
             />
-          <div style={styles.footer}>
+          <Footer>
             <div style={styles.disclaimer}>
               Super Mario Maker Database (in short SMMDB) is not affiliated or associated with any other company.<br />
               All logos, trademarks, and trade names used herein are the property of their respective owners.
@@ -221,8 +182,8 @@ class View extends React.PureComponent<AppViewProps, AppViewState> {
               <Link to='/privacy' style={styles.footerLink}>Privacy Policy</Link>
               <Link to='/legal' style={styles.footerLink}>Legal Notice</Link>
             </div>
-          </div>
-        </div>
+          </Footer>
+        </Main>
         {
           this.props.videoId &&
           <div style={styles.overflow} onClick={this.onVideoHide}>
@@ -238,7 +199,7 @@ class View extends React.PureComponent<AppViewProps, AppViewState> {
           this.props.showFilter &&
           <div />
         }
-      </div>
+      </App>
     )
   }
 }

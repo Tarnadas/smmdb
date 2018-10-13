@@ -1,6 +1,7 @@
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 const ReactLoadablePlugin = require('react-loadable/webpack').ReactLoadablePlugin
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
@@ -80,7 +81,12 @@ module.exports = [
       })
     ],
     resolve: {
-      extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ]
+      extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ],
+      plugins: [
+        new TsconfigPathsPlugin({
+          configFile: './tsconfig.json'
+        })
+      ]
     },
     module: {
       rules: [
