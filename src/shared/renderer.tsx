@@ -35,7 +35,7 @@ export default async function renderer (isServer = false, reactRenderer: any, pr
             <AppView isServer />
           )} />
         </StaticRouter>
-        : <ConnectedRouter history={history!}> {/* eslint-disable-line typescript/no-non-null-assertion */}
+        : <ConnectedRouter history={history! /* eslint-disable-line typescript/no-non-null-assertion */}>
           <Route path='/' component={AppView} />
         </ConnectedRouter>
     }
