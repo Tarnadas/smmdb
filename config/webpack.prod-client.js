@@ -18,7 +18,7 @@ module.exports = [
         'redux', 'redux-immutable', 'axios',
         'node-emoji', 'marked', 'qrcode'
       ],
-      app: [ '@babel/polyfill', path.join(__dirname, '../src/client/renderer.tsx') ]
+      app: path.join(__dirname, '../src/client/renderer.tsx')
     },
     output: {
       filename: '[name].[chunkhash].js',
@@ -69,7 +69,7 @@ module.exports = [
         preload: /\.js/
       }),
       new ReactLoadablePlugin({
-        filename: './build/react-loadable.json',
+        filename: './build/react-loadable.json'
       }),
       new BundleAnalyzerPlugin({
         analyzerMode: 'static',

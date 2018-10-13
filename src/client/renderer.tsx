@@ -1,3 +1,5 @@
+import '@babel/polyfill'
+
 import { hydrate } from 'react-dom'
 import { fromJS } from 'immutable'
 
