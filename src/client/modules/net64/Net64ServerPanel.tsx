@@ -84,12 +84,6 @@ export class Net64ServerPanel extends React.PureComponent<ServerPanelProps, Serv
     this.onToggle = this.onToggle.bind(this)
     this.handleDescriptionToggle = this.handleDescriptionToggle.bind(this)
     this.renderPlayers = this.renderPlayers.bind(this)
-    if (props.server.players) {
-      props.server.players.push({
-        characterId: 0,
-        username: 'User'
-      })
-    }
   }
 
   private getDescription = (): string => {

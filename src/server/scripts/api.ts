@@ -970,7 +970,7 @@ export class API {
     server.owner = account._id
     server.ownername = account.username
     server.updated = Math.trunc(Date.now() / 1000)
-    server.isDedicated = req.body.isDedicated || false
+    server.isDedicated = req.body.isDedicated || true
     const id = await Account.updateNet64Server(account, server)
     res.json({ id })
   }
