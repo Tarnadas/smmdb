@@ -38,6 +38,7 @@ export async function portCheck (req: Request, res: Response, ip: any, port: any
     }
   } catch (err) {
     res.status(400).send(`Port is not a number: ${port}`)
+    return false
   }
   if (!hasPortOpen(ip, port)) {
     res.status(400).send(`Port is closed`)
