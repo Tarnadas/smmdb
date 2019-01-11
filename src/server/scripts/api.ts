@@ -11,6 +11,7 @@ import { Account } from '../Account'
 import { Course } from '../Course'
 import { Course64 } from '../Course64'
 import { Bot } from '..'
+import { portCheck } from '../routes/net64/portcheck'
 
 const MAX_FILTER_LIMIT = 120
 
@@ -893,7 +894,8 @@ export class API {
             version: server.version,
             compatVersion: server.compatVersion || '1.0',
             gameMode: server.gameMode,
-            passwordRequired: server.passwordRequired || false
+            passwordRequired: server.passwordRequired || false,
+            isDedicated: server.isDedicated
           }
         }
       }
@@ -901,7 +903,7 @@ export class API {
     }
   }
 
-  public static async sendNet64Server (req: any, res: any): Promise<void> {
+  public static async sendNet64Server (req: any, res: any, apiData: any): Promise<void> {
     const auth = req.get('Authorization')
     const apiKey = auth != null && auth.includes('APIKEY ') && auth.split('APIKEY ')[1]
     if (!apiKey) {
@@ -917,9 +919,32 @@ export class API {
       res.status(400).send(`No POST body submitted`)
       return
     }
+    const ip: string = req.body.ip || req.ip
+    const port: number = req.body.port
+    if (apiData.id != null) {
+      const servers = await Database.getNet64Servers([{
+        $match: {
+          _id: new ObjectID(apiData.id),
+          updated: {
+            $gte: Math.trunc(Date.now() / 1000) - 15
+          }
+        }
+      }])
+      const server = servers[0]
+      if (!server) {
+        if (!await portCheck(req, res, ip, port)) {
+          return
+        }
+      }
+    } else {
+      if (!await portCheck(req, res, ip, port)) {
+        return
+      }
+    }
+
     const server: any = {}
-    if (req.body.ip != null) server.ip = req.body.ip
-    if (req.body.port != null && typeof req.body.port === 'number') server.port = req.body.port
+    server.ip = ip
+    server.port = port
     if (req.body.name != null) {
       server.name = req.body.name.substr(0, 40)
     }
@@ -945,8 +970,9 @@ export class API {
     server.owner = account._id
     server.ownername = account.username
     server.updated = Math.trunc(Date.now() / 1000)
-    Account.updateNet64Server(account, server)
-    res.json({})
+    server.isDedicated = req.body.isDedicated || false
+    const id = await Account.updateNet64Server(account, server)
+    res.json({ id })
   }
 
   public static async blogPost (req: any, res: any): Promise<void> {

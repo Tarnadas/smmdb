@@ -17,6 +17,7 @@ import * as qs from 'querystring'
 
 import renderer from '../shared/renderer'
 
+import routes from './routes'
 import { Account } from './Account'
 import { Course } from './Course'
 import { API } from './scripts/api'
@@ -129,6 +130,8 @@ async function main (): Promise<void> {
       next()
     })
   }
+
+  app.use('/api/v2', routes)
 
   app.use('/courseimg/:id*?', async (req, res): Promise<void> => {
     const [id, full] = req.params.id.split('.')[0].split('_')
@@ -304,7 +307,7 @@ async function main (): Promise<void> {
     } else if (apiCall === 'uploadimage64') {
       API.uploadImage64(req, res)
     } else if (apiCall === 'net64server') {
-      API.sendNet64Server(req, res)
+      API.sendNet64Server(req, res, apiData)
     } else if (apiCall === 'blogpost') {
       API.blogPost(req, res)
     } else {

@@ -3,6 +3,20 @@ import styled from 'styled-components'
 export const App = styled.div`
   width: 100%;
   height: 100%;
+
+  .global-hidden {
+    display: none;
+  }
+
+  .markdown img {
+    max-width: 100%;
+    max-height: 200px;
+  }
+
+  .markdown a {
+    color: #0001A7;
+    cursor: pointer;
+  }
 `
 
 export const Main = styled.div`

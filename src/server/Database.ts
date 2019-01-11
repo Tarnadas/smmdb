@@ -277,7 +277,8 @@ export abstract class Database {
       },
       {
         $sort: {
-          playerCount: -1
+          playerCount: -1,
+          isDedicated: -1
         }
       }
     ]

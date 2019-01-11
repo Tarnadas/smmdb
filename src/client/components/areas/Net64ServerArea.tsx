@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 
 import { resolve } from 'url'
 
-import { Net64ServerPanel } from '../panels/Net64ServerPanel'
+import { Net64ServerPanel } from '../../modules/net64/Net64ServerPanel'
 import { ScreenSize } from '../../reducers/mediaQuery'
 
 class Area extends React.PureComponent<any, any> {

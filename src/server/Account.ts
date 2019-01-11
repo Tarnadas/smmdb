@@ -86,12 +86,13 @@ export abstract class Account {
     await Database.updateAccount(account._id, update)
   }
 
-  public static async updateNet64Server (account: any, server: any): Promise<any> {
-    const s = await Database.getNet64Server(account._id)
-    if (s) {
-      Database.updateNet64Server(s._id, server)
+  public static async updateNet64Server (account: any, server: any): Promise<string> {
+    const _server = await Database.getNet64Server(account._id)
+    if (_server) {
+      Database.updateNet64Server(_server._id, server)
+      return _server._id
     } else {
-      Database.insertNet64Server(server)
+      return (await Database.insertNet64Server(server)).insertedId
     }
   }
 
