@@ -40,7 +40,7 @@ export async function portCheck (req: Request, res: Response, ip: any, port: any
     res.status(400).send(`Port is not a number: ${port}`)
     return false
   }
-  if (!hasPortOpen(ip, port)) {
+  if (!await hasPortOpen(ip, port)) {
     res.status(400).send(`Port is closed`)
     return false
   }
@@ -53,18 +53,22 @@ async function hasPortOpen (ip: string, port: number): Promise<boolean> {
       const ws = new WebSocket(`ws://${ip}:${port}`)
 
       ws.on('open', () => {
+        if (ws.readyState >= ws.CLOSING) return
         ws.close()
         resolve(true)
       })
       ws.on('error', () => {
+        if (ws.readyState >= ws.CLOSING) return
         ws.close()
         resolve(false)
       })
       setTimeout(() => {
+        if (ws.readyState >= ws.CLOSING) return
         ws.close()
         resolve(false)
-      }, 10000)
-    } catch (err) {}
-    resolve(false)
+      }, 2000)
+    } catch (err) {
+      resolve(false)
+    }
   })
 }

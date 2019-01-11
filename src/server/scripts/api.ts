@@ -932,14 +932,10 @@ export class API {
       }])
       const server = servers[0]
       if (!server) {
-        if (!await portCheck(req, res, ip, port)) {
-          return
-        }
+        if (!await portCheck(req, res, ip, port)) return
       }
     } else {
-      if (!await portCheck(req, res, ip, port)) {
-        return
-      }
+      if (!await portCheck(req, res, ip, port)) return
     }
 
     const server: any = {}
