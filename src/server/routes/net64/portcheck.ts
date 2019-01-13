@@ -7,11 +7,8 @@ const router = Router()
 
 router.get('/', async (req, res) => {
   const ip = req.ip.replace('::ffff:', '')
-  console.log('IP', ip, req.ip)
   const port = req.query.port
-  console.log('CHECK')
-  if (!await portCheck(req, res, ip, port)) return
-  console.log('CHECK SUCCEED')
+  if (!(await portCheck(req, res, ip, port))) return
   const geo = lookup(ip) as Lookup | null
   res.json({
     ip,
@@ -53,27 +50,26 @@ export async function portCheck (req: Request, res: Response, ip: any, port: any
 async function hasPortOpen (ip: string, port: number): Promise<boolean> {
   return new Promise<boolean>((resolve) => {
     try {
-      console.log(`ws://${ip}:${port}`)
       const ws = new WebSocket(`ws://${ip}:${port}`)
 
       ws.on('open', () => {
-        console.error('OPEN')
-        if (ws.readyState >= ws.CLOSING) return
-        ws.close()
+        try {
+          ws.close()
+        } catch (err) {}
         resolve(true)
       })
-      ws.on('error', (err) => {
-        console.error('ERR', err)
-        if (ws.readyState >= ws.CLOSING) return
-        ws.close()
+      ws.on('error', () => {
+        try {
+          ws.close()
+        } catch (err) {}
         resolve(false)
       })
       setTimeout(() => {
-        console.error('TIMEOUT')
-        if (ws.readyState >= ws.CLOSING) return
-        ws.close()
+        try {
+          ws.close()
+        } catch (err) {}
         resolve(false)
-      }, 2000)
+      }, 10000)
     } catch (err) {
       resolve(false)
     }
