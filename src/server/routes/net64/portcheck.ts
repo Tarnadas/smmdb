@@ -5,10 +5,10 @@ import { lookup, Lookup } from 'geoip-lite'
 
 const router = Router()
 
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   const ip = req.ip.replace('::ffff:', '')
   const port = req.query.port
-  if (!portCheck(req, res, ip, port)) return
+  if (!await portCheck(req, res, ip, port)) return
   const geo = lookup(ip) as Lookup | null
   res.json({
     ip,
