@@ -1,12 +1,6 @@
 import { MongoClient, ObjectID, Db, Collection, UpdateWriteOpResult, DeleteWriteOpResultObject } from 'mongodb'
+
 import { Account } from './Account'
-// import jimp from 'jimp'
-/* import imageminWebp from 'imagemin-webp'
-import ProgressBar from 'progress'
-
-import fs from 'fs'
-import path from 'path' */
-
 import { log } from './scripts/util'
 import { Match } from '../models/Match'
 
@@ -81,31 +75,6 @@ export abstract class Database {
       this.blog = this.database.collection('blog')
       this.similarity = this.database.collection('similarity')
     }
-    /* const imgPath = path.join(__dirname, 'img')
-    const optPath = path.join(__dirname, 'opt')
-    if (!fs.existsSync(imgPath)) fs.mkdirSync(imgPath)
-    if (!fs.existsSync(optPath)) fs.mkdirSync(optPath)
-    const entries = await this.courseData.find().toArray()
-    console.log()
-    const bar = new ProgressBar(':bar :percent :current/:total  :etas', {
-      total: entries.length
-    })
-    for (let entry of entries) {
-      const webp = await imageminWebp({
-        quality: 80,
-        method: 6
-      })(entry.thumbnail.buffer)
-      const webpPreview = await imageminWebp({
-        quality: 80,
-        method: 6
-      })(entry.thumbnailPreview.buffer)
-      await this.courseData.updateOne({ _id: ObjectID(entry._id) }, { $set: {
-        thumbnailWebp: webp,
-        thumbnailPreviewWebp: webpPreview
-      } })
-      bar.tick()
-    }
-    console.log() */
   }
 
   public static async addCourse (course: any): Promise<number> {
