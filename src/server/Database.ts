@@ -11,7 +11,7 @@ type SimilartySchema = {
   similarCourses: Match[]
 }
 
-export abstract class Database {
+export class Database {
   private static database?: Db
 
   private static courses: any
@@ -52,28 +52,46 @@ export abstract class Database {
       throw new Error()
     }
 
+    Database.initCollections(this.database)
+    Database.setCollections(this.database, isTest)
+  }
+
+  private static async initCollections (database: Db) {
+    const collections = (await database.collections()).map(collection => collection.collectionName)
+    if (!collections.includes('courses')) database.createCollection('courses')
+    if (!collections.includes('courseData')) database.createCollection('courseData')
+    if (!collections.includes('courses64')) database.createCollection('courses64')
+    if (!collections.includes('accounts')) database.createCollection('accounts')
+    if (!collections.includes('stars')) database.createCollection('stars')
+    if (!collections.includes('stars64')) database.createCollection('stars64')
+    if (!collections.includes('net64')) database.createCollection('net64')
+    if (!collections.includes('blog')) database.createCollection('blog')
+    if (!collections.includes('similarity')) database.createCollection('similarity')
+  }
+
+  private static async setCollections (database: Db, isTest: boolean) {
     if (isTest) {
       try {
-        await this.database.collection('coursesTest').drop()
+        await database.collection('coursesTest').drop()
       } catch (err) {}
       try {
-        await this.database.collection('accountsTest').drop()
+        await database.collection('accountsTest').drop()
       } catch (err) {}
-      this.courses = this.database.collection('coursesTest')
-      this.courses64 = this.database.collection('courses64Test')
-      this.accounts = this.database.collection('accountsTest')
-      this.stars = this.database.collection('starsTest')
-      this.stars64 = this.database.collection('stars64Test')
+      this.courses = database.collection('coursesTest')
+      this.courses64 = database.collection('courses64Test')
+      this.accounts = database.collection('accountsTest')
+      this.stars = database.collection('starsTest')
+      this.stars64 = database.collection('stars64Test')
     } else {
-      this.courses = this.database.collection('courses')
-      this.courseData = this.database.collection('courseData')
-      this.courses64 = this.database.collection('courses64')
-      this.accounts = this.database.collection('accounts')
-      this.stars = this.database.collection('stars')
-      this.stars64 = this.database.collection('stars64')
-      this.net64 = this.database.collection('net64')
-      this.blog = this.database.collection('blog')
-      this.similarity = this.database.collection('similarity')
+      this.courses = database.collection('courses')
+      this.courseData = database.collection('courseData')
+      this.courses64 = database.collection('courses64')
+      this.accounts = database.collection('accounts')
+      this.stars = database.collection('stars')
+      this.stars64 = database.collection('stars64')
+      this.net64 = database.collection('net64')
+      this.blog = database.collection('blog')
+      this.similarity = database.collection('similarity')
     }
   }
 
