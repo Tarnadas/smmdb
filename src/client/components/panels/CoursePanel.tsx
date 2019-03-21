@@ -723,7 +723,8 @@ class Panel extends React.PureComponent<any, any> {
                 }
                 <img ref={(qr): void => {
                   if (!qr) return
-                  QRCode.toDataURL(resolve(process.env.DOMAIN || '', `/api/downloadcourse?id=${course.id}&type=3ds`),
+                  const dataUrl = resolve(process.env.DOMAIN || '', `/api/downloadcourse?id=${course.id}&type=3ds`)
+                  QRCode.toDataURL(dataUrl,
                     (err: any, url: any): void => {
                       if (err) console.error(err)
                       qr.src = url
