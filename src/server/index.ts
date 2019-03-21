@@ -184,6 +184,7 @@ async function main (): Promise<void> {
       verifier.verify(idToken, clientId, async (err: Error, tokenInfo: any): Promise<void> => {
         if (err) {
           res.status(400).send('idToken not verified')
+          return
         }
 
         // create account if it does not exist
