@@ -18,7 +18,6 @@ import {
 } from './RouteLoading'
 
 import { ScreenSize } from '../../reducers/mediaQuery'
-import { Net64View } from './Net64View'
 
 class View extends React.PureComponent<any, any> {
   public componentDidUpdate (prevProps: any): void {
@@ -71,12 +70,6 @@ class View extends React.PureComponent<any, any> {
             setFetchCourses={this.props.setFetchCourses}
             isServer={this.props.isServer}
           />
-        )} />
-        <Route path='/net64' render={(): JSX.Element => (
-          <Net64View isServer={this.props.isServer} />
-        )} />
-        <Route path='/sm64o' render={(): JSX.Element => (
-          <Net64View isServer={this.props.isServer} />
         )} />
         <Route path='/blog' render={(): JSX.Element => (
           <BlogView isServer={this.props.isServer} />

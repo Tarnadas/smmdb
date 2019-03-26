@@ -63,12 +63,6 @@ class SocialView extends React.PureComponent<any, any> {
               iconColor='bright'
             />
             <SMMButton
-              link='https://reddit.com/r/Net64' blank
-              text='Net64 Reddit'
-              iconSrc='/img/reddit.svg'
-              iconColor='bright'
-            />
-            <SMMButton
               link='https://discord.gg/SPZsgSe' blank
               text='Discord'
               iconSrc='/img/discord.svg'

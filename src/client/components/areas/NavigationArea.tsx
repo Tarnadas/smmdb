@@ -80,7 +80,8 @@ class Area extends React.PureComponent<any, any> {
         />
         <NavigationButton
           onClick={this.props.onClick}
-          link='/net64'
+          link='https://net64-mod.github.io/'
+          blank
           text='Net64'
           iconSrc='/img/net64.png'
           iconColor='dark'

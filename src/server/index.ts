@@ -316,7 +316,11 @@ async function main (): Promise<void> {
     }
   })
 
-  app.use('/', async (req, res): Promise<void> => {
+  app.use('/:route?', async (req: express.Request, res: express.Response): Promise<void> => {
+    if (req.params.route === 'net64') {
+      handleNet64Redirect(req, res)
+      return
+    }
     const websiteStats = {
       courses: await Course.getCourseAmount(),
       accounts: await Account.getAccountAmount()
@@ -352,4 +356,8 @@ async function main (): Promise<void> {
   server.listen(process.env.PORT, (): void => {
     log(`Server is listening on port ${process.env.PORT}`)
   })
+}
+
+function handleNet64Redirect (req: express.Request, res: express.Response) {
+  res.redirect(301, 'https://net64-mod.github.io/')
 }

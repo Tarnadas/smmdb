@@ -50,7 +50,7 @@ class MainView extends React.PureComponent<any, any> {
             Welcome to SMMDB!
           </div>
           You can share your Super Mario Maker courses platform independently on this website. Supported platforms are Wii U, 3DS and Cemu. For Cemu there is even a save file editor. Just navigate to &#39;Client&#39;.<br />
-          It also features courses for Super Mario 64 Maker and a server list for Net64+, popular ROM hacks by Kaze Emanuar.<br /><br />
+          It also features courses for Super Mario 64 Maker, a popular ROM hack by Kaze Emanuar.<br /><br />
           To use all features on this website it is recommended to sign in with Google.<br /><br />
           All content on this website is user-created. We do not share any copyrighted stuff.
         </div>
@@ -59,9 +59,9 @@ class MainView extends React.PureComponent<any, any> {
             Affiliates
           </div>
           <SMMButton
-            link='https://reddit.com/r/Net64' blank
-            text='Net64 Reddit'
-            iconSrc='/img/reddit.svg'
+            link='https://discord.gg/GgGUKH8' blank
+            text='Net64 Discord'
+            iconSrc='/img/net64.svg'
             iconColor='bright'
           />
           <SMMButton

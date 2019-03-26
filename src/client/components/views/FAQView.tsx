@@ -97,17 +97,6 @@ class FAQView extends React.PureComponent<any, any> {
             Downloaded courses can be loaded with the emulator&#39;s load state function.
           </div>
           <div style={styles.question}>
-            What is Net64 and what is Net64+?
-          </div>
-          <div style={styles.answer}>
-            Net64 (formerly SM64O) is an <a href='https://github.com/Guad/sm64o' target='_blank'>open sourced</a> program to play Super Mario 64 online multiplayer.
-            There are various people involved in the project, most notably Kaze, who is known for Last Impact and his great influence in the SM64 ROM hacking scene.
-            Some wouldn&#39;t call Net64 a ROM hack, but in fact it works the same as a ROM hack except that its source gets injected into RAM rather than modifying a ROM before playing.
-            This makes it safe to distribute and not be a victim of Nintendo shutting it down.<br />
-            <a href='https://github.com/Tarnadas/net64plus' target='_blank'>Net64+</a> is a modified version of Net64. It uses a different and more performant networking technique. Right now both programs are not compatible with each other, but the client devs are working it.
-            Net64+ also has a <a href='https://github.com/Tarnadas/net64plus-server' target='_blank'>dedicated server software</a>, which makes it extremely easy to host or find servers. There is a server list integrated inside the client, so you will always immediately find servers to play on.
-          </div>
-          <div style={styles.question}>
             I have a question which has not been answered in the FAQ
           </div>
           <div style={styles.answer}>
