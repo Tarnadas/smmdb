@@ -59,8 +59,8 @@ class MainView extends React.PureComponent<any, any> {
             Affiliates
           </div>
           <SMMButton
-            link='https://discord.gg/GgGUKH8' blank
-            text='Net64 Discord'
+            link='https://net64-mod.github.io' blank
+            text='Net64 Website'
             iconSrc='/img/net64.svg'
             iconColor='bright'
           />
