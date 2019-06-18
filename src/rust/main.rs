@@ -1,6 +1,7 @@
 #[macro_use]
 extern crate mongodb;
 
+mod account;
 mod collections;
 mod course;
 mod database;

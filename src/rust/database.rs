@@ -1,9 +1,10 @@
-use crate::course::Course;
+use crate::account::Account;
+use crate::course::{Course, CourseResponse};
 
-use mongodb::coll::options::FindOptions;
 use mongodb::db::ThreadedDatabase;
-use mongodb::{Client, ThreadedClient};
 
+use mongodb::oid::ObjectId;
+use mongodb::{Client, ThreadedClient};
 #[derive(Clone)]
 pub struct Database {
     client: Client,
@@ -14,32 +15,6 @@ impl Database {
         let client = Client::with_uri("mongodb://localhost:27017")
             .expect("Failed to initialize standalone client.");
 
-        // let coll = client.db("test").collection("movies");
-
-        // let doc = doc! {
-        //     "title": "Jaws",
-        //     "array": [ 1, 2, 3 ],
-        // };
-
-        // // Insert document into 'test.movies' collection
-        // coll.insert_one(doc.clone(), None)
-        //     .ok().expect("Failed to insert document.");
-
-        // // Find the document and receive a cursor
-        // let mut cursor = coll.find(Some(doc.clone()), None)
-        //     .ok().expect("Failed to execute find.");
-
-        // let item = cursor.next();
-
-        // // cursor.next() returns an Option<Result<Document>>
-        // match item {
-        //     Some(Ok(doc)) => match doc.get("title") {
-        //         Some(&Bson::String(ref title)) => println!("{}", title),
-        //         _ => panic!("Expected title to be a string!"),
-        //     },
-        //     Some(Err(_)) => panic!("Failed to get next from server!"),
-        //     None => panic!("Server returned no results!"),
-        // }
         Database { client }
     }
 
@@ -52,10 +27,42 @@ impl Database {
             None,
         ) {
             Ok(cursor) => {
-                let course: Vec<Course> = cursor.map(|item| item.unwrap().into()).collect();
+                let course: Vec<CourseResponse> = cursor
+                    .map(|item| {
+                        let course: Course = item.unwrap().into();
+                        let account = self
+                            .get_account(course.get_owner().clone())
+                            .expect("[Database::get_course] account not found");
+                        CourseResponse::from_course(course, account)
+                    })
+                    .collect();
                 serde_json::to_string(&course).unwrap()
             }
             Err(e) => e.to_string(),
         }
+    }
+
+    pub fn get_account(&self, account_id: ObjectId) -> Option<Account> {
+        let accounts = self.client.db("admin").collection("accounts");
+        let mut account_res: Vec<Account> = accounts
+            .find(
+                Some(doc! {
+                    "_id" => account_id
+                }),
+                None,
+            )
+            .unwrap()
+            .map(|item| item.unwrap().into())
+            .collect();
+        account_res.pop()
+    }
+
+    pub fn get_accounts(&self) -> Vec<Account> {
+        let accounts = self.client.db("admin").collection("accounts");
+        accounts
+            .find(None, None)
+            .unwrap()
+            .map(|item| item.unwrap().into())
+            .collect()
     }
 }
