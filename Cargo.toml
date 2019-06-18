@@ -18,3 +18,8 @@ protobuf = "*"
 serde = "1"
 serde_json = "1"
 serde-transcode = "1.1"
+
+[profile]
+[profile.release]
+debug = false
+lto = true
