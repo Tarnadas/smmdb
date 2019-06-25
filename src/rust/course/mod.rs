@@ -28,7 +28,7 @@ pub struct Course {
     width_sub: i32,
     #[serde(skip_serializing_if = "Option::is_none")]
     nintendoid: Option<String>,
-    difficulty: i32,
+    difficulty: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     videoid: Option<String>,
     lastmodified: i32,
@@ -78,9 +78,7 @@ impl From<OrderedDocument> for Course {
                 .get_i32("widthSub")
                 .expect("[Course::from] width_sub unwrap failed"),
             nintendoid: document.get_str("nintendoid").ok().map(|u| u.to_string()),
-            difficulty: document
-                .get_i32("difficulty")
-                .expect("[Course::from] difficulty unwrap failed"),
+            difficulty: document.get_i32("difficulty").ok(),
             videoid: document.get_str("videoid").ok().map(|id| id.to_string()),
             lastmodified: document
                 .get_i32("lastmodified")

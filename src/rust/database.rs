@@ -1,50 +1,67 @@
 use crate::account::Account;
+use crate::collections::Collections;
 use crate::course::{Course, CourseResponse};
+use crate::routes::api;
 
 use mongodb::db::ThreadedDatabase;
-
 use mongodb::oid::ObjectId;
-use mongodb::{Client, ThreadedClient};
-#[derive(Clone)]
+use mongodb::{coll::Collection, Client, ThreadedClient};
+
 pub struct Database {
     client: Client,
+    courses: Collection,
+    accounts: Collection,
 }
 
 impl Database {
     pub fn new() -> Self {
         let client = Client::with_uri("mongodb://localhost:27017")
             .expect("Failed to initialize standalone client.");
+        let courses = client.db("admin").collection(Collections::Courses.as_str());
+        let accounts = client
+            .db("admin")
+            .collection(Collections::Accounts.as_str());
 
-        Database { client }
+        Database {
+            client,
+            courses,
+            accounts,
+        }
     }
 
-    pub fn get_courses(&self) -> String {
-        let courses = self.client.db("admin").collection("courses");
-        match courses.aggregate(
-            vec![doc! {
-                "$limit" => 10
-            }],
-            None,
-        ) {
+    pub fn get_courses(&self, query: api::GetCourses) -> String {
+        match self.courses.aggregate(query.into(), None) {
             Ok(cursor) => {
-                let course: Vec<CourseResponse> = cursor
+                let (account_ids, courses): (Vec<bson::Bson>, Vec<Course>) = cursor
                     .map(|item| {
                         let course: Course = item.unwrap().into();
-                        let account = self
-                            .get_account(course.get_owner().clone())
-                            .expect("[Database::get_course] account not found");
+                        (course.get_owner().clone().into(), course)
+                    })
+                    .unzip();
+
+                let accounts = self.get_accounts(account_ids);
+                let courses: Vec<CourseResponse> = courses
+                    .into_iter()
+                    .map(|course| {
+                        let account = accounts
+                            .iter()
+                            .find(|account| {
+                                account.get_id().to_string() == course.get_owner().to_string()
+                            })
+                            .unwrap();
                         CourseResponse::from_course(course, account)
                     })
                     .collect();
-                serde_json::to_string(&course).unwrap()
+
+                serde_json::to_string(&courses).unwrap()
             }
             Err(e) => e.to_string(),
         }
     }
 
     pub fn get_account(&self, account_id: ObjectId) -> Option<Account> {
-        let accounts = self.client.db("admin").collection("accounts");
-        let mut account_res: Vec<Account> = accounts
+        let mut account_res: Vec<Account> = self
+            .accounts
             .find(
                 Some(doc! {
                     "_id" => account_id
@@ -57,10 +74,16 @@ impl Database {
         account_res.pop()
     }
 
-    pub fn get_accounts(&self) -> Vec<Account> {
-        let accounts = self.client.db("admin").collection("accounts");
-        accounts
-            .find(None, None)
+    pub fn get_accounts(&self, account_ids: Vec<bson::Bson>) -> Vec<Account> {
+        self.accounts
+            .find(
+                Some(doc! {
+                    "_id": {
+                        "$in": account_ids
+                    }
+                }),
+                None,
+            )
             .unwrap()
             .map(|item| item.unwrap().into())
             .collect()

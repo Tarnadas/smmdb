@@ -2,7 +2,7 @@ use mongodb::oid::ObjectId;
 use mongodb::ordered::OrderedDocument;
 use serde::Serialize;
 
-#[derive(Serialize)]
+#[derive(Debug, Serialize)]
 pub struct Account {
     #[serde(rename = "_id")]
     id: ObjectId,
@@ -30,6 +30,10 @@ impl From<OrderedDocument> for Account {
 }
 
 impl Account {
+    pub fn get_id(&self) -> &ObjectId {
+        &self.id
+    }
+
     pub fn get_username(&self) -> &String {
         &self.username
     }

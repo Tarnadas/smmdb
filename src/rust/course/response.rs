@@ -1,12 +1,11 @@
-use crate::account::Account;
 use super::Course;
-
+use crate::account::Account;
 use cemu_smm::proto::SMMCourse::{
     SMMCourse_AutoScroll, SMMCourse_CourseTheme, SMMCourse_GameStyle,
 };
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CourseResponse {
     id: String,
@@ -25,7 +24,7 @@ pub struct CourseResponse {
     width_sub: i32,
     #[serde(skip_serializing_if = "Option::is_none")]
     nintendoid: Option<String>,
-    difficulty: i32,
+    difficulty: Option<i32>,
     #[serde(skip_serializing_if = "Option::is_none")]
     videoid: Option<String>,
     lastmodified: i32,
@@ -39,7 +38,7 @@ pub struct CourseResponse {
 }
 
 impl CourseResponse {
-    pub fn from_course(course: Course, account: Account) -> CourseResponse {
+    pub fn from_course(course: Course, account: &Account) -> CourseResponse {
         CourseResponse {
             id: course.id.to_hex(),
             title: course.title,

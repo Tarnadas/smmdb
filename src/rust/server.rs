@@ -1,8 +1,7 @@
 use crate::database::Database;
 use crate::routes::{api, index};
 
-use actix_web::{middleware, web, App, Error, HttpResponse, HttpServer};
-use cemu_smm::course::Course;
+use actix_web::{middleware, App, HttpServer};
 use std::sync::{Arc, Mutex};
 
 pub struct Server {}
@@ -33,7 +32,7 @@ impl Server {
 }
 
 impl ServerData {
-    pub fn get_courses(&self) -> String {
-        self.database.lock().unwrap().get_courses()
+    pub fn get_courses(&self, query: api::GetCourses) -> String {
+        self.database.lock().unwrap().get_courses(query)
     }
 }
