@@ -1,6 +1,9 @@
 #[macro_use]
 extern crate mongodb;
 
+#[macro_use]
+extern crate failure;
+
 mod account;
 mod collections;
 mod course;

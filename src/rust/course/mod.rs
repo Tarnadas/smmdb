@@ -107,6 +107,7 @@ impl Course {
             1 => Ok(SMMCourse_AutoScroll::SLOW),
             2 => Ok(SMMCourse_AutoScroll::MEDIUM),
             3 => Ok(SMMCourse_AutoScroll::FAST),
+            4 => Ok(SMMCourse_AutoScroll::LOCK),
             _ => Err(ValueAccessError::UnexpectedType),
         }
     }

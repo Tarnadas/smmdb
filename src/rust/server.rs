@@ -32,7 +32,14 @@ impl Server {
 }
 
 impl ServerData {
-    pub fn get_courses(&self, query: api::GetCourses) -> String {
-        self.database.lock().unwrap().get_courses(query)
+    pub fn get_courses(&self, query: api::GetCourses) -> Result<String, api::GetCoursesError> {
+        match query.into() {
+            Ok(query) => Ok(self
+                .database
+                .lock()
+                .expect("[ServerData::get_courses] lock() failed")
+                .get_courses(query)),
+            Err(error) => Err(error),
+        }
     }
 }

@@ -1,10 +1,10 @@
 use crate::account::Account;
 use crate::collections::Collections;
 use crate::course::{Course, CourseResponse};
-use crate::routes::api;
 
 use mongodb::db::ThreadedDatabase;
 use mongodb::oid::ObjectId;
+use mongodb::ordered::OrderedDocument;
 use mongodb::{coll::Collection, Client, ThreadedClient};
 
 pub struct Database {
@@ -29,8 +29,8 @@ impl Database {
         }
     }
 
-    pub fn get_courses(&self, query: api::GetCourses) -> String {
-        match self.courses.aggregate(query.into(), None) {
+    pub fn get_courses(&self, query: Vec<OrderedDocument>) -> String {
+        match self.courses.aggregate(query, None) {
             Ok(cursor) => {
                 let (account_ids, courses): (Vec<bson::Bson>, Vec<Course>) = cursor
                     .map(|item| {
