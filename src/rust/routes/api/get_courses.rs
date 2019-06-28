@@ -4,7 +4,7 @@ use actix_web::{error::ResponseError, get, http::StatusCode, web, HttpRequest, H
 use cemu_smm::proto::SMMCourse::{
     SMMCourse_AutoScroll, SMMCourse_CourseTheme, SMMCourse_GameStyle,
 };
-use mongodb::{oid::{self, ObjectId}, ordered::OrderedDocument, Bson};
+use mongodb::{oid::ObjectId, ordered::OrderedDocument, Bson};
 use serde::Deserialize;
 use serde_qs::actix::QsQuery;
 
@@ -56,7 +56,8 @@ impl GetCourses {
             res.insert_bson(
                 "_id".to_string(),
                 Bson::ObjectId(
-                    ObjectId::with_string(id).map_err(|e| GetCoursesError::IdDeserializeError(e))?,
+                    ObjectId::with_string(id)
+                        .map_err(|_| GetCoursesError::DeserializeError("id".to_string()))?,
                 ),
             );
         }
@@ -66,7 +67,7 @@ impl GetCourses {
                 .iter()
                 .map(|id| -> Result<Bson, GetCoursesError> {
                     let object_id = ObjectId::with_string(id)
-                        .map_err(|e| GetCoursesError::IdDeserializeError(e))?;
+                        .map_err(|_| GetCoursesError::DeserializeError("ids".to_string()))?;
                     Ok(Bson::ObjectId(object_id))
                 })
                 .filter_map(Result::ok)
@@ -79,9 +80,30 @@ impl GetCourses {
             );
         }
 
-        // if let Some(title) = self.title {
-        //     res.insert_bson("title", )
-        // }
+        if let Some(title) = self.title.clone() {
+            res.insert_bson(
+                "title".to_string(),
+                Bson::RegExp(format!(".*{}.*", title), "i".to_string()),
+            );
+        }
+
+        if let Some(maker) = self.maker.clone() {
+            res.insert_bson(
+                "maker".to_string(),
+                Bson::RegExp(format!(".*{}.*", maker), "i".to_string()),
+            );
+        }
+
+        if let Some(owner) = &self.owner {
+            res.insert_bson(
+                "owner".to_string(),
+                Bson::ObjectId(
+                    ObjectId::with_string(owner)
+                        .map_err(|_| GetCoursesError::DeserializeError("owner".to_string()))?,
+                ),
+            );
+        }
+
         match res.is_empty() {
             true => Ok(None),
             false => Ok(Some(res)),
@@ -138,8 +160,8 @@ pub enum GetCoursesError {
     LimitTooLow,
     #[fail(display = "limit must be at most 120")]
     LimitTooHigh,
-    #[fail(display = "could not deserialize id fom hex string")]
-    IdDeserializeError(oid::Error),
+    #[fail(display = "could not deserialize {} fom hex string", _0)]
+    DeserializeError(String),
 }
 
 impl ResponseError for GetCoursesError {
@@ -147,7 +169,7 @@ impl ResponseError for GetCoursesError {
         match *self {
             GetCoursesError::LimitTooLow => HttpResponse::new(StatusCode::BAD_REQUEST),
             GetCoursesError::LimitTooHigh => HttpResponse::new(StatusCode::BAD_REQUEST),
-            GetCoursesError::IdDeserializeError(_) => HttpResponse::new(StatusCode::BAD_REQUEST),
+            GetCoursesError::DeserializeError(_) => HttpResponse::new(StatusCode::BAD_REQUEST),
         }
     }
 }
