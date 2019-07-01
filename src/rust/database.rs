@@ -46,7 +46,7 @@ impl Database {
                         let account = accounts
                             .iter()
                             .find(|account| {
-                                account.get_id().to_string() == course.get_owner().to_string()
+                                account.get_id_ref().to_string() == course.get_owner().to_string()
                             })
                             .unwrap();
                         CourseResponse::from_course(course, account)
@@ -72,6 +72,14 @@ impl Database {
             .map(|item| item.unwrap().into())
             .collect();
         account_res.pop()
+    }
+
+    pub fn find_account(&self, filter: OrderedDocument) -> Option<Account> {
+        dbg!(&filter);
+        self.accounts
+            .find_one(Some(filter), None)
+            .unwrap()
+            .map(|item| item.into())
     }
 
     pub fn get_accounts(&self, account_ids: Vec<bson::Bson>) -> Vec<Account> {

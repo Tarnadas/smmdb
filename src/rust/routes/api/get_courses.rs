@@ -1,5 +1,5 @@
 use crate::server::ServerData;
-
+use crate::Database;
 use actix_web::{error::ResponseError, get, http::StatusCode, web, HttpRequest, HttpResponse};
 use cemu_smm::proto::SMMCourse::{
     SMMCourse_AutoScroll, SMMCourse_CourseTheme, SMMCourse_GameStyle,
@@ -7,6 +7,7 @@ use cemu_smm::proto::SMMCourse::{
 use mongodb::{oid::ObjectId, ordered::OrderedDocument, Bson};
 use serde::Deserialize;
 use serde_qs::actix::QsQuery;
+use std::sync::MutexGuard;
 
 #[get("/getcourses")]
 pub fn get_courses(
@@ -50,7 +51,34 @@ pub struct GetCourses {
 }
 
 impl GetCourses {
-    fn get_match(&self) -> Result<Option<OrderedDocument>, GetCoursesError> {
+    pub fn into_ordered_document(
+        self,
+        database: &MutexGuard<Database>,
+    ) -> Result<Vec<OrderedDocument>, GetCoursesError> {
+        let mut pipeline = vec![];
+
+        if let Some(pipeline_match) = self.get_match(database)? {
+            pipeline.push(doc! { "$match" => pipeline_match });
+        }
+
+        let limit = self.get_limit()?;
+        pipeline.push(doc! {
+            "$limit" => limit
+        });
+
+        if let Some(skip) = self.skip {
+            pipeline.push(doc! {
+                "$skip" => skip
+            });
+        }
+
+        Ok(pipeline)
+    }
+
+    fn get_match(
+        &self,
+        database: &MutexGuard<Database>,
+    ) -> Result<Option<OrderedDocument>, GetCoursesError> {
         let mut res = doc! {};
         if let Some(id) = &self.id {
             res.insert_bson(
@@ -104,6 +132,18 @@ impl GetCourses {
             );
         }
 
+        if let Some(uploader) = &self.uploader {
+            let filter = doc! {
+                "username" => Bson::RegExp(format!("^{}$", uploader), "i".to_string())
+            };
+            match database.find_account(filter) {
+                Some(account) => {
+                    res.insert_bson("owner".to_string(), Bson::ObjectId(account.get_id()));
+                }
+                None => return Err(GetCoursesError::UploaderUnknown(uploader.clone())),
+            };
+        }
+
         match res.is_empty() {
             true => Ok(None),
             false => Ok(Some(res)),
@@ -131,29 +171,6 @@ impl Default for Limit {
     }
 }
 
-impl Into<Result<Vec<OrderedDocument>, GetCoursesError>> for GetCourses {
-    fn into(self) -> Result<Vec<OrderedDocument>, GetCoursesError> {
-        let mut pipeline = vec![];
-
-        if let Some(pipeline_match) = self.get_match()? {
-            pipeline.push(doc! { "$match" => pipeline_match });
-        }
-
-        let limit = self.get_limit()?;
-        pipeline.push(doc! {
-            "$limit" => limit
-        });
-
-        if let Some(skip) = self.skip {
-            pipeline.push(doc! {
-                "$skip" => skip
-            });
-        }
-
-        Ok(pipeline)
-    }
-}
-
 #[derive(Fail, Debug)]
 pub enum GetCoursesError {
     #[fail(display = "limit must be at least 1")]
@@ -162,6 +179,8 @@ pub enum GetCoursesError {
     LimitTooHigh,
     #[fail(display = "could not deserialize {} fom hex string", _0)]
     DeserializeError(String),
+    #[fail(display = "uploader with name {} unknown", _0)]
+    UploaderUnknown(String),
 }
 
 impl ResponseError for GetCoursesError {
@@ -170,6 +189,7 @@ impl ResponseError for GetCoursesError {
             GetCoursesError::LimitTooLow => HttpResponse::new(StatusCode::BAD_REQUEST),
             GetCoursesError::LimitTooHigh => HttpResponse::new(StatusCode::BAD_REQUEST),
             GetCoursesError::DeserializeError(_) => HttpResponse::new(StatusCode::BAD_REQUEST),
+            GetCoursesError::UploaderUnknown(_) => HttpResponse::new(StatusCode::BAD_REQUEST),
         }
     }
 }

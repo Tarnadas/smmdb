@@ -30,7 +30,11 @@ impl From<OrderedDocument> for Account {
 }
 
 impl Account {
-    pub fn get_id(&self) -> &ObjectId {
+    pub fn get_id(self) -> ObjectId {
+        self.id
+    }
+
+    pub fn get_id_ref(&self) -> &ObjectId {
         &self.id
     }
 

@@ -33,12 +33,12 @@ impl Server {
 
 impl ServerData {
     pub fn get_courses(&self, query: api::GetCourses) -> Result<String, api::GetCoursesError> {
-        match query.into() {
-            Ok(query) => Ok(self
-                .database
-                .lock()
-                .expect("[ServerData::get_courses] lock() failed")
-                .get_courses(query)),
+        let database = self
+            .database
+            .lock()
+            .expect("[ServerData::get_courses] lock() failed");
+        match query.into_ordered_document(&database) {
+            Ok(query) => Ok(database.get_courses(query)),
             Err(error) => Err(error),
         }
     }
