@@ -5,6 +5,7 @@ use cemu_smm::proto::SMMCourse::{
     SMMCourse_AutoScroll, SMMCourse_CourseTheme, SMMCourse_GameStyle,
 };
 use mongodb::{oid::ObjectId, ordered::OrderedDocument, Bson};
+use protobuf::ProtobufEnum;
 use serde::Deserialize;
 use serde_qs::actix::QsQuery;
 use std::sync::MutexGuard;
@@ -142,6 +143,45 @@ impl GetCourses {
                 }
                 None => return Err(GetCoursesError::UploaderUnknown(uploader.clone())),
             };
+        }
+
+        if let Some(game_styles) = &self.game_style {
+            let game_styles: Vec<Bson> = game_styles
+                .iter()
+                .map(|game_style| Bson::I32(game_style.value()))
+                .collect();
+            res.insert_bson(
+                "gameStyle".to_string(),
+                Bson::Document(doc! {
+                    "$in" => game_styles
+                }),
+            );
+        }
+
+        if let Some(course_themes) = &self.course_theme {
+            let course_themes: Vec<Bson> = course_themes
+                .iter()
+                .map(|course_theme| Bson::I32(course_theme.value()))
+                .collect();
+            res.insert_bson(
+                "courseTheme".to_string(),
+                Bson::Document(doc! {
+                    "$in" => course_themes
+                }),
+            );
+        }
+
+        if let Some(course_themes) = &self.course_theme_sub {
+            let course_themes: Vec<Bson> = course_themes
+                .iter()
+                .map(|course_theme| Bson::I32(course_theme.value()))
+                .collect();
+            res.insert_bson(
+                "courseThemeSub".to_string(),
+                Bson::Document(doc! {
+                    "$in" => course_themes
+                }),
+            );
         }
 
         match res.is_empty() {
