@@ -82,13 +82,7 @@ impl GetCourses {
     ) -> Result<Option<OrderedDocument>, GetCoursesError> {
         let mut res = doc! {};
         if let Some(id) = &self.id {
-            res.insert_bson(
-                "_id".to_string(),
-                Bson::ObjectId(
-                    ObjectId::with_string(id)
-                        .map_err(|_| GetCoursesError::DeserializeError("id".to_string()))?,
-                ),
-            );
+            GetCourses::insert_objectid(&mut res, "_id".to_string(), id)?;
         }
 
         if let Some(ids) = self.ids.clone() {
@@ -110,27 +104,15 @@ impl GetCourses {
         }
 
         if let Some(title) = self.title.clone() {
-            res.insert_bson(
-                "title".to_string(),
-                Bson::RegExp(format!(".*{}.*", title), "i".to_string()),
-            );
+            GetCourses::insert_regexp(&mut res, "title".to_string(), title);
         }
 
         if let Some(maker) = self.maker.clone() {
-            res.insert_bson(
-                "maker".to_string(),
-                Bson::RegExp(format!(".*{}.*", maker), "i".to_string()),
-            );
+            GetCourses::insert_regexp(&mut res, "maker".to_string(), maker);
         }
 
         if let Some(owner) = &self.owner {
-            res.insert_bson(
-                "owner".to_string(),
-                Bson::ObjectId(
-                    ObjectId::with_string(owner)
-                        .map_err(|_| GetCoursesError::DeserializeError("owner".to_string()))?,
-                ),
-            );
+            GetCourses::insert_objectid(&mut res, "owner".to_string(), owner)?;
         }
 
         if let Some(uploader) = &self.uploader {
@@ -199,6 +181,27 @@ impl GetCourses {
             return Err(GetCoursesError::LimitTooHigh);
         }
         Ok(limit + self.skip.unwrap_or_default())
+    }
+
+    fn insert_regexp(doc: &mut OrderedDocument, key: String, regexp: String) {
+        doc.insert_bson(
+            key,
+            Bson::RegExp(format!(".*{}.*", regexp), "i".to_string()),
+        );
+    }
+
+    fn insert_objectid(
+        doc: &mut OrderedDocument,
+        key: String,
+        oid: &str,
+    ) -> Result<(), GetCoursesError> {
+        doc.insert_bson(
+            key.clone(),
+            Bson::ObjectId(
+                ObjectId::with_string(oid).map_err(|_| GetCoursesError::DeserializeError(key))?,
+            ),
+        );
+        Ok(())
     }
 }
 
