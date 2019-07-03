@@ -1,5 +1,6 @@
 use crate::server::ServerData;
 use crate::Database;
+
 use actix_web::{error::ResponseError, get, http::StatusCode, web, HttpRequest, HttpResponse};
 use cemu_smm::proto::SMMCourse::{
     SMMCourse_AutoScroll, SMMCourse_CourseTheme, SMMCourse_GameStyle,
@@ -128,42 +129,23 @@ impl GetCourses {
         }
 
         if let Some(game_styles) = &self.game_style {
-            let game_styles: Vec<Bson> = game_styles
-                .iter()
-                .map(|game_style| Bson::I32(game_style.value()))
-                .collect();
-            res.insert_bson(
-                "gameStyle".to_string(),
-                Bson::Document(doc! {
-                    "$in" => game_styles
-                }),
-            );
+            GetCourses::insert_enum(&mut res, "gameStyle".to_string(), game_styles);
         }
 
         if let Some(course_themes) = &self.course_theme {
-            let course_themes: Vec<Bson> = course_themes
-                .iter()
-                .map(|course_theme| Bson::I32(course_theme.value()))
-                .collect();
-            res.insert_bson(
-                "courseTheme".to_string(),
-                Bson::Document(doc! {
-                    "$in" => course_themes
-                }),
-            );
+            GetCourses::insert_enum(&mut res, "courseTheme".to_string(), course_themes);
         }
 
         if let Some(course_themes) = &self.course_theme_sub {
-            let course_themes: Vec<Bson> = course_themes
-                .iter()
-                .map(|course_theme| Bson::I32(course_theme.value()))
-                .collect();
-            res.insert_bson(
-                "courseThemeSub".to_string(),
-                Bson::Document(doc! {
-                    "$in" => course_themes
-                }),
-            );
+            GetCourses::insert_enum(&mut res, "courseThemeSub".to_string(), course_themes);
+        }
+
+        if let Some(auto_scrolls) = &self.auto_scroll {
+            GetCourses::insert_enum(&mut res, "autoScroll".to_string(), auto_scrolls);
+        }
+
+        if let Some(auto_scrolls) = &self.auto_scroll_sub {
+            GetCourses::insert_enum(&mut res, "autoScrollSub".to_string(), auto_scrolls);
         }
 
         match res.is_empty() {
@@ -202,6 +184,19 @@ impl GetCourses {
             ),
         );
         Ok(())
+    }
+
+    fn insert_enum<T>(doc: &mut OrderedDocument, key: String, enums: &Vec<T>)
+    where
+        T: ProtobufEnum,
+    {
+        let enums: Vec<Bson> = enums.iter().map(|val| Bson::I32(val.value())).collect();
+        doc.insert_bson(
+            key.to_string(),
+            Bson::Document(doc! {
+                "$in" => enums
+            }),
+        );
     }
 }
 
