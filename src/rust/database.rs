@@ -6,6 +6,7 @@ use mongodb::db::ThreadedDatabase;
 use mongodb::oid::ObjectId;
 use mongodb::ordered::OrderedDocument;
 use mongodb::{coll::Collection, Client, ThreadedClient};
+use std::env;
 
 pub struct Database {
     client: Client,
@@ -15,7 +16,15 @@ pub struct Database {
 
 impl Database {
     pub fn new() -> Self {
-        let client = Client::with_uri("mongodb://localhost:27017")
+        let host = match env::var("DOCKER") {
+            Ok(val) => match val.as_ref() {
+                "true" | "1" => "mongodb",
+                _ => "localhost",
+            },
+            Err(_) => "localhost",
+        };
+        dbg!(host);
+        let client = Client::with_uri(&format!("mongodb://{}:27017", host))
             .expect("Failed to initialize standalone client.");
         let courses = client.db("admin").collection(Collections::Courses.as_str());
         let accounts = client

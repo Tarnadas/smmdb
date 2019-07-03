@@ -31,6 +31,7 @@ services:
       - LETSENCRYPT_HOST=api.smmdb.net
       - LETSENCRYPT_EMAIL=mreder1289@gmail.com
       - VIRTUAL_PORT=3030
+      - DOCKER=true
     links:
       - mongodb
     depends_on:
