@@ -25,7 +25,7 @@ impl Server {
                 .service(index)
                 .service(api::service())
         })
-        .bind("127.0.0.1:8080")?
+        .bind("127.0.0.1:3030")?
         .workers(1)
         .run()
     }

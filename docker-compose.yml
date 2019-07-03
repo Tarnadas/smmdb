@@ -1,4 +1,4 @@
-version: '3.6'
+version: "3.6"
 networks:
   default:
     external:
@@ -19,6 +19,21 @@ services:
     depends_on:
       - mongodb
     restart: always
+  api:
+    build: ./src/rust
+    ports:
+      - "127.0.0.1:3030:3030"
+    working_dir: /usr/src/app
+    environment:
+      - VIRTUAL_HOST=api.smmdb.net
+      - LETSENCRYPT_HOST=api.smmdb.net
+      - LETSENCRYPT_EMAIL=mreder1289@gmail.com
+      - VIRTUAL_PORT=3030
+    links:
+      - mongodb
+    depends_on:
+      - mongodb
+    restart: always
   mongodb:
     image: mongo:3.4
     container_name: "mongodb"
@@ -31,5 +46,4 @@ services:
       - "127.0.0.1:27017:27017"
     restart: always
 volumes:
-  mongodatabase:  
-
+  mongodatabase:
