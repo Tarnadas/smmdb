@@ -36,20 +36,20 @@ pub struct GetCourses {
     course_theme_sub: Option<Vec<SMMCourse_CourseTheme>>,
     auto_scroll: Option<Vec<SMMCourse_AutoScroll>>,
     auto_scroll_sub: Option<Vec<SMMCourse_AutoScroll>>,
-    width_from: Option<i32>,
-    width_to: Option<i32>,
-    width_sub_from: Option<i32>,
-    width_sub_to: Option<i32>,
-    nintendoid: Option<String>,
-    difficulty_from: Option<u32>,
-    difficulty_to: Option<u32>,
-    videoid: Option<String>,
-    lastmodified_from: Option<u32>,
-    lastmodified_to: Option<u32>,
-    uploaded_from: Option<u32>,
-    uploaded_to: Option<u32>,
-    stars_from: Option<u32>,
-    stars_to: Option<u32>,
+    width_gte: Option<i32>,
+    width_lte: Option<i32>,
+    width_sub_gte: Option<i32>,
+    width_sub_lte: Option<i32>,
+    nintendo_id: Option<String>,
+    difficulty_gte: Option<i32>,
+    difficulty_lte: Option<i32>,
+    video_id: Option<String>,
+    lastmodified_gte: Option<i64>,
+    lastmodified_lte: Option<i64>,
+    uploaded_gte: Option<i64>,
+    uploaded_lte: Option<i64>,
+    stars_gte: Option<i32>,
+    stars_lte: Option<i32>,
 }
 
 impl GetCourses {
@@ -148,6 +148,38 @@ impl GetCourses {
             GetCourses::insert_enum(&mut res, "autoScrollSub".to_string(), auto_scrolls);
         }
 
+        GetCourses::insert_boundaries(
+            &mut res,
+            "width".to_string(),
+            self.width_gte,
+            self.width_lte,
+        );
+
+        GetCourses::insert_boundaries(
+            &mut res,
+            "widthSub".to_string(),
+            self.width_sub_gte,
+            self.width_sub_lte,
+        );
+
+        if let Some(nintendo_id) = &self.nintendo_id {
+            res.insert_bson("nintendoid".to_string(), Bson::String(nintendo_id.clone()));
+        }
+
+        GetCourses::insert_boundaries(
+            &mut res,
+            "difficulty".to_string(),
+            self.difficulty_gte,
+            self.difficulty_lte,
+        );
+
+        GetCourses::insert_boundaries(
+            &mut res,
+            "stars".to_string(),
+            self.stars_gte,
+            self.stars_lte,
+        );
+
         match res.is_empty() {
             true => Ok(None),
             false => Ok(Some(res)),
@@ -197,6 +229,35 @@ impl GetCourses {
                 "$in" => enums
             }),
         );
+    }
+
+    fn insert_boundaries(
+        doc: &mut OrderedDocument,
+        key: String,
+        gte: Option<i32>,
+        lte: Option<i32>,
+    ) {
+        let mut boundaries = None;
+        if let Some(gte) = gte {
+            boundaries = Some(doc! {
+                "$gte" => gte
+            });
+        }
+        if let Some(lte) = lte {
+            match &mut boundaries {
+                Some(boundaries) => {
+                    boundaries.insert("$lte", lte);
+                }
+                None => {
+                    boundaries = Some(doc! {
+                        "$lte" => lte
+                    })
+                }
+            }
+        }
+        if let Some(boundaries) = boundaries {
+            doc.insert_bson(key, Bson::Document(boundaries));
+        }
     }
 }
 
