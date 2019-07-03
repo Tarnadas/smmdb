@@ -1,5 +1,6 @@
 FROM rust:1.35 as build
 
+RUN USER=root cargo new --bin smmdb
 WORKDIR /smmdb
 
 COPY ./Cargo.toml ./Cargo.toml
