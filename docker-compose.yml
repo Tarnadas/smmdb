@@ -25,7 +25,7 @@ services:
       dockerfile: ./src/rust/Dockerfile
     ports:
       - "127.0.0.1:3030:3030"
-    working_dir: /usr/src/app
+    working_dir: /smmdb
     environment:
       - VIRTUAL_HOST=api.smmdb.net
       - LETSENCRYPT_HOST=api.smmdb.net
