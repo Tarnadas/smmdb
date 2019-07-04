@@ -16,7 +16,7 @@ COPY ./src/rust ./src/rust
 RUN rm ./target/release/deps/smmdb*
 RUN cargo build --release
 
-FROM jessie-slim
+FROM debian:jessie-slim
 
 COPY --from=build /smmdb/target/release/smmdb .
 
