@@ -20,4 +20,6 @@ FROM debian:jessie-slim
 
 COPY --from=build /smmdb/target/release/smmdb .
 
+ENV DOCKER true
+EXPOSE 3030
 CMD ["./smmdb"]
