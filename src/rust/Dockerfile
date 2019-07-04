@@ -5,6 +5,7 @@ WORKDIR /smmdb
 
 COPY ./Cargo.toml ./Cargo.toml
 COPY ./Cargo.lock ./Cargo.lock
+RUN echo "fn main() {}" >> ./src/rust/main.rs
 
 RUN cargo build --release
 RUN rm src/*.rs
