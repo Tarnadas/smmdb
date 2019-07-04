@@ -30,7 +30,9 @@
     "restore": "cd mongo && docker-compose up",
     "docker:mongo": "docker-compose -f docker-compose.dev.yml up",
     "clean": "rimraf ./build/client && rimraf ./build/server",
-    "lint": "eslint --ext .js,.jsx,.ts,.tsx src"
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx src",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "sideEffects": false,
   "dependencies": {
@@ -81,7 +83,8 @@
     "styled-components": "^3.4.9",
     "tmp": "0.0.31",
     "win-7zip": "^0.1.1",
-    "ws": "^6.1.2"
+    "ws": "^6.1.2",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "@babel/core": "^7.1.0",
@@ -149,5 +152,6 @@
     "webpack-node-externals": "^1.5.4"
   },
   "author": "Mario Reder",
-  "license": "MIT"
+  "license": "MIT",
+  "snyk": true
 }
