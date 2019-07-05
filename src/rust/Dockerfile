@@ -8,6 +8,7 @@ COPY ./Cargo.lock ./Cargo.lock
 RUN mkdir ./src/rust
 RUN echo "fn main() {}" >> ./src/rust/main.rs
 
+RUN cargo fetch
 RUN cargo build --release
 RUN rm src/*.rs
 
@@ -20,6 +21,6 @@ FROM debian:jessie-slim
 
 COPY --from=build /smmdb/target/release/smmdb .
 
-ENV DOCKER true
+ENV DOCKER=true
 EXPOSE 3030
 CMD ["./smmdb"]
