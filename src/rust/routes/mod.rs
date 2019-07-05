@@ -1,5 +1,4 @@
-pub mod api;
+pub mod courses;
 mod index;
 
-// pub use api::*;
 pub use index::*;

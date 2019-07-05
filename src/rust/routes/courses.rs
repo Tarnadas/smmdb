@@ -1,7 +1,7 @@
 use crate::server::ServerData;
 use crate::Database;
 
-use actix_web::{error::ResponseError, get, http::StatusCode, web, HttpRequest, HttpResponse};
+use actix_web::{dev, error::ResponseError, get, http::StatusCode, web, HttpRequest, HttpResponse};
 use cemu_smm::proto::SMMCourse::{
     SMMCourse_AutoScroll, SMMCourse_CourseTheme, SMMCourse_GameStyle,
 };
@@ -11,8 +11,12 @@ use serde::Deserialize;
 use serde_qs::actix::QsQuery;
 use std::sync::MutexGuard;
 
-#[get("/getcourses")]
-pub fn get_courses(
+pub fn service() -> impl dev::HttpServiceFactory {
+    web::scope("/courses").service(get_courses)
+}
+
+#[get("")]
+fn get_courses(
     data: web::Data<ServerData>,
     query: QsQuery<GetCourses>,
     req: HttpRequest,

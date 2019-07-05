@@ -1,5 +1,5 @@
 use crate::database::Database;
-use crate::routes::{api, index};
+use crate::routes::{courses, index};
 
 use actix_web::{middleware, App, HttpServer};
 use std::sync::{Arc, Mutex};
@@ -23,16 +23,19 @@ impl Server {
                 .wrap(middleware::Compress::default())
                 .wrap(middleware::Logger::default())
                 .service(index)
-                .service(api::service())
+                .service(courses::service())
         })
-        .bind("127.0.0.1:3030")?
+        .bind("0.0.0.0:3030")?
         .workers(1)
         .run()
     }
 }
 
 impl ServerData {
-    pub fn get_courses(&self, query: api::GetCourses) -> Result<String, api::GetCoursesError> {
+    pub fn get_courses(
+        &self,
+        query: courses::GetCourses,
+    ) -> Result<String, courses::GetCoursesError> {
         let database = self
             .database
             .lock()
