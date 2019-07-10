@@ -17,6 +17,7 @@ export type Course = {
   uploaded: number
   lastmodified: number
   hash?: Minhash
+  isBroken?: boolean
 }
 
 export type CourseMap = { [key: string]: Course }

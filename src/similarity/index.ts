@@ -14,7 +14,12 @@ async function start (): Promise<void> {
   await Database.initialize()
 
   const courses: CourseMap = {}
-  const courseList: Course[] = (await Database.filterCourses({}, { lastmodified: -1 }, 0, 1000000).toArray())
+  const courseList: Course[] = await Database.filterCourses(
+    {},
+    { lastmodified: -1 },
+    0,
+    1000000
+  ).toArray()
 
   for (const course of courseList) {
     courses[course._id] = course
@@ -34,10 +39,19 @@ async function start (): Promise<void> {
   const matchesRemaining = await updateDatabase(similarCourses)
 
   console.log(`${matchesRemaining} similar courses remaining`)
+
+  process.exit(0)
 }
 
-async function calculateHashes (courseList: Course[], courses: CourseMap, lshIndex: LshIndex): Promise<void> {
-  const progressBar = new ProgressBar('Calculating hashes (:current/:total) [:bar] :percent', { total: courseList.length })
+async function calculateHashes (
+  courseList: Course[],
+  courses: CourseMap,
+  lshIndex: LshIndex
+): Promise<void> {
+  const progressBar = new ProgressBar(
+    'Calculating hashes (:current/:total) [:bar] :percent',
+    { total: courseList.length }
+  )
   for (const course of courseList) {
     try {
       let hash: Minhash
@@ -48,16 +62,21 @@ async function calculateHashes (courseList: Course[], courses: CourseMap, lshInd
       }
       lshIndex.insert(course._id, hash)
     } catch (err) {
-      console.error(err)
+      course.isBroken = true
     } finally {
       progressBar.tick()
     }
   }
 }
 
-async function calculateHash (course: Course, courses: CourseMap): Promise<Minhash> {
+async function calculateHash (
+  course: Course,
+  courses: CourseMap
+): Promise<Minhash> {
   const hash = new Minhash()
-  const courseData: CourseData = await deserialize((await Database.getCourseData(course._id))[0])
+  const courseData: CourseData = await deserialize(
+    (await Database.getCourseData(course._id))[0]
+  )
   for (const tile of courseData.tiles) {
     const tileString = tile.tileData.toString()
     hash.update(tileString)
@@ -67,19 +86,32 @@ async function calculateHash (course: Course, courses: CourseMap): Promise<Minha
   return hash
 }
 
-async function compareCourses (courseList: Course[], courses: CourseMap, similarCourses: Matches, lshIndex: LshIndex): Promise<void> {
+async function compareCourses (
+  courseList: Course[],
+  courses: CourseMap,
+  similarCourses: Matches,
+  lshIndex: LshIndex
+): Promise<void> {
   for (const courseId in courses) {
     similarCourses[courseId] = []
   }
   const alreadyAssignedCourseIds: string[] = []
-  const progressBar = new ProgressBar('Comparing courses (:current/:total) [:bar] :percent', { total: courseList.length })
+  const progressBar = new ProgressBar(
+    'Comparing courses (:current/:total) [:bar] :percent',
+    { total: courseList.length }
+  )
   for (const courseId in courses) {
     const course = courses[courseId]
+    if (course.isBroken) continue
     if (!course.hash) {
       throw new Error(`Hash for course with ID ${course._id} was not defined`)
     }
     const matches = lshIndex.query(course.hash)
-    const sequenceMatcher = new difflib.SequenceMatcher(null, null, course.hash.hashbands)
+    const sequenceMatcher = new difflib.SequenceMatcher(
+      null,
+      null,
+      course.hash.hashbands
+    )
     for (const matchId of matches) {
       if (courseId === matchId) continue
       if (alreadyAssignedCourseIds.includes(matchId)) continue
@@ -110,22 +142,44 @@ function countMatches (similarCourses: Matches): number {
   return matchesFound
 }
 
-function findDeletableCourses (canDelete: Course[], courses: CourseMap, similarCourses: Matches): void {
+function findDeletableCourses (
+  canDelete: Course[],
+  courses: CourseMap,
+  similarCourses: Matches
+): void {
   for (const courseId in similarCourses) {
     const course = courses[courseId]
+    if (course.isBroken) {
+      canDelete.push(course)
+      continue
+    }
     for (const match of similarCourses[courseId]) {
       if (match.sim !== 1) continue
       const similarCourse = courses[match.courseId]
-      if (course.uploaded > similarCourse.uploaded && course.lastmodified <= similarCourse.lastmodified) {
+      if (
+        course.uploaded > similarCourse.uploaded &&
+        course.lastmodified <= similarCourse.lastmodified
+      ) {
         canDelete.push(course)
-        similarCourses[match.courseId] = similarCourses[match.courseId].filter(({ courseId }): boolean => course._id !== courseId)
+        similarCourses[match.courseId] = similarCourses[match.courseId].filter(
+          ({ courseId }): boolean => course._id !== courseId
+        )
+        break
       }
     }
   }
 }
 
-function deleteCourses (canDelete: Course[], courses: CourseMap, similarCourses: Matches, matchesFound: number): void {
-  const progressBar = new ProgressBar('Deleting duplicates (:current/:total) [:bar] :percent', { total: canDelete.length })
+function deleteCourses (
+  canDelete: Course[],
+  courses: CourseMap,
+  similarCourses: Matches,
+  matchesFound: number
+): void {
+  const progressBar = new ProgressBar(
+    'Deleting duplicates (:current/:total) [:bar] :percent',
+    { total: canDelete.length }
+  )
   for (const course of canDelete) {
     ServerCourse.delete(course._id)
     delete courses[course._id]
@@ -139,11 +193,19 @@ function deleteCourses (canDelete: Course[], courses: CourseMap, similarCourses:
       matchesAfterDelete++
     }
   }
-  console.log(`Resolved ${matchesFound - matchesAfterDelete} conflicting courses by removing ${canDelete.length} duplicates`)
+  console.log(
+    `Resolved ${matchesFound -
+      matchesAfterDelete} conflicting courses by removing ${
+      canDelete.length
+    } duplicates`
+  )
 }
 
 async function updateDatabase (similarCourses: Matches): Promise<number> {
-  const dbProgressBar = new ProgressBar('Updating database (:current/:total) [:bar] :percent', { total: Object.keys(similarCourses).length })
+  const dbProgressBar = new ProgressBar(
+    'Updating database (:current/:total) [:bar] :percent',
+    { total: Object.keys(similarCourses).length }
+  )
   let matchesRemaining = 0
   for (const courseId in similarCourses) {
     const similarCourse = similarCourses[courseId]
