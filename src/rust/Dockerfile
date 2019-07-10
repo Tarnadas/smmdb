@@ -13,6 +13,7 @@ RUN cargo build --release
 RUN rm src/*.rs
 
 COPY ./src/rust ./src/rust
+COPY ./src/swagger ./src/swagger
 
 RUN rm ./target/release/deps/smmdb*
 RUN cargo build --release
