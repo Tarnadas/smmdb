@@ -1,5 +1,5 @@
 use crate::database::Database;
-use crate::routes::{courses, index};
+use crate::routes::{courses, index, swagger};
 
 use actix_web::{middleware, App, HttpServer};
 use std::sync::{Arc, Mutex};
@@ -23,6 +23,7 @@ impl Server {
                 .wrap(middleware::Compress::default())
                 .wrap(middleware::Logger::default())
                 .service(index)
+                .service(swagger)
                 .service(courses::service())
         })
         .bind("0.0.0.0:3030")?

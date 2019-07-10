@@ -9,6 +9,7 @@ name = "smmdb"
 path = "src/rust/main.rs"
 
 [dependencies]
+actix-http = "0.2"
 actix-web = "1"
 bson = "0.13"
 cemu-smm = "4"

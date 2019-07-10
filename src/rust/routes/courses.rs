@@ -21,7 +21,6 @@ fn get_courses(
     query: QsQuery<GetCourses>,
     req: HttpRequest,
 ) -> Result<String, GetCoursesError> {
-    dbg!(req);
     data.get_courses(query.into_inner())
 }
 
