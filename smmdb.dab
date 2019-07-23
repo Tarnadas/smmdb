@@ -1,0 +1,58 @@
+{
+  "Services": {
+    "api": {
+      "Env": [
+        "VIRTUAL_HOST=api.smmdb.net",
+        "LETSENCRYPT_HOST=api.smmdb.net",
+        "LETSENCRYPT_EMAIL=mreder1289@gmail.com",
+        "VIRTUAL_PORT=3030"
+      ],
+      "Image": "tarnadas/smmdb-api@sha256:5f239d87c0b1106321d666d8e4a8684e2a3a4b93a654f32775aa95b72272e5a7",
+      "Networks": [
+        "default"
+      ],
+      "Ports": [
+        {
+          "Port": 3030,
+          "Protocol": "tcp"
+        }
+      ]
+    },
+    "mongodb": {
+      "Env": [
+        "MONGO_DATA_DIR=/data/db",
+        "MONGO_LOG_DIR=/dev/null"
+      ],
+      "Image": "mongo@sha256:5964decf4dfc6fec5c33b89fc8a4f925969198ac76edf0502ce508b98dc64ce9",
+      "Networks": [
+        "default"
+      ],
+      "Ports": [
+        {
+          "Port": 27017,
+          "Protocol": "tcp"
+        }
+      ]
+    },
+    "smmdb": {
+      "Env": [
+        "VIRTUAL_HOST=smmdb.ddns.net",
+        "LETSENCRYPT_HOST=smmdb.ddns.net",
+        "LETSENCRYPT_EMAIL=mreder1289@gmail.com",
+        "VIRTUAL_PORT=3000"
+      ],
+      "Image": "tarnadas/smmdb@sha256:529a0d046ed09b4f58fb90cc1ca326e3a9ebbbde8c51c9cb737132bdc371d9ed",
+      "Networks": [
+        "default"
+      ],
+      "Ports": [
+        {
+          "Port": 3000,
+          "Protocol": "tcp"
+        }
+      ],
+      "WorkingDir": "/usr/src/app"
+    }
+  },
+  "Version": "0.1"
+}
