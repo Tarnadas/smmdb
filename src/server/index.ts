@@ -124,14 +124,18 @@ async function main (): Promise<void> {
     next()
   })
 
-  if (process.env.NODE_ENV === 'development') {
-    app.use((req, res, next): void => {
-      res.set('Access-Control-Allow-Origin', 'http://localhost:8080')
-      next()
-    })
-  }
-
   app.use('/api/v2', routes)
+
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*')
+    res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS')
+
+    if (req.method === 'OPTIONS') {
+      res.send(200)
+    } else {
+      next()
+    }
+  })
 
   app.use('/courseimg/:id*?', async (req, res): Promise<void> => {
     const [id, full] = req.params.id.split('.')[0].split('_')

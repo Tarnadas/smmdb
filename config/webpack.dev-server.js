@@ -24,7 +24,8 @@ module.exports = [
         NODE_ENV: 'development',
         IS_SERVER: true,
         PORT: port,
-        DOMAIN: domain
+        DOMAIN: domain,
+        DOCKER: process.env.DOCKER
       })
     ],
     externals: [require('webpack-node-externals')()],
