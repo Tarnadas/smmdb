@@ -18,7 +18,7 @@ jobs:
     - stage: Test
       script: cargo test
     - stage: Build
-      script: cargo build --release
+      script: cargo build
     - stage: Deploy
       deploy:
         provider: script
