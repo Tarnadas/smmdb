@@ -8,9 +8,18 @@ install:
 
 cache: cargo
 
+services:
+  - docker
+
 jobs:
   include:
     - stage: Test
       script: cargo test
     - stage: Build
       script: cargo build --release
+    - stage: Deploy
+      deploy:
+        provider: script
+        script: bash deploy.sh
+        on:
+          branch: develop
