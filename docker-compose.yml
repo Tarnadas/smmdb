@@ -4,6 +4,14 @@ networks:
     external:
       name: webproxy
 services:
+  watchtower:
+    image: v2tec/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/config.json
+    command: --cleanup --label-enable
+    restart: always
   smmdb:
     build: .
     image: tarnadas/smmdb
