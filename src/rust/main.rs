@@ -7,6 +7,7 @@ extern crate failure;
 mod account;
 mod collections;
 mod course;
+mod course2;
 mod database;
 mod routes;
 mod server;
