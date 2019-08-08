@@ -2,7 +2,9 @@ FROM rust:1.35 as build
 
 RUN USER=root rustup default nightly-2019-07-16
 
-RUN USER=root cargo new --bin smmdb
+RUN cd / && \
+  mkdir -p smmdb && \
+  cargo init --bin smmdb
 WORKDIR /smmdb
 
 COPY ./Cargo.toml ./Cargo.toml
