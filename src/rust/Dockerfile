@@ -1,6 +1,6 @@
 FROM rust:1.35 as build
 
-RUN rustup default nightly-2019-07-16
+RUN USER=root rustup default nightly-2019-07-16
 
 RUN USER=root cargo new --bin smmdb
 WORKDIR /smmdb
