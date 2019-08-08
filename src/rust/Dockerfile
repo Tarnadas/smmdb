@@ -4,7 +4,7 @@ RUN USER=root rustup default nightly-2019-07-16
 
 RUN cd / && \
   mkdir -p smmdb && \
-  cargo init --bin smmdb
+  USER=root cargo init --bin smmdb
 WORKDIR /smmdb
 
 COPY ./Cargo.toml ./Cargo.toml
