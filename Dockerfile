@@ -15,7 +15,7 @@ COPY . /usr/src/app
 
 # Build
 ENV DOCKER=docker
-RUN yarn build:dev
+RUN yarn build
 
 FROM node:10-slim as dep-build
 
