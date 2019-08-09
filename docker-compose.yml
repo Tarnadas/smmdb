@@ -23,6 +23,8 @@ services:
       - LETSENCRYPT_HOST=smmdb.ddns.net
       - LETSENCRYPT_EMAIL=mreder1289@gmail.com
       - VIRTUAL_PORT=3000
+      - GOOGLE_CLIENT_ID
+      - DISCORD_TOKEN
     links:
       - mongodb
     depends_on:
