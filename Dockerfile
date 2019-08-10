@@ -35,8 +35,7 @@ RUN apt-get update && apt-get install -y p7zip p7zip-full zip
 RUN rm -rf /var/cache/apt/archives
 
 # Run
-ENV NODE_ENV development
-# ENV NODE_ENV production
+ENV NODE_ENV production
 EXPOSE 3000
 RUN chmod +x ./build/server
 CMD [ "node", "./build/server" ]
