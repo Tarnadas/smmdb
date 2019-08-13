@@ -1,8 +1,5 @@
 FROM mhart/alpine-node:10 as build
 
-RUN echo $GOOGLE_CLIENT_ID
-RUN echo $DISCORD_TOKEN
-
 # Create directory
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
@@ -18,7 +15,9 @@ COPY . /usr/src/app
 
 # Build
 ENV DOCKER=docker
-RUN yarn build
+ARG GOOGLE_CLIENT_ID
+ARG DISCORD_TOKEN
+RUN GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID DISCORD_TOKEN=$DISCORD_TOKEN yarn build
 
 FROM node:10-slim as dep-build
 
