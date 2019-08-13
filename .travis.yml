@@ -31,8 +31,8 @@ services:
 
 jobs:
   include:
-    - stage: Test
-      script: cargo test
+    # - stage: Test
+    #   script: cargo test
     - stage: Deploy
       script: echo "deploying to Docker Hub..."
       deploy:

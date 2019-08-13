@@ -1,5 +1,8 @@
 FROM mhart/alpine-node:10 as build
 
+RUN echo $GOOGLE_CLIENT_ID
+RUN echo $DISCORD_TOKEN
+
 # Create directory
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
