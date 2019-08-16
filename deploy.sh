@@ -1,5 +1,5 @@
 #!/bin/bash
 echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 docker-compose pull
-docker-compose build --build-arg GOOGLE_CLIENT_ID --build-arg DISCORD_TOKEN --parallel
+GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID DISCORD_TOKEN=$DISCORD_TOKEN docker-compose build --parallel
 docker-compose bundle --push-images

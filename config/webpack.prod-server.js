@@ -9,6 +9,9 @@ let credentials
 try {
   credentials = require('./credentials')
 } catch (err) {}
+const googleClientId =
+  process.env.GOOGLE_CLIENT_ID || credentials.googleClientId
+const discordToken = process.env.DISCORD_TOKEN || credentials.discordToken
 
 module.exports = [
   {
@@ -31,9 +34,8 @@ module.exports = [
         PORT: port,
         DOMAIN: domain,
         DOCKER: process.env.DOCKER,
-        GOOGLE_CLIENT_ID:
-          process.env.GOOGLE_CLIENT_ID || credentials.googleClientId,
-        DISCORD_TOKEN: process.env.DISCORD_TOKEN || credentials.discordToken
+        GOOGLE_CLIENT_ID: googleClientId,
+        DISCORD_TOKEN: discordToken
       })
     ],
     externals: [require('webpack-node-externals')()],

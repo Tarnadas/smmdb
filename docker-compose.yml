@@ -13,11 +13,7 @@ services:
     command: --cleanup --label-enable
     restart: always
   smmdb:
-    build:
-      context: .
-      args:
-        - GOOGLE_CLIENT_ID
-        - DISCORD_TOKEN
+    build: .
     image: tarnadas/smmdb
     ports:
       - "127.0.0.1:3000:3000"

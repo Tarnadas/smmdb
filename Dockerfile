@@ -15,9 +15,7 @@ COPY . /usr/src/app
 
 # Build
 ENV DOCKER=docker
-ARG GOOGLE_CLIENT_ID
-ARG DISCORD_TOKEN
-RUN GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID DISCORD_TOKEN=$DISCORD_TOKEN yarn build
+RUN yarn build
 
 FROM node:10-slim as dep-build
 
