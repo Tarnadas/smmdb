@@ -15,6 +15,8 @@ COPY . /usr/src/app
 
 # Build
 ENV DOCKER=docker
+ENV GOOGLE_CLIENT_ID
+ENV DISCORD_TOKEN
 RUN yarn build
 
 FROM node:10-slim as dep-build
