@@ -1,14 +1,14 @@
-FROM mhart/alpine-node:10 as build
+FROM timbru31/node-alpine-git
 
 # Create directory
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
-RUN apk add git
 
 # Install dependencies
 COPY package.json /usr/src/app
 COPY yarn.lock /usr/src/app
-RUN yarn install
+RUN yarn install --no-progress --pure-lockfile --prod
+RUN yarn install --no-progress --pure-lockfile --prefer-offline
 
 # COPY Files
 COPY . /usr/src/app
