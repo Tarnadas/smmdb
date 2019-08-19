@@ -15,9 +15,6 @@ services:
   smmdb:
     build:
       context: .
-      args:
-        - GOOGLE_CLIENT_ID
-        - DISCORD_TOKEN
       cache_from:
         - tarnadas/smmdb
     image: tarnadas/smmdb

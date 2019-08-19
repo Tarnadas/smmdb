@@ -1,0 +1,20 @@
+FROM mhart/alpine-node:10 as build
+
+# Create directory
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+RUN apk add git
+
+# Install dependencies
+COPY package.json /usr/src/app
+COPY yarn.lock /usr/src/app
+RUN yarn install
+
+# COPY Files
+COPY . /usr/src/app
+
+# Build
+ENV DOCKER=docker
+ARG GOOGLE_CLIENT_ID
+ARG DISCORD_TOKEN
+RUN GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID DISCORD_TOKEN=$DISCORD_TOKEN yarn build

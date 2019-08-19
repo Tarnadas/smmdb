@@ -1,0 +1,7 @@
+FROM node:10-slim as dep-build
+
+WORKDIR /usr/src/app
+RUN apt-get update && apt-get install -y git
+COPY package.json /usr/src/app
+COPY yarn.lock /usr/src/app
+RUN yarn install --prod
