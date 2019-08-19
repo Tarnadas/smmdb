@@ -18,6 +18,8 @@ services:
       args:
         - GOOGLE_CLIENT_ID
         - DISCORD_TOKEN
+      cache_from:
+        - tarnadas/smmdb
     image: tarnadas/smmdb
     ports:
       - "127.0.0.1:3000:3000"
@@ -36,6 +38,8 @@ services:
     build:
       context: .
       dockerfile: ./src/rust/Dockerfile
+      cache_from:
+        - tarnadas/smmdb-api
     image: tarnadas/smmdb-api
     ports:
       - "127.0.0.1:3030:3030"
