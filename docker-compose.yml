@@ -48,6 +48,7 @@ services:
       - mongodb
     depends_on:
       - mongodb
+      - tarnadas/smmdb-api-build
     restart: always
   mongodb:
     image: mongo:3.4

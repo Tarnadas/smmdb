@@ -1,0 +1,7 @@
+version: "3.6"
+services:
+  smmdb-api-build:
+    build:
+      context: .
+      dockerfile: ./src/rust/DockerfileBuild
+    image: tarnadas/smmdb-api-build
