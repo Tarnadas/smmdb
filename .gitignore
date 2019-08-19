@@ -21,6 +21,7 @@
 /report.html
 /stats.json
 /mongo/db
+*.dab
 
 
 #Added by cargo
