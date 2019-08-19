@@ -5,3 +5,4 @@ services:
       context: .
       dockerfile: ./src/rust/DockerfileBuild
     image: tarnadas/smmdb-api-build
+    cache_from: tarnadas/smmdb-api-build
