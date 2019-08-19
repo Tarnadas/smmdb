@@ -10,7 +10,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - /root/.docker/config.json:/config.json
-    command: watchtower tarnadas/smmdb tarnadas/smmdb-api
+    command: watchtower tarnadas/smmdb tarnadas/smmdb-api --cleanup --interval 30
     restart: always
   smmdb:
     build:
