@@ -2,8 +2,10 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
-const ReactLoadablePlugin = require('react-loadable/webpack').ReactLoadablePlugin
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const ReactLoadablePlugin = require('react-loadable/webpack')
+  .ReactLoadablePlugin
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+  .BundleAnalyzerPlugin
 
 const path = require('path')
 
@@ -14,10 +16,20 @@ module.exports = [
     mode: 'production',
     entry: {
       vendor: [
-        'react-redux', 'react-router', 'react-router-dom', 'react-router-redux',
-        'react-google-login', 'react-lazyload', 'react-helmet', 'react-loadable',
-        'redux', 'redux-immutable', 'axios',
-        'node-emoji', 'marked', 'qrcode'
+        'react-redux',
+        'react-router',
+        'react-router-dom',
+        'react-router-redux',
+        'react-google-login',
+        'react-lazyload',
+        'react-helmet',
+        'react-loadable',
+        'redux',
+        'redux-immutable',
+        'axios',
+        'node-emoji',
+        'marked',
+        'qrcode'
       ],
       app: path.join(__dirname, '../src/client/renderer.tsx')
     },
@@ -81,7 +93,7 @@ module.exports = [
       })
     ],
     resolve: {
-      extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ],
+      extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
       plugins: [
         new TsconfigPathsPlugin({
           configFile: './tsconfig.json'
@@ -101,17 +113,16 @@ module.exports = [
                 babelOptions: {
                   babelrc: false,
                   presets: [
-                    ['@babel/env', {
-                      targets: {
-                        browsers: [
-                          '> 1%',
-                          'not ie > 0',
-                          'not op_mini all'
-                        ]
-                      },
-                      modules: false,
-                      useBuiltIns: 'usage'
-                    }],
+                    [
+                      '@babel/env',
+                      {
+                        targets: {
+                          browsers: ['> 1%', 'not ie > 0', 'not op_mini all']
+                        },
+                        modules: false,
+                        useBuiltIns: 'usage'
+                      }
+                    ],
                     '@babel/react'
                   ],
                   plugins: [

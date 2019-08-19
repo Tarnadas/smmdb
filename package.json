@@ -17,7 +17,7 @@
     "watch:client": "npm run build:dev-client -- --watch",
     "watch:server": "npm run build:dev-server -- --watch",
     "watch:similarity": "npm run build:similarity -- --watch",
-    "build:dev": "npm run build:dev-server && npm run build:dev-client",
+    "build:dev": "yarn clean && npm run build:dev-client && npm run build:dev-server",
     "build:dev-client": "webpack --env=dev-client --progress --colors",
     "build:dev-server": "webpack --env=dev-server --progress --colors",
     "build:ver": "webpack --env=ver --progress --colors",
@@ -29,6 +29,7 @@
     "backup": "node ./backup.js",
     "restore": "cd mongo && docker-compose up",
     "docker:mongo": "docker-compose -f docker-compose.dev.yml up",
+    "docker:push": "docker-compose bundle --push-images",
     "clean": "rimraf ./build/client && rimraf ./build/server",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src"
   },

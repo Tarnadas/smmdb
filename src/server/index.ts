@@ -24,7 +24,6 @@ import { API } from './scripts/api'
 import { Database } from './Database'
 import { DiscordBot } from './Discord'
 
-import { clientId, cookie as cookieCredentials } from './scripts/credentials'
 import { log } from './scripts/util'
 
 const cookieSession = require('cookie-session')
@@ -108,7 +107,7 @@ async function main (): Promise<void> {
   app.use('/scripts', express.static(path.join(__dirname, '../client/scripts'), { maxAge: cacheMaxAgeJS }))
   app.use(cookieSession({
     name: 'session',
-    keys: cookieCredentials,
+    keys: '123',
     maxAge: 24 * 60 * 60 * 1000
   }))
   const connections: any = {}
@@ -124,14 +123,18 @@ async function main (): Promise<void> {
     next()
   })
 
-  if (process.env.NODE_ENV === 'development') {
-    app.use((req, res, next): void => {
-      res.set('Access-Control-Allow-Origin', 'http://localhost:8080')
-      next()
-    })
-  }
-
   app.use('/api/v2', routes)
+
+  app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*')
+    res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS')
+
+    if (req.method === 'OPTIONS') {
+      res.send(200)
+    } else {
+      next()
+    }
+  })
 
   app.use('/courseimg/:id*?', async (req, res): Promise<void> => {
     const [id, full] = req.params.id.split('.')[0].split('_')
@@ -181,7 +184,7 @@ async function main (): Promise<void> {
     if (!idToken) {
       res.status(400).send('idToken not found')
     } else {
-      verifier.verify(idToken, clientId, async (err: Error, tokenInfo: any): Promise<void> => {
+      verifier.verify(idToken, process.env.GOOGLE_CLIENT_ID, async (err: Error, tokenInfo: any): Promise<void> => {
         if (err) {
           res.status(400).send('idToken not verified')
           return

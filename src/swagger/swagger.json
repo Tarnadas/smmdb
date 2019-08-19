@@ -1,0 +1,86 @@
+{
+  "swagger": "2.0",
+  "info": { "version": "v1", "title": "SMMDB" },
+  "schemes": ["https"],
+  "paths": {
+    "/courses": {
+      "get": {
+        "tags": ["CoursesApi"],
+        "summary": "Get course list",
+        "description": "Returns a list of course items.",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Output assignment enabled",
+            "schema": { "$ref": "#/definitions/Smm1Course" }
+          },
+          "400": { "description": "Bad request" }
+        },
+        "deprecated": false
+      }
+    }
+  },
+  "definitions": {
+    "Smm1Course": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "maker",
+        "owner",
+        "uploader",
+        "game_style",
+        "course_theme",
+        "course_theme_sub",
+        "auto_scroll",
+        "auto_scroll_sub",
+        "width",
+        "width_sub",
+        "lastmodified",
+        "uploaded"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "maker": { "type": "string" },
+        "owner": { "type": "string" },
+        "uploader": { "type": "string" },
+        "description": { "type": "string" },
+        "game_style": { "$ref": "#/definitions/Smm1Course_GameStyle" },
+        "course_theme": { "$ref": "#/definitions/Smm1Course_CourseTheme" },
+        "course_theme_sub": { "$ref": "#/definitions/Smm1Course_CourseTheme" },
+        "auto_scroll": { "$ref": "#/definitions/Smm1Course_AutoScroll" },
+        "auto_scroll_sub": { "$ref": "#/definitions/Smm1Course_AutoScroll" },
+        "width": { "type": "integer" },
+        "width_sub": { "type": "integer" },
+        "nintendoid": { "type": "string" },
+        "difficulty": { "type": "integer" },
+        "videoid": { "type": "string" },
+        "lastmodified": { "type": "string" },
+        "uploaded": { "type": "string" },
+        "v_full": { "type": "integer" },
+        "v_prev": { "type": "integer" },
+        "stars": { "type": "integer" }
+      }
+    },
+    "Smm1Course_GameStyle": {
+      "type": "string",
+      "enum": ["M1", "M3", "MW", "WU"]
+    },
+    "Smm1Course_CourseTheme": {
+      "type": "string",
+      "enum": [
+        "GROUND",
+        "UNDERGROUND",
+        "CASTLE",
+        "AIRSHIP",
+        "UNDERWATER",
+        "GHOUST_HOUSE"
+      ]
+    },
+    "Smm1Course_AutoScroll": {
+      "type": "string",
+      "enum": ["DISABLED", "SLOW", "MEDIUM", "FAST", "LOCK"]
+    }
+  }
+}

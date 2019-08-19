@@ -1,11 +1,24 @@
-version: '3.6'
+version: "3.6"
 networks:
   default:
     external:
       name: webproxy
 services:
+  watchtower:
+    image: v2tec/watchtower
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /root/.docker/config.json:/config.json
+    command: --cleanup --label-enable
+    restart: always
   smmdb:
-    build: .
+    build:
+      context: .
+      args:
+        - GOOGLE_CLIENT_ID
+        - DISCORD_TOKEN
+    image: tarnadas/smmdb
     ports:
       - "127.0.0.1:3000:3000"
     working_dir: /usr/src/app
@@ -14,6 +27,23 @@ services:
       - LETSENCRYPT_HOST=smmdb.ddns.net
       - LETSENCRYPT_EMAIL=mreder1289@gmail.com
       - VIRTUAL_PORT=3000
+    links:
+      - mongodb
+    depends_on:
+      - mongodb
+    restart: always
+  api:
+    build:
+      context: .
+      dockerfile: ./src/rust/Dockerfile
+    image: tarnadas/smmdb-api
+    ports:
+      - "127.0.0.1:3030:3030"
+    environment:
+      - VIRTUAL_HOST=api.smmdb.net
+      - LETSENCRYPT_HOST=api.smmdb.net
+      - LETSENCRYPT_EMAIL=mreder1289@gmail.com
+      - VIRTUAL_PORT=3030
     links:
       - mongodb
     depends_on:
@@ -31,5 +61,4 @@ services:
       - "127.0.0.1:27017:27017"
     restart: always
 volumes:
-  mongodatabase:  
-
+  mongodatabase:

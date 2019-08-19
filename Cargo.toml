@@ -1,0 +1,33 @@
+[package]
+name = "smmdb"
+version = "0.1.0"
+authors = ["Mario Reder <mreder1289@gmail.com>"]
+edition = "2018"
+
+[[bin]]
+name = "smmdb"
+path = "src/rust/main.rs"
+
+[dependencies]
+actix-http = "0.2"
+actix-web = "1"
+bson = "0.13"
+cemu-smm = "4"
+chrono = "0.4"
+env_logger = "0.6"
+failure = "0.1"
+futures = "*"
+itertools = "0.8"
+mongodb = "0.3"
+protobuf = "2.8"
+serde = "1"
+serde_json = "1"
+
+[dependencies.serde_qs]
+version = "0.5"
+features = ["actix"]
+
+[profile]
+[profile.release]
+debug = false
+lto = true

@@ -5,6 +5,14 @@ const path = require('path')
 
 const { port, domain } = require('./environment')['prod']
 
+let credentials
+try {
+  credentials = require('./credentials')
+} catch (err) {}
+const googleClientId =
+  process.env.GOOGLE_CLIENT_ID || credentials.googleClientId
+const discordToken = process.env.DISCORD_TOKEN || credentials.discordToken
+
 module.exports = [
   {
     mode: 'production',
@@ -25,12 +33,14 @@ module.exports = [
         IS_SERVER: true,
         PORT: port,
         DOMAIN: domain,
-        DOCKER: process.env.DOCKER
+        DOCKER: process.env.DOCKER,
+        GOOGLE_CLIENT_ID: googleClientId,
+        DISCORD_TOKEN: discordToken
       })
     ],
     externals: [require('webpack-node-externals')()],
     resolve: {
-      extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ],
+      extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
       plugins: [
         new TsconfigPathsPlugin({
           configFile: './tsconfig.json'
@@ -50,12 +60,15 @@ module.exports = [
                 babelOptions: {
                   babelrc: false,
                   presets: [
-                    ['@babel/env', {
-                      targets: {
-                        node: 'current'
-                      },
-                      modules: false
-                    }],
+                    [
+                      '@babel/env',
+                      {
+                        targets: {
+                          node: 'current'
+                        },
+                        modules: false
+                      }
+                    ],
                     '@babel/react'
                   ],
                   plugins: [

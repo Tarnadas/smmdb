@@ -1,7 +1,7 @@
 module.exports = {
   dev: {
-    port: 8080,
-    domain: 'http://localhost/'
+    port: 3000,
+    domain: 'http://localhost:3000/'
   },
   ver: {
     port: 3001,

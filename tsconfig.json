@@ -10,12 +10,10 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@/client/*": [ "./src/client/*" ],
-      "@/server/*": [ "./src/server/*" ]
+      "@/client/*": ["./src/client/*"],
+      "@/server/*": ["./src/server/*"]
     }
   },
-  "include": [
-    "./src/**/*"
-  ],
+  "include": ["./src/**/*"],
   "exclude": ["node_modules"]
 }

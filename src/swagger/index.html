@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>SMMDB API</title>
+    <meta charset="UTF-8" />
+    <link
+      href="//fonts.googleapis.com/css?family=Open+Sans:400,700|Source+Code+Pro:300,600|Titillium+Web:400,600,700"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="//cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.2.2/swagger-ui.css"
+    />
+    <script src="//cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.23.0/swagger-ui-bundle.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/swagger-ui/3.23.0/swagger-ui-standalone-preset.js"></script>
+    <style>
+      html {
+        box-sizing: border-box;
+        overflow: -moz-scrollbars-vertical;
+        overflow-y: scroll;
+      }
+      *,
+      *:before,
+      *:after {
+        box-sizing: inherit;
+      }
+      body {
+        margin: 0;
+        background: #fafafa;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
+    <script>
+      window.onload = async () => {
+        const swagger = await fetch("./swagger.json");
+        const spec = await swagger.json();
+        console.log(spec);
+        // Build a system
+        const ui = SwaggerUIBundle({
+          spec: spec,
+          dom_id: "#swagger-ui",
+          deepLinking: true,
+          presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+          plugins: [SwaggerUIBundle.plugins.DownloadUrl],
+          layout: "StandaloneLayout"
+        });
+        window.ui = ui;
+      };
+    </script>
+  </body>
+</html>
