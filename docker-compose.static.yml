@@ -1,0 +1,9 @@
+version: "3.6"
+services:
+  smmdb-run:
+    build:
+      context: .
+      dockerfile: ./DockerfileRun
+      cache_from:
+        - tarnadas/smmdb-run
+    image: tarnadas/smmdb-run
