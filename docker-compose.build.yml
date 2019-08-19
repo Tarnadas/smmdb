@@ -3,7 +3,7 @@ services:
   smmdb-build:
     build:
       context: .
-      dockerfile: ./src/DockerfileBuild
+      dockerfile: ./DockerfileBuild
       args:
         - GOOGLE_CLIENT_ID
         - DISCORD_TOKEN
@@ -14,7 +14,7 @@ services:
   smmdb-build-dep:
     build:
       context: .
-      dockerfile: ./src/DockerfileBuildDep
+      dockerfile: ./DockerfileBuildDep
       cache_from:
         - tarnadas/smmdb-build-dep
     image: tarnadas/smmdb-build-dep
