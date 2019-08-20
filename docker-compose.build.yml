@@ -2,8 +2,8 @@ version: "3.6"
 services:
   smmdb-build:
     build:
-      context: .
-      dockerfile: ./DockerfileBuild
+      context: ./website
+      dockerfile: DockerfileBuild
       args:
         - GOOGLE_CLIENT_ID
         - DISCORD_TOKEN
@@ -13,16 +13,16 @@ services:
     working_dir: /usr/src/app
   smmdb-build-dep:
     build:
-      context: .
-      dockerfile: ./DockerfileBuildDep
+      context: ./website
+      dockerfile: DockerfileBuildDep
       cache_from:
         - tarnadas/smmdb-build-dep
     image: tarnadas/smmdb-build-dep
     working_dir: /usr/src/app
   smmdb-api-build:
     build:
-      context: .
-      dockerfile: ./src/rust/DockerfileBuild
+      context: ./api
+      dockerfile: DockerfileBuild
       cache_from:
         - tarnadas/smmdb-api-build
     image: tarnadas/smmdb-api-build

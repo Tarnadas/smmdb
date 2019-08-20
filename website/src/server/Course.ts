@@ -83,6 +83,7 @@ export class Course {
     const type = fileType(buffer)
     const mime = type && type.mime
     const buf = new Uint8Array(buffer)
+    console.log('BUFFER', buffer)
     const is3DS = (): boolean => {
       const header = [0x04, 0x30, 0x04, 0x00, 0x7D, 0x00, 0x00, 0x00, 0xDD, 0xBA, 0xFE, 0xCA]
       for (let i = 0; i < header.length; i++) {

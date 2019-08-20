@@ -11,7 +11,15 @@ RUN yarn install --no-progress --pure-lockfile --prod
 RUN yarn install --no-progress --pure-lockfile --prefer-offline
 
 # COPY Files
-COPY . /usr/src/app
+COPY ./build/static /usr/src/app/build/static
+COPY ./config /usr/src/app/config
+COPY ./src /usr/src/app/src
+COPY .babelrc /usr/src/app/.babelrc
+COPY .eslintrc /usr/src/app/.eslintrc
+COPY favicon.ico /usr/src/app/favicon.ico
+COPY package.json /usr/src/app/package.json
+COPY tsconfig.json /usr/src/app/tsconfig.json
+COPY webpack.config.js /usr/src/app/webpack.config.js
 
 # Build
 ENV DOCKER=docker

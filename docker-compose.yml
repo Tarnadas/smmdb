@@ -15,6 +15,7 @@ services:
   smmdb:
     build:
       context: .
+      dockerfile: ./website/Dockerfile
       cache_from:
         - tarnadas/smmdb
     image: tarnadas/smmdb
@@ -34,7 +35,7 @@ services:
   api:
     build:
       context: .
-      dockerfile: ./src/rust/Dockerfile
+      dockerfile: ./api/Dockerfile
       cache_from:
         - tarnadas/smmdb-api
     image: tarnadas/smmdb-api
