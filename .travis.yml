@@ -36,6 +36,6 @@ jobs:
       script: echo "deploying to Docker Hub..."
       deploy:
         provider: script
-        script: bash deploy.sh
+        script: bash deploy.sh || travis_terminate 1
         on:
           branch: develop

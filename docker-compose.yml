@@ -14,8 +14,8 @@ services:
     restart: always
   smmdb:
     build:
-      context: .
-      dockerfile: ./website/Dockerfile
+      context: ./website
+      dockerfile: Dockerfile
       cache_from:
         - tarnadas/smmdb
     image: tarnadas/smmdb
@@ -34,8 +34,8 @@ services:
     restart: always
   api:
     build:
-      context: .
-      dockerfile: ./api/Dockerfile
+      context: ./api
+      dockerfile: Dockerfile
       cache_from:
         - tarnadas/smmdb-api
     image: tarnadas/smmdb-api
