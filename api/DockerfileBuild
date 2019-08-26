@@ -35,7 +35,7 @@ WORKDIR /smmdb
 
 COPY ./Cargo.toml ./Cargo.toml
 COPY ./Cargo.lock ./Cargo.lock
-RUN echo "fn main() {}" >> ./src/main.rs
+RUN rm ./src/main.rs && echo "fn main() {}" >> ./src/main.rs
 
 RUN cargo fetch
 RUN cargo build --release
