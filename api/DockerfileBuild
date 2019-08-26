@@ -35,15 +35,15 @@ WORKDIR /smmdb
 
 COPY ./Cargo.toml ./Cargo.toml
 COPY ./Cargo.lock ./Cargo.lock
-RUN mkdir ./src/rust
-RUN echo "fn main() {}" >> ./src/rust/main.rs
+RUN mkdir ./src
+RUN echo "fn main() {}" >> ./src/main.rs
 
 RUN cargo fetch
 RUN cargo build --release
 RUN rm src/*.rs
 
-COPY ./src/rust ./src/rust
-COPY ./src/swagger ./src/swagger
+COPY ./src ./src
+COPY ./swagger ./swagger
 
 RUN rm ./target/release/deps/smmdb*
 RUN cargo build --release
