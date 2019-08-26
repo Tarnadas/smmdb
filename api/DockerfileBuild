@@ -35,7 +35,6 @@ WORKDIR /smmdb
 
 COPY ./Cargo.toml ./Cargo.toml
 COPY ./Cargo.lock ./Cargo.lock
-RUN mkdir ./src
 RUN echo "fn main() {}" >> ./src/main.rs
 
 RUN cargo fetch
