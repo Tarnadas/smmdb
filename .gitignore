@@ -5,3 +5,5 @@
 /7z.exe
 /mongo/db
 *.dab
+/target
+**/*.rs.bk

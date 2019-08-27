@@ -1,0 +1,10 @@
+[workspace]
+members = [
+    "api",
+]
+
+[profile]
+[profile.release]
+debug = false
+lto = true
+codegen-units = 1
