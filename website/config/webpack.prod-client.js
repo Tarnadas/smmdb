@@ -9,7 +9,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
 
 const path = require('path')
 
-const { port, domain } = require('./environment')['prod']
+const { port, domain, apiDomain } = require('./environment')['prod']
 
 module.exports = [
   {
@@ -71,6 +71,7 @@ module.exports = [
         IS_SERVER: false,
         PORT: port,
         DOMAIN: domain,
+        API_DOMAIN: apiDomain,
         DOCKER: process.env.DOCKER
       }),
       new webpack.optimize.ModuleConcatenationPlugin(),

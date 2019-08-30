@@ -2,11 +2,12 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
-const ReactLoadablePlugin = require('react-loadable/webpack').ReactLoadablePlugin
+const ReactLoadablePlugin = require('react-loadable/webpack')
+  .ReactLoadablePlugin
 
 const path = require('path')
 
-const { port, domain } = require('./environment')['dev']
+const { port, domain, apiDomain } = require('./environment')['dev']
 
 module.exports = [
   {
@@ -37,7 +38,8 @@ module.exports = [
         NODE_ENV: 'development',
         IS_SERVER: false,
         PORT: port,
-        DOMAIN: domain
+        DOMAIN: domain,
+        API_DOMAIN: apiDomain
       }),
       new HtmlWebpackPlugin({
         filename: '../index.html',
@@ -51,7 +53,7 @@ module.exports = [
       })
     ],
     resolve: {
-      extensions: [ '.ts', '.tsx', '.js', '.jsx', '.json' ],
+      extensions: ['.ts', '.tsx', '.js', '.jsx', '.json'],
       plugins: [
         new TsconfigPathsPlugin({
           configFile: './tsconfig.json'
@@ -59,9 +61,7 @@ module.exports = [
       ]
     },
     watchOptions: {
-      ignored: [
-        /build\/.*/
-      ]
+      ignored: [/build\/.*/]
     },
     module: {
       rules: [
@@ -76,16 +76,19 @@ module.exports = [
                 babelOptions: {
                   babelrc: false,
                   presets: [
-                    ['@babel/env', {
-                      targets: {
-                        browsers: [
-                          'last 3 Chrome versions',
-                          'last 2 ff versions'
-                        ]
-                      },
-                      modules: false,
-                      useBuiltIns: 'usage'
-                    }],
+                    [
+                      '@babel/env',
+                      {
+                        targets: {
+                          browsers: [
+                            'last 3 Chrome versions',
+                            'last 2 ff versions'
+                          ]
+                        },
+                        modules: false,
+                        useBuiltIns: 'usage'
+                      }
+                    ],
                     '@babel/react'
                   ],
                   plugins: [

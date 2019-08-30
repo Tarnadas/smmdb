@@ -27,8 +27,8 @@
     "build": "yarn clean && yarn build:client && yarn build:server",
     "test": "jest spec",
     "backup": "node ./backup.js",
-    "restore": "cd mongo && docker-compose up",
-    "docker:mongo": "docker-compose -f docker-compose.dev.yml up",
+    "restore": "cd ../mongo && docker-compose up",
+    "docker:mongo": "docker-compose -f ../docker-compose.dev.yml up",
     "clean": "rimraf ./build/client && rimraf ./build/server",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx src"
   },
