@@ -1,16 +1,19 @@
-use crate::account::Account;
+use crate::account::{Account, AccountRes};
 use crate::collections::Collections;
 use crate::course::{Course, CourseResponse};
 use crate::course2::{Course2, Course2Response};
+use crate::session::Session;
 
 use mongodb::db::ThreadedDatabase;
 use mongodb::oid::ObjectId;
 use mongodb::ordered::OrderedDocument;
-use mongodb::{coll::Collection, Client, ThreadedClient};
+use mongodb::{
+    coll::{results::InsertOneResult, Collection},
+    Client, ThreadedClient,
+};
 use std::env;
 
 pub struct Database {
-    client: Client,
     courses: Collection,
     courses2: Collection,
     accounts: Collection,
@@ -28,13 +31,14 @@ impl Database {
         let client = Client::with_uri(&format!("mongodb://{}:27017", host))
             .expect("Failed to initialize standalone client.");
         let courses = client.db("admin").collection(Collections::Courses.as_str());
-        let courses2 = client.db("admin").collection(Collections::Courses2.as_str());
+        let courses2 = client
+            .db("admin")
+            .collection(Collections::Courses2.as_str());
         let accounts = client
             .db("admin")
             .collection(Collections::Accounts.as_str());
 
         Database {
-            client,
             courses,
             courses2,
             accounts,
@@ -117,7 +121,6 @@ impl Database {
     }
 
     pub fn find_account(&self, filter: OrderedDocument) -> Option<Account> {
-        dbg!(&filter);
         self.accounts
             .find_one(Some(filter), None)
             .unwrap()
@@ -137,5 +140,25 @@ impl Database {
             .unwrap()
             .map(|item| item.unwrap().into())
             .collect()
+    }
+
+    pub fn add_account(
+        &self,
+        account: AccountRes,
+        session: Session,
+    ) -> Result<Account, mongodb::Error> {
+        let account_doc = account.clone().into_ordered_document();
+        let res: InsertOneResult = self.accounts.insert_one(account_doc, None)?;
+        Ok(Account::new(
+            account,
+            res.inserted_id
+                .ok_or(mongodb::Error::ResponseError(
+                    "insert_id missing".to_string(),
+                ))?
+                .as_object_id()
+                .unwrap()
+                .clone(),
+            session,
+        ))
     }
 }

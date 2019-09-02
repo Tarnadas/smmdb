@@ -21,8 +21,8 @@ services:
     working_dir: /usr/src/app
   smmdb-api-build:
     build:
-      context: ./api
-      dockerfile: DockerfileBuild
+      context: .
+      dockerfile: ./api/DockerfileBuild
       cache_from:
         - tarnadas/smmdb-api-build
     image: tarnadas/smmdb-api-build

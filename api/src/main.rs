@@ -6,11 +6,13 @@ extern crate failure;
 
 mod account;
 mod collections;
+mod config;
 mod course;
 mod course2;
 mod database;
 mod routes;
 mod server;
+mod session;
 
 use crate::database::Database;
 use crate::server::Server;

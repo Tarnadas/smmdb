@@ -18,6 +18,7 @@ COPY .babelrc /usr/src/app/.babelrc
 COPY .eslintrc /usr/src/app/.eslintrc
 COPY favicon.ico /usr/src/app/favicon.ico
 COPY package.json /usr/src/app/package.json
+RUN true
 COPY tsconfig.json /usr/src/app/tsconfig.json
 COPY webpack.config.js /usr/src/app/webpack.config.js
 

@@ -1,5 +1,4 @@
 use crate::server::ServerData;
-use crate::Database;
 
 use cemu_smm::{course2::Course2, errors::DecompressionError, proto::SMM2Course::SMM2Course};
 
@@ -18,7 +17,6 @@ pub fn put_courses(
     req: HttpRequest,
     payload: web::Payload,
 ) -> impl Future<Item = HttpResponse, Error = PutCourses2Error> {
-    // data.get_courses2(query.into_inner())
     payload
         .from_err()
         .fold(BytesMut::new(), |mut acc, chunk| {
