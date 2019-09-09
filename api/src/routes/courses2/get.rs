@@ -9,7 +9,6 @@ use mongodb::{oid::ObjectId, ordered::OrderedDocument, Bson};
 use protobuf::ProtobufEnum;
 use serde::Deserialize;
 use serde_qs::actix::QsQuery;
-use std::sync::MutexGuard;
 
 #[get("")]
 pub fn get_courses(
@@ -17,7 +16,7 @@ pub fn get_courses(
     query: QsQuery<GetCourses2>,
     req: HttpRequest,
 ) -> Result<String, GetCourses2Error> {
-    data.get_courses2(query.into_inner())
+    data.lock().unwrap().get_courses2(query.into_inner())
 }
 
 #[derive(Deserialize, Debug)]
@@ -55,7 +54,7 @@ pub struct GetCourses2 {
 impl GetCourses2 {
     pub fn into_ordered_document(
         self,
-        database: &MutexGuard<Database>,
+        database: &Database,
     ) -> Result<Vec<OrderedDocument>, GetCourses2Error> {
         let mut pipeline = vec![];
 
@@ -77,10 +76,7 @@ impl GetCourses2 {
         Ok(pipeline)
     }
 
-    fn get_match(
-        &self,
-        database: &MutexGuard<Database>,
-    ) -> Result<Option<OrderedDocument>, GetCourses2Error> {
+    fn get_match(&self, database: &Database) -> Result<Option<OrderedDocument>, GetCourses2Error> {
         let mut res = doc! {};
         if let Some(id) = &self.id {
             GetCourses2::insert_objectid(&mut res, "_id".to_string(), id)?;

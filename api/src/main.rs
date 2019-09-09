@@ -18,8 +18,8 @@ use crate::database::Database;
 use crate::server::Server;
 
 fn main() {
-    use std::sync::{Arc, Mutex};
+    use std::sync::Arc;
 
     let database = Database::new();
-    Server::start(Arc::new(Mutex::new(database))).unwrap();
+    Server::start(Arc::new(database)).unwrap();
 }

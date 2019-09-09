@@ -40,7 +40,7 @@ fn login(
     let id_token = &json.token_obj.id_token;
     let id_info = client.verify(id_token)?;
     let account: AccountRes = id_info.try_into()?;
-    let account = data.add_or_get_account(
+    let account = data.lock().unwrap().add_or_get_account(
         account,
         Session::new(id_token.clone(), json.token_obj.expires_at),
     )?;

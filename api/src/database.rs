@@ -4,18 +4,20 @@ use crate::course::{Course, CourseResponse};
 use crate::course2::{Course2, Course2Response};
 use crate::session::Session;
 
-use mongodb::db::ThreadedDatabase;
-use mongodb::oid::ObjectId;
-use mongodb::ordered::OrderedDocument;
 use mongodb::{
     coll::{results::InsertOneResult, Collection},
-    Client, ThreadedClient,
+    db::ThreadedDatabase,
+    oid::ObjectId,
+    ordered::OrderedDocument,
+    Bson, Client, ThreadedClient,
 };
 use std::env;
 
 pub struct Database {
     courses: Collection,
+    course_data: Collection,
     courses2: Collection,
+    course2_data: Collection,
     accounts: Collection,
 }
 
@@ -31,16 +33,24 @@ impl Database {
         let client = Client::with_uri(&format!("mongodb://{}:27017", host))
             .expect("Failed to initialize standalone client.");
         let courses = client.db("admin").collection(Collections::Courses.as_str());
+        let course_data = client
+            .db("admin")
+            .collection(Collections::CourseData.as_str());
         let courses2 = client
             .db("admin")
             .collection(Collections::Courses2.as_str());
+        let course2_data = client
+            .db("admin")
+            .collection(Collections::Course2Data.as_str());
         let accounts = client
             .db("admin")
             .collection(Collections::Accounts.as_str());
 
         Database {
             courses,
+            course_data,
             courses2,
+            course2_data,
             accounts,
         }
     }
@@ -48,7 +58,7 @@ impl Database {
     pub fn get_courses(&self, query: Vec<OrderedDocument>) -> String {
         match self.courses.aggregate(query, None) {
             Ok(cursor) => {
-                let (account_ids, courses): (Vec<bson::Bson>, Vec<Course>) = cursor
+                let (account_ids, courses): (Vec<Bson>, Vec<Course>) = cursor
                     .map(|item| {
                         let course: Course = item.unwrap().into();
                         (course.get_owner().clone().into(), course)
@@ -78,7 +88,7 @@ impl Database {
     pub fn get_courses2(&self, query: Vec<OrderedDocument>) -> String {
         match self.courses2.aggregate(query, None) {
             Ok(cursor) => {
-                let (account_ids, courses): (Vec<bson::Bson>, Vec<Course2>) = cursor
+                let (account_ids, courses): (Vec<Bson>, Vec<Course2>) = cursor
                     .map(|item| {
                         let course: Course2 = item.unwrap().into();
                         (course.get_owner().clone().into(), course)
@@ -105,6 +115,27 @@ impl Database {
         }
     }
 
+    pub fn put_course2(
+        &self,
+        doc_meta: OrderedDocument,
+        data: Bson,
+        thumb: Bson,
+        thumb_opt: Bson,
+    ) -> Result<(), mongodb::Error> {
+        let insert_res = self.courses2.insert_one(doc_meta, None)?;
+        let inserted_id = insert_res.inserted_id.ok_or(mongodb::Error::ResponseError(
+            "inserted_id not given".to_string(),
+        ))?;
+        let doc = doc! {
+            "_id" => inserted_id,
+            "data" => data,
+            "thumb" => thumb,
+            "thumb_opt" => thumb_opt,
+        };
+        self.course2_data.insert_one(doc, None)?;
+        Ok(())
+    }
+
     pub fn get_account(&self, account_id: ObjectId) -> Option<Account> {
         let mut account_res: Vec<Account> = self
             .accounts
@@ -127,7 +158,7 @@ impl Database {
             .map(|item| item.into())
     }
 
-    pub fn get_accounts(&self, account_ids: Vec<bson::Bson>) -> Vec<Account> {
+    pub fn get_accounts(&self, account_ids: Vec<Bson>) -> Vec<Account> {
         self.accounts
             .find(
                 Some(doc! {
