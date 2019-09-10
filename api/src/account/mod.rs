@@ -1,10 +1,14 @@
+mod request;
+mod response;
+
+pub use request::*;
+pub use response::*;
+
 use crate::session::Session;
 
-use google_signin::IdInfo;
 use mongodb::oid::ObjectId;
 use mongodb::ordered::OrderedDocument;
 use serde::Serialize;
-use std::convert::TryFrom;
 
 #[derive(Debug, Serialize)]
 pub struct Account {
@@ -16,13 +20,7 @@ pub struct Account {
     apikey: String,
     downloadformat: Option<DownloadFormat>,
     session: Option<Session>,
-}
-
-#[derive(Clone, Debug, Serialize)]
-pub struct AccountRes {
-    googleid: String,
-    username: String,
-    email: String,
+    permissions: Option<i32>,
 }
 
 impl From<OrderedDocument> for Account {
@@ -56,35 +54,13 @@ impl From<OrderedDocument> for Account {
                 .get_document("session")
                 .ok()
                 .map(|session| session.clone().into()),
+            permissions: None,
         }
-    }
-}
-
-impl TryFrom<IdInfo> for AccountRes {
-    type Error = AccountConvertError;
-
-    fn try_from(id_info: IdInfo) -> Result<Self, Self::Error> {
-        let email = id_info.email.ok_or(AccountConvertError::EmailMissing)?;
-        let email_verified = id_info
-            .email_verified
-            .ok_or(AccountConvertError::EmailNotVerified)?;
-        if email_verified != "true" {
-            return Err(AccountConvertError::EmailNotVerified);
-        }
-        let username = email
-            .split('@')
-            .next()
-            .ok_or(AccountConvertError::EmailParsingFailed)?;
-        Ok(AccountRes {
-            googleid: id_info.sub,
-            username: username.to_owned(),
-            email,
-        })
     }
 }
 
 impl Account {
-    pub fn new(account: AccountRes, id: ObjectId, session: Session) -> Self {
+    pub fn new(account: AccountReq, id: ObjectId, session: Session) -> Self {
         Account {
             id,
             googleid: account.googleid,
@@ -93,6 +69,7 @@ impl Account {
             apikey: "".to_string(),
             downloadformat: None,
             session: Some(session),
+            permissions: None,
         }
     }
 
@@ -109,37 +86,17 @@ impl Account {
     }
 }
 
-impl AccountRes {
-    pub fn into_ordered_document(self) -> OrderedDocument {
-        doc! {
-            "googleid" => self.googleid,
-            "username" => self.username,
-            "email" => self.email,
-        }
-    }
-
-    pub fn as_find(&self) -> OrderedDocument {
-        doc! {
-            "googleid" => self.googleid.clone()
-        }
-    }
-}
-
-#[derive(Fail, Debug)]
-pub enum AccountConvertError {
-    #[fail(display = "email missing in OAuth2 response")]
-    EmailMissing,
-    #[fail(display = "email not verified")]
-    EmailNotVerified,
-    #[fail(display = "parsing username from email failed")]
-    EmailParsingFailed,
-}
-
 #[derive(Debug, Serialize)]
 enum DownloadFormat {
     WiiU = 0,
     N3DS = 1,
     Protobuf = 2,
+}
+
+impl Default for DownloadFormat {
+    fn default() -> Self {
+        Self::WiiU
+    }
 }
 
 impl From<i32> for DownloadFormat {
@@ -149,6 +106,16 @@ impl From<i32> for DownloadFormat {
             1 => DownloadFormat::N3DS,
             2 => DownloadFormat::Protobuf,
             _ => panic!(),
+        }
+    }
+}
+
+impl Into<i32> for DownloadFormat {
+    fn into(self: DownloadFormat) -> i32 {
+        match self {
+            Self::WiiU => 0,
+            Self::N3DS => 1,
+            Self::Protobuf => 2,
         }
     }
 }

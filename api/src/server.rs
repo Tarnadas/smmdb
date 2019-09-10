@@ -1,5 +1,6 @@
-use crate::account::{Account, AccountRes};
+use crate::account::{Account, AccountReq};
 use crate::config::get_google_client_id;
+use crate::course2::Course2;
 use crate::database::Database;
 use crate::routes::{courses, courses2, index, login, swagger};
 use crate::session::Session;
@@ -11,12 +12,15 @@ use actix_web::{
     App, HttpServer,
 };
 use mongodb::{spec::BinarySubtype, Bson};
-use std::sync::{Arc, Mutex};
+use std::{
+    convert::TryInto,
+    sync::{Arc, Mutex},
+};
 
 pub struct Server {}
 
 pub struct Data {
-    pub database: Arc<Database>,
+    database: Arc<Database>,
     pub google_client_id: String,
 }
 
@@ -85,21 +89,22 @@ impl Data {
         let res: Result<Vec<_>, _> = courses
             .iter_mut()
             .map(|course| -> Result<(), courses2::PutCourses2Error> {
-                let course_meta = serde_json::to_value(course.get_course())?;
-                let data = Bson::Binary(BinarySubtype::Generic, course.get_course_data().clone());
-                let course_thumb = course
-                    .get_course_thumb_mut()
-                    .ok_or(courses2::PutCourses2Error::ThumbnailMissing)?;
-                let thumb = Bson::Binary(
-                    BinarySubtype::Generic,
-                    course_thumb.get_jpeg_no_opt().to_vec(),
-                );
-                let thumb_opt =
-                    Bson::Binary(BinarySubtype::Generic, course_thumb.get_jpeg().to_vec());
-                if let Bson::Document(doc_meta) = Bson::from(course_meta) {
-                    self.database
-                        .put_course2(doc_meta, data, thumb, thumb_opt)?;
-                }
+                // // let course_meta = serde_json::to_value(course.get_course())?;
+                // let course = Course2::new(mongodb::oid::ObjectId::new()?, course.take_course());
+                // let data = Bson::Binary(BinarySubtype::Generic, course.get_course_data().clone());
+                // let course_thumb = course
+                //     .get_course_thumb_mut()
+                //     .ok_or(courses2::PutCourses2Error::ThumbnailMissing)?;
+                // let thumb = Bson::Binary(
+                //     BinarySubtype::Generic,
+                //     course_thumb.get_jpeg_no_opt().to_vec(),
+                // );
+                // let thumb_opt =
+                //     Bson::Binary(BinarySubtype::Generic, course_thumb.get_jpeg().to_vec());
+                // // if let Bson::Document(doc_meta) = Bson::from(course_meta) {
+                // self.database
+                //     .put_course2(course.try_into()?, data, thumb, thumb_opt)?;
+                // // }
                 Ok(())
             })
             .collect();
@@ -109,7 +114,7 @@ impl Data {
 
     pub fn add_or_get_account(
         &self,
-        account: AccountRes,
+        account: AccountReq,
         session: Session,
     ) -> Result<Account, mongodb::Error> {
         match self.database.find_account(account.as_find()) {

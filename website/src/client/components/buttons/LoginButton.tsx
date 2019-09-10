@@ -83,7 +83,7 @@ class Button extends React.PureComponent<any, any> {
 
   private async onGoogleLoginSuccess (accessKey: any): Promise<void> {
     try {
-      const response = await fetch(resolve(process.env.DOMAIN || '', '/tokensignin'), {
+      const response = await fetch(resolve(process.env.API_DOMAIN || '', '/login/google'), {
         method: 'POST',
         body: JSON.stringify(accessKey),
         headers: {
