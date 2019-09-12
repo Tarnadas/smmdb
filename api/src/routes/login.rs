@@ -1,7 +1,8 @@
 use crate::account::{AccountConvertError, AccountReq, AccountRes};
 use crate::server::ServerData;
-use crate::session::Session;
+use crate::session::AuthSession;
 
+use actix_session::Session;
 use futures::future::Future;
 use reqwest::r#async::Client;
 use serde::Deserialize;
@@ -53,6 +54,7 @@ fn login(
     data: web::Data<ServerData>,
     req: HttpRequest,
     json: web::Json<Login>,
+    session: Session,
 ) -> impl Future<Item = HttpResponse, Error = LoginError> {
     let id_token = json.token_obj.id_token.clone();
     Client::new()
@@ -69,12 +71,18 @@ fn login(
                 Err(LoginError::ClientIdInvalid(id_info.aud))
             } else {
                 let account: AccountReq = id_info.try_into()?;
+                session.set("id_token", id_token.clone()).unwrap();
+                session
+                    .set("expires_at", json.token_obj.expires_at)
+                    .unwrap();
                 let account = data.add_or_get_account(
                     account,
-                    Session::new(id_token.clone(), json.token_obj.expires_at),
+                    // session,
+                    AuthSession::new(id_token.clone(), json.token_obj.expires_at),
                 )?;
                 // TODO get stars from database
                 let account = AccountRes::new(account);
+                session.set("account_id", account.get_id()).unwrap();
                 Ok(HttpResponseBuilder::new(StatusCode::OK).json(account))
             }
         })

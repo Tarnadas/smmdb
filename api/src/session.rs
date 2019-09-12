@@ -2,23 +2,23 @@ use mongodb::ordered::OrderedDocument;
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]
-pub struct Session {
+pub struct AuthSession {
     id_token: String,
     expires_at: i64,
 }
 
-impl Session {
+impl AuthSession {
     pub fn new(id_token: String, expires_at: i64) -> Self {
-        Session {
+        AuthSession {
             id_token,
             expires_at,
         }
     }
 }
 
-impl From<OrderedDocument> for Session {
+impl From<OrderedDocument> for AuthSession {
     fn from(document: OrderedDocument) -> Self {
-        Session {
+        AuthSession {
             id_token: document
                 .get_str("id_token")
                 .expect("[Session::from] id_token unwrap failed")

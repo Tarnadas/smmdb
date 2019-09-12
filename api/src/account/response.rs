@@ -25,4 +25,8 @@ impl AccountRes {
             permissions: account.permissions.unwrap_or_default(),
         }
     }
+
+    pub fn get_id(&self) -> &String {
+        &self.id
+    }
 }

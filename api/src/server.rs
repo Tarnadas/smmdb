@@ -3,13 +3,14 @@ use crate::config::get_google_client_id;
 use crate::course2::Course2;
 use crate::database::Database;
 use crate::routes::{courses, courses2, index, login, swagger};
-use crate::session::Session;
+use crate::session::AuthSession;
 
 use actix_cors::Cors;
+use actix_session::{CookieSession, Session};
 use actix_web::{
     http::header,
     middleware::{Compress, Logger},
-    App, HttpServer,
+    web, App, HttpResponse, HttpServer,
 };
 use mongodb::{spec::BinarySubtype, Bson};
 use std::{
@@ -47,6 +48,8 @@ impl Server {
                         ])
                         .max_age(3600),
                 )
+                .wrap(CookieSession::signed(&[0; 32]).secure(true))
+                .service(web::resource("/").to(|| HttpResponse::Ok()))
                 .wrap(Compress::default())
                 .wrap(Logger::default())
                 .service(index)
@@ -115,7 +118,7 @@ impl Data {
     pub fn add_or_get_account(
         &self,
         account: AccountReq,
-        session: Session,
+        session: AuthSession,
     ) -> Result<Account, mongodb::Error> {
         match self.database.find_account(account.as_find()) {
             Some(account) => Ok(account),

@@ -4,7 +4,7 @@ mod response;
 pub use request::*;
 pub use response::*;
 
-use crate::session::Session;
+use crate::session::AuthSession;
 
 use mongodb::oid::ObjectId;
 use mongodb::ordered::OrderedDocument;
@@ -19,7 +19,7 @@ pub struct Account {
     email: String,
     apikey: String,
     downloadformat: Option<DownloadFormat>,
-    session: Option<Session>,
+    session: Option<AuthSession>,
     permissions: Option<i32>,
 }
 
@@ -60,7 +60,7 @@ impl From<OrderedDocument> for Account {
 }
 
 impl Account {
-    pub fn new(account: AccountReq, id: ObjectId, session: Session) -> Self {
+    pub fn new(account: AccountReq, id: ObjectId, session: AuthSession) -> Self {
         Account {
             id,
             googleid: account.googleid,

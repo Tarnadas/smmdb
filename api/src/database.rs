@@ -2,7 +2,7 @@ use crate::account::{Account, AccountReq};
 use crate::collections::Collections;
 use crate::course::{Course, CourseResponse};
 use crate::course2::Course2;
-use crate::session::Session;
+use crate::session::AuthSession;
 
 use mongodb::{
     coll::{results::InsertOneResult, Collection},
@@ -178,7 +178,7 @@ impl Database {
     pub fn add_account(
         &self,
         account: AccountReq,
-        session: Session,
+        session: AuthSession,
     ) -> Result<Account, mongodb::Error> {
         let account_doc = account.clone().into_ordered_document();
         let res: InsertOneResult = self.accounts.insert_one(account_doc, None)?;
