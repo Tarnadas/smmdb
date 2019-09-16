@@ -194,4 +194,22 @@ impl Database {
             session,
         ))
     }
+
+    pub fn store_account_session(
+        &self,
+        account_id: &ObjectId,
+        session: AuthSession,
+    ) -> Result<(), mongodb::Error> {
+        let filter = doc! {
+            "_id" => account_id.clone()
+        };
+        let session: OrderedDocument = session.into();
+        let update = doc! {
+            "$set" => {
+                "session" => session
+            }
+        };
+        self.accounts.update_one(filter, update, None)?;
+        Ok(())
+    }
 }

@@ -77,7 +77,6 @@ fn login(
                     .unwrap();
                 let account = data.add_or_get_account(
                     account,
-                    // session,
                     AuthSession::new(id_token.clone(), json.token_obj.expires_at),
                 )?;
                 // TODO get stars from database

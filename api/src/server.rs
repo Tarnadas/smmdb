@@ -3,7 +3,7 @@ use crate::config::get_google_client_id;
 use crate::course2::Course2;
 use crate::database::Database;
 use crate::routes::{courses, courses2, index, login, swagger};
-use crate::session::AuthSession;
+use crate::session::{Auth, AuthReq, AuthSession};
 
 use actix_cors::Cors;
 use actix_session::{CookieSession, Session};
@@ -12,7 +12,6 @@ use actix_web::{
     middleware::{Compress, Logger},
     web, App, HttpResponse, HttpServer,
 };
-use mongodb::{spec::BinarySubtype, Bson};
 use std::{
     convert::TryInto,
     sync::{Arc, Mutex},
@@ -40,15 +39,23 @@ impl Server {
                 })))
                 .wrap(
                     Cors::new()
-                        .allowed_methods(vec!["GET", "POST", "PUT"])
+                        .allowed_methods(vec!["GET", "POST", "PUT", "OPTIONS"])
                         .allowed_headers(vec![
                             header::AUTHORIZATION,
                             header::ACCEPT,
                             header::CONTENT_TYPE,
                         ])
+                        .supports_credentials()
                         .max_age(3600),
                 )
-                .wrap(CookieSession::signed(&[0; 32]).secure(true))
+                .wrap(Auth)
+                .wrap(
+                    CookieSession::signed(&[0; 32])
+                        .name("smmdb")
+                        .path("/")
+                        .max_age(3600 * 24 * 7)
+                        .secure(false),
+                )
                 .service(web::resource("/").to(|| HttpResponse::Ok()))
                 .wrap(Compress::default())
                 .wrap(Logger::default())
@@ -121,8 +128,16 @@ impl Data {
         session: AuthSession,
     ) -> Result<Account, mongodb::Error> {
         match self.database.find_account(account.as_find()) {
-            Some(account) => Ok(account),
+            Some(account) => {
+                self.database
+                    .store_account_session(account.get_id_ref(), session)?;
+                Ok(account)
+            }
             None => self.database.add_account(account, session),
         }
+    }
+
+    pub fn get_account_from_auth(&self, auth_req: AuthReq) -> Option<Account> {
+        self.database.find_account(auth_req.into())
     }
 }

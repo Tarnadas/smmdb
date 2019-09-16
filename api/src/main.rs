@@ -14,6 +14,8 @@ mod routes;
 mod server;
 mod session;
 
+pub use session::Identity;
+
 use crate::database::Database;
 use crate::server::Server;
 

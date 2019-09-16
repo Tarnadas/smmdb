@@ -88,7 +88,8 @@ class Button extends React.PureComponent<any, any> {
         body: JSON.stringify(accessKey),
         headers: {
           'Content-Type': 'application/json'
-        }
+        },
+        credentials: 'include'
       })
       if (!response.ok) throw new Error(response.statusText)
       const accountData = await response.json()
