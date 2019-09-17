@@ -153,7 +153,6 @@ impl TryFrom<&RequestHead> for AuthReq {
     fn try_from(header: &RequestHead) -> Result<Self, Self::Error> {
         if let Some(authorization) = header.headers().get(header::AUTHORIZATION) {
             if let Ok(authorization) = authorization.to_str() {
-                dbg!(&authorization);
                 let s: Vec<&str> = authorization.split(' ').collect();
                 if let (Some("APIKEY"), Some(account_id), Some(apikey)) =
                     (s.get(0).copied(), s.get(1), s.get(2))

@@ -1,7 +1,7 @@
 use crate::account::{Account, AccountReq};
 use crate::collections::Collections;
 use crate::course::{Course, CourseResponse};
-use crate::course2::Course2;
+use crate::course2::{Course2, Course2Response};
 use crate::session::AuthSession;
 
 use mongodb::{
@@ -86,35 +86,34 @@ impl Database {
     }
 
     pub fn get_courses2(&self, query: Vec<OrderedDocument>) -> String {
-        // match self.courses2.aggregate(query, None) {
-        //     Ok(cursor) => {
-        //         let (account_ids, courses): (Vec<Bson>, Vec<Course2>) = cursor
-        //             .map(|item| -> Result<_, _> {
-        //                 let course: Course2 = item.unwrap().try_into()?;
-        //                 (course.get_owner().clone().into(), course)
-        //             })
-        //             .filter_map(Result::ok)
-        //             .unzip();
+        match self.courses2.aggregate(query, None) {
+            Ok(cursor) => {
+                let (account_ids, courses): (Vec<Bson>, Vec<Course2>) = cursor
+                    .map(|item| -> Result<(Bson, Course2), serde_json::Error> {
+                        let course: Course2 = item.unwrap().try_into()?;
+                        Ok((course.get_owner().clone().into(), course))
+                    })
+                    .filter_map(Result::ok)
+                    .unzip();
 
-        //         let accounts = self.get_accounts(account_ids);
-        //         let courses: Vec<Course2Response> = courses
-        //             .into_iter()
-        //             .map(|course| {
-        //                 let account = accounts
-        //                     .iter()
-        //                     .find(|account| {
-        //                         account.get_id_ref().to_string() == course.get_owner().to_string()
-        //                     })
-        //                     .unwrap();
-        //                 Course2Response::from_course(course, account)
-        //             })
-        //             .collect();
+                let accounts = self.get_accounts(account_ids);
+                let courses: Vec<Course2Response> = courses
+                    .into_iter()
+                    .map(|course| {
+                        let account = accounts
+                            .iter()
+                            .find(|account| {
+                                account.get_id_ref().to_string() == course.get_owner().to_string()
+                            })
+                            .unwrap();
+                        Course2Response::from_course(course, account)
+                    })
+                    .collect();
 
-        //         serde_json::to_string(&courses).unwrap()
-        //     }
-        //     Err(e) => e.to_string(),
-        // }
-        "".to_string()
+                serde_json::to_string(&courses).unwrap()
+            }
+            Err(e) => e.to_string(),
+        }
     }
 
     pub fn put_course2(
@@ -134,6 +133,7 @@ impl Database {
             "thumb" => thumb,
             "thumb_opt" => thumb_opt,
         };
+        // TODO same oid
         self.course2_data.insert_one(doc, None)?;
         Ok(())
     }

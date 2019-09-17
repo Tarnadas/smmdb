@@ -1,6 +1,6 @@
 mod response;
 
-// pub use self::response::Course2Response;
+pub use self::response::Course2Response;
 
 use cemu_smm::proto::SMM2Course::{
     SMM2Course, SMM2CourseArea_AutoScroll, SMM2CourseArea_CourseTheme, SMM2CourseHeader_GameStyle,
@@ -21,13 +21,6 @@ impl TryFrom<OrderedDocument> for Course2 {
     fn try_from(document: OrderedDocument) -> Result<Course2, Self::Error> {
         let course = Bson::from(document);
         let course: serde_json::Value = course.into();
-        // Ok(Course2 {
-        //     owner: document
-        //         .get_object_id("owner")
-        //         .expect("[Course2::from] owner unwrap failed")
-        //         .to_owned(),
-        //     course: serde_json::from_value(course)?,
-        // })
         Ok(serde_json::from_value(course)?)
     }
 }
@@ -39,6 +32,10 @@ impl Course2 {
 
     pub fn get_owner(&self) -> &ObjectId {
         &self.owner
+    }
+
+    pub fn get_course(&self) -> &SMM2Course {
+        &self.course
     }
 
     fn map_to_auto_scroll(

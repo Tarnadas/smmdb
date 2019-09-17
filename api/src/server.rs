@@ -12,6 +12,7 @@ use actix_web::{
     middleware::{Compress, Logger},
     web, App, HttpResponse, HttpServer,
 };
+use mongodb::{spec::BinarySubtype, Bson};
 use std::{
     convert::TryInto,
     sync::{Arc, Mutex},
@@ -37,6 +38,19 @@ impl Server {
                     database: database.clone(),
                     google_client_id: get_google_client_id(),
                 })))
+                .service(courses::service())
+                .service(courses2::service())
+                .service(login::service())
+                .service(swagger)
+                .service(index)
+                .wrap(Auth)
+                .wrap(
+                    CookieSession::signed(&[0; 32])
+                        .name("smmdb")
+                        .path("/")
+                        .max_age(3600 * 24 * 7)
+                        .secure(false),
+                )
                 .wrap(
                     Cors::new()
                         .allowed_methods(vec!["GET", "POST", "PUT", "OPTIONS"])
@@ -48,22 +62,8 @@ impl Server {
                         .supports_credentials()
                         .max_age(3600),
                 )
-                .wrap(Auth)
-                .wrap(
-                    CookieSession::signed(&[0; 32])
-                        .name("smmdb")
-                        .path("/")
-                        .max_age(3600 * 24 * 7)
-                        .secure(false),
-                )
-                .service(web::resource("/").to(|| HttpResponse::Ok()))
                 .wrap(Compress::default())
                 .wrap(Logger::default())
-                .service(index)
-                .service(swagger)
-                .service(courses::service())
-                .service(courses2::service())
-                .service(login::service())
         })
         .bind("0.0.0.0:3030")?
         .workers(1)
@@ -95,26 +95,31 @@ impl Data {
     pub fn put_courses2(
         &self,
         mut courses: Vec<cemu_smm::Course2>,
+        account: &Account,
     ) -> Result<(), courses2::PutCourses2Error> {
         let res: Result<Vec<_>, _> = courses
             .iter_mut()
-            .map(|course| -> Result<(), courses2::PutCourses2Error> {
-                // // let course_meta = serde_json::to_value(course.get_course())?;
-                // let course = Course2::new(mongodb::oid::ObjectId::new()?, course.take_course());
-                // let data = Bson::Binary(BinarySubtype::Generic, course.get_course_data().clone());
-                // let course_thumb = course
-                //     .get_course_thumb_mut()
-                //     .ok_or(courses2::PutCourses2Error::ThumbnailMissing)?;
-                // let thumb = Bson::Binary(
-                //     BinarySubtype::Generic,
-                //     course_thumb.get_jpeg_no_opt().to_vec(),
-                // );
-                // let thumb_opt =
-                //     Bson::Binary(BinarySubtype::Generic, course_thumb.get_jpeg().to_vec());
-                // // if let Bson::Document(doc_meta) = Bson::from(course_meta) {
-                // self.database
-                //     .put_course2(course.try_into()?, data, thumb, thumb_opt)?;
-                // // }
+            .map(|smm_course| -> Result<(), courses2::PutCourses2Error> {
+                let course = Course2::new(
+                    account.get_id_ref().clone(),
+                    smm_course.get_course().clone(),
+                );
+                let course_meta = serde_json::to_value(course)?;
+                let data =
+                    Bson::Binary(BinarySubtype::Generic, smm_course.get_course_data().clone());
+                let course_thumb = smm_course
+                    .get_course_thumb_mut()
+                    .ok_or(courses2::PutCourses2Error::ThumbnailMissing)?;
+                let thumb = Bson::Binary(
+                    BinarySubtype::Generic,
+                    course_thumb.get_jpeg_no_opt().to_vec(),
+                );
+                let thumb_opt =
+                    Bson::Binary(BinarySubtype::Generic, course_thumb.get_jpeg().to_vec());
+                if let Bson::Document(doc_meta) = Bson::from(course_meta) {
+                    self.database
+                        .put_course2(doc_meta, data, thumb, thumb_opt)?;
+                }
                 Ok(())
             })
             .collect();

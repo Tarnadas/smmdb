@@ -26,10 +26,14 @@ pub fn put_courses(
             Ok::<BytesMut, PayloadError>(acc)
         })
         .map(move |buffer| match Course2::from_packed(&buffer[..]) {
-            Ok(courses) => match data.lock().unwrap().put_courses2(courses) {
-                Ok(_) => HttpResponse::NoContent().into(),
-                Err(_) => HttpResponse::BadRequest().into(),
-            },
+            Ok(courses) => {
+                let account = identity.get_account();
+                let data = data.lock().unwrap();
+                match data.put_courses2(courses, account.as_ref().unwrap()) {
+                    Ok(_) => HttpResponse::NoContent().into(),
+                    Err(_) => HttpResponse::BadRequest().into(),
+                }
+            }
             Err(err) => PutCourses2Error::from(err).error_response(),
         })
 }
