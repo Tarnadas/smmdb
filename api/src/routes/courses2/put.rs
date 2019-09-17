@@ -1,4 +1,4 @@
-use crate::server::ServerData;
+use crate::{server::ServerData, Identity};
 
 use cemu_smm::{course2::Course2, errors::DecompressionError};
 
@@ -16,6 +16,7 @@ pub fn put_courses(
     data: web::Data<ServerData>,
     req: HttpRequest,
     payload: web::Payload,
+    identity: Identity,
 ) -> impl Future<Item = HttpResponse, Error = PutCourses2Error> {
     let data = data.clone();
     payload
