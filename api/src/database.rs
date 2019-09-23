@@ -2,6 +2,8 @@ use crate::account::{Account, AccountReq};
 use crate::collections::Collections;
 use crate::course::{Course, CourseResponse};
 use crate::course2::{Course2, Course2Response};
+use crate::minhash::{LshIndex, MinHash};
+use crate::mongodb::coll::options::FindOptions;
 use crate::session::AuthSession;
 
 use mongodb::{
@@ -116,26 +118,63 @@ impl Database {
         }
     }
 
+    pub fn fill_lsh_index(&self, lsh_index: &mut LshIndex) {
+        if let Ok(cursor) = self.courses2.find(
+            None,
+            Some(FindOptions {
+                projection: Some(doc! {
+                    "hash" => 1
+                }),
+                ..Default::default()
+            }),
+        ) {
+            cursor.filter_map(Result::ok).for_each(|item| {
+                if let (Some(id), Some(hash)) = (item.get("_id"), item.get("hash")) {
+                    let hash: serde_json::Value = hash.clone().into();
+                    let hash: Result<MinHash, _> = serde_json::from_value(hash);
+                    if let (Bson::ObjectId(id), Ok(hash)) = (id.clone(), hash) {
+                        lsh_index.insert(id.to_hex(), &hash);
+                    }
+                }
+            });
+        }
+    }
+
     pub fn put_course2(
         &self,
         doc_meta: OrderedDocument,
-        data: Bson,
+        data_gz: Bson,
+        data_br: Bson,
         thumb: Bson,
-        thumb_opt: Bson,
-    ) -> Result<(), mongodb::Error> {
+    ) -> Result<ObjectId, mongodb::Error> {
         let insert_res = self.courses2.insert_one(doc_meta, None)?;
         let inserted_id = insert_res.inserted_id.ok_or(mongodb::Error::ResponseError(
             "inserted_id not given".to_string(),
         ))?;
         let doc = doc! {
-            "_id" => inserted_id,
-            "data" => data,
+            "_id" => inserted_id.clone(),
+            "data_gz" => data_gz,
+            "data_br" => data_br,
             "thumb" => thumb,
-            "thumb_opt" => thumb_opt,
         };
-        // TODO same oid
         self.course2_data.insert_one(doc, None)?;
-        Ok(())
+        Ok(inserted_id.as_object_id().unwrap().clone())
+    }
+
+    pub fn find_courses2(&self, doc: OrderedDocument) -> Result<Vec<Course2>, mongodb::Error> {
+        match self.courses2.find(Some(doc), None) {
+            Ok(cursor) => {
+                let courses: Vec<Course2> = cursor
+                    .map(|item| -> Result<Course2, serde_json::Error> {
+                        let course: Course2 = item.unwrap().try_into()?;
+                        Ok(course)
+                    })
+                    .filter_map(Result::ok)
+                    .collect();
+                Ok(courses)
+            }
+            Err(err) => Err(err),
+        }
     }
 
     pub fn get_account(&self, account_id: ObjectId) -> Option<Account> {

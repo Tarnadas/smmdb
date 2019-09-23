@@ -2,17 +2,22 @@ mod response;
 
 pub use self::response::Course2Response;
 
+use crate::minhash::{MinHash, PermGen};
+
 use cemu_smm::proto::SMM2Course::{
     SMM2Course, SMM2CourseArea_AutoScroll, SMM2CourseArea_CourseTheme, SMM2CourseHeader_GameStyle,
 };
 use mongodb::{oid::ObjectId, ordered::OrderedDocument, Bson, ValueAccessError};
 use serde::{Deserialize, Serialize};
-use std::convert::TryFrom;
+use std::{convert::TryFrom, fmt};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Course2 {
+    #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
+    id: Option<ObjectId>,
     owner: ObjectId,
     course: SMM2Course,
+    hash: MinHash,
 }
 
 impl TryFrom<OrderedDocument> for Course2 {
@@ -26,8 +31,23 @@ impl TryFrom<OrderedDocument> for Course2 {
 }
 
 impl Course2 {
-    pub fn new(owner: ObjectId, course: SMM2Course) -> Self {
-        Course2 { owner, course }
+    pub fn insert(owner: ObjectId, course: &cemu_smm::Course2, perm_gen: &PermGen) -> Self {
+        let mut hash = MinHash::new(&perm_gen);
+        hash.update(&perm_gen, course.get_course_data());
+        Course2 {
+            id: None,
+            owner,
+            course: course.get_course().clone(),
+            hash,
+        }
+    }
+
+    pub fn set_id(&mut self, id: ObjectId) {
+        self.id = Some(id);
+    }
+
+    pub fn get_id(&self) -> &ObjectId {
+        &self.id.as_ref().unwrap()
     }
 
     pub fn get_owner(&self) -> &ObjectId {
@@ -36,6 +56,10 @@ impl Course2 {
 
     pub fn get_course(&self) -> &SMM2Course {
         &self.course
+    }
+
+    pub fn get_hash(&self) -> &MinHash {
+        &self.hash
     }
 
     fn map_to_auto_scroll(
@@ -82,6 +106,31 @@ impl Course2 {
             3 => Ok(SMM2CourseHeader_GameStyle::WU),
             4 => Ok(SMM2CourseHeader_GameStyle::W3),
             _ => Err(ValueAccessError::UnexpectedType),
+        }
+    }
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Course2SimilarityError {
+    similar_course_id: String,
+    jaccard: f64,
+}
+
+impl Course2SimilarityError {
+    pub fn new(similar_course_id: String, jaccard: f64) -> Self {
+        Course2SimilarityError {
+            similar_course_id,
+            jaccard,
+        }
+    }
+}
+
+impl fmt::Display for Course2SimilarityError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match serde_json::to_string(&self) {
+            Ok(res) => write!(f, "{}", res),
+            Err(_) => fmt::Result::Err(fmt::Error),
         }
     }
 }

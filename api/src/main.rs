@@ -10,10 +10,13 @@ mod config;
 mod course;
 mod course2;
 mod database;
+mod minhash;
 mod routes;
 mod server;
 mod session;
 
+pub use course::Course;
+pub use course2::Course2;
 pub use session::Identity;
 
 use crate::database::Database;
