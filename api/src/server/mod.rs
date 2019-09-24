@@ -53,7 +53,7 @@ impl Server {
                 .wrap(Logger::default())
         })
         .bind("0.0.0.0:3030")?
-        .workers(1) // TODO num cpus
+        .workers(num_cpus::get())
         .run()
     }
 }
