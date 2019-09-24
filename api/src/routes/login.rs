@@ -66,7 +66,6 @@ fn login(
         .and_then(|mut res| res.json())
         .map_err(|res| res.into())
         .and_then(move |id_info: IdInfo| {
-            let data = data.lock().unwrap();
             if data.google_client_id != id_info.aud {
                 Err(LoginError::ClientIdInvalid(id_info.aud))
             } else {

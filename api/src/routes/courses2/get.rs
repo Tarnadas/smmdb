@@ -16,7 +16,7 @@ pub fn get_courses(
     query: QsQuery<GetCourses2>,
     req: HttpRequest,
 ) -> Result<String, GetCourses2Error> {
-    data.lock().unwrap().get_courses2(query.into_inner())
+    data.get_courses2(query.into_inner())
 }
 
 #[derive(Deserialize, Debug)]

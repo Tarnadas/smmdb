@@ -100,12 +100,10 @@ where
         let data: Option<Data<ServerData>> = req.app_data();
         if let Some(data) = data {
             if let Ok(auth_req) = AuthReq::try_from(session) {
-                let data = data.lock().unwrap();
                 if let Some(account) = data.get_account_from_auth(auth_req) {
                     Identity::set_identity(account, &mut req);
                 }
             } else if let Ok(auth_req) = AuthReq::try_from(req.head()) {
-                let data = data.lock().unwrap();
                 if let Some(account) = data.get_account_from_auth(auth_req) {
                     Identity::set_identity(account, &mut req);
                 }

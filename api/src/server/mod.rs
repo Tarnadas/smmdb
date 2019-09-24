@@ -9,7 +9,7 @@ use actix_web::{
     middleware::{Compress, Logger},
     App, HttpServer,
 };
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 mod data;
 
@@ -21,10 +21,11 @@ impl Server {
     pub fn start(database: Arc<Database>) -> std::io::Result<()> {
         std::env::set_var("RUST_LOG", "actix_web=debug");
         env_logger::init();
+        let data = Arc::new(Data::new(database));
 
         HttpServer::new(move || {
             App::new()
-                .data(Arc::new(Mutex::new(Data::new(database.clone()))))
+                .data(data.clone())
                 .service(courses::service())
                 .service(courses2::service())
                 .service(login::service())

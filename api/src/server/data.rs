@@ -27,7 +27,7 @@ pub struct Data {
     pub lsh_index: Arc<Mutex<LshIndex>>,
 }
 
-pub type ServerData = Arc<Mutex<Data>>;
+pub type ServerData = Arc<Data>;
 
 impl Data {
     pub fn new(database: Arc<Database>) -> Self {
@@ -64,7 +64,7 @@ impl Data {
     }
 
     pub fn put_courses2(
-        &mut self,
+        &self,
         mut courses: Vec<cemu_smm::Course2>,
         account: &Account,
     ) -> Result<PutCourses2Response, courses2::PutCourses2Error> {
