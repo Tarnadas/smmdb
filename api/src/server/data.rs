@@ -95,6 +95,11 @@ impl Data {
                                 return Err(courses2::PutCourses2Error::Similarity(
                                     Course2SimilarityError::new(
                                         similar_course.get_id().to_hex(),
+                                        similar_course
+                                            .get_course()
+                                            .get_header()
+                                            .get_title()
+                                            .to_string(),
                                         jaccard,
                                     ),
                                 ));

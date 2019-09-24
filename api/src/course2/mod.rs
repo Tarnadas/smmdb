@@ -114,13 +114,15 @@ impl Course2 {
 #[serde(rename_all = "camelCase")]
 pub struct Course2SimilarityError {
     similar_course_id: String,
+    title: String,
     jaccard: f64,
 }
 
 impl Course2SimilarityError {
-    pub fn new(similar_course_id: String, jaccard: f64) -> Self {
+    pub fn new(similar_course_id: String, title: String, jaccard: f64) -> Self {
         Course2SimilarityError {
             similar_course_id,
+            title,
             jaccard,
         }
     }
