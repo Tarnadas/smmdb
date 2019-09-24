@@ -152,6 +152,13 @@ impl Data {
         Ok(response)
     }
 
+    pub fn delete_course2(&self, course_id: ObjectId) -> Result<(), mongodb::Error> {
+        let query = doc! {
+            "_id" => course_id
+        };
+        self.database.delete_course2(query)
+    }
+
     pub fn add_or_get_account(
         &self,
         account: AccountReq,

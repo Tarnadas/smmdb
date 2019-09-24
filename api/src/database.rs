@@ -161,6 +161,12 @@ impl Database {
         Ok(inserted_id.as_object_id().unwrap().clone())
     }
 
+    pub fn delete_course2(&self, doc: OrderedDocument) -> Result<(), mongodb::Error> {
+        self.courses2.delete_one(doc.clone(), None)?;
+        self.course2_data.delete_one(doc, None)?;
+        Ok(())
+    }
+
     pub fn find_courses2(&self, doc: OrderedDocument) -> Result<Vec<Course2>, mongodb::Error> {
         match self.courses2.find(Some(doc), None) {
             Ok(cursor) => {
