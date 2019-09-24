@@ -2,7 +2,6 @@ use super::Course2;
 use crate::account::Account;
 
 use cemu_smm::proto::SMM2Course::SMM2Course;
-use mongodb::oid::ObjectId;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]

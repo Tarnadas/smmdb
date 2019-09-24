@@ -180,15 +180,16 @@ impl GetCourses {
             self.stars_lte,
         );
 
-        match res.is_empty() {
-            true => Ok(None),
-            false => Ok(Some(res)),
+        if res.is_empty() {
+            Ok(None)
+        } else {
+            Ok(Some(res))
         }
     }
 
     fn get_limit(&self) -> Result<u32, GetCoursesError> {
         let limit = self.limit.0;
-        if limit <= 0 {
+        if limit == 0 {
             return Err(GetCoursesError::LimitTooLow);
         }
         if limit > 120 {
@@ -218,7 +219,7 @@ impl GetCourses {
         Ok(())
     }
 
-    fn insert_enum<T>(doc: &mut OrderedDocument, key: String, enums: &Vec<T>)
+    fn insert_enum<T>(doc: &mut OrderedDocument, key: String, enums: &[T])
     where
         T: ProtobufEnum,
     {

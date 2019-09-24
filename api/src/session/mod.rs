@@ -110,7 +110,7 @@ where
             }
         }
 
-        Box::new(self.service.call(req).and_then(|res| Ok(res)))
+        Box::new(self.service.call(req).and_then(Ok))
     }
 }
 

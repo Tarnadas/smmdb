@@ -8,23 +8,23 @@ pub struct MinHash {
     hash: Vec<u64>,
 }
 
-static MINHASH_PRIME: u64 = 4294967291;
-static MAX_HASH: u64 = 4294967295;
-static XXHASH_SEED: u64 = 0xDEADBEEF;
+static MINHASH_PRIME: u64 = 4_294_967_291;
+static MAX_HASH: u64 = 4_294_967_295;
+static XXHASH_SEED: u64 = 0xDEAD_BEEF;
 
-fn calculate_hash<T: Hash>(t: &T) -> u64 {
+fn calculate_hash(t: &[u8]) -> u64 {
     let mut s = XxHash64::with_seed(XXHASH_SEED);
     t.hash(&mut s);
     s.finish()
 }
 
-static mut hash_seed: u32 = 1;
+static mut HASH_SEED: u32 = 1;
 
 fn get_rand_int() -> u64 {
     unsafe {
         let max_hash = MAX_HASH as f64;
-        let x = (hash_seed as f64).sin() * max_hash;
-        hash_seed = hash_seed + 1;
+        let x = f64::from(HASH_SEED).sin() * max_hash;
+        HASH_SEED += 1;
 
         ((x - x.floor()) * max_hash).floor() as u64
     }
@@ -85,7 +85,7 @@ impl MinHash {
         self.hash.capacity()
     }
 
-    pub fn update(&mut self, perm: &PermGen, input: &Vec<u8>) {
+    pub fn update(&mut self, perm: &PermGen, input: &[u8]) {
         let mut index = 0;
         let num_perm = self.num_perm();
 
@@ -112,7 +112,7 @@ impl MinHash {
             }
         }
 
-        (shared as f64) / (self.num_perm() as f64)
+        f64::from(shared) / (self.num_perm() as f64)
     }
 }
 
@@ -169,13 +169,10 @@ impl LshIndex {
         let mut ret: HashSet<String> = HashSet::new();
 
         for band in &hash_bands {
-            match self.index.get(band) {
-                Some(set) => {
-                    for val in set {
-                        ret.insert(val.to_owned());
-                    }
+            if let Some(set) = self.index.get(band) {
+                for val in set {
+                    ret.insert(val.to_owned());
                 }
-                None => (),
             }
         }
 

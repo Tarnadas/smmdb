@@ -148,9 +148,9 @@ impl Database {
         thumb: Bson,
     ) -> Result<ObjectId, mongodb::Error> {
         let insert_res = self.courses2.insert_one(doc_meta, None)?;
-        let inserted_id = insert_res.inserted_id.ok_or(mongodb::Error::ResponseError(
-            "inserted_id not given".to_string(),
-        ))?;
+        let inserted_id = insert_res
+            .inserted_id
+            .ok_or_else(|| mongodb::Error::ResponseError("inserted_id not given".to_string()))?;
         let doc = doc! {
             "_id" => inserted_id.clone(),
             "data_gz" => data_gz,
@@ -224,9 +224,7 @@ impl Database {
         Ok(Account::new(
             account,
             res.inserted_id
-                .ok_or(mongodb::Error::ResponseError(
-                    "insert_id missing".to_string(),
-                ))?
+                .ok_or_else(|| mongodb::Error::ResponseError("insert_id missing".to_string()))?
                 .as_object_id()
                 .unwrap()
                 .clone(),

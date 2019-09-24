@@ -105,7 +105,7 @@ impl Data {
 
                         let data_gz = smm_course
                             .get_course_data()
-                            .into_iter()
+                            .iter()
                             .cloned()
                             .encode(&mut GZipEncoder::new(), Action::Finish)
                             .collect::<Result<Vec<_>, _>>()?;
