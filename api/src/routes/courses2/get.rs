@@ -2,12 +2,8 @@ use crate::server::ServerData;
 use crate::Database;
 
 use actix_web::{error::ResponseError, get, http::StatusCode, web, HttpRequest, HttpResponse};
-use cemu_smm::proto::SMM2Course::{
-    SMM2CourseArea_AutoScroll, SMM2CourseArea_CourseTheme, SMM2CourseHeader_GameStyle,
-};
 use mongodb::{oid::ObjectId, ordered::OrderedDocument, Bson};
-use protobuf::ProtobufEnum;
-use serde::Deserialize;
+use serde::{de, Deserialize, Deserializer};
 use serde_qs::actix::QsQuery;
 
 #[get("")]
@@ -27,28 +23,9 @@ pub struct GetCourses2 {
     id: Option<String>,
     ids: Option<Vec<String>>,
     title: Option<String>,
-    maker: Option<String>,
     owner: Option<String>,
     uploader: Option<String>,
-    game_style: Option<Vec<SMM2CourseHeader_GameStyle>>,
-    course_theme: Option<Vec<SMM2CourseArea_CourseTheme>>,
-    course_theme_sub: Option<Vec<SMM2CourseArea_CourseTheme>>,
-    auto_scroll: Option<Vec<SMM2CourseArea_AutoScroll>>,
-    auto_scroll_sub: Option<Vec<SMM2CourseArea_AutoScroll>>,
-    width_gte: Option<i32>,
-    width_lte: Option<i32>,
-    width_sub_gte: Option<i32>,
-    width_sub_lte: Option<i32>,
-    nintendo_id: Option<String>,
-    difficulty_gte: Option<i32>,
-    difficulty_lte: Option<i32>,
-    video_id: Option<String>,
-    lastmodified_gte: Option<i64>,
-    lastmodified_lte: Option<i64>,
-    uploaded_gte: Option<i64>,
-    uploaded_lte: Option<i64>,
-    stars_gte: Option<i32>,
-    stars_lte: Option<i32>,
+    sort: Option<Vec<Sort>>,
 }
 
 impl GetCourses2 {
@@ -62,7 +39,9 @@ impl GetCourses2 {
             pipeline.push(doc! { "$match" => pipeline_match });
         }
 
-        let limit = self.get_limit()?;
+        pipeline.push(self.get_sort_doc());
+
+        let limit = self.get_limit();
         pipeline.push(doc! {
             "$limit" => limit
         });
@@ -104,10 +83,6 @@ impl GetCourses2 {
             GetCourses2::insert_regexp(&mut res, "title".to_string(), title);
         }
 
-        if let Some(maker) = self.maker.clone() {
-            GetCourses2::insert_regexp(&mut res, "maker".to_string(), maker);
-        }
-
         if let Some(owner) = &self.owner {
             GetCourses2::insert_objectid(&mut res, "owner".to_string(), owner)?;
         }
@@ -124,58 +99,6 @@ impl GetCourses2 {
             };
         }
 
-        if let Some(game_styles) = &self.game_style {
-            GetCourses2::insert_enum(&mut res, "gameStyle".to_string(), game_styles);
-        }
-
-        if let Some(course_themes) = &self.course_theme {
-            GetCourses2::insert_enum(&mut res, "courseTheme".to_string(), course_themes);
-        }
-
-        if let Some(course_themes) = &self.course_theme_sub {
-            GetCourses2::insert_enum(&mut res, "courseThemeSub".to_string(), course_themes);
-        }
-
-        if let Some(auto_scrolls) = &self.auto_scroll {
-            GetCourses2::insert_enum(&mut res, "autoScroll".to_string(), auto_scrolls);
-        }
-
-        if let Some(auto_scrolls) = &self.auto_scroll_sub {
-            GetCourses2::insert_enum(&mut res, "autoScrollSub".to_string(), auto_scrolls);
-        }
-
-        GetCourses2::insert_boundaries(
-            &mut res,
-            "width".to_string(),
-            self.width_gte,
-            self.width_lte,
-        );
-
-        GetCourses2::insert_boundaries(
-            &mut res,
-            "widthSub".to_string(),
-            self.width_sub_gte,
-            self.width_sub_lte,
-        );
-
-        if let Some(nintendo_id) = &self.nintendo_id {
-            res.insert_bson("nintendoid".to_string(), Bson::String(nintendo_id.clone()));
-        }
-
-        GetCourses2::insert_boundaries(
-            &mut res,
-            "difficulty".to_string(),
-            self.difficulty_gte,
-            self.difficulty_lte,
-        );
-
-        GetCourses2::insert_boundaries(
-            &mut res,
-            "stars".to_string(),
-            self.stars_gte,
-            self.stars_lte,
-        );
-
         if res.is_empty() {
             Ok(None)
         } else {
@@ -183,15 +106,26 @@ impl GetCourses2 {
         }
     }
 
-    fn get_limit(&self) -> Result<u32, GetCourses2Error> {
-        let limit = self.limit.0;
-        if limit == 0 {
-            return Err(GetCourses2Error::LimitTooLow);
+    fn get_sort_doc(&self) -> OrderedDocument {
+        let mut query = OrderedDocument::new();
+        for sort in self.get_sort() {
+            query.insert(sort.val, sort.dir);
         }
-        if limit > 120 {
-            return Err(GetCourses2Error::LimitTooHigh);
+        doc! {
+            "$sort" => query
         }
-        Ok(limit + self.skip.unwrap_or_default())
+    }
+
+    fn get_sort(&self) -> Vec<Sort> {
+        if self.sort.is_some() {
+            self.sort.clone().unwrap()
+        } else {
+            vec![Sort::default()]
+        }
+    }
+
+    fn get_limit(&self) -> u32 {
+        self.limit.0 + self.skip.unwrap_or_default()
     }
 
     fn insert_regexp(doc: &mut OrderedDocument, key: String, regexp: String) {
@@ -214,52 +148,10 @@ impl GetCourses2 {
         );
         Ok(())
     }
-
-    fn insert_enum<T>(doc: &mut OrderedDocument, key: String, enums: &[T])
-    where
-        T: ProtobufEnum,
-    {
-        let enums: Vec<Bson> = enums.iter().map(|val| Bson::I32(val.value())).collect();
-        doc.insert_bson(
-            key.to_string(),
-            Bson::Document(doc! {
-                "$in" => enums
-            }),
-        );
-    }
-
-    fn insert_boundaries(
-        doc: &mut OrderedDocument,
-        key: String,
-        gte: Option<i32>,
-        lte: Option<i32>,
-    ) {
-        let mut boundaries = None;
-        if let Some(gte) = gte {
-            boundaries = Some(doc! {
-                "$gte" => gte
-            });
-        }
-        if let Some(lte) = lte {
-            match &mut boundaries {
-                Some(boundaries) => {
-                    boundaries.insert("$lte", lte);
-                }
-                None => {
-                    boundaries = Some(doc! {
-                        "$lte" => lte
-                    })
-                }
-            }
-        }
-        if let Some(boundaries) = boundaries {
-            doc.insert_bson(key, Bson::Document(boundaries));
-        }
-    }
 }
 
 #[derive(Deserialize, Debug)]
-struct Limit(u32);
+struct Limit(#[serde(deserialize_with = "deserialize_limit")] u32);
 
 impl Default for Limit {
     fn default() -> Limit {
@@ -267,13 +159,60 @@ impl Default for Limit {
     }
 }
 
+fn deserialize_limit<'de, D>(de: D) -> Result<u32, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let val = u32::deserialize(de)?;
+    if val == 0 {
+        Err(de::Error::invalid_value(
+            de::Unexpected::Unsigned(val.into()),
+            &"limit must be at least 1",
+        ))
+    } else if val > 120 {
+        Err(de::Error::invalid_value(
+            de::Unexpected::Unsigned(val.into()),
+            &"limit must be at most 120",
+        ))
+    } else {
+        Ok(val)
+    }
+}
+
+#[derive(Clone, Deserialize, Debug)]
+struct Sort {
+    val: String,
+    #[serde(deserialize_with = "deserialize_dir")]
+    dir: i32,
+}
+
+impl Default for Sort {
+    fn default() -> Self {
+        Sort {
+            val: "last_modified".to_string(),
+            dir: -1,
+        }
+    }
+}
+
+fn deserialize_dir<'de, D>(de: D) -> Result<i32, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let val = i32::deserialize(de)?;
+    if val != -1 && val != 1 {
+        Err(de::Error::invalid_value(
+            de::Unexpected::Signed(val.into()),
+            &"sort direction must either be -1 or 1",
+        ))
+    } else {
+        Ok(val)
+    }
+}
+
 #[derive(Fail, Debug)]
 pub enum GetCourses2Error {
-    #[fail(display = "limit must be at least 1")]
-    LimitTooLow,
-    #[fail(display = "limit must be at most 120")]
-    LimitTooHigh,
-    #[fail(display = "could not deserialize {} fom hex string", _0)]
+    #[fail(display = "could not deserialize {} from hex string", _0)]
     DeserializeError(String),
     #[fail(display = "uploader with name {} unknown", _0)]
     UploaderUnknown(String),
@@ -282,8 +221,6 @@ pub enum GetCourses2Error {
 impl ResponseError for GetCourses2Error {
     fn error_response(&self) -> HttpResponse {
         match *self {
-            GetCourses2Error::LimitTooLow => HttpResponse::new(StatusCode::BAD_REQUEST),
-            GetCourses2Error::LimitTooHigh => HttpResponse::new(StatusCode::BAD_REQUEST),
             GetCourses2Error::DeserializeError(_) => HttpResponse::new(StatusCode::BAD_REQUEST),
             GetCourses2Error::UploaderUnknown(_) => HttpResponse::new(StatusCode::BAD_REQUEST),
         }

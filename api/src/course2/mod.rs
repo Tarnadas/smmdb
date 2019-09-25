@@ -7,6 +7,7 @@ use crate::minhash::{MinHash, PermGen};
 use cemu_smm::proto::SMM2Course::{
     SMM2Course, SMM2CourseArea_AutoScroll, SMM2CourseArea_CourseTheme, SMM2CourseHeader_GameStyle,
 };
+use chrono::offset::Utc;
 use mongodb::{oid::ObjectId, ordered::OrderedDocument, Bson, ValueAccessError};
 use serde::{Deserialize, Serialize};
 use std::{convert::TryFrom, fmt};
@@ -16,6 +17,8 @@ pub struct Course2 {
     #[serde(rename = "_id", skip_serializing_if = "Option::is_none")]
     id: Option<ObjectId>,
     owner: ObjectId,
+    last_modified: i64,
+    uploaded: i64,
     course: SMM2Course,
     hash: MinHash,
 }
@@ -34,9 +37,12 @@ impl Course2 {
     pub fn insert(owner: ObjectId, course: &cemu_smm::Course2, perm_gen: &PermGen) -> Self {
         let mut hash = MinHash::new(&perm_gen);
         hash.update(&perm_gen, course.get_course_data());
+        let uploaded = Utc::now().timestamp_millis();
         Course2 {
             id: None,
             owner,
+            last_modified: uploaded,
+            uploaded,
             course: course.get_course().clone(),
             hash,
         }
@@ -52,6 +58,14 @@ impl Course2 {
 
     pub fn get_owner(&self) -> &ObjectId {
         &self.owner
+    }
+
+    pub fn get_last_modified(&self) -> i64 {
+        self.last_modified
+    }
+
+    pub fn get_uploaded(&self) -> i64 {
+        self.uploaded
     }
 
     pub fn get_course(&self) -> &SMM2Course {
