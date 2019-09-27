@@ -23,7 +23,7 @@ use std::{
     sync::{Arc, Mutex},
 };
 
-const SIMILARITY_THRESHOLD: f64 = 0.98;
+const SIMILARITY_THRESHOLD: f64 = 0.95;
 
 pub struct Data {
     database: Arc<Database>,
