@@ -100,9 +100,7 @@ impl ResponseError for GetCourse2ThumbnailError {
             GetCourse2ThumbnailError::MongoOid(mongodb::oid::Error::FromHexError(_)) => {
                 HttpResponse::new(StatusCode::BAD_REQUEST)
             }
-            GetCourse2ThumbnailError::MongoOid(_) => {
-                HttpResponse::new(StatusCode::INTERNAL_SERVER_ERROR)
-            }
+            GetCourse2ThumbnailError::MongoOid(_) => HttpResponse::new(StatusCode::BAD_REQUEST),
             GetCourse2ThumbnailError::Mongo(_) => {
                 HttpResponse::new(StatusCode::INTERNAL_SERVER_ERROR)
             }
