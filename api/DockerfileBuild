@@ -23,10 +23,14 @@ RUN set -eux; \
     cargo --version; \
     rustc --version; \
     \
-    apt-get remove -y --auto-remove \
-        wget \
+    #apt-get remove -y --auto-remove \
+    #    wget \
+    #    ; \
+    #rm -rf /var/lib/apt/lists/*; \
+    apt-get install -y --no-install-recommends \
+        openssl \
+        libssl-dev \
         ; \
-    rm -rf /var/lib/apt/lists/*;
 
 RUN cd / && \
     mkdir -p smmdb && \

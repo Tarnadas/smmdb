@@ -161,6 +161,21 @@ impl Database {
         Ok(inserted_id.as_object_id().unwrap().clone())
     }
 
+    pub fn get_course2_thumbnail(
+        &self,
+        doc: OrderedDocument,
+    ) -> Result<Option<OrderedDocument>, mongodb::Error> {
+        self.course2_data.find_one(
+            Some(doc),
+            Some(FindOptions {
+                projection: Some(doc! {
+                    "thumb" => 1
+                }),
+                ..Default::default()
+            }),
+        )
+    }
+
     pub fn delete_course2(&self, doc: OrderedDocument) -> Result<(), mongodb::Error> {
         self.courses2.delete_one(doc.clone(), None)?;
         self.course2_data.delete_one(doc, None)?;

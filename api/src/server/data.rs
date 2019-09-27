@@ -5,7 +5,7 @@ use crate::database::Database;
 use crate::minhash::{LshIndex, PermGen};
 use crate::routes::{
     courses,
-    courses2::{self, PutCourses2Response},
+    courses2::{self, thumbnail::GetCourse2ThumbnailError, PutCourses2Response},
 };
 use crate::session::{AuthReq, AuthSession};
 
@@ -60,6 +60,27 @@ impl Data {
         match query.into_ordered_document(&self.database) {
             Ok(query) => Ok(self.database.get_courses2(query)),
             Err(error) => Err(error),
+        }
+    }
+
+    pub fn get_course2_thumbnail(
+        &self,
+        course_id: ObjectId,
+    ) -> Result<Vec<u8>, GetCourse2ThumbnailError> {
+        let query = doc! {
+            "_id" => course_id.clone()
+        };
+        let thumb = self.database.get_course2_thumbnail(query)?;
+        if let Some(thumb) = thumb {
+            Ok(thumb
+                .get_binary_generic("thumb")
+                .expect(&format!(
+                    "mongodb corrupted. thumbnail missing for course {}",
+                    course_id
+                ))
+                .clone())
+        } else {
+            Err(GetCourse2ThumbnailError::CourseNotFound(course_id))
         }
     }
 
