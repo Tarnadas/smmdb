@@ -164,13 +164,12 @@ impl Database {
     pub fn get_course2_thumbnail(
         &self,
         doc: OrderedDocument,
+        projection: OrderedDocument,
     ) -> Result<Option<OrderedDocument>, mongodb::Error> {
         self.course2_data.find_one(
             Some(doc),
             Some(FindOptions {
-                projection: Some(doc! {
-                    "thumb" => 1
-                }),
+                projection: Some(projection),
                 ..Default::default()
             }),
         )

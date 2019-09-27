@@ -5,12 +5,17 @@ use crate::database::Database;
 use crate::minhash::{LshIndex, PermGen};
 use crate::routes::{
     courses,
-    courses2::{self, thumbnail::GetCourse2ThumbnailError, PutCourses2Response},
+    courses2::{
+        self,
+        thumbnail::{GetCourse2ThumbnailError, GetThumbnail2, Size2},
+        PutCourses2Response,
+    },
 };
 use crate::session::{AuthReq, AuthSession};
 
 use brotli2::{read::BrotliEncoder, CompressParams};
 use compression::prelude::*;
+use image::{jpeg::JPEGEncoder, load_from_memory, DynamicImage, FilterType, ImageError};
 use mongodb::{oid::ObjectId, spec::BinarySubtype, Bson};
 use rayon::prelude::*;
 use std::{
@@ -66,19 +71,66 @@ impl Data {
     pub fn get_course2_thumbnail(
         &self,
         course_id: ObjectId,
+        query: GetThumbnail2,
     ) -> Result<Vec<u8>, GetCourse2ThumbnailError> {
-        let query = doc! {
+        let doc = doc! {
             "_id" => course_id.clone()
         };
-        let thumb = self.database.get_course2_thumbnail(query)?;
+        let size: String = query.size.clone().into();
+        let projection = doc! {
+            size.clone() => 1
+        };
+        let thumb = self.database.get_course2_thumbnail(doc, projection)?;
         if let Some(thumb) = thumb {
-            Ok(thumb
-                .get_binary_generic("thumb")
-                .expect(&format!(
-                    "mongodb corrupted. thumbnail missing for course {}",
-                    course_id
-                ))
-                .clone())
+            match thumb.get_binary_generic(&size) {
+                Ok(thumb) => Ok(thumb.clone()),
+                Err(_) => {
+                    if query.size == Size2::ORIGINAL {
+                        Err(GetCourse2ThumbnailError::CourseNotFound(course_id))
+                    } else {
+                        let doc = doc! {
+                            "_id" => course_id.clone()
+                        };
+                        let size: String = Size2::ORIGINAL.into();
+                        let projection = doc! {
+                            size.clone() => 1
+                        };
+                        let thumb = self
+                            .database
+                            .get_course2_thumbnail(doc, projection)?
+                            .unwrap();
+                        let thumb = thumb
+                            .get_binary_generic(&size)
+                            .expect(&format!(
+                                "mongodb corrupted. thumbnail missing for course {}",
+                                course_id
+                            ))
+                            .clone();
+
+                        let image = load_from_memory(&thumb[..])?;
+                        let (nwidth, nheight) = query.size.get_dimensions();
+                        let image = image.resize_exact(nwidth, nheight, FilterType::Gaussian);
+                        let color = image.color();
+
+                        match image {
+                            DynamicImage::ImageRgb8(buffer) => {
+                                let (width, height) = buffer.dimensions();
+                                let mut res = vec![];
+                                let mut encoder = JPEGEncoder::new_with_quality(&mut res, 85);
+                                encoder
+                                    .encode(&buffer.into_raw()[..], width, height, color)
+                                    .map_err(|e| ImageError::from(e))?;
+                                // TODO save image
+                                Ok(res)
+                            }
+                            _ => Err(image::ImageError::FormatError(
+                                "expected image rgb8".to_string(),
+                            )
+                            .into()),
+                        }
+                    }
+                }
+            }
         } else {
             Err(GetCourse2ThumbnailError::CourseNotFound(course_id))
         }
