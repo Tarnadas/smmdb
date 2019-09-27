@@ -28,6 +28,7 @@ pub struct GetThumbnail2 {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "lowercase")]
 pub enum Size2 {
     S,
     M,

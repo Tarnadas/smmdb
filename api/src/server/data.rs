@@ -91,16 +91,16 @@ impl Data {
                         let doc = doc! {
                             "_id" => course_id.clone()
                         };
-                        let size: String = Size2::ORIGINAL.into();
+                        let size_original: String = Size2::ORIGINAL.into();
                         let projection = doc! {
-                            size.clone() => 1
+                            size_original.clone() => 1
                         };
                         let thumb = self
                             .database
                             .get_course2_thumbnail(doc, projection)?
                             .unwrap();
                         let thumb = thumb
-                            .get_binary_generic(&size)
+                            .get_binary_generic(&size_original)
                             .expect(&format!(
                                 "mongodb corrupted. thumbnail missing for course {}",
                                 course_id
@@ -120,7 +120,11 @@ impl Data {
                                 encoder
                                     .encode(&buffer.into_raw()[..], width, height, color)
                                     .map_err(|e| ImageError::from(e))?;
-                                // TODO save image
+                                self.database.update_course2_thumbnail(
+                                    course_id,
+                                    size,
+                                    res.clone(),
+                                )?;
                                 Ok(res)
                             }
                             _ => Err(image::ImageError::FormatError(

@@ -11,6 +11,7 @@ use mongodb::{
     db::ThreadedDatabase,
     oid::ObjectId,
     ordered::OrderedDocument,
+    spec::BinarySubtype,
     Bson, Client, ThreadedClient,
 };
 use std::{convert::TryInto, env};
@@ -173,6 +174,25 @@ impl Database {
                 ..Default::default()
             }),
         )
+    }
+
+    pub fn update_course2_thumbnail(
+        &self,
+        course_id: ObjectId,
+        size: String,
+        data: Vec<u8>,
+    ) -> Result<(), mongodb::Error> {
+        let data = Bson::Binary(BinarySubtype::Generic, data);
+        let filter = doc! {
+            "_id" => course_id
+        };
+        let update = doc! {
+            "$set" => {
+                size => data
+            }
+        };
+        self.course2_data.update_one(filter, update, None)?;
+        Ok(())
     }
 
     pub fn delete_course2(&self, doc: OrderedDocument) -> Result<(), mongodb::Error> {
