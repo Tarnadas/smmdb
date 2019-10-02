@@ -1,17 +1,19 @@
-use crate::account::{Account, AccountReq};
-use crate::config::get_google_client_id;
-use crate::course2::{Course2, Course2Response, Course2SimilarityError};
-use crate::database::Database;
-use crate::minhash::{LshIndex, PermGen};
-use crate::routes::{
-    courses,
-    courses2::{
-        self,
-        thumbnail::{GetCourse2ThumbnailError, GetThumbnail2, Size2},
-        PutCourses2Response,
+use crate::{
+    account::{Account, AccountReq},
+    config::get_google_client_id,
+    course2::{self, Course2, Course2Response, Course2SimilarityError},
+    database::Database,
+    minhash::{LshIndex, PermGen},
+    routes::{
+        courses,
+        courses2::{
+            self,
+            thumbnail::{GetCourse2ThumbnailError, GetThumbnail2, Size2},
+            PutCourses2Response,
+        },
     },
+    session::{AuthReq, AuthSession},
 };
-use crate::session::{AuthReq, AuthSession};
 
 use brotli2::{read::BrotliEncoder, CompressParams};
 use compression::prelude::*;
@@ -144,6 +146,7 @@ impl Data {
         &self,
         mut courses: Vec<cemu_smm::Course2>,
         account: &Account,
+        difficulty: Option<course2::Difficulty>,
     ) -> Result<PutCourses2Response, courses2::PutCourses2Error> {
         let lsh_index = self.lsh_index.clone();
         let response = Arc::new(Mutex::new(PutCourses2Response::new()));
@@ -151,8 +154,12 @@ impl Data {
             .par_iter_mut()
             .map(
                 |smm_course| -> Result<Course2Response, courses2::PutCourses2Error> {
-                    let mut course =
-                        Course2::insert(account.get_id_ref().clone(), smm_course, &self.perm_gen);
+                    let mut course = Course2::insert(
+                        account.get_id_ref().clone(),
+                        smm_course,
+                        difficulty.clone(),
+                        &self.perm_gen,
+                    );
                     {
                         let mut lsh_index = lsh_index.lock().unwrap();
                         let query: Vec<Bson> = lsh_index

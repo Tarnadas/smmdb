@@ -1,5 +1,5 @@
 use crate::{
-    course2::{Course2Response, Course2SimilarityError},
+    course2::{Course2Response, Course2SimilarityError, Difficulty},
     server::ServerData,
     Identity,
 };
@@ -14,16 +14,24 @@ use actix_web::{
     HttpRequest, HttpResponse,
 };
 use futures::{self, Future, Stream};
-use serde::{Serialize, Serializer};
+use serde::{Deserialize, Serialize, Serializer};
+use serde_qs::actix::QsQuery;
 use std::io;
+
+#[derive(Debug, Deserialize)]
+pub struct PutCourses2 {
+    difficulty: Option<Difficulty>,
+}
 
 #[put("")]
 pub fn put_courses(
     data: web::Data<ServerData>,
     req: HttpRequest,
+    query: QsQuery<PutCourses2>,
     payload: web::Payload,
     identity: Identity,
 ) -> impl Future<Item = HttpResponse, Error = PutCourses2Error> {
+    let query = query.into_inner();
     let data = data.clone();
     payload
         .from_err()
@@ -35,7 +43,7 @@ pub fn put_courses(
             move |buffer| match cemu_smm::Course2::from_packed(&buffer[..]) {
                 Ok(courses) => {
                     let account = identity.get_account();
-                    match data.put_courses2(courses, account.as_ref().unwrap()) {
+                    match data.put_courses2(courses, account.as_ref().unwrap(), query.difficulty) {
                         Ok(res) => res.into(),
                         Err(_) => HttpResponse::BadRequest().into(),
                     }

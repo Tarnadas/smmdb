@@ -19,6 +19,8 @@ pub struct Course2 {
     owner: ObjectId,
     last_modified: i64,
     uploaded: i64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    difficulty: Option<Difficulty>,
     course: SMM2Course,
     hash: MinHash,
 }
@@ -34,7 +36,12 @@ impl TryFrom<OrderedDocument> for Course2 {
 }
 
 impl Course2 {
-    pub fn insert(owner: ObjectId, course: &cemu_smm::Course2, perm_gen: &PermGen) -> Self {
+    pub fn insert(
+        owner: ObjectId,
+        course: &cemu_smm::Course2,
+        difficulty: Option<Difficulty>,
+        perm_gen: &PermGen,
+    ) -> Self {
         let mut hash = MinHash::new(&perm_gen);
         hash.update(&perm_gen, course.get_course_data());
         let uploaded = Utc::now().timestamp_millis();
@@ -43,6 +50,7 @@ impl Course2 {
             owner,
             last_modified: uploaded,
             uploaded,
+            difficulty,
             course: course.get_course().clone(),
             hash,
         }
@@ -149,4 +157,13 @@ impl fmt::Display for Course2SimilarityError {
             Err(_) => fmt::Result::Err(fmt::Error),
         }
     }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Difficulty {
+    Easy,
+    Normal,
+    Expert,
+    SuperExpert,
 }
