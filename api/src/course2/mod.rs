@@ -68,6 +68,10 @@ impl Course2 {
         &self.owner
     }
 
+    pub fn get_difficulty(&self) -> &Option<Difficulty> {
+        &self.difficulty
+    }
+
     pub fn get_last_modified(&self) -> i64 {
         self.last_modified
     }

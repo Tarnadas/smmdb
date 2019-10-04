@@ -64,10 +64,23 @@ impl Data {
         &self,
         query: courses2::GetCourses2,
     ) -> Result<String, courses2::GetCourses2Error> {
-        match query.into_ordered_document(&self.database) {
-            Ok(query) => Ok(self.database.get_courses2(query)),
-            Err(error) => Err(error),
-        }
+        let query = query.into_ordered_document(&self.database)?;
+        let (courses, accounts) = self.database.get_courses2(query)?;
+
+        let courses: Vec<Course2Response> = courses
+            .into_iter()
+            .map(|course| {
+                let account = accounts
+                    .iter()
+                    .find(|account| {
+                        account.get_id_ref().to_string() == course.get_owner().to_string()
+                    })
+                    .unwrap();
+                Course2Response::from_course(course, account)
+            })
+            .collect();
+
+        Ok(serde_json::to_string(&courses)?)
     }
 
     pub fn get_course2_thumbnail(

@@ -1,7 +1,7 @@
 use crate::account::{Account, AccountReq};
 use crate::collections::Collections;
 use crate::course::{Course, CourseResponse};
-use crate::course2::{Course2, Course2Response};
+use crate::course2::Course2;
 use crate::minhash::{LshIndex, MinHash};
 use crate::mongodb::coll::options::FindOptions;
 use crate::session::AuthSession;
@@ -88,35 +88,23 @@ impl Database {
         }
     }
 
-    pub fn get_courses2(&self, query: Vec<OrderedDocument>) -> String {
-        match self.courses2.aggregate(query, None) {
-            Ok(cursor) => {
-                let (account_ids, courses): (Vec<Bson>, Vec<Course2>) = cursor
-                    .map(|item| -> Result<(Bson, Course2), serde_json::Error> {
-                        let course: Course2 = item.unwrap().try_into()?;
-                        Ok((course.get_owner().clone().into(), course))
-                    })
-                    .filter_map(Result::ok)
-                    .unzip();
+    pub fn get_courses2(
+        &self,
+        query: Vec<OrderedDocument>,
+    ) -> Result<(Vec<Course2>, Vec<Account>), mongodb::Error> {
+        let cursor = self.courses2.aggregate(query, None)?;
 
-                let accounts = self.get_accounts(account_ids);
-                let courses: Vec<Course2Response> = courses
-                    .into_iter()
-                    .map(|course| {
-                        let account = accounts
-                            .iter()
-                            .find(|account| {
-                                account.get_id_ref().to_string() == course.get_owner().to_string()
-                            })
-                            .unwrap();
-                        Course2Response::from_course(course, account)
-                    })
-                    .collect();
+        let (account_ids, courses): (Vec<Bson>, Vec<Course2>) = cursor
+            .map(|item| -> Result<(Bson, Course2), serde_json::Error> {
+                let course: Course2 = item.unwrap().try_into()?;
+                Ok((course.get_owner().clone().into(), course))
+            })
+            .filter_map(Result::ok)
+            .unzip();
 
-                serde_json::to_string(&courses).unwrap()
-            }
-            Err(e) => e.to_string(),
-        }
+        let accounts = self.get_accounts(account_ids);
+
+        Ok((courses, accounts))
     }
 
     pub fn fill_lsh_index(&self, lsh_index: &mut LshIndex) {

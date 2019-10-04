@@ -216,6 +216,22 @@ pub enum GetCourses2Error {
     DeserializeError(String),
     #[fail(display = "uploader with name {} unknown", _0)]
     UploaderUnknown(String),
+    #[fail(display = "[PutCourses2Error::SerdeJson]: {}", _0)]
+    SerdeJson(serde_json::Error),
+    #[fail(display = "[GetCourses2Error::Mongo]: {}", _0)]
+    Mongo(mongodb::Error),
+}
+
+impl From<serde_json::Error> for GetCourses2Error {
+    fn from(err: serde_json::Error) -> Self {
+        GetCourses2Error::SerdeJson(err)
+    }
+}
+
+impl From<mongodb::Error> for GetCourses2Error {
+    fn from(err: mongodb::Error) -> Self {
+        GetCourses2Error::Mongo(err)
+    }
 }
 
 impl ResponseError for GetCourses2Error {
@@ -223,6 +239,8 @@ impl ResponseError for GetCourses2Error {
         match *self {
             GetCourses2Error::DeserializeError(_) => HttpResponse::new(StatusCode::BAD_REQUEST),
             GetCourses2Error::UploaderUnknown(_) => HttpResponse::new(StatusCode::BAD_REQUEST),
+            GetCourses2Error::SerdeJson(_) => HttpResponse::new(StatusCode::BAD_REQUEST),
+            GetCourses2Error::Mongo(_) => HttpResponse::new(StatusCode::INTERNAL_SERVER_ERROR),
         }
     }
 }
