@@ -116,10 +116,12 @@ impl Data {
                             .unwrap();
                         let thumb = thumb
                             .get_binary_generic(&size_original)
-                            .expect(&format!(
-                                "mongodb corrupted. thumbnail missing for course {}",
-                                course_id
-                            ))
+                            .unwrap_or_else(|_| {
+                                panic!(
+                                    "mongodb corrupted. thumbnail missing for course {}",
+                                    course_id
+                                )
+                            })
                             .clone();
 
                         let image = load_from_memory(&thumb[..])?;
@@ -134,7 +136,7 @@ impl Data {
                                 let mut encoder = JPEGEncoder::new_with_quality(&mut res, 85);
                                 encoder
                                     .encode(&buffer.into_raw()[..], width, height, color)
-                                    .map_err(|e| ImageError::from(e))?;
+                                    .map_err(ImageError::from)?;
                                 self.database.update_course2_thumbnail(
                                     course_id,
                                     size,
