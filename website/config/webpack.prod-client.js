@@ -2,8 +2,6 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
-const ReactLoadablePlugin = require('react-loadable/webpack')
-  .ReactLoadablePlugin
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin
 
@@ -23,7 +21,6 @@ module.exports = [
         'react-google-login',
         'react-lazyload',
         'react-helmet',
-        'react-loadable',
         'redux',
         'redux-immutable',
         'axios',
@@ -82,9 +79,6 @@ module.exports = [
       new ScriptExtHtmlWebpackPlugin({
         preload: /\.js/
       }),
-      new ReactLoadablePlugin({
-        filename: './build/react-loadable.json'
-      }),
       new BundleAnalyzerPlugin({
         analyzerMode: 'static',
         reportFilename: path.join(__dirname, '../report.html'),
@@ -126,10 +120,7 @@ module.exports = [
                     ],
                     '@babel/react'
                   ],
-                  plugins: [
-                    'react-loadable/babel',
-                    '@babel/plugin-syntax-dynamic-import'
-                  ]
+                  plugins: ['@babel/plugin-syntax-dynamic-import']
                 }
               }
             }

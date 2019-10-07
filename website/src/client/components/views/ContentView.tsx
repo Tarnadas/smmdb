@@ -3,19 +3,17 @@ import { Helmet } from 'react-helmet'
 import { connect } from 'react-redux'
 import { Route, withRouter } from 'react-router-dom'
 
-import {
-  BlogView,
-  CoursesView,
-  Courses64View,
-  FAQView,
-  PrivacyPolicyView,
-  ProfileView,
-  LegalNoticeView,
-  MainView,
-  SocialView,
-  UploadView,
-  Upload64View
-} from './RouteLoading'
+import BlogView from './BlogView'
+import Courses64View from './Courses64View'
+import CoursesView from './CoursesView'
+import FAQView from './FAQView'
+import LegalNoticeView from './LegalNoticeView'
+import MainView from './MainView'
+import PrivacyPolicyView from './PrivacyPolicyView'
+import ProfileView from './ProfileView'
+import SocialView from './SocialView'
+import Upload64View from './Upload64View'
+import UploadView from './UploadView'
 
 import { ScreenSize } from '../../reducers/mediaQuery'
 
@@ -40,49 +38,69 @@ class View extends React.PureComponent<any, any> {
       <div style={styles.content}>
         <Helmet>
           <title>SMMDB</title>
-          <meta name="description" content="Super Mario Maker and Super Mario 64 Maker course database for consoles Wii U, 3DS and emulators Cemu, Citra and decaf. Net64/SM64O/Super Mario 64 Online official server list." />
+          <meta
+            name="description"
+            content="Super Mario Maker and Super Mario 64 Maker course database for consoles Wii U, 3DS and emulators Cemu, Citra and decaf. Net64/SM64O/Super Mario 64 Online official server list."
+          />
         </Helmet>
-        <Route exact path='/' component={MainView} />
-        <Route path='/courses' render={(): JSX.Element => (
-          <CoursesView
-            shouldUpdate={this.props.shouldUpdate}
-            setFetchCourses={this.props.setFetchCourses}
-            isServer={this.props.isServer}
-          />
-        )} />
-        <Route path='/courses64' render={(): JSX.Element => (
-          <Courses64View
-            shouldUpdate={this.props.shouldUpdate}
-            setFetchCourses={this.props.setFetchCourses}
-            isServer={this.props.isServer}
-          />
-        )} />
-        <Route path='/upload' render={(): JSX.Element => (
-          <UploadView
-            shouldUpdate={this.props.shouldUpdate}
-            setFetchCourses={this.props.setFetchCourses}
-            isServer={this.props.isServer}
-          />
-        )} />
-        <Route path='/upload64' render={(): JSX.Element => (
-          <Upload64View
-            shouldUpdate={this.props.shouldUpdate}
-            setFetchCourses={this.props.setFetchCourses}
-            isServer={this.props.isServer}
-          />
-        )} />
-        <Route path='/blog' render={(): JSX.Element => (
-          <BlogView isServer={this.props.isServer} />
-        )} />
-        <Route path='/profile' component={ProfileView} />
-        <Route path='/faq' component={FAQView} />
-        <Route path='/social' component={SocialView} />
-        <Route path='/privacy' component={PrivacyPolicyView} />
-        <Route path='/legal' component={LegalNoticeView} />
+        <Route exact path="/" component={MainView} />
+        <Route
+          path="/courses"
+          render={(): JSX.Element => (
+            <CoursesView
+              shouldUpdate={this.props.shouldUpdate}
+              setFetchCourses={this.props.setFetchCourses}
+              isServer={this.props.isServer}
+            />
+          )}
+        />
+        <Route
+          path="/courses64"
+          render={(): JSX.Element => (
+            <Courses64View
+              shouldUpdate={this.props.shouldUpdate}
+              setFetchCourses={this.props.setFetchCourses}
+              isServer={this.props.isServer}
+            />
+          )}
+        />
+        <Route
+          path="/upload"
+          render={(): JSX.Element => (
+            <UploadView
+              shouldUpdate={this.props.shouldUpdate}
+              setFetchCourses={this.props.setFetchCourses}
+              isServer={this.props.isServer}
+            />
+          )}
+        />
+        <Route
+          path="/upload64"
+          render={(): JSX.Element => (
+            <Upload64View
+              shouldUpdate={this.props.shouldUpdate}
+              setFetchCourses={this.props.setFetchCourses}
+              isServer={this.props.isServer}
+            />
+          )}
+        />
+        <Route
+          path="/blog"
+          render={(): JSX.Element => (
+            <BlogView isServer={this.props.isServer} />
+          )}
+        />
+        <Route path="/profile" component={ProfileView} />
+        <Route path="/faq" component={FAQView} />
+        <Route path="/social" component={SocialView} />
+        <Route path="/privacy" component={PrivacyPolicyView} />
+        <Route path="/legal" component={LegalNoticeView} />
       </div>
     )
   }
 }
-export const ContentView = withRouter(connect((state: any): any => ({
-  screenSize: state.getIn(['mediaQuery', 'screenSize'])
-}))(View) as any) as any
+export const ContentView = withRouter(connect(
+  (state: any): any => ({
+    screenSize: state.getIn(['mediaQuery', 'screenSize'])
+  })
+)(View) as any) as any

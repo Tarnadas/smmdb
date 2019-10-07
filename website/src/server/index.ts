@@ -8,7 +8,6 @@ import device from 'device'
 import { renderToString } from 'react-dom/server'
 import { Helmet } from 'react-helmet'
 import pmx from 'pmx'
-import { preloadAll } from 'react-loadable'
 
 import * as http from 'http'
 import * as fs from 'fs'
@@ -329,7 +328,7 @@ async function main (): Promise<void> {
       accounts: await Account.getAccountAmount()
     }
     const d = device(req.get('user-agent'))
-    let [html, preloadedState, modules] = await renderer(
+    let [html, preloadedState] = await renderer(
       true,
       renderToString,
       null,
@@ -340,22 +339,15 @@ async function main (): Promise<void> {
       d.is('phone'),
       d.is('tablet')
     )
-    const getBundles = require('react-loadable/webpack').getBundles
-    const stats = require('../../build/react-loadable.json')
-    const bundles = getBundles(stats, modules)
     const helmet = Helmet.renderStatic()
     const index = cheerio.load($index.html())
     index('#root').html(html)
     index('head').prepend(helmet.title.toString())
     index('head').prepend(helmet.meta.toString())
-    index('head').prepend(bundles.map((bundle: any): string =>
-      `<link rel="preload" href="/scripts/${bundle.file}" as="script">`
-    ).join('\n'))
     index('body').prepend(`<script>window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(/</g, '\\u003c')}</script>`)
     res.send(index.html())
   })
 
-  await preloadAll()
   server.listen(process.env.PORT, (): void => {
     log(`Server is listening on port ${process.env.PORT}`)
   })

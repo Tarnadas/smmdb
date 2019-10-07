@@ -2,8 +2,6 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
-const ReactLoadablePlugin = require('react-loadable/webpack')
-  .ReactLoadablePlugin
 
 const path = require('path')
 
@@ -47,9 +45,6 @@ module.exports = [
       }),
       new ScriptExtHtmlWebpackPlugin({
         preload: /\.js/
-      }),
-      new ReactLoadablePlugin({
-        filename: './build/react-loadable.json'
       })
     ],
     resolve: {
@@ -91,10 +86,7 @@ module.exports = [
                     ],
                     '@babel/react'
                   ],
-                  plugins: [
-                    'react-loadable/babel',
-                    '@babel/plugin-syntax-dynamic-import'
-                  ]
+                  plugins: ['@babel/plugin-syntax-dynamic-import']
                 }
               }
             }

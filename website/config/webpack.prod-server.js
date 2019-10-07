@@ -71,10 +71,7 @@ module.exports = [
                     ],
                     '@babel/react'
                   ],
-                  plugins: [
-                    'react-loadable/babel',
-                    '@babel/plugin-syntax-dynamic-import'
-                  ]
+                  plugins: ['@babel/plugin-syntax-dynamic-import']
                 }
               }
             }
