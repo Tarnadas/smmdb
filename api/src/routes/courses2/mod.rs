@@ -12,11 +12,11 @@ pub use post::*;
 pub use put::*;
 
 pub fn service() -> impl dev::HttpServiceFactory {
-        web::scope("/courses2")
-                .service(get::get_courses)
-                .service(put::put_courses)
-                .service(post::post_analyze_courses)
-                .service(delete::delete_course)
-                .service(thumbnail::get_thumbnail)
-                .service(meta::post_meta)
+    web::scope("/courses2")
+        .service(get::get_courses)
+        .service(put::put_courses)
+        .service(post::post_analyze_courses)
+        .service(delete::delete_course)
+        .service(thumbnail::get_thumbnail)
+        .service(meta::post_meta)
 }
