@@ -4,11 +4,9 @@ pub use self::response::Course2Response;
 
 use crate::minhash::{MinHash, PermGen};
 
-use cemu_smm::proto::SMM2Course::{
-    SMM2Course, SMM2CourseArea_AutoScroll, SMM2CourseArea_CourseTheme, SMM2CourseHeader_GameStyle,
-};
+use cemu_smm::proto::SMM2Course::SMM2Course;
 use chrono::offset::Utc;
-use mongodb::{oid::ObjectId, ordered::OrderedDocument, Bson, ValueAccessError};
+use mongodb::{oid::ObjectId, ordered::OrderedDocument, Bson};
 use serde::{Deserialize, Serialize};
 use std::{convert::TryFrom, fmt};
 
@@ -86,53 +84,6 @@ impl Course2 {
 
     pub fn get_hash(&self) -> &MinHash {
         &self.hash
-    }
-
-    fn map_to_auto_scroll(
-        document: &OrderedDocument,
-        identifier: &str,
-    ) -> Result<SMM2CourseArea_AutoScroll, ValueAccessError> {
-        match document.get_i32(identifier)? {
-            0 => Ok(SMM2CourseArea_AutoScroll::NONE),
-            1 => Ok(SMM2CourseArea_AutoScroll::SLOW),
-            2 => Ok(SMM2CourseArea_AutoScroll::MEDIUM),
-            3 => Ok(SMM2CourseArea_AutoScroll::FAST),
-            4 => Ok(SMM2CourseArea_AutoScroll::CUSTOM),
-            _ => Err(ValueAccessError::UnexpectedType),
-        }
-    }
-
-    fn map_to_course_theme(
-        document: &OrderedDocument,
-        identifier: &str,
-    ) -> Result<SMM2CourseArea_CourseTheme, ValueAccessError> {
-        match document.get_i32(identifier)? {
-            0 => Ok(SMM2CourseArea_CourseTheme::GROUND),
-            1 => Ok(SMM2CourseArea_CourseTheme::UNDERGROUND),
-            2 => Ok(SMM2CourseArea_CourseTheme::CASTLE),
-            3 => Ok(SMM2CourseArea_CourseTheme::AIRSHIP),
-            4 => Ok(SMM2CourseArea_CourseTheme::UNDERWATER),
-            5 => Ok(SMM2CourseArea_CourseTheme::GHOUST_HOUSE),
-            6 => Ok(SMM2CourseArea_CourseTheme::SNOW),
-            7 => Ok(SMM2CourseArea_CourseTheme::DESERT),
-            8 => Ok(SMM2CourseArea_CourseTheme::SKY),
-            9 => Ok(SMM2CourseArea_CourseTheme::FOREST),
-            _ => Err(ValueAccessError::UnexpectedType),
-        }
-    }
-
-    fn map_to_game_style(
-        document: &OrderedDocument,
-        identifier: &str,
-    ) -> Result<SMM2CourseHeader_GameStyle, ValueAccessError> {
-        match document.get_i32(identifier)? {
-            0 => Ok(SMM2CourseHeader_GameStyle::M1),
-            1 => Ok(SMM2CourseHeader_GameStyle::M3),
-            2 => Ok(SMM2CourseHeader_GameStyle::MW),
-            3 => Ok(SMM2CourseHeader_GameStyle::WU),
-            4 => Ok(SMM2CourseHeader_GameStyle::W3),
-            _ => Err(ValueAccessError::UnexpectedType),
-        }
     }
 }
 
