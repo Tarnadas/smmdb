@@ -1,5 +1,6 @@
 mod delete;
 mod get;
+pub mod meta;
 mod post;
 mod put;
 pub mod thumbnail;
@@ -17,4 +18,5 @@ pub fn service() -> impl dev::HttpServiceFactory {
                 .service(post::post_analyze_courses)
                 .service(delete::delete_course)
                 .service(thumbnail::get_thumbnail)
+                .service(meta::post_meta)
 }

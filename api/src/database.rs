@@ -183,10 +183,19 @@ impl Database {
         Ok(())
     }
 
-    pub fn delete_course2(&self, doc: OrderedDocument) -> Result<(), mongodb::Error> {
+    pub fn delete_course2(
+        &self,
+        course_id: String,
+        doc: OrderedDocument,
+    ) -> Result<(), mongodb::Error> {
         self.courses2.delete_one(doc.clone(), None)?;
-        self.course2_data.delete_one(doc, None)?;
-        Ok(())
+        let res = self.course2_data.delete_one(doc, None)?;
+        if res.deleted_count == 0 {
+            Err(mongodb::Error::ArgumentError(format!("{}", course_id)))
+        } else {
+            Ok(())
+        }
+        // Ok(())
     }
 
     pub fn find_courses2(&self, doc: OrderedDocument) -> Result<Vec<Course2>, mongodb::Error> {
@@ -202,6 +211,20 @@ impl Database {
                 Ok(courses)
             }
             Err(err) => Err(err),
+        }
+    }
+
+    pub fn post_course2_meta(
+        &self,
+        course_id: String,
+        filter: OrderedDocument,
+        update: OrderedDocument,
+    ) -> Result<(), mongodb::Error> {
+        let res = self.courses2.update_one(filter, update, None)?;
+        if res.matched_count == 0 {
+            Err(mongodb::Error::ArgumentError(format!("{}", course_id)))
+        } else {
+            Ok(())
         }
     }
 

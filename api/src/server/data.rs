@@ -8,6 +8,7 @@ use crate::{
         courses,
         courses2::{
             self,
+            meta::PostCourse2MetaError,
             thumbnail::{GetCourse2ThumbnailError, GetThumbnail2, Size2},
             PutCourses2Response,
         },
@@ -256,11 +257,35 @@ impl Data {
         Ok(response)
     }
 
-    pub fn delete_course2(&self, course_id: ObjectId) -> Result<(), mongodb::Error> {
+    pub fn delete_course2(
+        &self,
+        course_id: String,
+        course_oid: ObjectId,
+    ) -> Result<(), mongodb::Error> {
         let query = doc! {
-            "_id" => course_id
+            "_id" => course_oid
         };
-        self.database.delete_course2(query)
+        self.database.delete_course2(course_id, query)
+    }
+
+    pub fn post_course2_meta(
+        &self,
+        course_id: ObjectId,
+        difficulty: Option<course2::Difficulty>,
+    ) -> Result<(), PostCourse2MetaError> {
+        let filter = doc! {
+            "_id" => course_id.clone()
+        };
+        let mut set = doc! {};
+        if let Some(difficulty) = difficulty {
+            set.insert("difficulty", format!("{:?}", difficulty).to_lowercase());
+        }
+        let update = doc! {
+            "$set" => set
+        };
+        Ok(self
+            .database
+            .post_course2_meta(course_id.to_string(), filter, update)?)
     }
 
     pub fn add_or_get_account(

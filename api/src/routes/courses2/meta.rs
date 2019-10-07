@@ -1,0 +1,73 @@
+use crate::{course2::Difficulty, server::ServerData};
+
+use actix_web::{error::ResponseError, http::StatusCode, post, web, HttpRequest, HttpResponse};
+use mongodb::oid::ObjectId;
+use serde::Deserialize;
+
+#[derive(Debug, Deserialize)]
+pub struct PostCourse2Meta {
+    difficulty: Option<Difficulty>,
+}
+
+#[post("meta/{course_id}")]
+pub fn post_meta(
+    data: web::Data<ServerData>,
+    path: web::Path<String>,
+    meta: web::Json<PostCourse2Meta>,
+    req: HttpRequest,
+) -> Result<HttpResponse, PostCourse2MetaError> {
+    let course_id = path.into_inner();
+    let course_id = ObjectId::with_string(&course_id)?;
+    let difficulty = meta.difficulty.clone();
+    data.post_course2_meta(course_id, difficulty)?;
+    Ok(HttpResponse::NoContent().into())
+}
+
+#[derive(Debug, Fail)]
+pub enum PostCourse2MetaError {
+    #[fail(display = "[PutCourses2Error::SerdeJson]: {}", _0)]
+    SerdeJson(serde_json::Error),
+    #[fail(display = "Object id invalid.\nReason: {}", _0)]
+    MongoOid(mongodb::oid::Error),
+    #[fail(display = "Course with ID {} not found", _0)]
+    ObjectIdUnknown(String),
+    #[fail(display = "[PutCourses2Error::SerdeJson]: {}", _0)]
+    Mongo(mongodb::Error),
+}
+
+impl From<serde_json::Error> for PostCourse2MetaError {
+    fn from(err: serde_json::Error) -> Self {
+        PostCourse2MetaError::SerdeJson(err)
+    }
+}
+
+impl From<mongodb::oid::Error> for PostCourse2MetaError {
+    fn from(err: mongodb::oid::Error) -> Self {
+        PostCourse2MetaError::MongoOid(err)
+    }
+}
+
+impl From<mongodb::Error> for PostCourse2MetaError {
+    fn from(err: mongodb::Error) -> Self {
+        match err {
+            mongodb::Error::ArgumentError(s) => PostCourse2MetaError::ObjectIdUnknown(s),
+            _ => PostCourse2MetaError::Mongo(err),
+        }
+    }
+}
+
+impl ResponseError for PostCourse2MetaError {
+    fn error_response(&self) -> HttpResponse {
+        match *self {
+            PostCourse2MetaError::SerdeJson(_) => HttpResponse::new(StatusCode::BAD_REQUEST),
+            PostCourse2MetaError::MongoOid(mongodb::oid::Error::FromHexError(_)) => {
+                HttpResponse::new(StatusCode::BAD_REQUEST)
+            }
+            PostCourse2MetaError::MongoOid(_) => {
+                HttpResponse::new(StatusCode::INTERNAL_SERVER_ERROR)
+            }
+            PostCourse2MetaError::ObjectIdUnknown(_) => HttpResponse::new(StatusCode::NOT_FOUND),
+            PostCourse2MetaError::Mongo(_) => HttpResponse::new(StatusCode::INTERNAL_SERVER_ERROR),
+        }
+    }
+}

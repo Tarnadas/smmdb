@@ -10,33 +10,41 @@ pub fn delete_course(
     req: HttpRequest,
 ) -> Result<HttpResponse, DeleteCourse2Error> {
     let course_id = path.into_inner();
-    let course_id = ObjectId::with_string(&course_id)
-        .map_err(|_| DeleteCourse2Error::InvalidObjectId(course_id))?;
-    data.delete_course2(course_id)?;
+    let course_oid = ObjectId::with_string(&course_id)?;
+    data.delete_course2(course_id.clone(), course_oid)?;
     Ok(HttpResponse::NoContent().into())
 }
 
 #[derive(Debug, Fail)]
 pub enum DeleteCourse2Error {
-    #[fail(
-        display = "Object id for course must be given as hex string.\nReceived: {}",
-        _0
-    )]
-    InvalidObjectId(String),
+    #[fail(display = "Object id invalid.\nReason: {}", _0)]
+    MongoOid(mongodb::oid::Error),
+    #[fail(display = "Course with ID {} not found", _0)]
+    ObjectIdUnknown(String),
     #[fail(display = "[DeleteCourse2Error::Mongo]: {}", _0)]
     Mongo(mongodb::Error),
 }
 
+impl From<mongodb::oid::Error> for DeleteCourse2Error {
+    fn from(err: mongodb::oid::Error) -> Self {
+        DeleteCourse2Error::MongoOid(err)
+    }
+}
+
 impl From<mongodb::Error> for DeleteCourse2Error {
     fn from(err: mongodb::Error) -> Self {
-        DeleteCourse2Error::Mongo(err)
+        match err {
+            mongodb::Error::ArgumentError(s) => DeleteCourse2Error::ObjectIdUnknown(s),
+            _ => DeleteCourse2Error::Mongo(err),
+        }
     }
 }
 
 impl ResponseError for DeleteCourse2Error {
     fn error_response(&self) -> HttpResponse {
         match *self {
-            DeleteCourse2Error::InvalidObjectId(_) => HttpResponse::new(StatusCode::BAD_REQUEST),
+            DeleteCourse2Error::MongoOid(_) => HttpResponse::new(StatusCode::BAD_REQUEST),
+            DeleteCourse2Error::ObjectIdUnknown(_) => HttpResponse::new(StatusCode::NOT_FOUND),
             DeleteCourse2Error::Mongo(_) => HttpResponse::new(StatusCode::INTERNAL_SERVER_ERROR),
         }
     }
