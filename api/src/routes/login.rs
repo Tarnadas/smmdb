@@ -57,7 +57,7 @@ pub fn service() -> impl dev::HttpServiceFactory {
 #[post("")]
 fn login(data: web::Data<ServerData>, req: HttpRequest, identity: Identity) -> HttpResponse {
     let account = identity.get_account();
-    let account = AccountRes::new(account.as_ref().unwrap());
+    let account = AccountRes::new(&account);
     HttpResponseBuilder::new(StatusCode::OK).json(account)
 }
 

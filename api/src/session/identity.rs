@@ -7,17 +7,14 @@ use actix_web::{
     web::{HttpRequest, HttpResponse},
     Error, FromRequest,
 };
-use std::{
-    cell::{Ref, RefCell},
-    rc::Rc,
-};
+use std::{cell::RefCell, rc::Rc};
 
 #[derive(Debug)]
 pub struct Identity(Rc<RefCell<Option<Account>>>);
 
 impl Identity {
-    pub fn get_account(&self) -> Ref<'_, Option<Account>> {
-        self.0.borrow()
+    pub fn get_account(&self) -> Account {
+        self.0.borrow().as_ref().unwrap().clone()
     }
 
     pub fn set_identity(account: Account, req: &mut ServiceRequest) {

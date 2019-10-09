@@ -1,4 +1,4 @@
-use crate::server::ServerData;
+use crate::{server::ServerData, Identity};
 
 use actix_web::{delete, error::ResponseError, http::StatusCode, web, HttpRequest, HttpResponse};
 use mongodb::oid::ObjectId;
@@ -8,9 +8,14 @@ pub fn delete_course(
     data: web::Data<ServerData>,
     path: web::Path<String>,
     req: HttpRequest,
+    identity: Identity,
 ) -> Result<HttpResponse, DeleteCourse2Error> {
     let course_id = path.into_inner();
     let course_oid = ObjectId::with_string(&course_id)?;
+    let account = identity.get_account();
+    if !data.does_account_own_course(account.get_id(), course_oid.clone()) {
+        return Err(DeleteCourse2Error::Unauthorized);
+    }
     data.delete_course2(course_id.clone(), course_oid)?;
     Ok(HttpResponse::NoContent().into())
 }
@@ -23,6 +28,8 @@ pub enum DeleteCourse2Error {
     ObjectIdUnknown(String),
     #[fail(display = "[DeleteCourse2Error::Mongo]: {}", _0)]
     Mongo(mongodb::Error),
+    #[fail(display = "")]
+    Unauthorized,
 }
 
 impl From<mongodb::oid::Error> for DeleteCourse2Error {
@@ -46,6 +53,7 @@ impl ResponseError for DeleteCourse2Error {
             DeleteCourse2Error::MongoOid(_) => HttpResponse::new(StatusCode::BAD_REQUEST),
             DeleteCourse2Error::ObjectIdUnknown(_) => HttpResponse::new(StatusCode::NOT_FOUND),
             DeleteCourse2Error::Mongo(_) => HttpResponse::new(StatusCode::INTERNAL_SERVER_ERROR),
+            DeleteCourse2Error::Unauthorized => HttpResponse::new(StatusCode::UNAUTHORIZED),
         }
     }
 }

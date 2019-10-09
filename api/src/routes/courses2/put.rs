@@ -43,7 +43,7 @@ pub fn put_courses(
             move |buffer| match cemu_smm::Course2::from_packed(&buffer[..]) {
                 Ok(courses) => {
                     let account = identity.get_account();
-                    match data.put_courses2(courses, account.as_ref().unwrap(), query.difficulty) {
+                    match data.put_courses2(courses, &account, query.difficulty) {
                         Ok(res) => res.into(),
                         Err(_) => HttpResponse::BadRequest().into(),
                     }

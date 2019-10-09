@@ -306,4 +306,16 @@ impl Data {
     pub fn get_account_from_auth(&self, auth_req: AuthReq) -> Option<Account> {
         self.database.find_account(auth_req.into())
     }
+
+    pub fn does_account_own_course(&self, account_id: ObjectId, course_oid: ObjectId) -> bool {
+        let query = doc! {
+            "_id" => course_oid,
+            "owner" => account_id
+        };
+        if let Ok(courses) = self.database.find_courses2(query) {
+            courses.len() == 1
+        } else {
+            false
+        }
+    }
 }

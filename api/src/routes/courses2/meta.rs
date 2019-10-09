@@ -1,4 +1,4 @@
-use crate::{course2::Difficulty, server::ServerData};
+use crate::{course2::Difficulty, server::ServerData, Identity};
 
 use actix_web::{error::ResponseError, http::StatusCode, post, web, HttpRequest, HttpResponse};
 use mongodb::oid::ObjectId;
@@ -15,9 +15,14 @@ pub fn post_meta(
     path: web::Path<String>,
     meta: web::Json<PostCourse2Meta>,
     req: HttpRequest,
+    identity: Identity,
 ) -> Result<HttpResponse, PostCourse2MetaError> {
     let course_id = path.into_inner();
     let course_id = ObjectId::with_string(&course_id)?;
+    let account = identity.get_account();
+    if !data.does_account_own_course(account.get_id(), course_id.clone()) {
+        return Err(PostCourse2MetaError::Unauthorized);
+    }
     let difficulty = meta.difficulty.clone();
     data.post_course2_meta(course_id, difficulty)?;
     Ok(HttpResponse::NoContent().into())
@@ -33,6 +38,8 @@ pub enum PostCourse2MetaError {
     ObjectIdUnknown(String),
     #[fail(display = "[PutCourses2Error::SerdeJson]: {}", _0)]
     Mongo(mongodb::Error),
+    #[fail(display = "")]
+    Unauthorized,
 }
 
 impl From<serde_json::Error> for PostCourse2MetaError {
@@ -68,6 +75,7 @@ impl ResponseError for PostCourse2MetaError {
             }
             PostCourse2MetaError::ObjectIdUnknown(_) => HttpResponse::new(StatusCode::NOT_FOUND),
             PostCourse2MetaError::Mongo(_) => HttpResponse::new(StatusCode::INTERNAL_SERVER_ERROR),
+            PostCourse2MetaError::Unauthorized => HttpResponse::new(StatusCode::UNAUTHORIZED),
         }
     }
 }

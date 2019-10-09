@@ -11,7 +11,7 @@ use mongodb::oid::ObjectId;
 use mongodb::ordered::OrderedDocument;
 use serde::Serialize;
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct Account {
     #[serde(rename = "_id")]
     id: ObjectId,

@@ -18,7 +18,7 @@ use mongodb::{oid::ObjectId, ordered::OrderedDocument};
 use serde::Serialize;
 use std::convert::TryFrom;
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 pub struct AuthSession {
     id_token: String,
     pub expires_at: i64,
