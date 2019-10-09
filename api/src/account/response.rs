@@ -14,12 +14,12 @@ pub struct AccountRes {
 }
 
 impl AccountRes {
-    pub fn new(account: Account) -> Self {
+    pub fn new(account: &Account) -> Self {
         AccountRes {
             id: account.id.to_hex(),
-            username: account.username,
-            downloadformat: account.downloadformat.unwrap_or_default().into(),
-            apikey: account.apikey,
+            username: account.username.clone(),
+            downloadformat: account.downloadformat.clone().unwrap_or_default().into(),
+            apikey: account.apikey.clone(),
             stars: vec![],
             stars64: vec![],
             permissions: account.permissions.unwrap_or_default(),

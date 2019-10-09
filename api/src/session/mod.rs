@@ -21,7 +21,7 @@ use std::convert::TryFrom;
 #[derive(Debug, Serialize)]
 pub struct AuthSession {
     id_token: String,
-    expires_at: i64,
+    pub expires_at: i64,
 }
 
 impl AuthSession {
@@ -100,8 +100,11 @@ where
         let data: Option<Data<ServerData>> = req.app_data();
         if let Some(data) = data {
             if let Ok(auth_req) = AuthReq::try_from(session) {
+                let expires_at = auth_req.session.as_ref().unwrap().expires_at;
                 if let Some(account) = data.get_account_from_auth(auth_req) {
-                    Identity::set_identity(account, &mut req);
+                    if !account.is_expired(expires_at) {
+                        Identity::set_identity(account, &mut req);
+                    }
                 }
             } else if let Ok(auth_req) = AuthReq::try_from(req.head()) {
                 if let Some(account) = data.get_account_from_auth(auth_req) {

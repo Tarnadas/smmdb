@@ -6,6 +6,7 @@ pub use response::*;
 
 use crate::session::AuthSession;
 
+use chrono::offset::Utc;
 use mongodb::oid::ObjectId;
 use mongodb::ordered::OrderedDocument;
 use serde::Serialize;
@@ -84,9 +85,19 @@ impl Account {
     pub fn get_username(&self) -> &String {
         &self.username
     }
+
+    pub fn is_expired(&self, expires_at: i64) -> bool {
+        if let Some(session) = &self.session {
+            let now = Utc::now().timestamp_millis();
+            dbg!(&now, session.expires_at, expires_at);
+            session.expires_at <= now && session.expires_at == expires_at
+        } else {
+            true
+        }
+    }
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Clone, Debug, Serialize)]
 enum DownloadFormat {
     WiiU = 0,
     N3DS = 1,

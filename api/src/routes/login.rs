@@ -1,6 +1,9 @@
-use crate::account::{AccountConvertError, AccountReq, AccountRes};
-use crate::server::ServerData;
-use crate::session::AuthSession;
+use crate::{
+    account::{AccountConvertError, AccountReq, AccountRes},
+    server::ServerData,
+    session::AuthSession,
+    Identity,
+};
 
 use actix_session::Session;
 use futures::future::Future;
@@ -46,11 +49,20 @@ pub struct IdInfo {
 }
 
 pub fn service() -> impl dev::HttpServiceFactory {
-    web::scope("/login").service(login)
+    web::scope("/login")
+        .service(login)
+        .service(login_with_google)
+}
+
+#[post("")]
+fn login(data: web::Data<ServerData>, req: HttpRequest, identity: Identity) -> HttpResponse {
+    let account = identity.get_account();
+    let account = AccountRes::new(account.as_ref().unwrap());
+    HttpResponseBuilder::new(StatusCode::OK).json(account)
 }
 
 #[post("/google")]
-fn login(
+fn login_with_google(
     data: web::Data<ServerData>,
     req: HttpRequest,
     json: web::Json<Login>,
@@ -79,7 +91,7 @@ fn login(
                     AuthSession::new(id_token.clone(), json.token_obj.expires_at),
                 )?;
                 // TODO get stars from database
-                let account = AccountRes::new(account);
+                let account = AccountRes::new(&account);
                 session.set("account_id", account.get_id()).unwrap();
                 Ok(HttpResponseBuilder::new(StatusCode::OK).json(account))
             }
