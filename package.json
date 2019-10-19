@@ -58,7 +58,7 @@
     "jimp": "^0.2.28",
     "marked": "^0.3.6",
     "minhash": "^0.0.9",
-    "mongodb": "^2.2.33",
+    "mongodb": "^3.1.13",
     "node-emoji": "^1.8.1",
     "pmx": "^1.5.4",
     "progress": "^2.0.0",
