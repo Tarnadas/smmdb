@@ -10,7 +10,7 @@ use serde_qs::actix::QsQuery;
 pub fn get_courses(
     data: web::Data<ServerData>,
     query: QsQuery<GetCourses2>,
-    req: HttpRequest,
+    _req: HttpRequest,
 ) -> Result<String, GetCourses2Error> {
     data.get_courses2(query.into_inner())
 }
