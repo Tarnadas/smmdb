@@ -150,7 +150,7 @@ impl Database {
         Ok(inserted_id.as_object_id().unwrap().clone())
     }
 
-    pub fn get_course2_thumbnail(
+    pub fn get_course2(
         &self,
         doc: OrderedDocument,
         projection: OrderedDocument,

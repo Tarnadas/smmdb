@@ -8,6 +8,7 @@ use crate::{
         courses,
         courses2::{
             self,
+            download::DownloadCourse2Error,
             meta::PostCourse2MetaError,
             thumbnail::{GetCourse2ThumbnailError, GetThumbnail2, Size2},
             PutCourses2Response,
@@ -84,6 +85,28 @@ impl Data {
         Ok(serde_json::to_string(&courses)?)
     }
 
+    pub fn get_course2(
+        &self,
+        course_id: ObjectId,
+    ) -> Result<(Vec<u8>, Vec<u8>), DownloadCourse2Error> {
+        let doc = doc! {
+            "_id" => course_id.clone()
+        };
+        let thumb: String = Size2::ORIGINAL.into();
+        let projection = doc! {
+            thumb.clone() => 1,
+            "data_gz" => 1
+        };
+        let course = self.database.get_course2(doc, projection)?;
+        if let Some(course) = course {
+            let data = course.get_binary_generic(&"data_gz")?;
+            let thumb = course.get_binary_generic(&thumb)?;
+            Ok((data.clone(), thumb.clone()))
+        } else {
+            Err(DownloadCourse2Error::CourseNotFound(course_id))
+        }
+    }
+
     pub fn get_course2_thumbnail(
         &self,
         course_id: ObjectId,
@@ -96,7 +119,7 @@ impl Data {
         let projection = doc! {
             size.clone() => 1
         };
-        let thumb = self.database.get_course2_thumbnail(doc, projection)?;
+        let thumb = self.database.get_course2(doc, projection)?;
         if let Some(thumb) = thumb {
             match thumb.get_binary_generic(&size) {
                 Ok(thumb) => Ok(thumb.clone()),
@@ -111,10 +134,7 @@ impl Data {
                         let projection = doc! {
                             size_original.clone() => 1
                         };
-                        let thumb = self
-                            .database
-                            .get_course2_thumbnail(doc, projection)?
-                            .unwrap();
+                        let thumb = self.database.get_course2(doc, projection)?.unwrap();
                         let thumb = thumb
                             .get_binary_generic(&size_original)
                             .unwrap_or_else(|_| {

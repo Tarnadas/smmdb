@@ -1,6 +1,5 @@
 use crate::server::ServerData;
 
-use actix_http::http::header;
 use actix_web::{error::ResponseError, get, http::StatusCode, web, HttpRequest, HttpResponse};
 use mongodb::oid::ObjectId;
 use serde::Deserialize;
@@ -11,14 +10,12 @@ pub fn get_thumbnail(
     data: web::Data<ServerData>,
     path: web::Path<String>,
     query: QsQuery<GetThumbnail2>,
-    req: HttpRequest,
+    _req: HttpRequest,
 ) -> Result<HttpResponse, GetCourse2ThumbnailError> {
     let course_id = path.into_inner();
     let course_id = ObjectId::with_string(&course_id)?;
     let thumb = data.get_course2_thumbnail(course_id, query.into_inner())?;
-    Ok(HttpResponse::Ok()
-        .set_header(header::CONTENT_TYPE, "image/jpeg")
-        .body(thumb))
+    Ok(HttpResponse::Ok().content_type("image/jpeg").body(thumb))
 }
 
 #[derive(Debug, Deserialize)]
