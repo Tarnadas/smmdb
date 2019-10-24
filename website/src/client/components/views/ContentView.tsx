@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Route, withRouter } from 'react-router-dom'
 
 import BlogView from './BlogView'
+import Courses2View from './Courses2View'
 import Courses64View from './Courses64View'
 import CoursesView from './CoursesView'
 import FAQView from './FAQView'
@@ -14,6 +15,7 @@ import ProfileView from './ProfileView'
 import SocialView from './SocialView'
 import Upload64View from './Upload64View'
 import UploadView from './UploadView'
+import Upload2View from './Upload2View'
 
 import { ScreenSize } from '../../reducers/mediaQuery'
 
@@ -55,6 +57,12 @@ class View extends React.PureComponent<any, any> {
           )}
         />
         <Route
+          path="/courses2"
+          render={(): JSX.Element => (
+            <Courses2View setScrollCallback={this.props.setScrollCallback} />
+          )}
+        />
+        <Route
           path="/courses64"
           render={(): JSX.Element => (
             <Courses64View
@@ -72,6 +80,12 @@ class View extends React.PureComponent<any, any> {
               setFetchCourses={this.props.setFetchCourses}
               isServer={this.props.isServer}
             />
+          )}
+        />
+        <Route
+          path="/upload2"
+          render={(): JSX.Element => (
+            <Upload2View setScrollCallback={this.props.setScrollCallback} />
           )}
         />
         <Route
