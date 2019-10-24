@@ -41,7 +41,7 @@ impl Server {
                 )
                 .wrap(
                     Cors::new()
-                        .allowed_methods(vec!["GET", "POST", "PUT", "OPTIONS"])
+                        .allowed_methods(vec!["GET", "POST", "PUT", "OPTIONS", "DELETE"])
                         .allowed_headers(vec![
                             header::AUTHORIZATION,
                             header::ACCEPT,
