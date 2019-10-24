@@ -297,12 +297,19 @@ impl Data {
             "_id" => course_id.clone()
         };
         let mut set = doc! {};
+        let mut unset = doc! {};
         if let Some(difficulty) = difficulty {
             set.insert("difficulty", format!("{:?}", difficulty).to_lowercase());
+        } else {
+            unset.insert("difficulty", "");
         }
-        let update = doc! {
-            "$set" => set
-        };
+        let mut update = doc! {};
+        if set.len() > 0 {
+            update.insert("$set", set);
+        }
+        if unset.len() > 0 {
+            update.insert("$unset", unset);
+        }
         Ok(self
             .database
             .post_course2_meta(course_id.to_string(), filter, update)?)

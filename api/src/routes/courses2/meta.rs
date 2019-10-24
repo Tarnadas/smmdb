@@ -14,7 +14,7 @@ pub fn post_meta(
     data: web::Data<ServerData>,
     path: web::Path<String>,
     meta: web::Json<PostCourse2Meta>,
-    req: HttpRequest,
+    _req: HttpRequest,
     identity: Identity,
 ) -> Result<HttpResponse, PostCourse2MetaError> {
     let course_id = path.into_inner();
