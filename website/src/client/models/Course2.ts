@@ -2,7 +2,7 @@ export interface Course2 {
   id: string
   owner: string
   uploader: string
-  difficulty: Difficulty
+  difficulty?: Difficulty
   lastModifie: number
   uploaded: number
   course: {

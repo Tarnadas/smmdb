@@ -1,9 +1,11 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-import { Course2, GameStyle } from '@/client/models/Course2'
+import { Course2, GameStyle, Difficulty } from '@/client/models/Course2'
 
 import Course2DownloadButton from '../buttons/Course2DownloadButton'
+import Course2DeleteButton from '../buttons/Course2DeleteButton'
+import { SMMButton } from '../buttons/SMMButton'
 
 interface Course2PanelProps {
   accountData: any
@@ -15,6 +17,7 @@ interface Course2PanelState {
   canEdit: boolean
   extended: boolean
   maxHeight: number | null
+  difficulty?: Difficulty
 }
 
 class Course2Panel extends React.PureComponent<
@@ -29,12 +32,15 @@ class Course2Panel extends React.PureComponent<
     super(props)
     const accountId = props.accountData.get('id')
     this.state = {
-      canEdit: accountId && accountId === props.courseId,
+      canEdit: accountId && accountId === props.course.owner,
       extended: false,
-      maxHeight: null
+      maxHeight: null,
+      difficulty: props.course.difficulty
     }
     this.handleClick = this.handleClick.bind(this)
     this.handleClose = this.handleClose.bind(this)
+    this.handleDifficultyChange = this.handleDifficultyChange.bind(this)
+    this.handleSave = this.handleSave.bind(this)
   }
 
   public componentDidMount (): void {
@@ -73,6 +79,36 @@ class Course2Panel extends React.PureComponent<
     })
   }
 
+  private handleDifficultyChange (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ): void {
+    const value = event.target.value as any
+    this.setState({ difficulty: value })
+  }
+
+  private async handleSave (): Promise<void> {
+    const { courseId } = this.props
+    const { difficulty } = this.state
+    try {
+      const res = await fetch(
+        `${process.env.API_DOMAIN}courses2/meta/${courseId}`,
+        {
+          method: 'post',
+          credentials: 'include',
+          body: JSON.stringify({
+            difficulty: difficulty || undefined
+          }),
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      )
+      console.log('OK', res)
+    } catch (err) {
+      console.error(err.response.body)
+    }
+  }
+
   private getGameStyleImage (gameStyle: GameStyle): string {
     switch (gameStyle) {
       case GameStyle.M1:
@@ -90,7 +126,7 @@ class Course2Panel extends React.PureComponent<
 
   public render (): JSX.Element {
     const { course, courseId } = this.props
-    const { canEdit, extended, maxHeight } = this.state
+    const { canEdit, extended, maxHeight, difficulty } = this.state
     // console.log(course)
     return (
       <div
@@ -196,11 +232,49 @@ class Course2Panel extends React.PureComponent<
               style={{
                 margin: '10px 0',
                 display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'flex-end'
+                justifyContent: 'flex-end',
+                alignItems: 'flex-end',
+                flexWrap: 'wrap'
               }}
             >
-              {canEdit && <div>CAN EDIT</div>}
+              {canEdit && (
+                <div
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-start',
+                    marginBottom: '24px'
+                  }}
+                >
+                  <span>Difficulty:</span>
+                  <select
+                    style={{
+                      width: '50%',
+                      minWidth: '150px',
+                      marginBottom: '12px'
+                    }}
+                    value={difficulty}
+                    onChange={this.handleDifficultyChange}
+                  >
+                    <option />
+                    <option value={Difficulty.Easy}>Easy</option>
+                    <option value={Difficulty.Normal}>Normal</option>
+                    <option value={Difficulty.Expert}>Expert</option>
+                    <option value={Difficulty.SuperExpert}>Super Expert</option>
+                  </select>
+                  <SMMButton
+                    onClick={this.handleSave}
+                    text="Save"
+                    iconSrc="/img/hand.png"
+                    iconColor="bright"
+                    padding="3px"
+                    noMargin
+                  />
+                </div>
+              )}
+              {canEdit && <Course2DeleteButton courseId={courseId} />}
               <Course2DownloadButton courseId={courseId} />
             </div>
           </div>
