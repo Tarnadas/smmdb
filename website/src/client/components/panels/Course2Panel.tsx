@@ -6,6 +6,7 @@ import { Course2, GameStyle, Difficulty } from '@/client/models/Course2'
 import Course2DownloadButton from '../buttons/Course2DownloadButton'
 import Course2DeleteButton from '../buttons/Course2DeleteButton'
 import { SMMButton } from '../buttons/SMMButton'
+import Course2DetailsButton from '../buttons/Course2DetailsButton'
 
 interface Course2PanelProps {
   accountData: any
@@ -264,17 +265,26 @@ class Course2Panel extends React.PureComponent<
                     <option value={Difficulty.Expert}>Expert</option>
                     <option value={Difficulty.SuperExpert}>Super Expert</option>
                   </select>
-                  <SMMButton
-                    onClick={this.handleSave}
-                    text="Save"
-                    iconSrc="/img/hand.png"
-                    iconColor="bright"
-                    padding="3px"
-                    noMargin
-                  />
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      marginLeft: '6px'
+                    }}
+                  >
+                    <SMMButton
+                      onClick={this.handleSave}
+                      text="Save"
+                      iconSrc="/img/hand.png"
+                      iconColor="bright"
+                      padding="3px"
+                      noMargin
+                    />
+                    <Course2DeleteButton courseId={courseId} />
+                  </div>
                 </div>
               )}
-              {canEdit && <Course2DeleteButton courseId={courseId} />}
+              <Course2DetailsButton course={course} />
               <Course2DownloadButton courseId={courseId} />
             </div>
           </div>
