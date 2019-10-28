@@ -125,6 +125,21 @@ class Course2Panel extends React.PureComponent<
     }
   }
 
+  private getDifficultyImage (difficulty: Difficulty): string {
+    switch (difficulty) {
+      case Difficulty.Easy:
+        return '/img/easy.png'
+      case Difficulty.Normal:
+        return '/img/normal.png'
+      case Difficulty.Expert:
+        return '/img/expert.png'
+      case Difficulty.SuperExpert:
+        return '/img/superexpert.png'
+      default:
+        return ''
+    }
+  }
+
   public render (): JSX.Element {
     const { course, courseId } = this.props
     const { canEdit, extended, maxHeight, difficulty } = this.state
@@ -206,11 +221,36 @@ class Course2Panel extends React.PureComponent<
               padding: '20px',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              flex: '1 1 200px'
+              flex: '1 1 200px',
+              flexDirection: 'column'
             }}
           >
-            {course.course.header.description}
+            {course.difficulty && (
+              <div
+                style={{
+                  alignSelf: 'flex-start'
+                }}
+              >
+                <span>Difficulty:</span>
+                <img
+                  src={this.getDifficultyImage(course.difficulty)}
+                  style={{
+                    minWidth: '24px',
+                    minHeight: '24px'
+                  }}
+                />
+              </div>
+            )}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flex: '1 0 auto'
+              }}
+            >
+              {course.course.header.description}
+            </div>
           </div>
         </div>
         <div
