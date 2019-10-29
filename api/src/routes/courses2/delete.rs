@@ -7,7 +7,7 @@ use mongodb::oid::ObjectId;
 pub fn delete_course(
     data: web::Data<ServerData>,
     path: web::Path<String>,
-    req: HttpRequest,
+    _req: HttpRequest,
     identity: Identity,
 ) -> Result<HttpResponse, DeleteCourse2Error> {
     let course_id = path.into_inner();

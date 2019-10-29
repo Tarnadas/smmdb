@@ -6,12 +6,10 @@ static SWAGGER: &str = include_str!("../../swagger/swagger.json");
 
 #[get("/")]
 pub fn index() -> Response {
-    let mut res = Response::with_body(StatusCode::OK, Body::from_message(INDEX));
-    res
+  Response::with_body(StatusCode::OK, Body::from_message(INDEX))
 }
 
 #[get("/swagger.json")]
 pub fn swagger() -> Response {
-    let mut res = Response::with_body(StatusCode::OK, Body::from_message(SWAGGER));
-    res
+  Response::with_body(StatusCode::OK, Body::from_message(SWAGGER))
 }

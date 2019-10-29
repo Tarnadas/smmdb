@@ -13,8 +13,8 @@ use futures::{self, Future, Stream};
 
 #[post("analyze")]
 pub fn post_analyze_courses(
-    data: web::Data<ServerData>,
-    req: HttpRequest,
+    _data: web::Data<ServerData>,
+    _req: HttpRequest,
     payload: web::Payload,
 ) -> impl Future<Item = HttpResponse, Error = PostCourses2Error> {
     payload

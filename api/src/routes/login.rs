@@ -55,7 +55,7 @@ pub fn service() -> impl dev::HttpServiceFactory {
 }
 
 #[post("")]
-fn login(data: web::Data<ServerData>, req: HttpRequest, identity: Identity) -> HttpResponse {
+fn login(_data: web::Data<ServerData>, _req: HttpRequest, identity: Identity) -> HttpResponse {
     let account = identity.get_account();
     let account = AccountRes::new(&account);
     HttpResponseBuilder::new(StatusCode::OK).json(account)
@@ -64,7 +64,7 @@ fn login(data: web::Data<ServerData>, req: HttpRequest, identity: Identity) -> H
 #[post("/google")]
 fn login_with_google(
     data: web::Data<ServerData>,
-    req: HttpRequest,
+    _req: HttpRequest,
     json: web::Json<Login>,
     session: Session,
 ) -> impl Future<Item = HttpResponse, Error = LoginError> {

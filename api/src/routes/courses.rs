@@ -18,7 +18,7 @@ pub fn service() -> impl dev::HttpServiceFactory {
 fn get_courses(
     data: web::Data<ServerData>,
     query: QsQuery<GetCourses>,
-    req: HttpRequest,
+    _req: HttpRequest,
 ) -> Result<String, GetCoursesError> {
     data.get_courses(query.into_inner())
 }

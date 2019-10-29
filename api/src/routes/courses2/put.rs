@@ -26,7 +26,7 @@ pub struct PutCourses2 {
 #[put("")]
 pub fn put_courses(
     data: web::Data<ServerData>,
-    req: HttpRequest,
+    _req: HttpRequest,
     query: QsQuery<PutCourses2>,
     payload: web::Payload,
     identity: Identity,
@@ -164,10 +164,6 @@ impl PutCourses2Response {
 
 impl Into<HttpResponse> for PutCourses2Response {
     fn into(self: PutCourses2Response) -> HttpResponse {
-        let res = serde_json::to_string(&self);
-        match res {
-            Ok(res) => HttpResponse::Ok().body(res),
-            Err(err) => HttpResponse::InternalServerError().body(err.to_string()),
-        }
+        HttpResponse::Ok().json(self)
     }
 }
