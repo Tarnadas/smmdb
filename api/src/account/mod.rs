@@ -89,7 +89,6 @@ impl Account {
     pub fn is_expired(&self, expires_at: i64) -> bool {
         if let Some(session) = &self.session {
             let now = Utc::now().timestamp_millis();
-            dbg!(&now, session.expires_at, expires_at);
             session.expires_at <= now && session.expires_at == expires_at
         } else {
             true
