@@ -14,6 +14,12 @@ export interface Course2 {
   }
 }
 
+export interface Course2Duplicate {
+  jaccard: number
+  similarCourseId: string
+  title: string
+}
+
 export enum Difficulty {
   Easy = 'easy',
   Normal = 'normal',

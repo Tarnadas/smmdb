@@ -143,7 +143,6 @@ class Course2Panel extends React.PureComponent<
   public render (): JSX.Element {
     const { course, courseId } = this.props
     const { canEdit, extended, maxHeight, difficulty } = this.state
-    // console.log(course)
     return (
       <div
         style={{
@@ -239,6 +238,7 @@ class Course2Panel extends React.PureComponent<
                     minHeight: '24px'
                   }}
                 />
+                <span>{course.difficulty}</span>
               </div>
             )}
             <div

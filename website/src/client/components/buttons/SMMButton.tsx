@@ -64,19 +64,20 @@ export class SMMButton extends React.PureComponent<any, any> {
         minWidth: '120px',
         width: 'auto',
         height: '40px',
-        backgroundColor: colorScheme === COLOR_SCHEME.YELLOW ? (
-          this.state.deleteHover ? (
-            '#cc0008'
-          ) : (
-            this.state.hover ? '#323245' : '#ffe500'
-          )
-        ) : (
-          colorScheme === COLOR_SCHEME.GREEN ? (
-            this.state.hover ? '#323245' : '#33cc33'
-          ) : (
-            this.state.hover ? '#323245' : '#CC7034'
-          )
-        ),
+        backgroundColor:
+          colorScheme === COLOR_SCHEME.YELLOW
+            ? this.state.deleteHover
+              ? '#cc0008'
+              : this.state.hover
+                ? '#323245'
+                : '#ffe500'
+            : colorScheme === COLOR_SCHEME.GREEN
+              ? this.state.hover
+                ? '#323245'
+                : '#33cc33'
+              : this.state.hover
+                ? '#323245'
+                : '#CC7034',
         textAlign: 'left',
         cursor: 'pointer',
         outline: 'none',
@@ -87,7 +88,8 @@ export class SMMButton extends React.PureComponent<any, any> {
         borderRadius: '5px',
         boxShadow: '1px 4px 13px 0 rgba(0,0,0,0.5)',
         display: 'inline-block',
-        fontSize: this.props.fontSize ? this.props.fontSize : ''
+        fontSize: this.props.fontSize ? this.props.fontSize : '',
+        zIndex: this.props.zIndex ? this.props.zIndex : undefined
       },
       smmIcon: {
         margin: '4px',
@@ -130,60 +132,61 @@ export class SMMButton extends React.PureComponent<any, any> {
         height: '100%'
       }
     }
-    const iconStyle = this.props.iconColor === 'bright'
-      ? styles.smmIcon
-      : (this.state.hover ? styles.smmIconHover : styles.smmIconDark)
+    const iconStyle =
+      this.props.iconColor === 'bright'
+        ? styles.smmIcon
+        : this.state.hover
+          ? styles.smmIconHover
+          : styles.smmIconDark
     const text = this.props.text
     return (
-      <div style={styles.smmButton}
+      <div
+        style={styles.smmButton}
         onMouseEnter={this.mouseEnter}
         onMouseLeave={this.mouseLeave}
         onClick={this.props.onClick ? this.props.onClick : null}
       >
-        {
-          this.props.link ? (
-            this.props.blank ? (
-              <a href={this.props.link} target='_blank'>
-                <ButtonSub
-                  iconStyle={iconStyle}
-                  iconSrc={this.props.iconSrc}
-                  text={text}
-                  hover={this.state.hover}
-                  noText={this.props.noText}
-                />
-              </a>
-            ) : (
-              <Link to={this.props.link}>
-                <ButtonSub
-                  iconStyle={iconStyle}
-                  iconSrc={this.props.iconSrc}
-                  text={text}
-                  hover={this.state.hover}
-                  noText={this.props.noText}
-                />
-              </Link>
-            )
+        {this.props.link ? (
+          this.props.blank ? (
+            <a href={this.props.link} target="_blank">
+              <ButtonSub
+                iconStyle={iconStyle}
+                iconSrc={this.props.iconSrc}
+                text={text}
+                hover={this.state.hover}
+                noText={this.props.noText}
+              />
+            </a>
           ) : (
-            <ButtonSub
-              iconStyle={iconStyle}
-              iconSrc={this.props.iconSrc}
-              text={text}
-              hover={this.state.hover}
-              noText={this.props.noText}
-            />
+            <Link to={this.props.link}>
+              <ButtonSub
+                iconStyle={iconStyle}
+                iconSrc={this.props.iconSrc}
+                text={text}
+                hover={this.state.hover}
+                noText={this.props.noText}
+              />
+            </Link>
           )
-        }
-        {
-          onDelete &&
+        ) : (
+          <ButtonSub
+            iconStyle={iconStyle}
+            iconSrc={this.props.iconSrc}
+            text={text}
+            hover={this.state.hover}
+            noText={this.props.noText}
+          />
+        )}
+        {onDelete && (
           <div
             style={styles.cancel}
             onClick={this.onDelete}
             onMouseEnter={this.deleteEnter}
             onMouseLeave={this.deleteLeave}
           >
-            <img style={styles.cancelImg} src='/img/cancel_yellow.svg' />
+            <img style={styles.cancelImg} src="/img/cancel_yellow.svg" />
           </div>
-        }
+        )}
       </div>
     )
   }

@@ -7,7 +7,12 @@ import { resolve } from 'url'
 
 import { ErrorMessage } from '../shared/ErrorMessage'
 import {
-  setCoursesUploaded, setCoursesUploaded64, setUpload, setUpload64, deleteUpload, deleteUpload64
+  setCoursesUploaded,
+  setCoursesUploaded64,
+  setUpload,
+  setUpload64,
+  deleteUpload,
+  deleteUpload64
 } from '../../actions'
 
 interface UploadAreaProps {
@@ -43,14 +48,19 @@ class Area extends React.PureComponent<UploadAreaProps, UploadAreaState> {
     const { is64 } = this.props
     const upload = is64 ? setUpload64 : setUpload
     const del = is64 ? deleteUpload64 : deleteUpload
-    const reqUrl = resolve(process.env.DOMAIN || '', `/api/uploadcourse${is64 ? '64' : ''}`)
+    const reqUrl = resolve(
+      process.env.DOMAIN || '',
+      `/api/uploadcourse${is64 ? '64' : ''}`
+    )
 
-    this.props.dispatch(upload(courseId, {
-      courseId,
-      title: course.name,
-      percentage: 0,
-      eta: 0
-    }))
+    this.props.dispatch(
+      upload(courseId, {
+        courseId,
+        title: course.name,
+        percentage: 0,
+        eta: 0
+      })
+    )
     this.setState({
       err: undefined
     })
@@ -65,38 +75,43 @@ class Area extends React.PureComponent<UploadAreaProps, UploadAreaState> {
     }
   }
 
-  private async makeUploadRequest (reqUrl: string, course: File, courseId: string): Promise<void> {
+  private async makeUploadRequest (
+    reqUrl: string,
+    course: File,
+    courseId: string
+  ): Promise<void> {
     const { apiKey, is64, dispatch } = this.props
     const upload = is64 ? setUpload64 : setUpload
     const setCourses = is64 ? setCoursesUploaded64 : setCoursesUploaded
     let name = ''
     try {
-      name = course.name.split('.').slice(0, -1).join()
+      name = course.name
+        .split('.')
+        .slice(0, -1)
+        .join()
       name.replace('_', ' ')
     } catch (err) {}
-    const res = await axios.post(
-      reqUrl,
-      course,
-      {
-        headers: {
-          'Content-Type': 'application/octet-stream',
-          'Authorization': `APIKEY ${apiKey}`,
-          'Filename': name
-        },
-        onUploadProgress: ({ loaded, total }): void => {
-          const percentage = loaded * 100 / total
-          dispatch(upload(courseId, {
+    const res = await axios.post(reqUrl, course, {
+      headers: {
+        'Content-Type': 'application/octet-stream',
+        Authorization: `APIKEY ${apiKey}`,
+        Filename: name
+      },
+      onUploadProgress: ({ loaded, total }): void => {
+        const percentage = (loaded * 100) / total
+        dispatch(
+          upload(courseId, {
             courseId,
             title: course.name,
             percentage,
             eta: 0
-          }))
-          this.setState({
-            err: undefined
           })
-        }
+        )
+        this.setState({
+          err: undefined
+        })
       }
-    )
+    })
     const courses = res.data
     this.props.dispatch(setCourses(is64 ? [courses] : courses, true))
   }
@@ -164,23 +179,21 @@ class Area extends React.PureComponent<UploadAreaProps, UploadAreaState> {
       <div style={styles.drag}>
         <input
           style={styles.input}
-          type='file'
+          type="file"
           multiple
           value={this.state.value}
           onChange={this.handleChange}
           onClick={this.handleClick}
         />
-        Drag and drop or click here to upload a course (max 6MB)
-        {
-          err &&
-          <ErrorMessage
-            err={err}
-          />
-        }
+        Drag and drop or click here to upload a Super Mario Maker 1 course (max
+        6MB)
+        {err && <ErrorMessage err={err} />}
       </div>
     )
   }
 }
-export const UploadArea = connect((state: any): any => ({
-  apiKey: state.getIn(['userData', 'accountData', 'apikey'])
-}))(Area) as any
+export const UploadArea = connect(
+  (state: any): any => ({
+    apiKey: state.getIn(['userData', 'accountData', 'apikey'])
+  })
+)(Area) as any

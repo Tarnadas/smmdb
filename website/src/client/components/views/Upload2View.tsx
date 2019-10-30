@@ -6,6 +6,7 @@ import { ScreenSize } from '@/client/reducers/mediaQuery'
 
 import { Course2 } from '../../models/Course2'
 import Course2Panel from '../panels/Course2Panel'
+import Upload2Panel from '../panels/Upload2Panel'
 import { ProgressSpinner } from '../shared/ProgressSpinner'
 
 interface Upload2ViewProps {
@@ -37,6 +38,7 @@ class Upload2View extends React.PureComponent<
     }
     this.onScroll = this.onScroll.bind(this)
     this.handleScroll = this.handleScroll.bind(this)
+    this.refresh = this.refresh.bind(this)
     props.setScrollCallback(this.handleScroll)
   }
 
@@ -69,18 +71,13 @@ class Upload2View extends React.PureComponent<
     const { skip } = this.state
     if (!accountData.get('id')) return
     try {
-      const apiKey = accountData.get('apikey')
       const owner = accountData.get('id')
       const url = `courses2?limit=${limit}&skip=${skip}&owner=${owner}`
       this.setState({
         fetching: true
       })
       const response = await fetch(`${process.env.API_DOMAIN || ''}${url}`, {
-        headers: apiKey
-          ? {
-            Authorization: `APIKEY ${apiKey}`
-          }
-          : undefined
+        credentials: 'include'
       })
       if (!response.ok) throw new Error(response.statusText)
       const courses = await response.json()
@@ -138,6 +135,21 @@ class Upload2View extends React.PureComponent<
     })
   }
 
+  private async refresh (): Promise<void> {
+    this.setState({ loading: true, skip: 0 })
+    return new Promise<void>(resolve => {
+      setTimeout(async () => {
+        const courses = await this.fetchCourses()
+        this.setState({ loading: false })
+        if (!courses) return
+        this.setState({
+          courses
+        })
+        resolve()
+      })
+    })
+  }
+
   public render () {
     const { loading } = this.state
     const { accountData } = this.props
@@ -170,6 +182,7 @@ class Upload2View extends React.PureComponent<
               }}
               onScroll={this.handleScroll}
             >
+              <Upload2Panel refresh={this.refresh} />
               {this.renderCourses()}
             </div>
           )
