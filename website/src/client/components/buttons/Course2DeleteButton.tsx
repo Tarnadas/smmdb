@@ -3,6 +3,7 @@ import { SMMButton } from './SMMButton'
 
 interface Course2DeleteButtonProps {
   courseId: string
+  onDelete: () => void
 }
 
 interface Course2DeleteButtonState {
@@ -31,17 +32,15 @@ export default class Course2DeleteButton extends React.PureComponent<
   private async onCourseDelete (): Promise<void> {
     const { shouldDelete } = this.state
     if (shouldDelete) {
-      const { courseId } = this.props
+      const { courseId, onDelete } = this.props
       try {
-        const res = await fetch(
-          `${process.env.API_DOMAIN}courses2/${courseId}`,
-          {
-            method: 'delete',
-            credentials: 'include'
-          }
-        )
+        await fetch(`${process.env.API_DOMAIN}courses2/${courseId}`, {
+          method: 'delete',
+          credentials: 'include'
+        })
+        onDelete()
       } catch (err) {
-        console.error(err.response.body)
+        console.error(err)
       }
     } else {
       this.setState({

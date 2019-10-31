@@ -40,6 +40,7 @@ class Upload2View extends React.PureComponent<
     }
     this.onScroll = this.onScroll.bind(this)
     this.handleScroll = this.handleScroll.bind(this)
+    this.onDelete = this.onDelete.bind(this)
     this.refresh = this.refresh.bind(this)
     props.setScrollCallback(this.handleScroll)
   }
@@ -103,17 +104,12 @@ class Upload2View extends React.PureComponent<
     }
   }
 
-  private renderCourses (): JSX.Element | JSX.Element[] {
-    const { courses } = this.state
-    return courses.length > 0 ? (
-      courses.map(course => (
-        <Course2Panel key={course.id} courseId={course.id} course={course} />
-      ))
-    ) : (
-      <span style={{ fontSize: '1.2rem', margin: 'auto 0' }}>
-        No course has been uploaded so far
-      </span>
-    )
+  private onDelete (index: number): void {
+    this.state.courses.splice(index, 1)
+    const courses = [...this.state.courses]
+    this.setState({
+      courses
+    })
   }
 
   private onScroll (): void {
@@ -153,6 +149,25 @@ class Upload2View extends React.PureComponent<
         resolve()
       })
     })
+  }
+
+  private renderCourses (): JSX.Element | JSX.Element[] {
+    const { courses } = this.state
+    return courses.length > 0 ? (
+      courses.map((course, index) => (
+        <Course2Panel
+          key={course.id}
+          index={index}
+          onDelete={this.onDelete}
+          courseId={course.id}
+          course={course}
+        />
+      ))
+    ) : (
+      <span style={{ fontSize: '1.2rem', margin: 'auto 0' }}>
+        No course has been uploaded so far
+      </span>
+    )
   }
 
   public render () {

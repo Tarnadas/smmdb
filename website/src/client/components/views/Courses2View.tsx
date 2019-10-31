@@ -38,6 +38,7 @@ class Courses2View extends React.PureComponent<
     }
     this.onScroll = this.onScroll.bind(this)
     this.handleScroll = this.handleScroll.bind(this)
+    this.onDelete = this.onDelete.bind(this)
     props.setScrollCallback(this.handleScroll)
   }
 
@@ -83,8 +84,14 @@ class Courses2View extends React.PureComponent<
   private renderCourses (): JSX.Element | JSX.Element[] {
     const { courses } = this.state
     return courses.length > 0 ? (
-      courses.map(course => (
-        <Course2Panel key={course.id} courseId={course.id} course={course} />
+      courses.map((course, index) => (
+        <Course2Panel
+          key={course.id}
+          index={index}
+          onDelete={this.onDelete}
+          courseId={course.id}
+          course={course}
+        />
       ))
     ) : (
       <span style={{ fontSize: '1.2rem', margin: 'auto 0' }}>
@@ -114,6 +121,14 @@ class Courses2View extends React.PureComponent<
     if (!courses) return
     this.setState({
       courses: [...this.state.courses, ...courses]
+    })
+  }
+
+  private onDelete (index: number): void {
+    this.state.courses.splice(index, 1)
+    const courses = [...this.state.courses]
+    this.setState({
+      courses
     })
   }
 

@@ -12,6 +12,8 @@ interface Course2PanelProps {
   accountData: any
   courseId: string
   course: Course2
+  index: number
+  onDelete: (index: number) => void
 }
 
 interface Course2PanelState {
@@ -42,6 +44,7 @@ class Course2Panel extends React.PureComponent<
     this.handleClose = this.handleClose.bind(this)
     this.handleDifficultyChange = this.handleDifficultyChange.bind(this)
     this.handleSave = this.handleSave.bind(this)
+    this.onDelete = this.onDelete.bind(this)
   }
 
   public componentDidMount (): void {
@@ -91,23 +94,23 @@ class Course2Panel extends React.PureComponent<
     const { courseId } = this.props
     const { difficulty } = this.state
     try {
-      const res = await fetch(
-        `${process.env.API_DOMAIN}courses2/meta/${courseId}`,
-        {
-          method: 'post',
-          credentials: 'include',
-          body: JSON.stringify({
-            difficulty: difficulty || undefined
-          }),
-          headers: {
-            'Content-Type': 'application/json'
-          }
+      await fetch(`${process.env.API_DOMAIN}courses2/meta/${courseId}`, {
+        method: 'post',
+        credentials: 'include',
+        body: JSON.stringify({
+          difficulty: difficulty || undefined
+        }),
+        headers: {
+          'Content-Type': 'application/json'
         }
-      )
-      console.log('OK', res)
+      })
     } catch (err) {
-      console.error(err.response.body)
+      console.error(err)
     }
+  }
+
+  private onDelete (): void {
+    this.props.onDelete(this.props.index)
   }
 
   private getGameStyleImage (gameStyle: GameStyle): string {
@@ -320,7 +323,10 @@ class Course2Panel extends React.PureComponent<
                       padding="3px"
                       noMargin
                     />
-                    <Course2DeleteButton courseId={courseId} />
+                    <Course2DeleteButton
+                      courseId={courseId}
+                      onDelete={this.onDelete}
+                    />
                   </div>
                 </div>
               )}
