@@ -112,7 +112,7 @@ class View extends React.PureComponent<AppViewProps, AppViewState> {
 
   private handleScroll (event: React.UIEvent<HTMLDivElement>): any {
     if (this.props.screenSize >= ScreenSize.MEDIUM) return
-    this.scrollCallback(event)
+    this.scrollCallback({ target: this.global })
     this.shouldUpdate(event.target)
   }
 
@@ -174,7 +174,7 @@ class View extends React.PureComponent<AppViewProps, AppViewState> {
         <TopBarArea isLoggedIn={isLoggedIn} />
         <Main
           onScroll={this.handleScroll}
-          ref={(glob: any): void => {
+          innerRef={(glob: any): void => {
             this.global = glob
           }}
         >

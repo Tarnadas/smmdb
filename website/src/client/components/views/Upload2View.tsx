@@ -27,6 +27,8 @@ class Upload2View extends React.PureComponent<
   Upload2ViewProps,
   Upload2ViewState
 > {
+  private scrollDiv?: HTMLDivElement | null = null
+
   public constructor (props: Upload2ViewProps) {
     super(props)
     this.state = {
@@ -114,17 +116,20 @@ class Upload2View extends React.PureComponent<
     )
   }
 
-  private onScroll (event?: React.UIEvent<HTMLDivElement>): void {
+  private onScroll (): void {
     if (this.props.screenSize < ScreenSize.MEDIUM) return
-    this.handleScroll(event)
+    this.handleScroll()
   }
 
   private async handleScroll (
     event?: React.UIEvent<HTMLDivElement>
   ): Promise<void> {
+    if (this.props.screenSize < ScreenSize.MEDIUM && !event) return
     const { fetching, reachedEnd } = this.state
-    if (fetching || reachedEnd || !event) return
-    const { target }: { target: HTMLDivElement } = event as any
+    if (fetching || reachedEnd || !this.scrollDiv) return
+    const { target }: { target: HTMLDivElement } = event
+      ? (event as any)
+      : { target: this.scrollDiv }
     const shouldUpdate =
       target.scrollHeight - target.scrollTop - target.clientHeight < 200
     if (!shouldUpdate) return
@@ -171,6 +176,7 @@ class Upload2View extends React.PureComponent<
             <ProgressSpinner inline={true} />
           ) : (
             <div
+              ref={div => (this.scrollDiv = div)}
               id="scroll"
               style={{
                 width: '100%',
@@ -180,7 +186,7 @@ class Upload2View extends React.PureComponent<
                 alignItems: 'center',
                 overflowY: 'auto'
               }}
-              onScroll={this.handleScroll}
+              onScroll={this.onScroll}
             >
               <Upload2Panel refresh={this.refresh} />
               {this.renderCourses()}
