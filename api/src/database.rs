@@ -49,6 +49,10 @@ impl Database {
             .db("admin")
             .collection(Collections::Accounts.as_str());
 
+        if let Err(err) = Database::generate_indexes(&courses2) {
+            println!("{}", err);
+        }
+
         Database {
             courses,
             course_data,
@@ -56,6 +60,41 @@ impl Database {
             course2_data,
             accounts,
         }
+    }
+
+    fn generate_indexes(courses2: &Collection) -> Result<(), mongodb::Error> {
+        let indexes = vec![
+            doc! {
+                "last_modified": -1,
+                "course.header.title": -1
+            },
+            doc! {
+                "last_modified": -1,
+                "course.header.title": 1
+            },
+            doc! {
+                "last_modified": 1,
+                "course.header.title": -1
+            },
+            doc! {
+                "last_modified": 1,
+                "course.header.title": 1
+            },
+        ];
+        let listed_indexes: Vec<OrderedDocument> = courses2
+            .list_indexes()?
+            .map(|item| -> Result<OrderedDocument, mongodb::Error> {
+                let doc: OrderedDocument = item?.into();
+                Ok(doc)
+            })
+            .filter_map(Result::ok)
+            .collect();
+        for index in indexes {
+            if listed_indexes.iter().find(|idx| idx == &&index).is_none() {
+                courses2.create_index(index, None)?;
+            }
+        }
+        Ok(())
     }
 
     pub fn get_courses(&self, query: Vec<OrderedDocument>) -> String {

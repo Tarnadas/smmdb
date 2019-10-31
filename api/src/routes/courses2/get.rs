@@ -117,11 +117,22 @@ impl GetCourses2 {
     }
 
     fn get_sort(&self) -> Vec<Sort> {
-        if self.sort.is_some() {
+        let mut res = if self.sort.is_some() {
             self.sort.clone().unwrap()
         } else {
             vec![Sort::default()]
+        };
+        if res
+            .iter()
+            .find(|sort| sort.val == "course.header.title".to_string())
+            .is_none()
+        {
+            res.push(Sort {
+                val: "course.header.title".to_string(),
+                dir: -1,
+            })
         }
+        res
     }
 
     fn get_limit(&self) -> u32 {
@@ -181,7 +192,7 @@ where
 
 #[derive(Clone, Deserialize, Debug)]
 struct Sort {
-    val: String,
+    pub val: String,
     #[serde(deserialize_with = "deserialize_dir")]
     dir: i32,
 }
