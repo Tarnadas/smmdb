@@ -196,7 +196,30 @@ impl Data {
                         difficulty.clone(),
                         &self.perm_gen,
                     );
-                    {
+                    let course_meta = serde_json::to_value(&course)?;
+
+                    let data_gz = smm_course
+                        .get_course_data()
+                        .iter()
+                        .cloned()
+                        .encode(&mut GZipEncoder::new(), Action::Finish)
+                        .collect::<Result<Vec<_>, _>>()?;
+                    let data_gz = Bson::Binary(BinarySubtype::Generic, data_gz);
+
+                    let mut data_br = vec![];
+                    let mut params = CompressParams::new();
+                    params.quality(11);
+                    BrotliEncoder::from_params(&smm_course.get_course_data()[..], &params)
+                        .read_to_end(&mut data_br)?;
+                    let data_br = Bson::Binary(BinarySubtype::Generic, data_br);
+
+                    let course_thumb = smm_course
+                        .get_course_thumb_mut()
+                        .ok_or(courses2::PutCourses2Error::ThumbnailMissing)?;
+                    let thumb =
+                        Bson::Binary(BinarySubtype::Generic, course_thumb.get_jpeg().to_vec());
+
+                    if let Bson::Document(doc_meta) = Bson::from(course_meta) {
                         let mut lsh_index = lsh_index.lock().unwrap();
                         let query: Vec<Bson> = lsh_index
                             .query(course.get_hash())
@@ -226,40 +249,15 @@ impl Data {
                             }
                         }
 
-                        let course_meta = serde_json::to_value(&course)?;
-
-                        let data_gz = smm_course
-                            .get_course_data()
-                            .iter()
-                            .cloned()
-                            .encode(&mut GZipEncoder::new(), Action::Finish)
-                            .collect::<Result<Vec<_>, _>>()?;
-                        let data_gz = Bson::Binary(BinarySubtype::Generic, data_gz);
-
-                        let mut data_br = vec![];
-                        let mut params = CompressParams::new();
-                        params.quality(11);
-                        BrotliEncoder::from_params(&smm_course.get_course_data()[..], &params)
-                            .read_to_end(&mut data_br)?;
-                        let data_br = Bson::Binary(BinarySubtype::Generic, data_br);
-
-                        let course_thumb = smm_course
-                            .get_course_thumb_mut()
-                            .ok_or(courses2::PutCourses2Error::ThumbnailMissing)?;
-                        let thumb =
-                            Bson::Binary(BinarySubtype::Generic, course_thumb.get_jpeg().to_vec());
-
-                        if let Bson::Document(doc_meta) = Bson::from(course_meta) {
-                            let inserted_id = self
-                                .database
-                                .put_course2(doc_meta, data_gz, data_br, thumb)?;
-                            course.set_id(inserted_id.clone());
-                            lsh_index.insert(course.get_id().to_hex(), course.get_hash());
-                            let course = Course2Response::from_course(course, account);
-                            Ok(course)
-                        } else {
-                            Err(mongodb::Error::DefaultError("".to_string()).into())
-                        }
+                        let inserted_id = self
+                            .database
+                            .put_course2(doc_meta, data_gz, data_br, thumb)?;
+                        course.set_id(inserted_id.clone());
+                        lsh_index.insert(course.get_id().to_hex(), course.get_hash());
+                        let course = Course2Response::from_course(course, account);
+                        Ok(course)
+                    } else {
+                        Err(mongodb::Error::DefaultError("".to_string()).into())
                     }
                 },
             )
