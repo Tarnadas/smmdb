@@ -25,6 +25,7 @@ export class API {
   public static async getStats (res: any): Promise<any> {
     const result = {
       courses: await Course.getCourseAmount(),
+      courses2: await Database.getCourses2Count(),
       courses64: await Course64.getCourseAmount(),
       accounts: await Account.getAccountAmount()
     }

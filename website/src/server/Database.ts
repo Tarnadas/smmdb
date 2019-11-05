@@ -16,6 +16,8 @@ export class Database {
 
   private static courses: any
 
+  private static courses2: any
+
   private static courseData: any
 
   private static courses64: any
@@ -78,12 +80,14 @@ export class Database {
         await database.collection('accountsTest').drop()
       } catch (err) {}
       this.courses = database.collection('coursesTest')
+      this.courses2 = database.collection('courses2Test')
       this.courses64 = database.collection('courses64Test')
       this.accounts = database.collection('accountsTest')
       this.stars = database.collection('starsTest')
       this.stars64 = database.collection('stars64Test')
     } else {
       this.courses = database.collection('courses')
+      this.courses2 = database.collection('courses2')
       this.courseData = database.collection('courseData')
       this.courses64 = database.collection('courses64')
       this.accounts = database.collection('accounts')
@@ -223,6 +227,10 @@ export class Database {
 
   public static async getCoursesCount (): Promise<number> {
     return (await this.courses.stats()).count
+  }
+
+  public static async getCourses2Count (): Promise<number> {
+    return (await this.courses2.stats()).count
   }
 
   public static async getCourses64Count (): Promise<number> {

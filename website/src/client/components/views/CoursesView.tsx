@@ -7,9 +7,13 @@ import { resolve } from 'url'
 import { stringify } from 'querystring'
 
 import { ScreenSize } from '../../reducers/mediaQuery'
-import { setCourses, deleteCourse, resetFilter, resetOrder } from '../../actions'
+import {
+  setCourses,
+  deleteCourse,
+  resetFilter,
+  resetOrder
+} from '../../actions'
 
-import { StatsPanel } from '../panels/StatsPanel'
 import { CoursePanel } from '../panels/CoursePanel'
 import { SideBarArea } from '../areas/SideBarArea'
 import { FilterArea } from '../areas/FilterArea'
@@ -30,7 +34,7 @@ class CoursesView extends React.PureComponent<any, any> {
   }
 
   // eslint-disable-next-line
-  public UNSAFE_componentWillMount (): void {
+  public UNSAFE_componentWillMount(): void {
     if (process.env.IS_SERVER) return
     this.props.dispatch(resetFilter())
     this.props.dispatch(resetOrder())
@@ -39,26 +43,36 @@ class CoursesView extends React.PureComponent<any, any> {
   }
 
   // eslint-disable-next-line
-  public UNSAFE_componentWillReceiveProps (nextProps: any): void {
-    if (nextProps.filter === this.props.filter && nextProps.order === this.props.order) return
+  public UNSAFE_componentWillReceiveProps(nextProps: any): void {
+    if (
+      nextProps.filter === this.props.filter &&
+      nextProps.order === this.props.order
+    ) { return }
     if (this.scroll) this.scroll.scrollTop = 0
     const order = nextProps.order.toJS()
-    this.queryString = stringify(Object.assign({}, nextProps.filter.toJS(), {
-      order: order.order,
-      dir: order.dir ? 'asc' : 'desc'
-    }))
+    this.queryString = stringify(
+      Object.assign({}, nextProps.filter.toJS(), {
+        order: order.order,
+        dir: order.dir ? 'asc' : 'desc'
+      })
+    )
     // this.scrollBar.scrollToTop(); // TODO
     this.fetchCourses()
   }
 
-  private async fetchCourses (shouldConcat = false, limit = LIMIT): Promise<void> {
+  private async fetchCourses (
+    shouldConcat = false,
+    limit = LIMIT
+  ): Promise<void> {
     try {
       const { apiKey } = this.props
-      const url = `/api/getcourses?limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}${this.queryString ? `&${this.queryString}` : ''}`
+      const url = `/api/getcourses?limit=${limit}&start=${
+        shouldConcat ? this.props.courses.size : 0
+      }${this.queryString ? `&${this.queryString}` : ''}`
       const response = await fetch(resolve(process.env.DOMAIN || '', url), {
         headers: apiKey
           ? {
-            'Authorization': `APIKEY ${this.props.apiKey}`
+            Authorization: `APIKEY ${this.props.apiKey}`
           }
           : undefined
       })
@@ -78,13 +92,15 @@ class CoursesView extends React.PureComponent<any, any> {
     const imageFull = this.props.imageFull
     const imagePrev = this.props.imagePrev
     const onCourseDelete = this.onCourseDelete
-    return Array.from((function * (): IterableIterator<JSX.Element> {
-      let i = 0
-      for (let course of courses) {
-        const courseId = course.get('id')
-        yield (
-          (accountData.get('id') && course.owner === accountData.get('id')) || accountData.get('permissions') === 1
-            ? <CoursePanel
+    return Array.from(
+      (function * (): IterableIterator<JSX.Element> {
+        let i = 0
+        for (let course of courses) {
+          const courseId = course.get('id')
+          yield (accountData.get('id') &&
+            course.owner === accountData.get('id')) ||
+          accountData.get('permissions') === 1 ? (
+            <CoursePanel
               key={courseId}
               canEdit
               course={course}
@@ -95,7 +111,8 @@ class CoursesView extends React.PureComponent<any, any> {
               id={i}
               onCourseDelete={onCourseDelete}
             />
-            : <CoursePanel
+          ) : (
+            <CoursePanel
               key={courseId}
               course={course}
               reupload={reuploads.get(courseId)}
@@ -104,13 +121,14 @@ class CoursesView extends React.PureComponent<any, any> {
               apiKey={accountData.get('apikey')}
               id={i}
             />
-        )
-        i++
-      }
-    })())
+          )
+          i++
+        }
+      })()
+    )
   }
 
-  private onCourseDelete (courseId: any): void{
+  private onCourseDelete (courseId: any): void {
     this.props.dispatch(deleteCourse(courseId))
   }
 
@@ -140,31 +158,37 @@ class CoursesView extends React.PureComponent<any, any> {
       <div style={styles.main}>
         <Helmet>
           <title>SMMDB - Courses</title>
-          <meta name="description" content="Super Mario Maker courses list for Cemu and consoles. SMMDB is the only cross-sharing platform for Super Mario Maker courses." />
+          <meta
+            name="description"
+            content="Super Mario Maker courses list for Cemu and consoles. SMMDB is the only cross-sharing platform for Super Mario Maker courses."
+          />
         </Helmet>
-        <StatsPanel />
-        {
-          screenSize >= ScreenSize.MEDIUM &&
-          <SideBarArea />
-        }
-        <div style={styles.content} id='scroll' onScroll={this.handleScroll} ref={(scroll): void => { this.scroll = scroll }}>
-          {
-            this.renderCourses()
-          }
+        {screenSize >= ScreenSize.MEDIUM && <SideBarArea />}
+        <div
+          style={styles.content}
+          id="scroll"
+          onScroll={this.handleScroll}
+          ref={(scroll): void => {
+            this.scroll = scroll
+          }}
+        >
+          {this.renderCourses()}
         </div>
-        <Route path='/courses/filter' component={FilterArea} />
+        <Route path="/courses/filter" component={FilterArea} />
       </div>
     )
   }
 }
-export default withRouter(connect((state: any): any => ({
-  screenSize: state.getIn(['mediaQuery', 'screenSize']),
-  courses: state.getIn(['courseData', 'main']),
-  accountData: state.getIn(['userData', 'accountData']),
-  filter: state.getIn(['filter', 'currentFilter']),
-  order: state.get('order'),
-  apiKey: state.getIn(['userData', 'accountData', 'apikey']),
-  imageFull: state.getIn(['image', 'full']),
-  imagePrev: state.getIn(['image', 'prev']),
-  reuploads: state.get('reuploads')
-}))(CoursesView) as any) as any
+export default withRouter(connect(
+  (state: any): any => ({
+    screenSize: state.getIn(['mediaQuery', 'screenSize']),
+    courses: state.getIn(['courseData', 'main']),
+    accountData: state.getIn(['userData', 'accountData']),
+    filter: state.getIn(['filter', 'currentFilter']),
+    order: state.get('order'),
+    apiKey: state.getIn(['userData', 'accountData', 'apikey']),
+    imageFull: state.getIn(['image', 'full']),
+    imagePrev: state.getIn(['image', 'prev']),
+    reuploads: state.get('reuploads')
+  })
+)(CoursesView) as any) as any

@@ -7,10 +7,14 @@ import { resolve } from 'url'
 import { stringify } from 'querystring'
 
 import { ScreenSize } from '../../reducers/mediaQuery'
-import { setCourses64, deleteCourse64, resetFilter, resetOrder } from '../../actions'
+import {
+  setCourses64,
+  deleteCourse64,
+  resetFilter,
+  resetOrder
+} from '../../actions'
 
 import { Course64Panel } from '../panels/Course64Panel'
-import { StatsPanel } from '../panels/StatsPanel'
 import { SideBarArea } from '../areas/SideBarArea'
 import { FilterArea } from '../areas/FilterArea'
 
@@ -30,7 +34,7 @@ class Courses64View extends React.PureComponent<any, any> {
   }
 
   // eslint-disable-next-line
-  public UNSAFE_componentWillMount (): void {
+  public UNSAFE_componentWillMount(): void {
     if (process.env.IS_SERVER) return
     this.props.dispatch(resetFilter())
     this.props.dispatch(resetOrder())
@@ -39,26 +43,36 @@ class Courses64View extends React.PureComponent<any, any> {
   }
 
   // eslint-disable-next-line
-  public UNSAFE_componentWillReceiveProps (nextProps: any): void {
-    if (nextProps.filter === this.props.filter && nextProps.order === this.props.order) return
+  public UNSAFE_componentWillReceiveProps(nextProps: any): void {
+    if (
+      nextProps.filter === this.props.filter &&
+      nextProps.order === this.props.order
+    ) { return }
     if (this.scroll) this.scroll.scrollTop = 0
     const order = nextProps.order.toJS()
-    this.queryString = stringify(Object.assign({}, nextProps.filter.toJS(), {
-      order: order.order,
-      dir: order.dir ? 'asc' : 'desc'
-    }))
+    this.queryString = stringify(
+      Object.assign({}, nextProps.filter.toJS(), {
+        order: order.order,
+        dir: order.dir ? 'asc' : 'desc'
+      })
+    )
     // this.scrollBar.scrollToTop(); // TODO
     this.fetchCourses()
   }
 
-  private async fetchCourses (shouldConcat = false, limit = LIMIT): Promise<void> {
+  private async fetchCourses (
+    shouldConcat = false,
+    limit = LIMIT
+  ): Promise<void> {
     try {
       const { apiKey } = this.props
-      const url = `/api/getcourses64?limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}${this.queryString ? `&${this.queryString}` : ''}`
+      const url = `/api/getcourses64?limit=${limit}&start=${
+        shouldConcat ? this.props.courses.size : 0
+      }${this.queryString ? `&${this.queryString}` : ''}`
       const response = await fetch(resolve(process.env.DOMAIN || '', url), {
         headers: apiKey
           ? {
-            'Authorization': `APIKEY ${this.props.apiKey}`
+            Authorization: `APIKEY ${this.props.apiKey}`
           }
           : undefined
       })
@@ -75,12 +89,14 @@ class Courses64View extends React.PureComponent<any, any> {
     const accountData = this.props.accountData
     const courses = this.props.courses
     const onCourseDelete = this.onCourseDelete
-    return Array.from((function * (): IterableIterator<JSX.Element> {
-      let i = 0
-      for (let course of courses) {
-        yield (
-          (accountData.get('id') && course.get('owner') === accountData.get('id')) || accountData.get('permissions') === 1
-            ? <Course64Panel
+    return Array.from(
+      (function * (): IterableIterator<JSX.Element> {
+        let i = 0
+        for (let course of courses) {
+          yield (accountData.get('id') &&
+            course.get('owner') === accountData.get('id')) ||
+          accountData.get('permissions') === 1 ? (
+            <Course64Panel
               key={course.get('id')}
               canEdit
               course={course}
@@ -88,16 +104,18 @@ class Courses64View extends React.PureComponent<any, any> {
               id={i}
               onCourseDelete={onCourseDelete}
             />
-            : <Course64Panel
+          ) : (
+            <Course64Panel
               key={course.get('id')}
               course={course}
               apiKey={accountData.get('apikey')}
               id={i}
             />
-        )
-        i++
-      }
-    })())
+          )
+          i++
+        }
+      })()
+    )
   }
 
   private onCourseDelete (courseId: any): void {
@@ -133,28 +151,34 @@ class Courses64View extends React.PureComponent<any, any> {
       <div style={styles.main}>
         <Helmet>
           <title>SMMDB - Courses64</title>
-          <meta name="description" content="Super Mario 64 Maker courses list for Nintendo 64 emulators. SMMDB is the official platform to share Super Mario 64 Maker courses." />
+          <meta
+            name="description"
+            content="Super Mario 64 Maker courses list for Nintendo 64 emulators. SMMDB is the official platform to share Super Mario 64 Maker courses."
+          />
         </Helmet>
-        <StatsPanel is64 />
-        {
-          screenSize >= ScreenSize.MEDIUM &&
-          <SideBarArea is64 />
-        }
-        <div style={styles.content} id='scroll' onScroll={this.handleScroll} ref={(scroll): void => { this.scroll = scroll }}>
-          {
-            this.renderCourses()
-          }
+        {screenSize >= ScreenSize.MEDIUM && <SideBarArea is64 />}
+        <div
+          style={styles.content}
+          id="scroll"
+          onScroll={this.handleScroll}
+          ref={(scroll): void => {
+            this.scroll = scroll
+          }}
+        >
+          {this.renderCourses()}
         </div>
-        <Route path='/courses64/filter' component={FilterArea} />
+        <Route path="/courses64/filter" component={FilterArea} />
       </div>
     )
   }
 }
-export default withRouter(connect((state: any): any => ({
-  screenSize: state.getIn(['mediaQuery', 'screenSize']),
-  courses: state.getIn(['courseData', 'main64']),
-  accountData: state.getIn(['userData', 'accountData']),
-  filter: state.getIn(['filter', 'currentFilter']),
-  order: state.get('order'),
-  apiKey: state.getIn(['userData', 'accountData', 'apikey'])
-}))(Courses64View) as any) as any
+export default withRouter(connect(
+  (state: any): any => ({
+    screenSize: state.getIn(['mediaQuery', 'screenSize']),
+    courses: state.getIn(['courseData', 'main64']),
+    accountData: state.getIn(['userData', 'accountData']),
+    filter: state.getIn(['filter', 'currentFilter']),
+    order: state.get('order'),
+    apiKey: state.getIn(['userData', 'accountData', 'apikey'])
+  })
+)(Courses64View) as any) as any
