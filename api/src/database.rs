@@ -83,10 +83,7 @@ impl Database {
         ];
         let listed_indexes: Vec<OrderedDocument> = courses2
             .list_indexes()?
-            .map(|item| -> Result<OrderedDocument, mongodb::Error> {
-                let doc: OrderedDocument = item?.into();
-                Ok(doc)
-            })
+            .map(|item| -> Result<OrderedDocument, mongodb::Error> { Ok(item?) })
             .filter_map(Result::ok)
             .collect();
         for index in indexes {

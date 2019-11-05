@@ -124,7 +124,7 @@ impl GetCourses2 {
         };
         if res
             .iter()
-            .find(|sort| sort.val == "course.header.title".to_string())
+            .find(|sort| sort.val == "course.header.title")
             .is_none()
         {
             res.push(Sort {

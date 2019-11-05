@@ -29,13 +29,13 @@ pub fn download_course(
     header.set_path("course_data_000.bcd").unwrap();
     header.set_size(data.len() as u64);
     header.set_cksum();
-    builder.append(&mut header, &data[..])?;
+    builder.append(&header, &data[..])?;
 
     let mut header = Header::new_gnu();
     header.set_path("course_thumb_000.btl").unwrap();
     header.set_size(thumb.len() as u64);
     header.set_cksum();
-    builder.append(&mut header, &thumb[..])?;
+    builder.append(&header, &thumb[..])?;
 
     Ok(HttpResponse::Ok()
         .content_type("application/tar+gzip")
