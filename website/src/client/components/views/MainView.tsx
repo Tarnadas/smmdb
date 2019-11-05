@@ -56,8 +56,8 @@ class MainView extends React.PureComponent<any, any> {
           <br />
           Supported platforms for Super Mario Maker 1 are Wii U, 3DS and Cemu.
           SMMDB can be used as a compatibility layer between those platform. It
-          enriches .. especially for platforms with minor support from Nintendo,
-          which includes 3DS and emulators.
+          enriches gameplay especially for platforms with minor support from
+          Nintendo, which includes 3DS and emulators.
           <br />
           Super Mario Maker for 3DS has no option to search for courses. Several
           Wii U courses can&#39;t even be played on 3DS because of
