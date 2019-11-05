@@ -23,8 +23,8 @@ services:
       - "127.0.0.1:3000:3000"
     working_dir: /usr/src/app
     environment:
-      - VIRTUAL_HOST=smmdb.ddns.net
-      - LETSENCRYPT_HOST=smmdb.ddns.net
+      - VIRTUAL_HOST=smmdb.net
+      - LETSENCRYPT_HOST=smmdb.net
       - LETSENCRYPT_EMAIL=mreder1289@gmail.com
       - VIRTUAL_PORT=3000
     links:
