@@ -27,7 +27,6 @@ class Panel extends React.PureComponent<any, any> {
     if (!stats) return null
     const styles: any = {
       panel: {
-        width: '100%',
         textAlign: 'left',
         color: 'rgb(255, 229, 0)',
         margin: '16px 0 5px 20px',
