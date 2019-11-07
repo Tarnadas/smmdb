@@ -12,7 +12,7 @@ services:
       - /root/.docker/config.json:/config.json
     command: watchtower tarnadas/smmdb tarnadas/smmdb-api --cleanup --interval 30
     restart: always
-  smmdb:
+  smmdb2:
     build:
       context: ./website
       dockerfile: Dockerfile
@@ -43,6 +43,8 @@ services:
     image: tarnadas/smmdb-api
     ports:
       - "127.0.0.1:3030:3030"
+    volumes:
+      - /etc/ssl/certs:/etc/ssl/certs
     environment:
       - VIRTUAL_HOST=api.smmdb.net
       - LETSENCRYPT_HOST=api.smmdb.net
