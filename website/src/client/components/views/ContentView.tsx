@@ -42,7 +42,7 @@ class View extends React.PureComponent<any, any> {
           <title>SMMDB</title>
           <meta
             name="description"
-            content="Super Mario Maker and Super Mario 64 Maker course database for consoles Wii U, 3DS and emulators Cemu, Citra and decaf. Net64/SM64O/Super Mario 64 Online official server list."
+            content="Super Mario Maker, Super Mario Maker 2 and Super Mario 64 Maker course database for consoles Switch, Wii U, 3DS and emulators Yuzu, Cemu, Citra and decaf."
           />
         </Helmet>
         <Route exact path="/" component={MainView} />

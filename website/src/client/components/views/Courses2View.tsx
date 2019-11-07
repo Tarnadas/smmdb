@@ -145,6 +145,10 @@ class Courses2View extends React.PureComponent<
       >
         <Helmet>
           <title>SMMDB - Courses 2</title>
+          <meta
+            name="description"
+            content="Super Mario Maker 2 courses list for Yuzu and Switch. SMMDB is the only cross-sharing platform for Super Mario Maker 2 courses."
+          />
         </Helmet>
         {loading ? (
           <ProgressSpinner inline={true} />
