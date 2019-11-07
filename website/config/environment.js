@@ -11,7 +11,7 @@ module.exports = {
   },
   prod: {
     port: 3000,
-    domain: 'https://smmdb.ddns.net/',
+    domain: 'https://smmdb.net/',
     apiDomain: 'https://api.smmdb.net/'
   }
 }
