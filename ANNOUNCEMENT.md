@@ -46,4 +46,5 @@ For SMM1 there exists a [Cemu save file editor](https://github.com/Tarnadas/cemu
 The same effort should be done for SMM2 for the [Yuzu emulator](https://yuzu-emu.org/).
 For Switch homebrew the [4TU](https://fortheusers.org/) community came in contact with me, because they want to
 build a homebrew app. This can be done once I documented the API.
-I also want to rewrite the website with Next.js, so if you have any suggestions
+
+Here is also a link to our [Discord server](https://discord.gg/SPZsgSe).
