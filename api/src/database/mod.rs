@@ -16,6 +16,10 @@ use mongodb::{
 };
 use std::{convert::TryInto, env};
 
+mod migration;
+
+use migration::*;
+
 pub struct Database {
     courses: Collection,
     course_data: Collection,
@@ -53,13 +57,15 @@ impl Database {
             println!("{}", err);
         }
 
-        Database {
+        let database = Database {
             courses,
             course_data,
             courses2,
             course2_data,
             accounts,
-        }
+        };
+        Migration::run(&database);
+        database
     }
 
     fn generate_indexes(courses2: &Collection) -> Result<(), mongodb::Error> {
