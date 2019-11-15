@@ -15,7 +15,7 @@ import {
 } from '../../actions'
 
 import { CoursePanel } from '../panels/CoursePanel'
-import { SideBarArea } from '../areas/SideBarArea'
+import SideBarArea from '../areas/SideBarArea'
 import { FilterArea } from '../areas/FilterArea'
 
 const LIMIT = 10
@@ -47,7 +47,9 @@ class CoursesView extends React.PureComponent<any, any> {
     if (
       nextProps.filter === this.props.filter &&
       nextProps.order === this.props.order
-    ) { return }
+    ) {
+      return
+    }
     if (this.scroll) this.scroll.scrollTop = 0
     const order = nextProps.order.toJS()
     this.queryString = stringify(

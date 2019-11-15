@@ -15,7 +15,7 @@ import {
 } from '../../actions'
 
 import { Course64Panel } from '../panels/Course64Panel'
-import { SideBarArea } from '../areas/SideBarArea'
+import SideBarArea from '../areas/SideBarArea'
 import { FilterArea } from '../areas/FilterArea'
 
 const LIMIT = 16

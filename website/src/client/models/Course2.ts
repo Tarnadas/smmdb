@@ -3,7 +3,7 @@ export interface Course2 {
   owner: string
   uploader: string
   difficulty?: Difficulty
-  lastModifie: number
+  lastModified: number
   uploaded: number
   course: {
     header: {

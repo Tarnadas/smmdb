@@ -1,16 +1,19 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 import Helmet from 'react-helmet'
+import { stringify } from 'querystring'
 
 import { ScreenSize } from '@/client/reducers/mediaQuery'
 
 import { Course2 } from '../../models/Course2'
 import Course2Panel from '../panels/Course2Panel'
 import { ProgressSpinner } from '../shared/ProgressSpinner'
+import SideBarArea from '../areas/SideBarArea'
 
 interface Courses2ViewProps {
   setScrollCallback: any
   screenSize: number
+  order: any
 }
 
 interface Courses2ViewState {
@@ -19,6 +22,7 @@ interface Courses2ViewState {
   fetching: boolean
   skip: number
   reachedEnd: boolean
+  err?: Error
 }
 
 class Courses2View extends React.PureComponent<
@@ -26,6 +30,8 @@ class Courses2View extends React.PureComponent<
   Courses2ViewState
 > {
   private scrollDiv?: HTMLDivElement | null = null
+
+  private queryString = ''
 
   public constructor (props: Courses2ViewProps) {
     super(props)
@@ -51,10 +57,32 @@ class Courses2View extends React.PureComponent<
     })
   }
 
+  public componentDidUpdate (): void {
+    const order = this.props.order.toJS()
+    // const qs = Object.assign({}, this.props.filter.toJS(), {
+    //   order: order.order,
+    //   dir: order.dir ? 'asc' : 'desc'
+    // })
+    if (order.order === 'lastmodified') {
+      order.order = 'last_modified'
+    }
+    const sort = []
+    sort.push({
+      val: order.order,
+      dir: order.dir ? 1 : -1
+    })
+    this.queryString = ''
+    sort.forEach((query, index) => {
+      this.queryString += `sort[${index}][val]=${query.val}&sort[${index}][dir]=${query.dir}`
+    })
+    this.queryString = ''
+  }
+
   private async fetchCourses (limit = 10): Promise<Course2[] | undefined> {
-    const { skip } = this.state
+    const { skip, err } = this.state
+    if (err) return
     try {
-      const url = `courses2?limit=${limit}&skip=${skip}`
+      const url = `courses2?limit=${limit}&skip=${skip}${this.queryString ? `&${this.queryString}` : ''}`
       this.setState({
         fetching: true
       })
@@ -70,14 +98,17 @@ class Courses2View extends React.PureComponent<
           reachedEnd: true
         })
       }
+      setTimeout(() => this.handleScroll())
       return courses
     } catch (err) {
+      this.setState({
+        err
+      })
       console.error(err)
     } finally {
       this.setState({
         fetching: false
       })
-      setTimeout(() => this.handleScroll())
     }
   }
 
@@ -119,6 +150,7 @@ class Courses2View extends React.PureComponent<
     if (!shouldUpdate) return
     const courses = await this.fetchCourses()
     if (!courses) return
+    console.log(courses.map(course => course.lastModified))
     this.setState({
       courses: [...this.state.courses, ...courses]
     })
@@ -133,6 +165,7 @@ class Courses2View extends React.PureComponent<
   }
 
   public render () {
+    const { screenSize } = this.props
     const { loading } = this.state
     return (
       <div
@@ -154,19 +187,29 @@ class Courses2View extends React.PureComponent<
           <ProgressSpinner inline={true} />
         ) : (
           <div
-            ref={div => (this.scrollDiv = div)}
-            id="scroll"
             style={{
-              width: '100%',
-              height: '100%',
               display: 'flex',
-              flexDirection: 'column',
+              flexDirection: screenSize >= ScreenSize.MEDIUM ? 'row' : 'column',
               alignItems: 'center',
-              overflowY: 'auto'
+              height: '100%'
             }}
-            onScroll={this.onScroll}
           >
-            {this.renderCourses()}
+            <SideBarArea />
+            <div
+              ref={div => (this.scrollDiv = div)}
+              id="scroll"
+              style={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                overflowY: 'auto'
+              }}
+              onScroll={this.onScroll}
+            >
+              {this.renderCourses()}
+            </div>
           </div>
         )}
       </div>
@@ -175,6 +218,13 @@ class Courses2View extends React.PureComponent<
 }
 export default connect(
   (state: any): any => ({
-    screenSize: state.getIn(['mediaQuery', 'screenSize']) as number
+    screenSize: state.getIn(['mediaQuery', 'screenSize']) as number,
+    order: state.get('order') as Order
   })
 )(Courses2View) as any
+
+enum Order {
+  LastModified = 'lastmodified',
+  Uploaded = 'uploaded',
+  Stars = 'stars'
+}

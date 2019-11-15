@@ -2,6 +2,7 @@ import * as React from 'react'
 import { connect } from 'react-redux'
 
 import { setOrder, swapOrder } from '../../actions/index'
+import { ScreenSize } from '@/client/reducers/mediaQuery'
 
 class Button extends React.PureComponent<any, any> {
   public constructor (props: any) {
@@ -25,14 +26,13 @@ class Button extends React.PureComponent<any, any> {
   }
 
   public render (): JSX.Element {
-    const direction = this.props.direction
+    const { direction, screenSize } = this.props
     const styles: any = {
       button: {
-        height: 'auto',
-        marginBottom: '20px'
+        height: 'auto'
       },
       img: {
-        height: '60px',
+        height: screenSize >= ScreenSize.MEDIUM ? '60px' : '30px',
         width: 'auto',
         cursor: 'pointer'
       },
@@ -48,16 +48,27 @@ class Button extends React.PureComponent<any, any> {
     }
     return (
       <div style={styles.button}>
-        <img style={styles.img} src={direction ? '/img/order_asc.svg' : '/img/order_desc.svg'} onClick={this.onClick} />
-        <select style={styles.select} value={this.state.order} onChange={this.onChange}>
-          <option value='lastmodified'>Modified</option>
-          <option value='uploaded'>Uploaded</option>
-          <option value='stars'>Stars</option>
+        <img
+          style={styles.img}
+          src={direction ? '/img/order_asc.svg' : '/img/order_desc.svg'}
+          onClick={this.onClick}
+        />
+        <select
+          style={styles.select}
+          value={this.state.order}
+          onChange={this.onChange}
+        >
+          <option value="lastmodified">Modified</option>
+          <option value="uploaded">Uploaded</option>
+          <option value="stars">Stars</option>
         </select>
       </div>
     )
   }
 }
-export const OrderButton = connect((state: any): any => ({
-  direction: state.getIn(['order', 'dir'])
-}))(Button)
+export const OrderButton = connect(
+  (state: any): any => ({
+    direction: state.getIn(['order', 'dir']),
+    screenSize: state.getIn(['mediaQuery', 'screenSize'])
+  })
+)(Button)

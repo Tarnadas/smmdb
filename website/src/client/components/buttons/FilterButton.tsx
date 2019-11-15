@@ -1,17 +1,21 @@
 import * as React from 'react'
 import { Link } from 'react-router-dom'
+import { connect } from 'react-redux'
 
-export class FilterButton extends React.PureComponent<any, any> {
+import { ScreenSize } from '@/client/reducers/mediaQuery'
+
+class FilterButton extends React.PureComponent<any, any> {
   public onSetFilter: any
 
   public render (): JSX.Element {
+    const { screenSize } = this.props
     const styles: any = {
       button: {
         height: 'auto',
         cursor: 'pointer'
       },
       img: {
-        height: '60px',
+        height: screenSize >= ScreenSize.MEDIUM ? '60px' : '30px',
         width: 'auto'
       },
       text: {
@@ -25,14 +29,17 @@ export class FilterButton extends React.PureComponent<any, any> {
       }
     }
     return (
-      <Link to='/courses/filter'>
+      <Link to="/courses/filter">
         <div style={styles.button} onClick={this.onSetFilter}>
-          <img style={styles.img} src='/img/filter.svg' />
-          <div style={styles.text}>
-            Filter
-          </div>
+          <img style={styles.img} src="/img/filter.svg" />
+          <div style={styles.text}>Filter</div>
         </div>
       </Link>
     )
   }
 }
+export default connect(
+  (state: any): any => ({
+    screenSize: state.getIn(['mediaQuery', 'screenSize'])
+  })
+)(FilterButton as any)
