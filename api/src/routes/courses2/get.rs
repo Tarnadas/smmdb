@@ -3,8 +3,9 @@ use crate::Database;
 
 use actix_web::{error::ResponseError, get, http::StatusCode, web, HttpRequest, HttpResponse};
 use mongodb::{oid::ObjectId, ordered::OrderedDocument, Bson};
-use serde::{de, Deserialize, Deserializer};
+use serde::{de, ser::Error, Deserialize, Deserializer, Serialize};
 use serde_qs::actix::QsQuery;
+use std::convert::{TryFrom, TryInto};
 
 #[get("")]
 pub fn get_courses(
@@ -109,7 +110,8 @@ impl GetCourses2 {
     fn get_sort_doc(&self) -> OrderedDocument {
         let mut query = OrderedDocument::new();
         for sort in self.get_sort() {
-            query.insert(sort.val, sort.dir);
+            let sort_dir: String = sort.val.try_into().unwrap_or_default();
+            query.insert(sort_dir, sort.dir);
         }
         doc! {
             "$sort" => query
@@ -124,11 +126,11 @@ impl GetCourses2 {
         };
         if res
             .iter()
-            .find(|sort| sort.val == "course.header.title")
+            .find(|sort| sort.val == SortValue::CourseHeaderTitle)
             .is_none()
         {
             res.push(Sort {
-                val: "course.header.title".to_string(),
+                val: SortValue::CourseHeaderTitle,
                 dir: -1,
             })
         }
@@ -192,7 +194,7 @@ where
 
 #[derive(Clone, Deserialize, Debug)]
 struct Sort {
-    pub val: String,
+    pub val: SortValue,
     #[serde(deserialize_with = "deserialize_dir")]
     dir: i32,
 }
@@ -200,9 +202,36 @@ struct Sort {
 impl Default for Sort {
     fn default() -> Self {
         Sort {
-            val: "last_modified".to_string(),
+            val: SortValue::LastModified,
             dir: -1,
         }
+    }
+}
+
+#[derive(Clone, Deserialize, Debug, PartialEq, Serialize)]
+enum SortValue {
+    #[serde(rename = "last_modified")]
+    LastModified,
+    #[serde(rename = "uploaded")]
+    Uploaded,
+    #[serde(rename = "course.header.title")]
+    CourseHeaderTitle,
+}
+
+impl TryFrom<SortValue> for String {
+    type Error = serde_json::Error;
+
+    fn try_from(value: SortValue) -> Result<Self, Self::Error> {
+        serde_json::to_value(&value)?
+            .as_str()
+            .map(String::from)
+            .ok_or(serde_json::Error::custom("serde_json as_str failed"))
+    }
+}
+
+impl Default for SortValue {
+    fn default() -> Self {
+        SortValue::LastModified
     }
 }
 
