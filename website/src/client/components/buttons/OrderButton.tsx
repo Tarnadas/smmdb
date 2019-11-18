@@ -26,7 +26,8 @@ class Button extends React.PureComponent<any, any> {
   }
 
   public render (): JSX.Element {
-    const { direction, screenSize } = this.props
+    const { direction, screenSize, location } = this.props
+    const { pathname } = location || { pathname: '' }
     const styles: any = {
       button: {
         height: 'auto'
@@ -60,7 +61,10 @@ class Button extends React.PureComponent<any, any> {
         >
           <option value="lastmodified">Modified</option>
           <option value="uploaded">Uploaded</option>
-          <option value="stars">Stars</option>
+          {
+            pathname !== '/courses2' &&
+            <option value="stars">Stars</option>
+          }
         </select>
       </div>
     )
@@ -69,6 +73,7 @@ class Button extends React.PureComponent<any, any> {
 export const OrderButton = connect(
   (state: any): any => ({
     direction: state.getIn(['order', 'dir']),
-    screenSize: state.getIn(['mediaQuery', 'screenSize'])
+    screenSize: state.getIn(['mediaQuery', 'screenSize']),
+    location: state.getIn(['router', 'location'])
   })
 )(Button)
