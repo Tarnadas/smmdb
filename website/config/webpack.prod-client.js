@@ -11,7 +11,7 @@ const { port, domain, apiDomain } = require('./environment')['prod']
 
 module.exports = [
   {
-    mode: 'production',
+    mode: 'development',
     entry: {
       vendor: [
         'react-redux',
@@ -112,13 +112,18 @@ module.exports = [
                       '@babel/env',
                       {
                         targets: {
-                          browsers: ['> 1%', 'not ie > 0', 'not op_mini all']
+                          browsers: [
+                            '> 1%',
+                            'not ie > 0',
+                            'not op_mini all'
+                          ]
                         },
                         modules: false,
                         useBuiltIns: 'usage'
                       }
                     ],
-                    '@babel/react'
+                    '@babel/react',
+                    'minify'
                   ],
                   plugins: ['@babel/plugin-syntax-dynamic-import']
                 }
