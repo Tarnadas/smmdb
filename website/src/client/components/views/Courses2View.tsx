@@ -1,13 +1,16 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
+import { Route, withRouter } from 'react-router'
 import Helmet from 'react-helmet'
+import { stringify } from 'querystring'
 
 import { ScreenSize } from '@/client/reducers/mediaQuery'
 
-import { Course2 } from '../../models/Course2'
+import { Course2, Filter2, Difficulty2, GameStyle2, CourseTheme2, AutoScroll2 } from '../../models/Course2'
 import Course2Panel from '../panels/Course2Panel'
 import { ProgressSpinner } from '../shared/ProgressSpinner'
 import SideBarArea from '../areas/SideBarArea'
+import Filter2Area from '../areas/Filter2Area'
 
 interface Courses2ViewProps {
   setScrollCallback: any
@@ -17,6 +20,7 @@ interface Courses2ViewProps {
 
 interface Courses2ViewState {
   courses: Course2[]
+  filter: Filter2
   loading: boolean
   fetching: boolean
   skip: number
@@ -36,6 +40,19 @@ class Courses2View extends React.PureComponent<
     super(props)
     this.state = {
       courses: [],
+      filter: {
+        title: '',
+        uploader: '',
+        lastmodifiedfrom: null,
+        lastmodifiedto: null,
+        uploadedfrom: null,
+        uploadedto: null,
+        difficulty: '' as any,
+        gamestyle: '' as any,
+        coursetheme: '' as any,
+        coursethemesub: '' as any,
+        autoscroll: '' as any
+      },
       loading: true,
       fetching: false,
       skip: 0,
@@ -44,6 +61,7 @@ class Courses2View extends React.PureComponent<
     this.onScroll = this.onScroll.bind(this)
     this.handleScroll = this.handleScroll.bind(this)
     this.onDelete = this.onDelete.bind(this)
+    this.applyFilter = this.applyFilter.bind(this)
     props.setScrollCallback(this.handleScroll)
   }
 
@@ -56,8 +74,8 @@ class Courses2View extends React.PureComponent<
     })
   }
 
-  public async componentDidUpdate (prevProps: Courses2ViewProps): Promise<void> {
-    if (prevProps.order === this.props.order) return
+  public async componentDidUpdate (prevProps: Courses2ViewProps, prevState: Courses2ViewState): Promise<void> {
+    if (prevProps.order === this.props.order && prevState.filter === this.state.filter) return
     this.setState({
       courses: [],
       skip: 0
@@ -75,6 +93,20 @@ class Courses2View extends React.PureComponent<
     sort.forEach((query, index) => {
       this.queryString += `sort[${index}][val]=${query.val}&sort[${index}][dir]=${query.dir}`
     })
+
+    const filterString = stringify((
+      () => {
+        const filter = { ...this.state.filter }
+        Object.entries(filter).forEach(([key, val]) => {
+          if (val != null && val !== '') return
+          delete (filter as any)[key]
+        })
+        return filter
+      })())
+    if (filterString) {
+      this.queryString += '&'
+      this.queryString += filterString
+    }
 
     const courses = await this.fetchCourses()
     if (!courses) return
@@ -170,9 +202,15 @@ class Courses2View extends React.PureComponent<
     })
   }
 
+  private applyFilter (filter: Filter2): void {
+    this.setState({
+      filter
+    })
+  }
+
   public render () {
     const { screenSize } = this.props
-    const { courses, loading, fetching } = this.state
+    const { courses, filter, loading, fetching } = this.state
     return (
       <div
         style={{
@@ -223,14 +261,21 @@ class Courses2View extends React.PureComponent<
             </div>
           )}
         </div>
+        <Route path="/courses2/filter"
+          render={(): JSX.Element => (
+            <Filter2Area
+              filter={filter}
+              applyFilter={this.applyFilter}
+            />
+          )} />
       </div>
     )
   }
 }
-export default connect((state: any): any => ({
+export default withRouter(connect((state: any): any => ({
   screenSize: state.getIn(['mediaQuery', 'screenSize']) as number,
   order: state.get('order') as Order
-}))(Courses2View) as any
+}))(Courses2View) as any) as any
 
 enum Order {
   LastModified = 'lastmodified',

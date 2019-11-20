@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { connect } from 'react-redux'
 
-import { Course2, GameStyle, Difficulty } from '@/client/models/Course2'
+import { Course2, GameStyle2, Difficulty2 } from '@/client/models/Course2'
 
 import Course2DownloadButton from '../buttons/Course2DownloadButton'
 import Course2DeleteButton from '../buttons/Course2DeleteButton'
@@ -20,7 +20,7 @@ interface Course2PanelState {
   canEdit: boolean
   extended: boolean
   maxHeight: number | null
-  difficulty?: Difficulty
+  difficulty?: Difficulty2
 }
 
 class Course2Panel extends React.PureComponent<
@@ -113,30 +113,30 @@ class Course2Panel extends React.PureComponent<
     this.props.onDelete(this.props.index)
   }
 
-  private getGameStyleImage (gameStyle: GameStyle): string {
+  private getGameStyleImage (gameStyle: GameStyle2): string {
     switch (gameStyle) {
-      case GameStyle.M1:
+      case GameStyle2.M1:
         return '/img/smb.png'
-      case GameStyle.M3:
+      case GameStyle2.M3:
         return '/img/smb3.png'
-      case GameStyle.MW:
+      case GameStyle2.MW:
         return '/img/smw.png'
-      case GameStyle.WU:
+      case GameStyle2.WU:
         return '/img/nsmbu.png'
       default:
         return ''
     }
   }
 
-  private getDifficultyImage (difficulty: Difficulty): string {
+  private getDifficultyImage (difficulty: Difficulty2): string {
     switch (difficulty) {
-      case Difficulty.Easy:
+      case Difficulty2.Easy:
         return '/img/easy.png'
-      case Difficulty.Normal:
+      case Difficulty2.Normal:
         return '/img/normal.png'
-      case Difficulty.Expert:
+      case Difficulty2.Expert:
         return '/img/expert.png'
-      case Difficulty.SuperExpert:
+      case Difficulty2.SuperExpert:
         return '/img/superexpert.png'
       default:
         return ''
@@ -303,10 +303,10 @@ class Course2Panel extends React.PureComponent<
                     onChange={this.handleDifficultyChange}
                   >
                     <option />
-                    <option value={Difficulty.Easy}>Easy</option>
-                    <option value={Difficulty.Normal}>Normal</option>
-                    <option value={Difficulty.Expert}>Expert</option>
-                    <option value={Difficulty.SuperExpert}>Super Expert</option>
+                    <option value={Difficulty2.Easy}>Easy</option>
+                    <option value={Difficulty2.Normal}>Normal</option>
+                    <option value={Difficulty2.Expert}>Expert</option>
+                    <option value={Difficulty2.SuperExpert}>Super Expert</option>
                   </select>
                   <div
                     style={{

@@ -1,12 +1,12 @@
 import * as React from 'react'
 import Axios from 'axios'
 
-import { Course2, Course2Duplicate, Difficulty } from '@/client/models/Course2'
+import { Course2, Course2Duplicate, Difficulty2 } from '@/client/models/Course2'
 import { ProgressSpinner } from '../shared/ProgressSpinner'
 
 interface Course2UploadProps {
   course: File
-  difficulty?: Difficulty
+  difficulty?: Difficulty2
   setFinished: () => void
 }
 
@@ -47,7 +47,7 @@ export default class Course2Upload extends React.PureComponent<
 
   private async sendCourse (
     course: File,
-    difficulty?: Difficulty
+    difficulty?: Difficulty2
   ): Promise<void> {
     const url = `${process.env.API_DOMAIN || ''}courses2${
       difficulty ? `?difficulty=${difficulty}` : ''

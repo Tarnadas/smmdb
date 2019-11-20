@@ -8,7 +8,8 @@ class FilterButton extends React.PureComponent<any, any> {
   public onSetFilter: any
 
   public render (): JSX.Element {
-    const { screenSize } = this.props
+    const { screenSize, location } = this.props
+    const { pathname } = location || { pathname: '' }
     const styles: any = {
       button: {
         height: 'auto',
@@ -29,7 +30,7 @@ class FilterButton extends React.PureComponent<any, any> {
       }
     }
     return (
-      <Link to="/courses/filter">
+      <Link to={pathname.includes('/courses2') ? '/courses2/filter' : '/courses/filter'}>
         <div style={styles.button} onClick={this.onSetFilter}>
           <img style={styles.img} src="/img/filter.svg" />
           <div style={styles.text}>Filter</div>
@@ -40,6 +41,7 @@ class FilterButton extends React.PureComponent<any, any> {
 }
 export default connect(
   (state: any): any => ({
-    screenSize: state.getIn(['mediaQuery', 'screenSize'])
+    screenSize: state.getIn(['mediaQuery', 'screenSize']),
+    location: state.getIn(['router', 'location'])
   })
 )(FilterButton as any)

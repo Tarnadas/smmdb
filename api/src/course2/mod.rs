@@ -122,3 +122,9 @@ pub enum Difficulty {
     Expert,
     SuperExpert,
 }
+
+impl From<Difficulty> for Bson {
+    fn from(difficulty: Difficulty) -> Bson {
+        Bson::String(serde_json::to_value(difficulty).unwrap().as_str().unwrap().to_string())
+    }
+}

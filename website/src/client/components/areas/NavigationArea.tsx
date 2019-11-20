@@ -77,6 +77,15 @@ class Area extends React.PureComponent<any, any> {
           iconSrc="/img/courses.png"
           iconColor="dark"
         />
+        {screenSize < ScreenSize.MEDIUM && (
+          <SubNavigationButton
+            onClick={this.props.onClick}
+            link="/courses2/filter"
+            text="Filter"
+            iconSrc="/img/filter.svg"
+            iconColor="dark"
+          />
+        )}
         <NavigationButton
           onClick={this.props.onClick}
           link="/courses64"

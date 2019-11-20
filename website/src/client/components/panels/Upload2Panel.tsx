@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-import { Difficulty } from '@/client/models/Course2'
+import { Difficulty2 } from '@/client/models/Course2'
 
 import Course2Upload from './Course2Upload'
 import { SMMButton } from '../buttons/SMMButton'
@@ -18,7 +18,7 @@ interface Upload2PanelState {
   value: string
   uploads: Upload[]
   allFinished: boolean
-  difficulty?: Difficulty
+  difficulty?: Difficulty2
   err?: Error
 }
 
@@ -85,7 +85,7 @@ export default class Upload2Panel extends React.PureComponent<
 
   private renderUploads (
     uploads: Upload[],
-    difficulty?: Difficulty
+    difficulty?: Difficulty2
   ): JSX.Element[] {
     return uploads.map((upload, index) => (
       <Course2Upload
@@ -159,10 +159,10 @@ export default class Upload2Panel extends React.PureComponent<
             onChange={this.handleDifficultyChange}
           >
             <option />
-            <option value={Difficulty.Easy}>Easy</option>
-            <option value={Difficulty.Normal}>Normal</option>
-            <option value={Difficulty.Expert}>Expert</option>
-            <option value={Difficulty.SuperExpert}>Super Expert</option>
+            <option value={Difficulty2.Easy}>Easy</option>
+            <option value={Difficulty2.Normal}>Normal</option>
+            <option value={Difficulty2.Expert}>Expert</option>
+            <option value={Difficulty2.SuperExpert}>Super Expert</option>
           </select>
         </div>
         {allFinished && (

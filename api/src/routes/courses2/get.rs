@@ -1,5 +1,4 @@
-use crate::server::ServerData;
-use crate::Database;
+use crate::{course2::Difficulty, server::ServerData, Database};
 
 use actix_web::{error::ResponseError, get, http::StatusCode, web, HttpRequest, HttpResponse};
 use mongodb::{oid::ObjectId, ordered::OrderedDocument, Bson};
@@ -27,6 +26,7 @@ pub struct GetCourses2 {
     owner: Option<String>,
     uploader: Option<String>,
     sort: Option<Vec<Sort>>,
+    difficulty: Option<Difficulty>,
 }
 
 impl GetCourses2 {
@@ -81,7 +81,7 @@ impl GetCourses2 {
         }
 
         if let Some(title) = self.title.clone() {
-            GetCourses2::insert_regexp(&mut res, "title".to_string(), title);
+            GetCourses2::insert_regexp(&mut res, "course.header.title".to_string(), title);
         }
 
         if let Some(owner) = &self.owner {
@@ -98,6 +98,10 @@ impl GetCourses2 {
                 }
                 None => return Err(GetCourses2Error::UploaderUnknown(uploader.clone())),
             };
+        }
+
+        if let Some(difficulty) = &self.difficulty {
+            res.insert("difficulty", difficulty.clone());
         }
 
         if res.is_empty() {
