@@ -1,7 +1,0 @@
-node_modules
-mongo
-data
-build/server/
-build/client/
-build/release/
-build/net64/

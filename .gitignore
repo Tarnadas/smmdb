@@ -1,31 +1,9 @@
-
-/config/credentials*
-/node_modules/
 /.idea/
 /.vscode/
-/.mongorc.json
 /db/
 /courses/
-/uploads/
-/build/static/img/
-/build/static/courseimg/
-/build/static/coursedata/
-/src/static.js
-/build/server/
-/build/client/
-/build/release/
-/build/net64/
-/build/similarity/
-/build/react-loadable.json
 /7z.exe
-/report.html
-/stats.json
 /mongo/db
-
-
-#Added by cargo
-#
-#already existing elements are commented out
-
+*.dab
 /target
 **/*.rs.bk
