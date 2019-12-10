@@ -9,7 +9,6 @@ use crate::session::AuthSession;
 use chrono::offset::Utc;
 use mongodb::oid::ObjectId;
 use mongodb::ordered::OrderedDocument;
-use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use serde::Serialize;
 
 #[derive(Clone, Debug, Serialize)]
@@ -62,8 +61,7 @@ impl From<OrderedDocument> for Account {
 }
 
 impl Account {
-    pub fn new(account: AccountReq, id: ObjectId, session: AuthSession) -> Self {
-        let apikey: String = thread_rng().sample_iter(&Alphanumeric).take(30).collect();
+    pub fn new(account: AccountReq, apikey: String, id: ObjectId, session: AuthSession) -> Self {
         Account {
             id,
             googleid: account.googleid,

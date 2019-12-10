@@ -14,6 +14,7 @@ use mongodb::{
     spec::BinarySubtype,
     Bson, Client, ThreadedClient,
 };
+use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use std::{convert::TryInto, env};
 
 mod migration;
@@ -313,8 +314,10 @@ impl Database {
     ) -> Result<Account, mongodb::Error> {
         let account_doc = account.clone().into_ordered_document();
         let res: InsertOneResult = self.accounts.insert_one(account_doc, None)?;
+        let apikey: String = thread_rng().sample_iter(&Alphanumeric).take(30).collect();
         Ok(Account::new(
             account,
+            apikey,
             res.inserted_id
                 .ok_or_else(|| mongodb::Error::ResponseError("insert_id missing".to_string()))?
                 .as_object_id()
