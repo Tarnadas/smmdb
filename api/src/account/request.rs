@@ -12,11 +12,12 @@ pub struct AccountReq {
 }
 
 impl AccountReq {
-    pub fn into_ordered_document(self) -> OrderedDocument {
+    pub fn into_ordered_document(self, apikey: String) -> OrderedDocument {
         doc! {
             "googleid" => self.googleid,
             "username" => self.username,
             "email" => self.email,
+            "apikey" => apikey,
         }
     }
 

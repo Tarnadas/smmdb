@@ -312,9 +312,9 @@ impl Database {
         account: AccountReq,
         session: AuthSession,
     ) -> Result<Account, mongodb::Error> {
-        let account_doc = account.clone().into_ordered_document();
-        let res: InsertOneResult = self.accounts.insert_one(account_doc, None)?;
         let apikey: String = thread_rng().sample_iter(&Alphanumeric).take(30).collect();
+        let account_doc = account.clone().into_ordered_document(apikey.clone());
+        let res: InsertOneResult = self.accounts.insert_one(account_doc, None)?;
         Ok(Account::new(
             account,
             apikey,
