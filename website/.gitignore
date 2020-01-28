@@ -4,6 +4,7 @@
 /build/static/img/
 /build/static/courseimg/
 /build/static/coursedata/
+/build/test-server/
 /src/static.js
 /build/server/
 /build/client/

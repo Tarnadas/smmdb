@@ -12,7 +12,8 @@
     "paths": {
       "@/client/*": ["./src/client/*"],
       "@/server/*": ["./src/server/*"]
-    }
+    },
+    "resolveJsonModule": true
   },
   "include": ["./src/**/*"],
   "exclude": ["node_modules"]
