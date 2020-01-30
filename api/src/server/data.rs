@@ -328,6 +328,10 @@ impl Data {
         }
     }
 
+    pub fn delete_account_session(&self, account: Account) -> Result<(), mongodb::Error> {
+        self.database.delete_account_session(account.get_id_ref())
+    }
+
     pub fn get_account_from_auth(&self, auth_req: AuthReq) -> Option<Account> {
         self.database.find_account(auth_req.into())
     }

@@ -125,6 +125,12 @@ pub enum Difficulty {
 
 impl From<Difficulty> for Bson {
     fn from(difficulty: Difficulty) -> Bson {
-        Bson::String(serde_json::to_value(difficulty).unwrap().as_str().unwrap().to_string())
+        Bson::String(
+            serde_json::to_value(difficulty)
+                .unwrap()
+                .as_str()
+                .unwrap()
+                .to_string(),
+        )
     }
 }

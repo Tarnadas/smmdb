@@ -341,4 +341,17 @@ impl Database {
         self.accounts.update_one(filter, update, None)?;
         Ok(())
     }
+
+    pub fn delete_account_session(&self, account_id: &ObjectId) -> Result<(), mongodb::Error> {
+        let filter = doc! {
+            "_id" => account_id.clone()
+        };
+        let update = doc! {
+            "$unset" => {
+                "session" => ""
+            }
+        };
+        self.accounts.update_one(filter, update, None)?;
+        Ok(())
+    }
 }

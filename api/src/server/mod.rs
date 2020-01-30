@@ -1,5 +1,5 @@
 use crate::database::Database;
-use crate::routes::{courses, courses2, index, login, swagger};
+use crate::routes::{courses, courses2, index, login, logout, swagger};
 use crate::session::Auth;
 
 use actix_cors::Cors;
@@ -29,6 +29,7 @@ impl Server {
                 .service(courses::service())
                 .service(courses2::service())
                 .service(login::service())
+                .service(logout::service())
                 .service(swagger)
                 .service(index)
                 .wrap(Auth)
