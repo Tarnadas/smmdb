@@ -14,7 +14,7 @@ impl Migration {
         let accounts: Vec<OrderedDocument> = coll
             .find(None, None)
             .unwrap()
-            .map(|item| item.unwrap().into())
+            .map(|item| item.unwrap())
             .collect();
         for account in accounts {
             let apikey = account.get_str("apikey");

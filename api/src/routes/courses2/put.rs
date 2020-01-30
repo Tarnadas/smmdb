@@ -32,7 +32,6 @@ pub fn put_courses(
     identity: Identity,
 ) -> impl Future<Item = HttpResponse, Error = PutCourses2Error> {
     let query = query.into_inner();
-    let data = data.clone();
     payload
         .from_err()
         .fold(BytesMut::new(), |mut acc, chunk| {

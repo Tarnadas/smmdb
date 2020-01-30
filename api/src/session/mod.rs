@@ -161,7 +161,7 @@ impl TryFrom<&RequestHead> for AuthReq {
                     if let Ok(account_id) = ObjectId::with_string(&account_id) {
                         return Ok(AuthReq {
                             account_id,
-                            apikey: Some(apikey.to_string()),
+                            apikey: Some((*apikey).to_string()),
                             session: None,
                         });
                     }

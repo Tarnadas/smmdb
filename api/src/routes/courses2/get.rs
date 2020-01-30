@@ -229,7 +229,7 @@ impl TryFrom<SortValue> for String {
         serde_json::to_value(&value)?
             .as_str()
             .map(String::from)
-            .ok_or(serde_json::Error::custom("serde_json as_str failed"))
+            .ok_or_else(|| serde_json::Error::custom("serde_json as_str failed"))
     }
 }
 

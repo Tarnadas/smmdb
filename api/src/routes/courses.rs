@@ -225,7 +225,7 @@ impl GetCourses {
     {
         let enums: Vec<Bson> = enums.iter().map(|val| Bson::I32(val.value())).collect();
         doc.insert_bson(
-            key.to_string(),
+            key,
             Bson::Document(doc! {
                 "$in" => enums
             }),

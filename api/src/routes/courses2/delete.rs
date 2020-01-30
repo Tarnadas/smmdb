@@ -16,7 +16,7 @@ pub fn delete_course(
     if !data.does_account_own_course(account.get_id(), course_oid.clone()) {
         return Err(DeleteCourse2Error::Unauthorized);
     }
-    data.delete_course2(course_id.clone(), course_oid)?;
+    data.delete_course2(course_id, course_oid)?;
     Ok(HttpResponse::NoContent().into())
 }
 

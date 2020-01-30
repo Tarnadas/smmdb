@@ -233,7 +233,7 @@ impl Database {
         self.courses2.delete_one(doc.clone(), None)?;
         let res = self.course2_data.delete_one(doc, None)?;
         if res.deleted_count == 0 {
-            Err(mongodb::Error::ArgumentError(course_id.to_string()))
+            Err(mongodb::Error::ArgumentError(course_id))
         } else {
             Ok(())
         }
@@ -263,7 +263,7 @@ impl Database {
     ) -> Result<(), mongodb::Error> {
         let res = self.courses2.update_one(filter, update, None)?;
         if res.matched_count == 0 {
-            Err(mongodb::Error::ArgumentError(course_id.to_string()))
+            Err(mongodb::Error::ArgumentError(course_id))
         } else {
             Ok(())
         }

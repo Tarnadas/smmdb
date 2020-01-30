@@ -252,7 +252,7 @@ impl Data {
                         let inserted_id = self
                             .database
                             .put_course2(doc_meta, data_gz, data_br, thumb)?;
-                        course.set_id(inserted_id.clone());
+                        course.set_id(inserted_id);
                         lsh_index.insert(course.get_id().to_hex(), course.get_hash());
                         let course = Course2Response::from_course(course, account);
                         Ok(course)
