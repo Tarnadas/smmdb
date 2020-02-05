@@ -1,7 +1,7 @@
 use crate::{course2::Difficulty, server::ServerData, Identity};
 
 use actix_web::{error::ResponseError, http::StatusCode, post, web, HttpRequest, HttpResponse};
-use mongodb::oid::ObjectId;
+use bson::oid::ObjectId;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -10,7 +10,7 @@ pub struct PostCourse2Meta {
 }
 
 #[post("meta/{course_id}")]
-pub fn post_meta(
+pub async fn post_meta(
     data: web::Data<ServerData>,
     path: web::Path<String>,
     meta: web::Json<PostCourse2Meta>,
@@ -33,11 +33,11 @@ pub enum PostCourse2MetaError {
     #[fail(display = "[PutCourses2Error::SerdeJson]: {}", _0)]
     SerdeJson(serde_json::Error),
     #[fail(display = "Object id invalid.\nReason: {}", _0)]
-    MongoOid(mongodb::oid::Error),
+    MongoOid(bson::oid::Error),
     #[fail(display = "Course with ID {} not found", _0)]
     ObjectIdUnknown(String),
     #[fail(display = "[PutCourses2Error::SerdeJson]: {}", _0)]
-    Mongo(mongodb::Error),
+    Mongo(mongodb::error::Error),
     #[fail(display = "")]
     Unauthorized,
 }
@@ -48,18 +48,18 @@ impl From<serde_json::Error> for PostCourse2MetaError {
     }
 }
 
-impl From<mongodb::oid::Error> for PostCourse2MetaError {
-    fn from(err: mongodb::oid::Error) -> Self {
-        PostCourse2MetaError::MongoOid(err)
+impl From<bson::oid::Error> for PostCourse2MetaError {
+    fn from(err: bson::oid::Error) -> Self {
+        match err {
+            bson::oid::Error::ArgumentError(s) => PostCourse2MetaError::ObjectIdUnknown(s),
+            _ => PostCourse2MetaError::MongoOid(err),
+        }
     }
 }
 
-impl From<mongodb::Error> for PostCourse2MetaError {
-    fn from(err: mongodb::Error) -> Self {
-        match err {
-            mongodb::Error::ArgumentError(s) => PostCourse2MetaError::ObjectIdUnknown(s),
-            _ => PostCourse2MetaError::Mongo(err),
-        }
+impl From<mongodb::error::Error> for PostCourse2MetaError {
+    fn from(err: mongodb::error::Error) -> Self {
+        PostCourse2MetaError::Mongo(err)
     }
 }
 
@@ -67,7 +67,7 @@ impl ResponseError for PostCourse2MetaError {
     fn error_response(&self) -> HttpResponse {
         match *self {
             PostCourse2MetaError::SerdeJson(_) => HttpResponse::new(StatusCode::BAD_REQUEST),
-            PostCourse2MetaError::MongoOid(mongodb::oid::Error::FromHexError(_)) => {
+            PostCourse2MetaError::MongoOid(bson::oid::Error::FromHexError(_)) => {
                 HttpResponse::new(StatusCode::BAD_REQUEST)
             }
             PostCourse2MetaError::MongoOid(_) => {

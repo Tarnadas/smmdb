@@ -7,6 +7,7 @@ use actix_web::{
     web::{HttpRequest, HttpResponse},
     Error, FromRequest,
 };
+use futures::future::{err, ok, Ready};
 use std::{cell::RefCell, rc::Rc};
 
 #[derive(Debug)]
@@ -35,7 +36,7 @@ impl Identity {
 
 impl FromRequest for Identity {
     type Error = Error;
-    type Future = Result<Identity, Error>;
+    type Future = Ready<Result<Identity, Error>>;
     type Config = ();
 
     #[inline]
@@ -44,9 +45,9 @@ impl FromRequest for Identity {
         let inner = identity.0.borrow();
         if inner.is_some() {
             drop(inner);
-            Ok(identity)
+            ok(identity)
         } else {
-            Err(HttpResponse::new(StatusCode::UNAUTHORIZED).into())
+            err(HttpResponse::new(StatusCode::UNAUTHORIZED).into())
         }
     }
 }

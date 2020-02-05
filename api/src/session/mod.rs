@@ -12,11 +12,14 @@ use actix_web::{
     web::Data,
     Error,
 };
-use futures::future::{ok, FutureResult};
-use futures::{Future, Poll};
-use mongodb::{oid::ObjectId, ordered::OrderedDocument};
+use bson::{oid::ObjectId, ordered::OrderedDocument};
+use futures::future::{ok, Future, Ready};
 use serde::Serialize;
-use std::convert::TryFrom;
+use std::{
+    convert::TryFrom,
+    pin::Pin,
+    task::{Context, Poll},
+};
 
 #[derive(Clone, Debug, Serialize)]
 pub struct AuthSession {
@@ -69,7 +72,7 @@ where
     type Error = Error;
     type InitError = ();
     type Transform = AuthMiddleware<S>;
-    type Future = FutureResult<Self::Transform, Self::InitError>;
+    type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
         ok(AuthMiddleware { service })
@@ -89,10 +92,10 @@ where
     type Request = ServiceRequest;
     type Response = ServiceResponse<B>;
     type Error = Error;
-    type Future = Box<dyn Future<Item = Self::Response, Error = Self::Error>>;
+    type Future = Pin<Box<dyn Future<Output = Result<Self::Response, Self::Error>>>>;
 
-    fn poll_ready(&mut self) -> Poll<(), Self::Error> {
-        self.service.poll_ready()
+    fn poll_ready(&mut self, cx: &mut Context<'_>) -> Poll<Result<(), Self::Error>> {
+        self.service.poll_ready(cx)
     }
 
     fn call(&mut self, mut req: ServiceRequest) -> Self::Future {
@@ -113,7 +116,11 @@ where
             }
         }
 
-        Box::new(self.service.call(req).and_then(Ok))
+        let fut = self.service.call(req);
+        Box::pin(async move {
+            let res = fut.await?;
+            Ok(res)
+        })
     }
 }
 

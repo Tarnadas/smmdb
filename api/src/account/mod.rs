@@ -6,9 +6,8 @@ pub use response::*;
 
 use crate::session::AuthSession;
 
+use bson::{oid::ObjectId, ordered::OrderedDocument};
 use chrono::offset::Utc;
-use mongodb::oid::ObjectId;
-use mongodb::ordered::OrderedDocument;
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use serde::Serialize;
 

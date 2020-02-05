@@ -3,16 +3,13 @@ use crate::collections::Collections;
 use crate::course::{Course, CourseResponse};
 use crate::course2::Course2;
 use crate::minhash::{LshIndex, MinHash};
-use crate::mongodb::coll::options::FindOptions;
 use crate::session::AuthSession;
 
+use bson::{oid::ObjectId, ordered::OrderedDocument, spec::BinarySubtype, Bson};
 use mongodb::{
-    coll::{results::InsertOneResult, Collection},
-    db::ThreadedDatabase,
-    oid::ObjectId,
-    ordered::OrderedDocument,
-    spec::BinarySubtype,
-    Bson, Client, ThreadedClient,
+    options::{FindOneOptions, FindOptions, IndexModel},
+    results::InsertOneResult,
+    Client, Collection,
 };
 use std::{convert::TryInto, env};
 
@@ -37,20 +34,22 @@ impl Database {
             },
             Err(_) => "localhost",
         };
-        let client = Client::with_uri(&format!("mongodb://{}:27017", host))
+        let client = Client::with_uri_str(&format!("mongodb://{}:27017", host))
             .expect("Failed to initialize standalone client.");
-        let courses = client.db("admin").collection(Collections::Courses.as_str());
+        let courses = client
+            .database("admin")
+            .collection(Collections::Courses.as_str());
         let course_data = client
-            .db("admin")
+            .database("admin")
             .collection(Collections::CourseData.as_str());
         let courses2 = client
-            .db("admin")
+            .database("admin")
             .collection(Collections::Courses2.as_str());
         let course2_data = client
-            .db("admin")
+            .database("admin")
             .collection(Collections::Course2Data.as_str());
         let accounts = client
-            .db("admin")
+            .database("admin")
             .collection(Collections::Accounts.as_str());
 
         if let Err(err) = Database::generate_indexes(&courses2) {
@@ -68,7 +67,7 @@ impl Database {
         database
     }
 
-    fn generate_indexes(courses2: &Collection) -> Result<(), mongodb::Error> {
+    fn generate_indexes(courses2: &Collection) -> Result<(), mongodb::error::Error> {
         let indexes = vec![
             doc! {
                 "last_modified": -1,
@@ -87,16 +86,10 @@ impl Database {
                 "course.header.title": 1
             },
         ];
-        let listed_indexes: Vec<OrderedDocument> = courses2
-            .list_indexes()?
-            .map(|item| -> Result<OrderedDocument, mongodb::Error> { Ok(item?) })
-            .filter_map(Result::ok)
-            .collect();
-        for index in indexes {
-            if listed_indexes.iter().find(|idx| idx == &&index).is_none() {
-                courses2.create_index(index, None)?;
-            }
-        }
+        let indexes = indexes
+            .into_iter()
+            .map(|index| IndexModel::builder().keys(index).build());
+        courses2.create_indexes(indexes)?;
         Ok(())
     }
 
@@ -133,7 +126,7 @@ impl Database {
     pub fn get_courses2(
         &self,
         query: Vec<OrderedDocument>,
-    ) -> Result<(Vec<Course2>, Vec<Account>), mongodb::Error> {
+    ) -> Result<(Vec<Course2>, Vec<Account>), mongodb::error::Error> {
         let cursor = self.courses2.aggregate(query, None)?;
 
         let (account_ids, courses): (Vec<Bson>, Vec<Course2>) = cursor
@@ -177,11 +170,9 @@ impl Database {
         data_gz: Bson,
         data_br: Bson,
         thumb: Bson,
-    ) -> Result<ObjectId, mongodb::Error> {
+    ) -> Result<ObjectId, mongodb::error::Error> {
         let insert_res = self.courses2.insert_one(doc_meta, None)?;
-        let inserted_id = insert_res
-            .inserted_id
-            .ok_or_else(|| mongodb::Error::ResponseError("inserted_id not given".to_string()))?;
+        let inserted_id = insert_res.inserted_id;
         let doc = doc! {
             "_id" => inserted_id.clone(),
             "data_gz" => data_gz,
@@ -196,10 +187,10 @@ impl Database {
         &self,
         doc: OrderedDocument,
         projection: OrderedDocument,
-    ) -> Result<Option<OrderedDocument>, mongodb::Error> {
+    ) -> Result<Option<OrderedDocument>, mongodb::error::Error> {
         self.course2_data.find_one(
             Some(doc),
-            Some(FindOptions {
+            Some(FindOneOptions {
                 projection: Some(projection),
                 ..Default::default()
             }),
@@ -211,7 +202,7 @@ impl Database {
         course_id: ObjectId,
         size: String,
         data: Vec<u8>,
-    ) -> Result<(), mongodb::Error> {
+    ) -> Result<(), mongodb::error::Error> {
         let data = Bson::Binary(BinarySubtype::Generic, data);
         let filter = doc! {
             "_id" => course_id
@@ -229,17 +220,20 @@ impl Database {
         &self,
         course_id: String,
         doc: OrderedDocument,
-    ) -> Result<(), mongodb::Error> {
+    ) -> Result<(), mongodb::error::Error> {
         self.courses2.delete_one(doc.clone(), None)?;
         let res = self.course2_data.delete_one(doc, None)?;
         if res.deleted_count == 0 {
-            Err(mongodb::Error::ArgumentError(course_id))
+            Err(mongodb::error::ErrorKind::ArgumentError { message: course_id }.into())
         } else {
             Ok(())
         }
     }
 
-    pub fn find_courses2(&self, doc: OrderedDocument) -> Result<Vec<Course2>, mongodb::Error> {
+    pub fn find_courses2(
+        &self,
+        doc: OrderedDocument,
+    ) -> Result<Vec<Course2>, mongodb::error::Error> {
         match self.courses2.find(Some(doc), None) {
             Ok(cursor) => {
                 let courses: Vec<Course2> = cursor
@@ -260,10 +254,10 @@ impl Database {
         course_id: String,
         filter: OrderedDocument,
         update: OrderedDocument,
-    ) -> Result<(), mongodb::Error> {
+    ) -> Result<(), mongodb::error::Error> {
         let res = self.courses2.update_one(filter, update, None)?;
         if res.matched_count == 0 {
-            Err(mongodb::Error::ArgumentError(course_id))
+            Err(mongodb::error::ErrorKind::ArgumentError { message: course_id }.into())
         } else {
             Ok(())
         }
@@ -310,16 +304,12 @@ impl Database {
         &self,
         account: AccountReq,
         session: AuthSession,
-    ) -> Result<Account, mongodb::Error> {
+    ) -> Result<Account, mongodb::error::Error> {
         let account_doc = account.clone().into_ordered_document();
         let res: InsertOneResult = self.accounts.insert_one(account_doc, None)?;
         Ok(Account::new(
             account,
-            res.inserted_id
-                .ok_or_else(|| mongodb::Error::ResponseError("insert_id missing".to_string()))?
-                .as_object_id()
-                .unwrap()
-                .clone(),
+            res.inserted_id.as_object_id().unwrap().clone(),
             session,
         ))
     }
@@ -328,7 +318,7 @@ impl Database {
         &self,
         account_id: &ObjectId,
         session: AuthSession,
-    ) -> Result<(), mongodb::Error> {
+    ) -> Result<(), mongodb::error::Error> {
         let filter = doc! {
             "_id" => account_id.clone()
         };
@@ -342,7 +332,10 @@ impl Database {
         Ok(())
     }
 
-    pub fn delete_account_session(&self, account_id: &ObjectId) -> Result<(), mongodb::Error> {
+    pub fn delete_account_session(
+        &self,
+        account_id: &ObjectId,
+    ) -> Result<(), mongodb::error::Error> {
         let filter = doc! {
             "_id" => account_id.clone()
         };

@@ -6,33 +6,31 @@ use actix_web::{
     error::{PayloadError, ResponseError},
     http::StatusCode,
     post,
-    web::{self, BytesMut},
+    web::{self},
     HttpRequest, HttpResponse,
 };
-use futures::{self, Future, Stream};
+use futures::{self, StreamExt};
 
 #[post("analyze")]
-pub fn post_analyze_courses(
+pub async fn post_analyze_courses(
     _data: web::Data<ServerData>,
     _req: HttpRequest,
-    payload: web::Payload,
-) -> impl Future<Item = HttpResponse, Error = PostCourses2Error> {
-    payload
-        .from_err()
-        .fold(BytesMut::new(), |mut acc, chunk| {
-            acc.extend_from_slice(&chunk);
-            Ok::<BytesMut, PayloadError>(acc)
-        })
-        .map(|buffer| match Course2::from_packed(&buffer[..]) {
-            Ok(courses) => {
-                let courses: Vec<SMM2Course> = courses
-                    .into_iter()
-                    .map(|course| course.take_course())
-                    .collect();
-                HttpResponse::Ok().json(courses)
-            }
-            Err(err) => PostCourses2Error::from(err).error_response(),
-        })
+    mut payload: web::Payload,
+) -> Result<HttpResponse, PostCourses2Error> {
+    let mut bytes = web::BytesMut::new();
+    while let Some(item) = payload.next().await {
+        bytes.extend_from_slice(&item?);
+    }
+    match Course2::from_packed(&bytes[..]) {
+        Ok(courses) => {
+            let courses: Vec<SMM2Course> = courses
+                .into_iter()
+                .map(|course| course.take_course())
+                .collect();
+            Ok(HttpResponse::Ok().json(courses))
+        }
+        Err(err) => Ok(PostCourses2Error::from(err).error_response()),
+    }
 }
 
 #[derive(Fail, Debug)]

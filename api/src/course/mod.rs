@@ -2,11 +2,10 @@ mod response;
 
 pub use self::response::CourseResponse;
 
+use bson::{oid::ObjectId, ordered::OrderedDocument, ValueAccessError};
 use cemu_smm::proto::SMMCourse::{
     SMMCourse_AutoScroll, SMMCourse_CourseTheme, SMMCourse_GameStyle,
 };
-use mongodb::oid::ObjectId;
-use mongodb::{ordered::OrderedDocument, ValueAccessError};
 use serde::Serialize;
 
 #[derive(Debug, Serialize)]

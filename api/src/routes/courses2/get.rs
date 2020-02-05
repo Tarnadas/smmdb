@@ -1,13 +1,18 @@
 use crate::{course2::Difficulty, server::ServerData, Database};
 
-use actix_web::{error::ResponseError, get, http::StatusCode, web, HttpRequest, HttpResponse};
-use mongodb::{oid::ObjectId, ordered::OrderedDocument, Bson};
-use serde::{de, ser::Error, Deserialize, Deserializer, Serialize};
+use actix_web::{
+    error::ResponseError, get, http::StatusCode, web, Error, HttpRequest, HttpResponse,
+};
+use bson::{oid::ObjectId, ordered::OrderedDocument, Bson};
+use serde::{de, Deserialize, Deserializer, Serialize};
 use serde_qs::actix::QsQuery;
-use std::convert::{TryFrom, TryInto};
+use std::{
+    convert::{TryFrom, TryInto},
+    io,
+};
 
 #[get("")]
-pub fn get_courses(
+pub async fn get_courses(
     data: web::Data<ServerData>,
     query: QsQuery<GetCourses2>,
     _req: HttpRequest,
@@ -223,13 +228,13 @@ enum SortValue {
 }
 
 impl TryFrom<SortValue> for String {
-    type Error = serde_json::Error;
+    type Error = Error;
 
     fn try_from(value: SortValue) -> Result<Self, Self::Error> {
         serde_json::to_value(&value)?
             .as_str()
             .map(String::from)
-            .ok_or_else(|| serde_json::Error::custom("serde_json as_str failed"))
+            .ok_or_else(|| io::Error::new(io::ErrorKind::Other, "serde_json as_str failed").into())
     }
 }
 
@@ -263,7 +268,7 @@ pub enum GetCourses2Error {
     #[fail(display = "[PutCourses2Error::SerdeJson]: {}", _0)]
     SerdeJson(serde_json::Error),
     #[fail(display = "[GetCourses2Error::Mongo]: {}", _0)]
-    Mongo(mongodb::Error),
+    Mongo(mongodb::error::Error),
 }
 
 impl From<serde_json::Error> for GetCourses2Error {
@@ -272,8 +277,8 @@ impl From<serde_json::Error> for GetCourses2Error {
     }
 }
 
-impl From<mongodb::Error> for GetCourses2Error {
-    fn from(err: mongodb::Error) -> Self {
+impl From<mongodb::error::Error> for GetCourses2Error {
+    fn from(err: mongodb::error::Error) -> Self {
         GetCourses2Error::Mongo(err)
     }
 }

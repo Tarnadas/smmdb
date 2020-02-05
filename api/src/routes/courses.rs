@@ -2,10 +2,10 @@ use crate::server::ServerData;
 use crate::Database;
 
 use actix_web::{dev, error::ResponseError, get, http::StatusCode, web, HttpRequest, HttpResponse};
+use bson::{oid::ObjectId, ordered::OrderedDocument, Bson};
 use cemu_smm::proto::SMMCourse::{
     SMMCourse_AutoScroll, SMMCourse_CourseTheme, SMMCourse_GameStyle,
 };
-use mongodb::{oid::ObjectId, ordered::OrderedDocument, Bson};
 use protobuf::ProtobufEnum;
 use serde::Deserialize;
 use serde_qs::actix::QsQuery;
@@ -15,7 +15,7 @@ pub fn service() -> impl dev::HttpServiceFactory {
 }
 
 #[get("")]
-fn get_courses(
+async fn get_courses(
     data: web::Data<ServerData>,
     query: QsQuery<GetCourses>,
     _req: HttpRequest,

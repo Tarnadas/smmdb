@@ -18,12 +18,12 @@ use crate::{
 };
 
 use brotli2::{read::BrotliEncoder, CompressParams};
+use bson::{oid::ObjectId, spec::BinarySubtype, Bson};
 use compression::prelude::*;
 use image::{jpeg::JPEGEncoder, load_from_memory, DynamicImage, FilterType, ImageError};
-use mongodb::{oid::ObjectId, spec::BinarySubtype, Bson};
 use rayon::prelude::*;
 use std::{
-    io::Read,
+    io::{self, Read},
     sync::{Arc, Mutex},
 };
 
@@ -257,7 +257,7 @@ impl Data {
                         let course = Course2Response::from_course(course, account);
                         Ok(course)
                     } else {
-                        Err(mongodb::Error::DefaultError("".to_string()).into())
+                        Err(io::Error::new(io::ErrorKind::Other, "".to_string()).into())
                     }
                 },
             )
@@ -279,7 +279,7 @@ impl Data {
         &self,
         course_id: String,
         course_oid: ObjectId,
-    ) -> Result<(), mongodb::Error> {
+    ) -> Result<(), mongodb::error::Error> {
         let query = doc! {
             "_id" => course_oid
         };
@@ -317,7 +317,7 @@ impl Data {
         &self,
         account: AccountReq,
         session: AuthSession,
-    ) -> Result<Account, mongodb::Error> {
+    ) -> Result<Account, mongodb::error::Error> {
         match self.database.find_account(account.as_find()) {
             Some(account) => {
                 self.database
@@ -328,7 +328,7 @@ impl Data {
         }
     }
 
-    pub fn delete_account_session(&self, account: Account) -> Result<(), mongodb::Error> {
+    pub fn delete_account_session(&self, account: Account) -> Result<(), mongodb::error::Error> {
         self.database.delete_account_session(account.get_id_ref())
     }
 

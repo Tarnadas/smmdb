@@ -2,15 +2,15 @@ use crate::server::ServerData;
 
 use actix_http::http::header;
 use actix_web::{error::ResponseError, get, http::StatusCode, web, HttpResponse};
+use bson::{oid::ObjectId, ValueAccessError};
 use compression::prelude::*;
-use mongodb::{oid::ObjectId, ValueAccessError};
 use serde::Deserialize;
 use serde_qs::actix::QsQuery;
 use std::io;
 use tar::{Builder, Header};
 
 #[get("download/{course_id}")]
-pub fn download_course(
+pub async fn download_course(
     data: web::Data<ServerData>,
     path: web::Path<String>,
     _query: QsQuery<DownloadCourse2>,
@@ -79,9 +79,9 @@ pub enum DownloadCourse2Error {
     #[fail(display = "[DownloadCourse2Error::IoError]: {}", _0)]
     IoError(io::Error),
     #[fail(display = "Object id invalid.\nReason: {}", _0)]
-    MongoOid(mongodb::oid::Error),
+    MongoOid(bson::oid::Error),
     #[fail(display = "[DownloadCourse2Error::Mongo]: {}", _0)]
-    Mongo(mongodb::Error),
+    Mongo(mongodb::error::Error),
     #[fail(display = "[DownloadCourse2Error::ValueAccessError]: {}", _0)]
     ValueAccessError(ValueAccessError),
     #[fail(display = "[DownloadCourse2Error::CompressionError]: {}", _0)]
@@ -94,14 +94,14 @@ impl From<io::Error> for DownloadCourse2Error {
     }
 }
 
-impl From<mongodb::oid::Error> for DownloadCourse2Error {
-    fn from(err: mongodb::oid::Error) -> Self {
+impl From<bson::oid::Error> for DownloadCourse2Error {
+    fn from(err: bson::oid::Error) -> Self {
         DownloadCourse2Error::MongoOid(err)
     }
 }
 
-impl From<mongodb::Error> for DownloadCourse2Error {
-    fn from(err: mongodb::Error) -> Self {
+impl From<mongodb::error::Error> for DownloadCourse2Error {
+    fn from(err: mongodb::error::Error) -> Self {
         DownloadCourse2Error::Mongo(err)
     }
 }
@@ -125,7 +125,7 @@ impl ResponseError for DownloadCourse2Error {
                 HttpResponse::new(StatusCode::INTERNAL_SERVER_ERROR)
             }
             DownloadCourse2Error::CourseNotFound(_) => HttpResponse::new(StatusCode::NOT_FOUND),
-            DownloadCourse2Error::MongoOid(mongodb::oid::Error::FromHexError(_)) => {
+            DownloadCourse2Error::MongoOid(bson::oid::Error::FromHexError(_)) => {
                 HttpResponse::new(StatusCode::BAD_REQUEST)
             }
             DownloadCourse2Error::MongoOid(_) => {

@@ -10,10 +10,10 @@ use actix_web::{
     error::{PayloadError, ResponseError},
     http::StatusCode,
     put,
-    web::{self, BytesMut},
+    web::{self},
     HttpRequest, HttpResponse,
 };
-use futures::{self, Future, Stream};
+use futures::{self, StreamExt};
 use serde::{Deserialize, Serialize, Serializer};
 use serde_qs::actix::QsQuery;
 use std::io;
@@ -24,32 +24,28 @@ pub struct PutCourses2 {
 }
 
 #[put("")]
-pub fn put_courses(
+pub async fn put_courses(
     data: web::Data<ServerData>,
     _req: HttpRequest,
     query: QsQuery<PutCourses2>,
-    payload: web::Payload,
+    mut payload: web::Payload,
     identity: Identity,
-) -> impl Future<Item = HttpResponse, Error = PutCourses2Error> {
+) -> Result<HttpResponse, PutCourses2Error> {
     let query = query.into_inner();
-    payload
-        .from_err()
-        .fold(BytesMut::new(), |mut acc, chunk| {
-            acc.extend_from_slice(&chunk);
-            Ok::<BytesMut, PayloadError>(acc)
-        })
-        .map(
-            move |buffer| match cemu_smm::Course2::from_packed(&buffer[..]) {
-                Ok(courses) => {
-                    let account = identity.get_account();
-                    match data.put_courses2(courses, &account, query.difficulty) {
-                        Ok(res) => res.into(),
-                        Err(_) => HttpResponse::BadRequest().into(),
-                    }
-                }
-                Err(err) => PutCourses2Error::from(err).error_response(),
-            },
-        )
+    let mut bytes = web::BytesMut::new();
+    while let Some(item) = payload.next().await {
+        bytes.extend_from_slice(&item?);
+    }
+    match cemu_smm::Course2::from_packed(&bytes[..]) {
+        Ok(courses) => {
+            let account = identity.get_account();
+            match data.put_courses2(courses, &account, query.difficulty) {
+                Ok(res) => Ok(res.into()),
+                Err(_) => Ok(HttpResponse::BadRequest().into()),
+            }
+        }
+        Err(err) => Ok(PutCourses2Error::from(err).error_response()),
+    }
 }
 
 #[derive(Debug, Fail)]
@@ -67,7 +63,7 @@ pub enum PutCourses2Error {
     #[fail(display = "[PutCourses2Error::ThumbnailMissing]: course is missing thumbnail")]
     ThumbnailMissing,
     #[fail(display = "[PutCourses2Error::Mongo]: {}", _0)]
-    Mongo(mongodb::Error),
+    Mongo(mongodb::error::Error),
     #[fail(display = "[PutCourses2Error::Compression]: {}", _0)]
     Compression(compression::prelude::CompressionError),
 }
@@ -96,8 +92,8 @@ impl From<serde_json::Error> for PutCourses2Error {
     }
 }
 
-impl From<mongodb::Error> for PutCourses2Error {
-    fn from(err: mongodb::Error) -> Self {
+impl From<mongodb::error::Error> for PutCourses2Error {
+    fn from(err: mongodb::error::Error) -> Self {
         PutCourses2Error::Mongo(err)
     }
 }

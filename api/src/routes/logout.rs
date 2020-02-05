@@ -12,7 +12,7 @@ pub fn service() -> impl dev::HttpServiceFactory {
 }
 
 #[post("")]
-fn logout(
+async fn logout(
     data: web::Data<ServerData>,
     _req: HttpRequest,
     identity: Identity,
@@ -25,11 +25,11 @@ fn logout(
 #[derive(Fail, Debug)]
 enum LogoutError {
     #[fail(display = "Mongodb error: {}", _0)]
-    MongodbError(mongodb::Error),
+    MongodbError(mongodb::error::Error),
 }
 
-impl From<mongodb::Error> for LogoutError {
-    fn from(err: mongodb::Error) -> Self {
+impl From<mongodb::error::Error> for LogoutError {
+    fn from(err: mongodb::error::Error) -> Self {
         LogoutError::MongodbError(err)
     }
 }

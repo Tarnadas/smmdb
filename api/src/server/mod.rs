@@ -5,6 +5,7 @@ use crate::session::Auth;
 use actix_cors::Cors;
 use actix_session::CookieSession;
 use actix_web::{
+    client::Client,
     http::header,
     middleware::{Compress, Logger},
     App, HttpServer,
@@ -26,6 +27,7 @@ impl Server {
         HttpServer::new(move || {
             App::new()
                 .data(data.clone())
+                .data(Client::default())
                 .service(courses::service())
                 .service(courses2::service())
                 .service(login::service())
@@ -49,13 +51,15 @@ impl Server {
                             header::CONTENT_TYPE,
                         ])
                         .supports_credentials()
-                        .max_age(3600),
+                        .max_age(3600)
+                        .finish(),
                 )
                 .wrap(Compress::default())
                 .wrap(Logger::default())
         })
         .bind("0.0.0.0:3030")?
         .workers(num_cpus::get())
-        .run()
+        .run();
+        Ok(())
     }
 }

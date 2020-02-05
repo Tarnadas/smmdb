@@ -1,5 +1,5 @@
 #[macro_use]
-extern crate mongodb;
+extern crate bson;
 
 #[macro_use]
 extern crate failure;

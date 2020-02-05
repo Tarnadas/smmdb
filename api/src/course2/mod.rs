@@ -4,9 +4,9 @@ pub use self::response::Course2Response;
 
 use crate::minhash::{MinHash, PermGen};
 
+use bson::{oid::ObjectId, ordered::OrderedDocument, Bson};
 use cemu_smm::proto::SMM2Course::SMM2Course;
 use chrono::offset::Utc;
-use mongodb::{oid::ObjectId, ordered::OrderedDocument, Bson};
 use serde::{Deserialize, Serialize};
 use std::{convert::TryFrom, fmt};
 
