@@ -1,7 +1,7 @@
 language: rust
 
 rust:
-  - nightly
+  - stable
 
 env:
   matrix:
@@ -23,15 +23,11 @@ install:
   - source ~/.nvm/nvm.sh
   - nvm install v10.5
 
-# cache: cargo
-
 services:
   - docker
 
 jobs:
   include:
-    # - stage: Test
-    #   script: cargo test
     - stage: Deploy
       script: echo "deploying to Docker Hub..."
       deploy:
