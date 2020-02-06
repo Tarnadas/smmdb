@@ -1,7 +1,7 @@
 use super::Database;
 
 use bson::ordered::OrderedDocument;
-use mongodb::Collection;
+use mongodb::coll::Collection;
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
 
 pub struct Migration;
