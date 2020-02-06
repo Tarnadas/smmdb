@@ -6,11 +6,12 @@ use actix_cors::Cors;
 use actix_session::CookieSession;
 use actix_web::{
     client::Client,
+    dev::Server as ActixServer,
     http::header,
     middleware::{Compress, Logger},
     App, HttpServer,
 };
-use std::sync::Arc;
+use std::{io, sync::Arc};
 
 mod data;
 
@@ -19,12 +20,12 @@ pub use data::*;
 pub struct Server;
 
 impl Server {
-    pub fn start(database: Arc<Database>) -> std::io::Result<()> {
+    pub fn start(database: Arc<Database>) -> Result<ActixServer, io::Error> {
         std::env::set_var("RUST_LOG", "actix_web=debug");
         env_logger::init();
         let data = Arc::new(Data::new(database));
 
-        HttpServer::new(move || {
+        Ok(HttpServer::new(move || {
             App::new()
                 .data(data.clone())
                 .data(Client::default())
@@ -59,7 +60,6 @@ impl Server {
         })
         .bind("0.0.0.0:3030")?
         .workers(num_cpus::get())
-        .run();
-        Ok(())
+        .run())
     }
 }

@@ -22,9 +22,12 @@ pub use session::Identity;
 use crate::database::Database;
 use crate::server::Server;
 
-fn main() {
+use std::io;
+
+#[actix_rt::main]
+async fn main() -> io::Result<()> {
     use std::sync::Arc;
 
     let database = Database::new();
-    Server::start(Arc::new(database)).unwrap();
+    Server::start(Arc::new(database)).unwrap().await
 }
