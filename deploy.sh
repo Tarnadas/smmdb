@@ -4,11 +4,17 @@ GIT_HASH=$(git rev-parse HEAD)
 echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 docker-compose -f docker-compose.build.yml pull --ignore-pull-failures
-docker-compose -f docker-compose.build.yml build --parallel
+echo "0"
+docker-compose -f docker-compose.build.yml build
+echo "1"
 docker tag tarnadas/smmdb-build tarnadas/smmdb-build:$GIT_HASH
+echo "2"
 docker tag tarnadas/smmdb-build-dep tarnadas/smmdb-build-dep:$GIT_HASH
+echo "3"
 docker tag tarnadas/smmdb-api-build tarnadas/smmdb-api-build:$GIT_HASH
+echo "4"
 docker-compose -f docker-compose.build.yml bundle --push-images
+echo "5"
 
 docker-compose pull --ignore-pull-failures
 docker-compose build --parallel
