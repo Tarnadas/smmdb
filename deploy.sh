@@ -9,17 +9,29 @@ docker pull tarnadas/smmdb-build-dep &
 docker pull tarnadas/smmdb-api-build &
 wait
 
-(cd website && docker build --cache-from=tarnadas/smmdb-build -t tarnadas/smmdb-build:$GIT_HASH -f ./DockerfileBuild .) &
-(cd website && docker build --cache-from=tarnadas/smmdb-build-dep -t tarnadas/smmdb-build-dep:$GIT_HASH -f ./DockerfileBuildDep .) &
-docker build --cache-from=tarnadas/smmdb-api-build -t tarnadas/smmdb-api-build:$GIT_HASH -f ./api/DockerfileBuild . &
+(cd website && docker build --cache-from=tarnadas/smmdb-build -f ./DockerfileBuild .) &
+(cd website && docker build --cache-from=tarnadas/smmdb-build-dep -f ./DockerfileBuildDep .) &
+docker build --cache-from=tarnadas/smmdb-api-build -f ./api/DockerfileBuild . &
 wait -n
 
-docker push tarnadas/smmdb-build:latest &
-docker push tarnadas/smmdb-build:$GIT_HASH &
-docker push tarnadas/smmdb-build-dep:latest &
-docker push tarnadas/smmdb-build-dep:$GIT_HASH &
-docker push tarnadas/smmdb-api-build:latest &
-docker push tarnadas/smmdb-api-build:$GIT_HASH &
+(
+  docker push tarnadas/smmdb-build:latest
+  docker tag tarnadas/smmdb-build tarnadas/smmdb-build:$GIT_HASH
+  docker push tarnadas/smmdb-build:$GIT_HASH
+) &
+
+(
+  docker push tarnadas/smmdb-build-dep:latest
+  docker tag tarnadas/smmdb-build-dep tarnadas/smmdb-build-dep:$GIT_HASH
+  docker push tarnadas/smmdb-build-dep:$GIT_HASH
+) &
+
+(
+  docker push tarnadas/smmdb-api-build:latest
+  docker tag tarnadas/smmdb-api-build tarnadas/smmdb-api-build:$GIT_HASH
+  docker push tarnadas/smmdb-api-build:$GIT_HASH
+) &
+
 wait -n
 
 docker-compose pull --ignore-pull-failures
