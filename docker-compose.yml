@@ -33,13 +33,6 @@ services:
       - mongodb
     restart: always
   api:
-    build:
-      context: ./api
-      dockerfile: Dockerfile
-      args:
-        - GOOGLE_CLIENT_ID
-      cache_from:
-        - tarnadas/smmdb-api
     image: tarnadas/smmdb-api
     ports:
       - "127.0.0.1:3030:3030"

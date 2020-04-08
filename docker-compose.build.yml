@@ -19,10 +19,3 @@ services:
         - tarnadas/smmdb-build-dep
     image: tarnadas/smmdb-build-dep
     working_dir: /usr/src/app
-  smmdb-api-build:
-    build:
-      context: .
-      dockerfile: ./api/DockerfileBuild
-      cache_from:
-        - tarnadas/smmdb-api-build
-    image: tarnadas/smmdb-api-build

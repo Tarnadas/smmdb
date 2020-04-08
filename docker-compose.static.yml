@@ -1,9 +1,0 @@
-# version: "3.6"
-# services:
-#   smmdb-api-rust:
-#     build:
-#       context: .
-#       dockerfile: ./src/rust/DockerfileRust
-#       cache_from:
-#         - tarnadas/smmdb-api-rust
-#     image: tarnadas/smmdb-api-rust
