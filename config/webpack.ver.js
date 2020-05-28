@@ -76,7 +76,7 @@ module.exports = [
       new webpack.optimize.ModuleConcatenationPlugin(),
       new HtmlWebpackPlugin({
         filename: '../index.html',
-        template: 'build/static/views/template.html'
+        template: 'static/views/template.html'
       }),
       new ScriptExtHtmlWebpackPlugin({
         preload: /\.js/
