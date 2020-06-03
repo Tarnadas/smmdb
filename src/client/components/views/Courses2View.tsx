@@ -25,7 +25,10 @@ interface Courses2ViewState {
   fetching: boolean
   skip: number
   reachedEnd: boolean
-  err?: Error
+  err?: {
+    status: number
+    statusText: string
+  }
 }
 
 class Courses2View extends React.PureComponent<
@@ -126,7 +129,15 @@ class Courses2View extends React.PureComponent<
         fetching: true
       })
       const response = await fetch(`${process.env.API_DOMAIN || ''}${url}`)
-      if (!response.ok) throw new Error(response.statusText)
+      if (!response.ok) {
+        this.setState({
+          err: {
+            status: response.status,
+            statusText: response.statusText
+          }
+        })
+        throw new Error(response.statusText)
+      }
       const courses = await response.json()
       if (!courses) return
       this.setState(prevState => ({
@@ -140,9 +151,6 @@ class Courses2View extends React.PureComponent<
       setTimeout(() => this.handleScroll())
       return courses
     } catch (err) {
-      this.setState({
-        err
-      })
       console.error(err)
     } finally {
       this.setState({
@@ -152,7 +160,7 @@ class Courses2View extends React.PureComponent<
   }
 
   private renderCourses (): JSX.Element | JSX.Element[] {
-    const { courses } = this.state
+    const { courses, err } = this.state
     return courses.length > 0 ? (
       courses.map((course, index) => (
         <Course2Panel
@@ -165,7 +173,13 @@ class Courses2View extends React.PureComponent<
       ))
     ) : (
       <span style={{ fontSize: '1.2rem', margin: 'auto 0' }}>
-        No course has been uploaded so far
+        {
+          err
+            ? err.status === 404
+              ? 'Filter matches no courses'
+              : 'An unknown error occured'
+            : 'No course has been uploaded so far'
+        }
       </span>
     )
   }
@@ -204,7 +218,8 @@ class Courses2View extends React.PureComponent<
 
   private applyFilter (filter: Filter2): void {
     this.setState({
-      filter
+      filter,
+      err: undefined
     })
   }
 
