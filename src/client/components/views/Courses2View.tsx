@@ -111,15 +111,16 @@ class Courses2View extends React.PureComponent<
       this.queryString += filterString
     }
 
-    const courses = await this.fetchCourses()
+    const courses = await this.fetchCourses(10, 0)
     if (!courses) return
     this.setState({
       courses: [...this.state.courses, ...courses]
     })
   }
 
-  private async fetchCourses (limit = 10): Promise<Course2[] | undefined> {
-    const { skip, err } = this.state
+  private async fetchCourses (limit = 10, skipAmount?: number): Promise<Course2[] | undefined> {
+    const { skip: skipState, err } = this.state
+    const skip = skipAmount != null ? skipAmount : skipState
     if (err) return
     try {
       const url = `courses2?limit=${limit}&skip=${skip}${
@@ -219,6 +220,8 @@ class Courses2View extends React.PureComponent<
   private applyFilter (filter: Filter2): void {
     this.setState({
       filter,
+      reachedEnd: false,
+      skip: 0,
       err: undefined
     })
   }
