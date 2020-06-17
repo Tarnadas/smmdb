@@ -2,7 +2,13 @@
 
 A cross console/emulator sharing platform for Super Mario Maker courses to rule them all.
 
-Visit the server at [https://smmdb.ddns.net](https://smmdb.ddns.net)
+- [Website](https://smmdb.net)
+
+- [API Backend repository](https://github.com/Tarnadas/smmdb-api)
+
+- [API Documentation Website (WIP)](https://api.smmdb.net/)
+
+- [SMM1 Save File Editor](https://github.com/tarnadas/cemu-smmdb/releases)
 
 ## Super Mario Maker on any platform
 
