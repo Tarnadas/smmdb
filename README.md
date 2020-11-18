@@ -1,5 +1,9 @@
 # SMMDB
 
+![Continuous integration](https://img.shields.io/travis/Tarnadas/smmdb?label=Travis%20CI&logo=travis)
+[![Discord](https://img.shields.io/discord/168893527357521920?label=Discord&logo=discord&color=7289da)](https://discord.gg/SPZsgSe)
+[![Twitter](https://img.shields.io/twitter/follow/marior_dev?style=flat&logo=twitter&label=follow&color=00acee)](https://twitter.com/marior_dev)
+
 A cross console/emulator sharing platform for Super Mario Maker courses to rule them all.
 
 - [Website](https://smmdb.net)
