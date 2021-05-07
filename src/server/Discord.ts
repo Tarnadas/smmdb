@@ -46,12 +46,15 @@ export class DiscordBot {
   }
 
   public async login (): Promise<void> {
-    try {
-      await this.client.login(process.env.DISCORD_TOKEN)
-    } catch (err) {
-      setTimeout((): void => {
-        this.login()
-      }, 30000)
+    while (true) {
+      try {
+        await this.client.login(process.env.DISCORD_TOKEN)
+        break
+      } catch (err) {
+        await new Promise(resolve => {
+          setTimeout(resolve, 10000)
+        })
+      }
     }
   }
 

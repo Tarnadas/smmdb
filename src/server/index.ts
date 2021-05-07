@@ -85,7 +85,7 @@ async function main (): Promise<void> {
   console.log()
   log('Database initialized')
 
-  Bot.login()
+  await Bot.login()
 
   // initialize app engine
   const app = express()
