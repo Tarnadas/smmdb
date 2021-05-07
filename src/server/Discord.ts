@@ -1,4 +1,5 @@
 import * as Discord from 'discord.js'
+import { discordToken } from '.'
 
 const FAQ_ID = '335060849091936256'
 
@@ -48,7 +49,7 @@ export class DiscordBot {
   public async login (): Promise<void> {
     while (true) {
       try {
-        await this.client.login(process.env.DISCORD_TOKEN)
+        await this.client.login(discordToken)
         break
       } catch (err) {
         await new Promise(resolve => {

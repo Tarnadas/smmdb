@@ -68,8 +68,7 @@ module.exports = [
         IS_SERVER: false,
         PORT: port,
         DOMAIN: domain,
-        API_DOMAIN: apiDomain,
-        DOCKER: process.env.DOCKER
+        API_DOMAIN: apiDomain
       }),
       new webpack.optimize.ModuleConcatenationPlugin(),
       new HtmlWebpackPlugin({

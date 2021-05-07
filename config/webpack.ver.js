@@ -70,8 +70,7 @@ module.exports = [
         NODE_ENV: 'production',
         IS_SERVER: false,
         PORT: port,
-        DOMAIN: domain,
-        DOCKER: process.env.DOCKER
+        DOMAIN: domain
       }),
       new webpack.optimize.ModuleConcatenationPlugin(),
       new HtmlWebpackPlugin({
@@ -153,8 +152,7 @@ module.exports = [
         NODE_ENV: 'production',
         IS_SERVER: true,
         PORT: port,
-        DOMAIN: domain,
-        DOCKER: process.env.DOCKER
+        DOMAIN: domain
       })
     ],
     externals: [require('webpack-node-externals')()],

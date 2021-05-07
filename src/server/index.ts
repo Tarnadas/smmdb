@@ -69,7 +69,15 @@ const $index = cheerio.load(fs.readFileSync(path.join(__dirname, '../client/inde
 
 export const cacheMaxAgeImg = '7d'
 export const cacheMaxAgeCSS = '1d'
-export const cacheMaxAgeJS = '1y';
+export const cacheMaxAgeJS = '1y'
+
+let credentials
+try {
+  credentials = require('./credentials')
+} catch (err) {}
+const googleClientId =
+  process.env.GOOGLE_CLIENT_ID || credentials.googleClientId
+export const discordToken = process.env.DISCORD_TOKEN || credentials.discordToken;
 
 // initialize database
 (async (): Promise<void> => {
@@ -183,7 +191,7 @@ async function main (): Promise<void> {
     if (!idToken) {
       res.status(400).send('idToken not found')
     } else {
-      verifier.verify(idToken, process.env.GOOGLE_CLIENT_ID, async (err: Error, tokenInfo: any): Promise<void> => {
+      verifier.verify(idToken, googleClientId, async (err: Error, tokenInfo: any): Promise<void> => {
         if (err) {
           res.status(400).send('idToken not verified')
           return

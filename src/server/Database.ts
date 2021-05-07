@@ -4,7 +4,7 @@ import { Account } from './Account'
 import { log } from './scripts/util'
 import { Match } from '../models/Match'
 
-const mongoUrl = `mongodb://${process.env.DOCKER === 'docker' ? 'mongodb' : 'localhost'}:27017`
+const mongoUrl = process.env.MONGODB_URI ? process.env.MONGODB_URI : 'mongodb://localhost:27017'
 
 type SimilartySchema = {
   _id: ObjectID

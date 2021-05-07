@@ -5,14 +5,6 @@ const path = require('path')
 
 const { port, domain } = require('./environment')['prod']
 
-let credentials
-try {
-  credentials = require('./credentials')
-} catch (err) {}
-const googleClientId =
-  process.env.GOOGLE_CLIENT_ID || credentials.googleClientId
-const discordToken = process.env.DISCORD_TOKEN || credentials.discordToken
-
 module.exports = [
   {
     mode: 'production',
@@ -32,10 +24,7 @@ module.exports = [
         NODE_ENV: 'production',
         IS_SERVER: true,
         PORT: port,
-        DOMAIN: domain,
-        DOCKER: process.env.DOCKER,
-        GOOGLE_CLIENT_ID: googleClientId,
-        DISCORD_TOKEN: discordToken
+        DOMAIN: domain
       })
     ],
     externals: [require('webpack-node-externals')()],
