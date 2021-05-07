@@ -11,7 +11,7 @@ RUN yarn install --no-progress --pure-lockfile --prod
 RUN yarn install --no-progress --pure-lockfile --prefer-offline
 
 # COPY Files
-COPY ./build/static /usr/src/app/build/static
+COPY ./static /usr/src/app/static
 COPY ./config /usr/src/app/config
 COPY ./src /usr/src/app/src
 COPY .babelrc /usr/src/app/.babelrc
