@@ -6,7 +6,7 @@ echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 (
   docker pull tarnadas/smmdb-build
-  docker build --cache-from=tarnadas/smmdb-build -f ./DockerfileBuild .
+  docker build --cache-from=tarnadas/smmdb-build -t tarnadas/smmdb-build -f ./DockerfileBuild .
   docker push tarnadas/smmdb-build:latest
   docker tag tarnadas/smmdb-build tarnadas/smmdb-build:$GIT_HASH
   docker push tarnadas/smmdb-build:$GIT_HASH
@@ -14,7 +14,7 @@ echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 (
   docker pull tarnadas/smmdb-build-dep
-  docker build --cache-from=tarnadas/smmdb-build-dep -f ./DockerfileBuildDep .
+  docker build --cache-from=tarnadas/smmdb-build-dep -t tarnadas/smmdb-build-dep -f ./DockerfileBuildDep .
   docker push tarnadas/smmdb-build-dep:latest
   docker tag tarnadas/smmdb-build-dep tarnadas/smmdb-build-dep:$GIT_HASH
   docker push tarnadas/smmdb-build-dep:$GIT_HASH
@@ -23,7 +23,7 @@ echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 wait
 
 docker pull tarnadas/smmdb
-docker build --cache-from=tarnadas/smmdb .
+docker build --cache-from=tarnadas/smmdb -t tarnadas/smmdb .
 docker tag tarnadas/smmdb tarnadas/smmdb:$GIT_HASH
 docker push tarnadas/smmdb:latest
 docker push tarnadas/smmdb:$GIT_HASH
