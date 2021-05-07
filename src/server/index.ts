@@ -71,13 +71,8 @@ export const cacheMaxAgeImg = '7d'
 export const cacheMaxAgeCSS = '1d'
 export const cacheMaxAgeJS = '1y'
 
-let credentials
-try {
-  credentials = require('./credentials')
-} catch (err) {}
-const googleClientId =
-  process.env.GOOGLE_CLIENT_ID || credentials.googleClientId
-export const discordToken = process.env.DISCORD_TOKEN || credentials.discordToken;
+const googleClientId = process.env.GOOGLE_CLIENT_ID
+export const discordToken = process.env.DISCORD_TOKEN;
 
 // initialize database
 (async (): Promise<void> => {
