@@ -33,7 +33,10 @@ class View extends React.PureComponent<any, any> {
         backgroundColor: '#24997e',
         height: screenSize >= ScreenSize.MEDIUM ? '0%' : 'auto',
         textAlign: 'center',
-        flex: screenSize >= ScreenSize.MEDIUM ? '1 0 auto' : '1 0 0%'
+        flex: screenSize >= ScreenSize.MEDIUM ? '1 0 auto' : '1 0 0%',
+        display: 'flex',
+        flexDirection: 'column',
+        overflow: screenSize < ScreenSize.MEDIUM ? 'unset' : 'auto'
       }
     }
     return (

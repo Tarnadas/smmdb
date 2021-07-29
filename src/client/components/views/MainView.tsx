@@ -13,8 +13,7 @@ class MainView extends React.PureComponent<any, any> {
         padding: screenSize === ScreenSize.SUPER_SMALL ? '6% 5%' : '6% 10%',
         color: '#000',
         display: 'flex',
-        flexDirection: 'column',
-        overflow: screenSize < ScreenSize.MEDIUM ? 'hidden' : 'auto'
+        flexDirection: 'column'
       },
       content: {
         flex: '1 0 auto',
