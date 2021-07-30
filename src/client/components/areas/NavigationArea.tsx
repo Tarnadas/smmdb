@@ -12,7 +12,7 @@ class Area extends React.PureComponent<any, any> {
     const styles: any = {
       navigation: {
         display: 'flex',
-        width: '240px',
+        width: '260px',
         height: screenSize >= ScreenSize.MEDIUM ? 'auto' : '100vh',
         maxHeight:
           screenSize >= ScreenSize.MEDIUM ? (display ? '700px' : '0') : '100vh',
@@ -32,7 +32,7 @@ class Area extends React.PureComponent<any, any> {
             ? 'none'
             : display
               ? 'none'
-              : 'translateX(-240px)',
+              : 'translateX(-260px)',
         transition:
           screenSize >= ScreenSize.MEDIUM
             ? 'max-height 1s linear'
@@ -112,6 +112,14 @@ class Area extends React.PureComponent<any, any> {
           link="/upload64"
           text="Upload64"
           iconSrc="/img/upload64.png"
+          iconColor="dark"
+        />
+        <NavigationButton
+          onClick={this.props.onClick}
+          link="https://shroomkingdom.net"
+          blank
+          text="Shroom Kingdom"
+          iconSrc="https://shroomkingdom.net/images/logo.svg"
           iconColor="dark"
         />
         <NavigationButton
