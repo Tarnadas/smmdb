@@ -2,7 +2,6 @@
 set -e
 GIT_HASH=$(git rev-parse HEAD)
 echo "using git hash $GIT_HASH"
-echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 (
   docker pull tarnadas/smmdb-build
