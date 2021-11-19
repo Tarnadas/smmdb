@@ -63,7 +63,7 @@ class AppView extends React.PureComponent {
       try {
         const res = (await got(resolve(domain, `/api/getamazonproducts?country=${country}`), {
           json: true,
-          useElectronNet: false
+          rejectUnauthorized: false
         })).body
         this.props.dispatch(setAmazonProducts(res))
       } catch (err) {

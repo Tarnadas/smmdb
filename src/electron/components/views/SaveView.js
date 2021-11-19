@@ -48,7 +48,7 @@ class SaveView extends React.Component {
       const ids = this.props.save.map(x => x.get('smmdbId')).reduce((str, val) => (str + ',' + val))
       const courses = (await got(resolve(domain, `/api/getcourses?ids=${ids}&filter=id,stars,starred`), Object.assign({
         json: true,
-        useElectronNet: false
+        rejectUnauthorized: false
       }, this.props.apiKey ? {
         headers: {
           'Authorization': `APIKEY ${this.props.apiKey}`

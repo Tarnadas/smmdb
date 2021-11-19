@@ -50,7 +50,7 @@ class UploadArea extends React.PureComponent {
           'Authorization': `APIKEY ${this.props.apiKey}`,
           'course-id': String(id)
         },
-        useElectronNet: false
+        rejectUnauthorized: false
       })
       req.on('request', r => {
         abort = r.abort

@@ -50,7 +50,7 @@ class UploadView extends React.PureComponent {
           'Authorization': `APIKEY ${apiKey}`
         },
         json: true,
-        useElectronNet: false
+        rejectUnauthorized: false
       })).body
       if (courses && courses.length > 0) {
         props.dispatch(setCoursesSelf64(courses, shouldConcat))

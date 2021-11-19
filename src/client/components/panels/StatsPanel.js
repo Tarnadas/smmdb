@@ -19,7 +19,7 @@ class StatsPanel extends React.PureComponent {
       try {
         const stats = (await got(resolve(domain, `/api/getstats`), {
           json: true,
-          useElectronNet: false
+          rejectUnauthorized: false
         })).body
         this.props.dispatch(setStats(stats))
       } catch (err) {

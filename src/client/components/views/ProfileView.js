@@ -87,7 +87,7 @@ class ProfileView extends React.PureComponent {
           method: 'POST',
           body: profile,
           json: true,
-          useElectronNet: false
+          rejectUnauthorized: false
         })).body
         this.props.dispatch(setAccountData(res))
         this.setState({

@@ -59,7 +59,7 @@ class Courses64View extends React.PureComponent {
       const apiKey = this.props.apiKey
       const courses = (await got(resolve(domain, `/api/getcourses64?limit=${limit}&start=${shouldConcat ? this.props.courses.size : 0}${this.queryString ? `&${this.queryString}` : ''}`), Object.assign({
         json: true,
-        useElectronNet: false
+        rejectUnauthorized: false
       }, this.props.apiKey ? {
         headers: {
           'Authorization': `APIKEY ${this.props.apiKey}`

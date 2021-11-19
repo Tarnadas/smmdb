@@ -57,7 +57,7 @@ class BlogView extends React.PureComponent {
         method: 'get'
       },
       json: true,
-      useElectronNet: false
+      rejectUnauthorized: false
     })).body
     this.setState({
       md: res.md,
@@ -82,7 +82,7 @@ class BlogView extends React.PureComponent {
         _id: this.state._id
       },
       json: true,
-      useElectronNet: false
+      rejectUnauthorized: false
     })).body
     this.setState({
       _id: res._id

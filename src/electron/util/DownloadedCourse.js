@@ -25,7 +25,7 @@ export default class DownloadedCourse {
 
       const req = got.stream.get(url.resolve(domain, `/api/downloadcourse?id=${courseId}`), {
         decompress: false,
-        useElectronNet: false
+        rejectUnauthorized: false
       })
       req.on('response', data => {
         onStart(courseId, parseInt(data.headers['content-length']))

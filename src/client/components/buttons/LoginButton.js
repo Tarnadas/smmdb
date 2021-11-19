@@ -34,7 +34,7 @@ class LoginButton extends React.PureComponent {
         const res = (await got(resolve(domain, '/signin'), {
           method: 'POST',
           json: true,
-          useElectronNet: false
+          rejectUnauthorized: false
         })).body
         this.props.dispatch(setAccountData(res))
         this.updateCourseStars(this.props, res)

@@ -88,7 +88,7 @@ export default class SaveFileEditor {
       let progress = 0
       const courses = (await got(resolve(domain, `/api/getcourses?limit=${limit}&random=${random ? '1' : '0'}&filter=id,lastmodified&${queryString}`), {
         json: true,
-        useElectronNet: false
+        rejectUnauthorized: false
       })).body
       if (courses.length < limit) limit = courses.length
       downloads = downloads.toJS()

@@ -13,7 +13,7 @@ export const initAccount = async apiKey => {
         'Authorization': `APIKEY ${apiKey}`
       },
       json: true,
-      useElectronNet: false
+      rejectUnauthorized: false
     })).body
     return account
   } catch (err) {

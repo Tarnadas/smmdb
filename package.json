@@ -1,7 +1,7 @@
 {
   "name": "smmdb",
   "version": "2.11.3",
-  "clientVersion": "2.2.1",
+  "clientVersion": "2.2.2",
   "net64Version": "1.0.0",
   "description": "Super Mario Maker course database for Cemu",
   "main": "build/server",
@@ -33,7 +33,7 @@
     "filereader-stream": "^1.0.0",
     "g": "^2.0.1",
     "google-id-token-verifier": "^0.2.3",
-    "got": "^7.1.0",
+    "got": "^8",
     "history": "^4.7.2",
     "imagemin-webp": "^4.0.0",
     "immutable": "^3.8.2",

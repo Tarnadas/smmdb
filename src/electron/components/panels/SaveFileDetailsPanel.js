@@ -34,7 +34,7 @@ class SaveFileDetailsPanel extends React.PureComponent {
         },
         method: 'POST',
         json: true,
-        useElectronNet: false
+        rejectUnauthorized: false
       })).body
       if (course != null) {
         const save = Map(this.props.save.merge({ stars: course.stars, starred: !!course.starred }))

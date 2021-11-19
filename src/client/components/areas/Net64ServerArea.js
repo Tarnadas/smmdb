@@ -34,7 +34,7 @@ class Net64ServerArea extends React.PureComponent {
     try {
       const servers = (await got(resolve(domain, `/api/getnet64servers`), {
         json: true,
-        useElectronNet: false
+        rejectUnauthorized: false
       })).body
       this.setState({
         servers
