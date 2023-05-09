@@ -27,7 +27,7 @@ import { log } from './scripts/util'
 
 const cookieSession = require('cookie-session')
 
-export const Bot = new DiscordBot()
+// export const Bot = new DiscordBot()
 
 const usersPerDay = pmx.probe().meter({
   name: 'users/day',
@@ -88,7 +88,7 @@ async function main (): Promise<void> {
   console.log()
   log('Database initialized')
 
-  await Bot.login()
+  // await Bot.login()
 
   // initialize app engine
   const app = express()
