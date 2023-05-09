@@ -10,7 +10,7 @@ import { Database } from '../Database'
 import { Account } from '../Account'
 import { Course } from '../Course'
 import { Course64 } from '../Course64'
-import { Bot } from '..'
+// import { Bot } from '..'
 import { portCheck } from '../routes/net64/portcheck'
 
 const MAX_FILTER_LIMIT = 120
@@ -349,7 +349,7 @@ export class API {
       }
       fs.writeFileSync(path.join(uploadPath, String(courses[0]._id)), req.body)
       try {
-        Bot.uploadCourse(courses, account)
+        // Bot.uploadCourse(courses, account)
       } catch (err) {
         console.error(err)
       }
@@ -388,7 +388,7 @@ export class API {
       res.status(500).send('Could not read course')
     } else {
       try {
-        Bot.uploadCourse64(course, account)
+        // Bot.uploadCourse64(course, account)
       } catch (err) {
         console.error(err)
       }
@@ -436,7 +436,7 @@ export class API {
     }
     fs.writeFileSync(path.join(uploadPath, String(course._id)), req.body)
     try {
-      Bot.updateCourse(course, account)
+      // Bot.updateCourse(course, account)
     } catch (err) {
       console.error(err)
     }
