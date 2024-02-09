@@ -7,7 +7,7 @@ const { port, domain } = require('./environment')['prod']
 
 module.exports = [
   {
-    mode: 'production',
+    mode: 'development',
     target: 'node',
     devtool: 'source-map',
     entry: path.join(__dirname, '../src/server/index.ts'),

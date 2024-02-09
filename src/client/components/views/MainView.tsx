@@ -198,10 +198,10 @@ class MainView extends React.PureComponent<any, any> {
               iconColor="bright"
             />
             <SMMButton
-              link="http://mariomods.net/"
+              link="https://shitzuapes.xyz/"
               blank
-              text="Mario Making Mods"
-              iconSrc="/img/MMM.png"
+              text="Shitzu Apes"
+              iconSrc="/img/shitzu.svg"
               iconColor="bright"
               noText
             />

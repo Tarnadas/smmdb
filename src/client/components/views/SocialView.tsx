@@ -87,10 +87,11 @@ class SocialView extends React.PureComponent<any, any> {
           <div style={styles.content}>
             Here are all our affiliate links. If you want to become an affiliate, please contact the webmaster<br /><br />
             <SMMButton
-              link='http://mariomods.net/' blank
-              text='Mario Making Mods'
-              iconSrc='/img/MMM.png'
-              iconColor='bright'
+              link="https://shitzuapes.xyz/"
+              blank
+              text="Shitzu Apes"
+              iconSrc="/img/shitzu.svg"
+              iconColor="bright"
               noText
             />
             <SMMButton
