@@ -70,7 +70,8 @@ module.exports = [
         NODE_ENV: 'production',
         IS_SERVER: false,
         PORT: port,
-        DOMAIN: domain
+        DOMAIN: domain,
+        GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || ''
       }),
       new webpack.optimize.ModuleConcatenationPlugin(),
       new HtmlWebpackPlugin({

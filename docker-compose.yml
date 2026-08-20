@@ -1,0 +1,30 @@
+version: '3.6'
+services:
+  mongo:
+    image: mongo:3.4
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - smmdb
+
+  web:
+    build: .
+    restart: unless-stopped
+    environment:
+      MONGODB_URI: mongodb://mongo:27017
+      PORT: '3000'
+      GOOGLE_CLIENT_ID: ''
+      COOKIE_SECRET: ''
+    depends_on:
+      - mongo
+    ports:
+      - '3000:3000'
+    networks:
+      - smmdb
+
+volumes:
+  mongo-data:
+
+networks:
+  smmdb:

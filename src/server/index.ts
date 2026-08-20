@@ -109,7 +109,7 @@ async function main (): Promise<void> {
   app.use('/scripts', express.static(path.join(__dirname, '../client/scripts'), { maxAge: cacheMaxAgeJS }))
   app.use(cookieSession({
     name: 'session',
-    keys: '123',
+    keys: process.env.COOKIE_SECRET || '123',
     maxAge: 24 * 60 * 60 * 1000
   }))
   const connections: any = {}

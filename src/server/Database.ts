@@ -226,15 +226,23 @@ export class Database {
   }
 
   public static async getCoursesCount (): Promise<number> {
-    return (await this.courses.stats()).count
+    return this.getCollectionCount(this.courses)
   }
 
   public static async getCourses2Count (): Promise<number> {
-    return (await this.courses2.stats()).count
+    return this.getCollectionCount(this.courses2)
   }
 
   public static async getCourses64Count (): Promise<number> {
-    return (await this.courses64.stats()).count
+    return this.getCollectionCount(this.courses64)
+  }
+
+  private static async getCollectionCount (collection: any): Promise<number> {
+    try {
+      return (await collection.stats()).count
+    } catch (err) {
+      return 0
+    }
   }
 
   public static addAccount (account: any): any {

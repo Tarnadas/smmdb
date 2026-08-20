@@ -44,3 +44,14 @@ Protocol Buffer files can be found at [smm-protobuf](https://github.com/Tarnadas
 ## Public API
 
 There is a [public API](docs/API.md) for developers, if they want to add SMMDB support to their software.
+
+## Self-hosting
+
+SMMDB can be run on your own infrastructure. See [docs/SELFHOSTING.md](docs/SELFHOSTING.md)
+for full instructions (Google OAuth setup, environment variables, building, Docker, and
+importing course data). The original site was shut down, so configuration is env-driven:
+`GOOGLE_CLIENT_ID`, `COOKIE_SECRET`, `MONGODB_URI`, and `PORT`.
+
+Backups shared with third parties must be sanitized first — `node scripts/sanitize-backup.js`
+drops the `accounts` and `amazon` collections, which contain personal data (emails, Google
+IDs, API keys) and AWS access keys respectively.

@@ -235,7 +235,7 @@ class Button extends React.PureComponent<any, any> {
         ) : (
           <GoogleLogin
             style={styles.google}
-            clientId="899493559187-bnvgqj1i8cnph7ilkl4h261836skee25.apps.googleusercontent.com"
+            clientId={process.env.GOOGLE_CLIENT_ID || ''}
             onSuccess={this.onGoogleLoginSuccess}
             onFailure={this.onGoogleLoginFailure}
           >

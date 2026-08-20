@@ -37,7 +37,8 @@ module.exports = [
         IS_SERVER: false,
         PORT: port,
         DOMAIN: domain,
-        API_DOMAIN: apiDomain
+        API_DOMAIN: apiDomain,
+        GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || ''
       }),
       new HtmlWebpackPlugin({
         filename: '../index.html',
