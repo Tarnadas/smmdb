@@ -45,5 +45,9 @@ COPY --from=build /usr/src/app/build /usr/src/app/build
 COPY --from=build /usr/src/app/node_modules /usr/src/app/node_modules
 
 EXPOSE 3000
-RUN chmod +x ./build/server
+# Course upload handling writes temp files into build/server and ./uploads.
+RUN mkdir -p ./uploads \
+    && chmod +x ./build/server \
+    && chown -R node:node ./build/server ./uploads
+USER node
 CMD [ "node", "./build/server" ]

@@ -51,8 +51,13 @@ Runtime environment variables (no rebuild required):
 | `MONGODB_URI`     | no       | `mongodb://localhost:27017` | MongoDB connection string           |
 | `PORT`            | no       | `3000`               | HTTP listen port                           |
 | `GOOGLE_CLIENT_ID`| yes      | —                    | OAuth client ID (server-side verification) |
-| `COOKIE_SECRET`   | no       | `123`                | cookie-session signing key — set something random in production |
+| `COOKIE_SECRET`   | yes (production) | random per-boot key (dev only) | cookie-session signing key — generate with `openssl rand -hex 32` |
 | `DISCORD_TOKEN`   | no       | —                    | Discord bot token (feature disabled)       |
+
+`COOKIE_SECRET` signs the session cookie, which carries the login credential. In
+production (`NODE_ENV=production`) the server **refuses to start** without it. In
+development it falls back to a random per-boot key (sessions reset on every restart)
+with a warning — there is no insecure default anymore.
 
 ## 3. Building
 
@@ -89,6 +94,14 @@ It starts:
 
 - `mongo` — MongoDB 3.4 with a persistent volume
 - `web` — built from the root `Dockerfile`
+
+The container runs as the unprivileged `node` user. Set `COOKIE_SECRET` in the
+`environment` block (uncomment the provided line) or the server will exit at boot.
+
+> **Security note:** both base images are end-of-life (`mongo:3.4`, `node:16` on Debian
+> buster, whose apt repos are frozen on archive.debian.org). They receive no security
+> patches. Fine for a private instance; if you expose one publicly, keep it behind a
+> TLS-terminating reverse proxy (section 8) and don't publish the mongo port.
 
 The `web` service reads `GOOGLE_CLIENT_ID` and `COOKIE_SECRET` from its `environment`
 block. **Important:** the client bundle bakes `GOOGLE_CLIENT_ID` at build time, so for a

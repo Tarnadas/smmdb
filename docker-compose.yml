@@ -15,7 +15,9 @@ services:
       MONGODB_URI: mongodb://mongo:27017
       PORT: '3000'
       GOOGLE_CLIENT_ID: ''
-      COOKIE_SECRET: ''
+      # Required — the server refuses to start without it.
+      # Generate one with: openssl rand -hex 32
+      # COOKIE_SECRET: <paste-generated-secret-here>
     depends_on:
       - mongo
     ports:

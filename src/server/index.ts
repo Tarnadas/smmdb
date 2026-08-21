@@ -12,6 +12,7 @@ import pmx from 'pmx'
 import * as http from 'http'
 import * as fs from 'fs'
 import * as path from 'path'
+import * as crypto from 'crypto'
 import * as qs from 'querystring'
 
 import renderer from '../shared/renderer'
@@ -72,7 +73,19 @@ export const cacheMaxAgeCSS = '1d'
 export const cacheMaxAgeJS = '1y'
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID
-export const discordToken = process.env.DISCORD_TOKEN;
+export const discordToken = process.env.DISCORD_TOKEN
+
+function getCookieKeys (): string[] {
+  const secret = process.env.COOKIE_SECRET
+  if (secret) {
+    return [secret]
+  }
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('COOKIE_SECRET is not set. Generate one with: openssl rand -hex 32')
+  }
+  console.warn('COOKIE_SECRET is not set - using a random key, sessions reset on every restart.')
+  return [crypto.randomBytes(32).toString('hex')]
+}
 
 // initialize database
 (async (): Promise<void> => {
@@ -109,7 +122,7 @@ async function main (): Promise<void> {
   app.use('/scripts', express.static(path.join(__dirname, '../client/scripts'), { maxAge: cacheMaxAgeJS }))
   app.use(cookieSession({
     name: 'session',
-    keys: process.env.COOKIE_SECRET || '123',
+    keys: getCookieKeys(),
     maxAge: 24 * 60 * 60 * 1000
   }))
   const connections: any = {}
