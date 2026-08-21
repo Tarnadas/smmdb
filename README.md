@@ -55,3 +55,6 @@ importing course data). The original site was shut down, so configuration is env
 Backups shared with third parties must be sanitized first — `node scripts/sanitize-backup.js`
 drops the `accounts` and `amazon` collections, which contain personal data (emails, Google
 IDs, API keys) and AWS access keys respectively.
+
+A pre-sanitized dump of the original database (all courses, no user data) is available:
+https://drive.proton.me/urls/6TF4JYA5QW#pFLyVy6mmCjG

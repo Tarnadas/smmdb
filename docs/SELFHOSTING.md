@@ -103,8 +103,14 @@ change your domain later, rebuild.
 
 ## 6. Importing course data
 
-The original operator can supply a mongodump (the final backup). Restore it before first
-start so `mongorestore` doesn't race the app:
+A pre-sanitized copy of the final production dump (all courses, no user data) is
+available for download:
+
+**https://drive.proton.me/urls/6TF4JYA5QW#pFLyVy6mmCjG**
+
+(`backup-sanitized.7z`, ~25 GiB — extract it and restore the contained `admin/` dump.)
+
+Restore it before first start so `mongorestore` doesn't race the app:
 
 ```bash
 mongorestore --drop --uri mongodb://localhost:27017 /path/to/dump
